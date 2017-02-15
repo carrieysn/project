@@ -1,0 +1,33 @@
+package com.cifpay.lc.core.cache.reservice;
+
+import com.cifpay.lc.constant.enums.CacheEnum;
+import com.cifpay.lc.core.cache.reservice.api.InternalCacheService;
+import com.cifpay.lc.core.cache.service.MerchantCacheServant;
+import com.cifpay.lc.domain.cache.CacheInput;
+import com.cifpay.lc.domain.cache.MerchantInputBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class MerchantCacheComponent implements InternalCacheService {
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private MerchantCacheServant merchantCacheServant;
+
+    @Override
+    public void removeCache(CacheInput paramBean) {
+
+        if (paramBean instanceof MerchantInputBean) {
+            MerchantInputBean merchantInputBean = (MerchantInputBean) paramBean;
+
+            merchantCacheServant.removeCache(merchantInputBean.getMerCode());
+        }
+
+    }
+
+    @Override
+    public String getCacheType() {
+        return CacheEnum.CACHE_TYPE_MERCHANT;
+    }
+}

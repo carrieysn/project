@@ -1,0 +1,198 @@
+package com.cifpay.lc.std.business.message;
+
+import com.alibaba.fastjson.JSON;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.message.MqMessageService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.MessageEnum;
+import com.cifpay.lc.core.autoconfigure.lock.DisLock;
+import com.cifpay.lc.core.autoconfigure.lock.DistributeLockManager;
+import com.cifpay.lc.core.db.dao.MessageDao;
+import com.cifpay.lc.core.db.pojo.Message;
+import com.cifpay.lc.domain.message.*;
+import com.cifpay.lc.exception.MessageBusinessException;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Created by sweet on 16-10-26.
+ */
+@Service("mqMessageService")
+public class MqMessageServiceImpl implements MqMessageService {
+
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private MessageDao messageDao;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    public String DISTRIBUTE_LOCK_PREFIX = "/CIFPAY/LOCK/LCMESSAGE";
+
+    private ExecutorService executor = Executors.newFixedThreadPool(50);
+
+    @Autowired
+    private DistributeLockManager distributeLockManager;
+
+    @Override
+    public BusinessOutput<SendMessageOutput> sendMessage(MessageEnum.MsgType msgType, MessageEnum.Scene scene, MessageParamBean messageParamBean) {
+
+        Message message = new Message();
+        message.setParams(JSON.toJSONString(messageParamBean));
+        message.setStatus(MessageEnum.Status.HANLDING.val);
+        message.setMsgType(msgType.val);
+        message.setScene(scene.val);
+        message.setCount(0);
+        message.setLastTime(System.currentTimeMillis());
+        message.setPlanTime(System.currentTimeMillis());
+        message.setCreateTime(System.currentTimeMillis());
+        int count = messageDao.insert(message);
+        if (count == 0) {
+            logger.error("保存异步处理消息到队列异常,body:", message.getParams());
+            throw new MessageBusinessException(ReturnCode.CORE_MSG_SAVE_EXCEPTION_N108002, "保存消息到message表不成功");
+        }
+        MessageInputBean messageInput = new MessageInputBean();
+        messageInput.setMsgId(message.getId());
+        messageInput.setMsgType(message.getMsgType());
+        messageInput.setSence(message.getScene());
+
+        boolean sendSuccess = send(messageInput);
+        if (sendSuccess) {
+            //发送消息成功
+            return BusinessOutput.success(null);
+        }
+
+        // 如果放到消息队列不成功，把状态改为待处理，由schedule继续处理
+        Message record = new Message();
+        record.setId(message.getId());
+        record.setStatus(MessageEnum.Status.WAIT.val);
+        count = messageDao.updateByPrimaryKey(record);
+        if (count == 0) {
+            logger.error("保存异步处理消息到队列异常,body:", message.getParams());
+            throw new MessageBusinessException(ReturnCode.CORE_MSG_SAVE_EXCEPTION_N108002, "更新消息到message表不成功");
+        }
+        return BusinessOutput.fail(ReturnCode.CORE_STD_SMS_SEND_ERROR, "发送消息失败");
+    }
+
+    @Override
+    public BusinessOutput<PublishMessageOutput> publishMessage(MessageEnum.MsgType msgType, MessageEnum.Scene scene, MessageParamBean messageParamBean) {
+        BusinessOutput<SendMessageOutput> outputBusinessOutput = sendMessage(msgType, scene, messageParamBean);
+
+        BusinessOutput<PublishMessageOutput> result = new BusinessOutput<PublishMessageOutput>();
+        result.setReturnCode(outputBusinessOutput.getReturnCode());
+        result.setReturnMsg(outputBusinessOutput.getReturnMsg());
+
+        return result;
+    }
+
+    @Override
+    public BusinessOutput<RetryMessageOutput> retryMessage(MessageEnum.MsgType msgType, MessageEnum.Scene scene, RetryParam retryParam) {
+        int PAGE_SIZE = 50;
+        //String scene = params.getScene();
+        String lockPath = DISTRIBUTE_LOCK_PREFIX + scene;
+        //避免不同节点并行
+        DisLock lock = null;
+        try {
+        	lock = distributeLockManager.getDisLock(lockPath);
+            if (lock.acquire(5, TimeUnit.SECONDS)) {
+                boolean stop = false;
+                while (!stop) {
+                    Message queryParam = new Message();
+                    queryParam.setMsgType(msgType.val);
+                    queryParam.setScene(scene.val);
+                    queryParam.setStatus(MessageEnum.Status.WAIT.val);
+                    queryParam.setOrderField("PLAN_TIME ASC");
+                    queryParam.setOffset(0);
+                    queryParam.setSize(PAGE_SIZE);
+                    queryParam.setPlanTime(System.currentTimeMillis());
+                    List<Message> messages = messageDao.listMessageBySelective(queryParam);
+                    if (messages == null || messages.size() <= 0) {
+                        stop = true;
+                        break;
+                    }
+                    for (Message message : messages) {
+                        executor.submit(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Message record = new Message();
+                                    record.setId(message.getId());
+                                    record.setStatus(MessageEnum.Status.HANLDING.val);
+                                    record.setLastTime(System.currentTimeMillis());
+                                    record.setCount(message.getCount() + 1);
+                                    boolean updateSuccess = messageDao.updateByPrimaryKeySelective(record);
+
+                                    if (updateSuccess) {
+                                        MessageInputBean messageInput = new MessageInputBean();
+                                        messageInput.setMsgId(message.getId());
+                                        messageInput.setMsgType(message.getMsgType());
+                                        messageInput.setSence(message.getScene());
+
+                                        boolean sendSuccess = send(messageInput);
+                                        if (!sendSuccess) {
+                                            logger.error("处理消息不成功,msgId:{}", message.getId());
+                                        }
+                                    } else {
+                                        logger.error("更新消息:{}不成功!!!", message.getId());
+                                    }
+
+                                } catch (Exception e) {
+                                    logger.error("处理消息失败了,msgId:{},异常：{}", message.getId(), e);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("获取分布式锁出现异常,err:{}", e);
+        } finally {
+            distributeLockManager.unlock(lock);
+        }
+
+        return BusinessOutput.success(null);
+    }
+
+    private boolean send(MessageInputBean messageInput) {
+        try {
+            String exchange = getExchange(messageInput.getMsgType());
+            String routingKey = getRoutingKey(messageInput.getSence());
+            if (!StringUtils.isEmpty(exchange) && !StringUtils.isEmpty(routingKey)) {
+                rabbitTemplate.convertAndSend(exchange, routingKey, messageInput);
+            } else if (!StringUtils.isEmpty(routingKey)) {
+                rabbitTemplate.convertAndSend(routingKey, messageInput);
+            } else {
+                rabbitTemplate.convertAndSend(messageInput);
+            }
+            return true;
+        } catch (Exception e) {
+            logger.error("消息放入消息队列异常，input:{},err:{}", messageInput, e);
+            return false;
+        }
+    }
+
+    private String getExchange(int msgType) {
+        if (MessageEnum.MsgType.LC.val == msgType) {
+            return MessageEnum.EXC_LC;
+        }
+        if (MessageEnum.MsgType.SMS.val == msgType) {
+            return MessageEnum.EXC_SMS;
+        }
+        return null;
+    }
+
+    private String getRoutingKey(String scene) {
+        return scene + "Queue";
+    }
+}

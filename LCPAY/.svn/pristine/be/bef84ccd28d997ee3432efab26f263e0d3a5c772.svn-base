@@ -1,0 +1,14 @@
+package com.cifpay.lc.api.message.lc;
+
+import com.cifpay.lc.api.message.MessageService;
+import com.cifpay.lc.domain.message.MessageInputBean;
+import com.cifpay.lc.domain.message.MessageOutputBean;
+
+/**
+ * 开证异步通知接口
+ * @author Administrator
+ *
+ */
+public interface OpenLcNotifyMessageService extends MessageService<MessageInputBean,MessageOutputBean> {
+
+}

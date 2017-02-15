@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTrdUnionPayFlowDao" > 
+
+   <update id="updateUnionPayFlow" parameterType="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow" >
+    update CIFPAY_LC_TRD_UNIONPAY_FLOW
+      set
+        SYNC_RESP_CODE = #{syncRespCode,jdbcType=VARCHAR},
+        SYNC_RESP_MSG = #{syncRespMsg,jdbcType=VARCHAR},
+        <if test="asynRespCode != null" >
+        	ASYN_RESP_CODE = #{asynRespCode,jdbcType=VARCHAR},
+        </if>
+        <if test="asynRespMsg != null" >
+        	ASYN_RESP_MSG = #{asynRespMsg,jdbcType=VARCHAR},
+        </if>
+        <if test="newFlowId != null" >
+        	NEW_FLOW_ID = #{newFlowId,jdbcType=VARCHAR},
+        </if>
+        <if test="traceNo != null" >
+        	TRACE_NO = #{traceNo,jdbcType=VARCHAR},
+        </if>
+	    <if test="traceTime != null" >
+	        TRACE_TIME = #{traceTime,jdbcType=VARCHAR},
+	    </if>
+	    <if test="txnAmt != null" >
+            TXN_AMT = #{txnAmt,jdbcType=BIGINT},
+         </if>
+         <if test="currencyCode != null" >
+             CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR},
+         </if>
+        <if test="settleAmt != null" >
+        	SETTLE_AMT = #{settleAmt,jdbcType=BIGINT},
+      	</if>
+        <if test="settleCurrencyCode != null" >
+            SETTLE_CURRENCY_CODE = #{settleCurrencyCode,jdbcType=VARCHAR},
+        </if>
+        <if test="settleDate != null" >
+            SETTLE_DATE = #{settleDate,jdbcType=VARCHAR},
+        </if>
+        <if test="syncTradeResult != null">
+            SYNC_TRADE_RESULT = #{syncTradeResult,jdbcType=VARCHAR},
+        </if>
+        <if test="asynTradeResult != null">
+            ASYN_TRADE_RESULT = #{asynTradeResult,jdbcType=VARCHAR},
+        </if>
+        LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP}
+      where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="updateUnionPayFlowAsyn" parameterType="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow" >
+    update CIFPAY_LC_TRD_UNIONPAY_FLOW
+      set
+        ASYN_RESP_CODE = #{asynRespCode,jdbcType=VARCHAR},
+        ASYN_RESP_MSG = #{asynRespMsg,jdbcType=VARCHAR},
+        <if test="traceNo != null" >
+        	TRACE_NO = #{traceNo,jdbcType=VARCHAR},
+        </if>
+	    <if test="traceTime != null" >
+	        TRACE_TIME = #{traceTime,jdbcType=VARCHAR},
+	    </if>
+        <if test="settleAmt != null" >
+        	SETTLE_AMT = #{settleAmt,jdbcType=BIGINT},
+      	</if>
+        <if test="settleCurrencyCode != null" >
+            SETTLE_CURRENCY_CODE = #{settleCurrencyCode,jdbcType=VARCHAR},
+        </if>
+        <if test="settleDate != null" >
+            SETTLE_DATE = #{settleDate,jdbcType=VARCHAR},
+        </if>
+        <if test="asynTradeResult != null">
+            ASYN_TRADE_RESULT = #{asynTradeResult,jdbcType=VARCHAR},
+        </if>
+        LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP}
+      where ORDER_ID =  #{orderId,jdbcType=VARCHAR} and TXN_TIME = #{txnTime,jdbcType=VARCHAR}
+  </update>
+ 
+</mapper>

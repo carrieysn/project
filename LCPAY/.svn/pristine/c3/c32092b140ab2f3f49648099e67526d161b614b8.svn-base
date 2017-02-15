@@ -1,0 +1,31 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_TYPE
+DROP TABLE IF EXISTS `CIFPAY_LC_TYPE`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_TYPE` (
+  `LC_TYPE` varchar(16) NOT NULL COMMENT '银信证类型',
+  `LC_TYPE_DESC` varchar(512) DEFAULT NULL COMMENT '银信证类型描述',
+  `MAX_DAYS_TO_RECEIVE` int(11) DEFAULT NULL COMMENT '默认收证期（天）',
+  `MAX_DAYS_TO_SEND` int(11) DEFAULT NULL COMMENT '默认履约期（天）',
+  `MAX_DAYS_TO_CONFIRM_PAY` int(11) DEFAULT NULL COMMENT '默认签收期（天）',
+  `MAX_DAYS_TO_PAY` int(11) DEFAULT NULL COMMENT '默认解付期（天）',
+  `IS_VALID` int(11) NOT NULL DEFAULT '0' COMMENT '启用状态：0 待开通，1 正常，2 已关闭',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新日期',
+  PRIMARY KEY (`LC_TYPE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证类型定义表';
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

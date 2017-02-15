@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcStatusTypeDao">
+	<resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcStatusType">
+		<id column="STATUS_CODE" property="statusCode" jdbcType="VARCHAR" />
+		<result column="STATUS_NAME" property="statusName" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		STATUS_CODE, STATUS_NAME
+	</sql>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from CIFPAY_LC_STATUS_TYPE
+		where STATUS_CODE =
+		#{statusCode,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		CIFPAY_LC_STATUS_TYPE
+		where STATUS_CODE =
+		#{statusCode,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcStatusType">
+		insert into
+		CIFPAY_LC_STATUS_TYPE (STATUS_CODE, STATUS_NAME)
+		values
+		(#{statusCode,jdbcType=VARCHAR}, #{statusName,jdbcType=VARCHAR})
+	</insert>
+
+	<insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcStatusType">
+		insert into CIFPAY_LC_STATUS_TYPE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="statusCode != null">
+				STATUS_CODE,
+			</if>
+			<if test="statusName != null">
+				STATUS_NAME,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="statusCode != null">
+				#{statusCode,jdbcType=VARCHAR},
+			</if>
+			<if test="statusName != null">
+				#{statusName,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcStatusType">
+		update CIFPAY_LC_STATUS_TYPE
+		<set>
+			<if test="statusName != null">
+				STATUS_NAME = #{statusName,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where STATUS_CODE = #{statusCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcStatusType">
+		update
+		CIFPAY_LC_STATUS_TYPE
+		set STATUS_NAME = #{statusName,jdbcType=VARCHAR}
+		where STATUS_CODE = #{statusCode,jdbcType=VARCHAR}
+	</update>
+</mapper>

@@ -1,0 +1,30 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_B_TRD_SYNC
+DROP TABLE IF EXISTS `CIFPAY_B_TRD_SYNC`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_B_TRD_SYNC` (
+  `JOURNAL_NO` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '银行交易流水',
+  `TRADE_CHN_TYPE` varchar(2) COLLATE utf8_bin NOT NULL COMMENT '交易渠道类型',
+  `TRADE_CHN_ID` varchar(15) COLLATE utf8_bin NOT NULL COMMENT '交易渠道ID',
+  `LC_ID` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '银信交易ID',
+  `ORDER_ID` varchar(32) COLLATE utf8_bin NOT NULL COMMENT '订单号',
+  `SYNC_TIME` datetime DEFAULT NULL COMMENT '交易同步时间',
+  `IS_SUCCESS` char(2) COLLATE utf8_bin DEFAULT NULL COMMENT '交易是否成功',
+  `BANK_STATE` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '银行交易状态（冻结、解冻、划款）',
+  PRIMARY KEY (`JOURNAL_NO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

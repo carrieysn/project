@@ -1,0 +1,40 @@
+package com.cifpay.lc.core.db.dao;
+
+import com.cifpay.lc.core.db.pojo.BSwOpenQueueMsg;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.Date;
+import java.util.List;
+
+@Repository
+public interface BSwOpenQueueMsgDao {
+
+	BSwOpenQueueMsg selectByPrimaryKey(Long msgId);
+
+	void deleteByPrimaryKey(Long msgId);
+
+	void insert(BSwOpenQueueMsg queueMsg);
+
+	void insertSelective(BSwOpenQueueMsg queueMsg);
+
+	void updateByPrimaryKeySelective(BSwOpenQueueMsg queueMsg);
+
+	void updateByPrimaryKey(BSwOpenQueueMsg queueMsg);
+
+	/**
+	 * 根据商户号、充值单号、面额类型、消息序号查询出对应的开证MQ消息
+	 * @param mid
+	 * @param rechargeOrderId
+	 * @param type
+	 * @param sno
+	 * @return
+	 */
+	BSwOpenQueueMsg selectByMerIdOrderIdTypeSno(@Param("mid") String mid,
+			@Param("rechargeOrderId") String rechargeOrderId, @Param("type") String type, @Param("sno") String sno);
+
+	void updateByMidAndOrderIdAndSno(BSwOpenQueueMsg queueMsg);
+
+	List<BSwOpenQueueMsg> selectNoSuccessQueueMsgList(@Param("handleTime") Date handleTime);
+
+}

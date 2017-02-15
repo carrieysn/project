@@ -1,0 +1,9 @@
+package com.cifpay.lc.api.message.sms;
+
+import com.cifpay.lc.api.message.MessageService;
+import com.cifpay.lc.domain.message.MessageInputBean;
+import com.cifpay.lc.domain.message.MessageOutputBean;
+
+public interface SmsSendService extends MessageService<MessageInputBean,MessageOutputBean> {
+
+}

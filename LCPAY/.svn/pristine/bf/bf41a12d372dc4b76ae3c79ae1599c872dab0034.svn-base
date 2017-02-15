@@ -1,0 +1,80 @@
+package com.cifpay.lc.std.sched.task.lc;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.gateway.lc.TransferService;
+import com.cifpay.lc.util.logging.LoggerEnum;
+import com.cifpay.lc.core.db.dao.LcConfirmPayDao;
+import com.cifpay.lc.core.db.pojo.LcConfirmPay;
+import com.cifpay.lc.core.interceptor.annotation.EnableGenerateRequestId;
+import com.cifpay.lc.domain.lc.TransferInputBean;
+import com.cifpay.lc.std.sched.task.SimpleTask;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+/**
+ * 申请解付，24小时后，自动执行解付
+ *
+ * @author Administrator
+ */
+@Component
+@EnableGenerateRequestId(scene = LoggerEnum.Scene.TRANSFERLC)
+public class TransferTask extends SimpleTask {
+
+    private static Logger logger = LoggerFactory.getLogger(TransferTask.class);
+
+    public String DISTRIBUTE_LOCK_PREFIX = "/CIFPAY/LOCK/TRANSFER";
+
+    @Autowired
+    private LcConfirmPayDao lcComfirmPayDao;
+
+    @Autowired
+    private TransferService transferService;
+
+    @Override
+    public String getLockName() {
+        return DISTRIBUTE_LOCK_PREFIX;
+    }
+
+
+    @Override
+    public void handleBusiness() {
+        // 超过执行解付有效期则自动划款解付
+        List<LcConfirmPay> listApply = lcComfirmPayDao.select4ExpiredAutoTransfer();
+        logger.debug(" ======== 开始转账操作：共" + listApply.size() + "条记录 ======== ");
+        listApply.stream().parallel().forEach(lcConfirmPay -> {
+            TransferInputBean inputBean = new TransferInputBean();
+            inputBean.setLcId(lcConfirmPay.getLcId());
+            inputBean.setMerId(lcConfirmPay.getMid());
+            inputBean.setApplyId(lcConfirmPay.getLcConfirmId());
+            inputBean.setRemark("到期自动执行解付");
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        transferService.execute(new BusinessInput<>(inputBean));
+                    } catch (Exception e) {
+                        logger.error("执行解付发生错误：", e);
+                    }
+                }
+            });
+        });
+
+    }
+
+
+    /**
+     * 5分钟检查一次有效期，如果到时则转账
+     */
+    @Scheduled(cron = "50 */1 * * * *")
+    public void checkLcTransfer() {
+        logger.debug(" ======== 开始转账操作 ======== ");
+        execute();
+        logger.debug(" ======== 结束转账操作 ======== ");
+    }
+}

@@ -1,0 +1,72 @@
+package com.cifpay.lc.gateway.integration.normal;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.gateway.common.exception.AbstractGatewayException;
+import com.cifpay.lc.gateway.input.NormalRequest;
+import com.cifpay.lc.gateway.output.FinalNormalResponse;
+import com.cifpay.lc.gateway.output.NormalResponse;
+import com.cifpay.lc.util.MethodParameterUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+@ControllerAdvice
+public class NormalResponseFormAdvice implements ResponseBodyAdvice<Object> {
+
+    @Autowired
+    private NormalMerchantHandler normalMerchantHandler;
+
+    private ObjectMapper jsonMapper = new ObjectMapper();
+
+    @Override
+    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+        Type rtnType = MethodParameterUtils.getGenericType(returnType);
+        if (null != rtnType && rtnType instanceof Class) {
+            Class<?> rtnClz = (Class<?>) rtnType;
+            if (NormalResponse.class.isAssignableFrom(rtnClz)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+        try {
+            @SuppressWarnings("unchecked")
+            NormalRequest<Object> requestParam = (NormalRequest<Object>) RequestContextHolder.getRequestAttributes().getAttribute(NormalRequest.MER_REQUEST_ATTR_KEY, RequestAttributes.SCOPE_REQUEST);
+            NormalResponse responseParam = (NormalResponse) body;
+
+            String sign = normalMerchantHandler.sign(requestParam, responseParam);
+
+            FinalNormalResponse finalResponse = new FinalNormalResponse();
+            finalResponse.setResponseData(jsonMapper.writeValueAsString(responseParam));
+            finalResponse.setSign(sign);
+            return finalResponse;
+        } catch (AbstractGatewayException e) {
+            Map<String, String> signResponseDataFailed = new HashMap<String, String>();
+            signResponseDataFailed.put("returnCode", String.valueOf(e.getReturnCode()));
+            signResponseDataFailed.put("returnMsg", e.getMessage());
+            return signResponseDataFailed;
+        } catch (Throwable e) {
+            Map<String, String> signResponseDataFailed = new HashMap<String, String>();
+            signResponseDataFailed.put("returnCode", String.valueOf(ReturnCode.GW_MER_REQUEST_SIGN_INVALID));
+            signResponseDataFailed.put("returnMsg", "验证签名失败");
+            return signResponseDataFailed;
+        }
+    }
+
+}

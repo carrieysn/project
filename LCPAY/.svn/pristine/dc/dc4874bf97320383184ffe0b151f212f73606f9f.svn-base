@@ -1,0 +1,21 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay.constant;
+
+/* *
+ *类名：UnionpayConfig
+ *功能：基础配置类
+ *详细：设置帐户有关信息
+ */
+public class UnionpayConfig {
+
+	// 合作身份者ID
+	public static final String partner = "531111605180009";
+	
+	// 收款银联账号
+	public static final String seller_id = partner;
+
+	// 商户银联账号
+	public static final String unionpay_no = "operator";
+
+	// 交易请求地址 
+	public static final String unionpay_wap_url = "https://payment.chinapay.com/CTITS/service/rest/page/nref/000000000017/0/0/0/0/0";
+}

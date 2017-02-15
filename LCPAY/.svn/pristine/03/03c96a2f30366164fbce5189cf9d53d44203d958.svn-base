@@ -1,0 +1,70 @@
+package com.cifpay.lc.core.common;
+
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.exception.AbstractCoreException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
+
+import java.security.SecureRandom;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * Core层异常处理助手类
+ */
+public abstract class CoreBusinessExceptionHelper {
+
+    private static final SecureRandom randomErrorRefId = new SecureRandom();
+    private static final SimpleDateFormat errorRefFormatPrefix = new SimpleDateFormat("mmss");
+    private static final DecimalFormat errorRefFormatSuffix = new DecimalFormat("0000");
+
+    /**
+     * 将Business业务逻辑方法中抛出的异常转化为CoreBusinessException【抛出】。
+     *
+     * @param e
+     * @throws CoreBusinessException
+     */
+    public static void throwAsCoreBusinessException(Throwable e) throws CoreBusinessException {
+        throw convertToCoreBusinessException(e);
+    }
+
+    /**
+     * 将Business业务逻辑方法中抛出的异常转化为CoreBusinessException【返回】。
+     *
+     * @param e
+     * @return
+     */
+    public static CoreBusinessException convertToCoreBusinessException(Throwable e) {
+        CoreBusinessException cbEx = null;
+        if (e instanceof CoreBusinessException) {
+            cbEx = (CoreBusinessException) e;
+        } else if (e instanceof AbstractCoreException) {
+            AbstractCoreException cex = (AbstractCoreException) e;
+            cbEx = new CoreBusinessException(cex.getReturnCode(), cex.getOriginalMessage(), cex);
+        } else if (e instanceof DuplicateKeyException) {
+            cbEx = new CoreBusinessException(ReturnCode.CORE_COMMON_VALIDATION_REJECTED, "输入重复记录", e);
+        } else if (e instanceof DataIntegrityViolationException) {
+            cbEx = new CoreBusinessException(ReturnCode.CORE_COMMON_VALIDATION_REJECTED, "输入的数据不满足数据存储要求", e);
+        } else if (e instanceof DataAccessException) {
+            cbEx = new CoreBusinessException(ReturnCode.CORE_COMMON_DB_ERROR, "数据库错误", e);
+        } else {
+            String unknownErrRefNo = generateRandomUnknownErrRefNo();
+            cbEx = new CoreBusinessException(ReturnCode.UNKNOWN_ERROR, "系统错误，ErrRef:" + unknownErrRefNo, e);
+        }
+        return cbEx;
+    }
+
+    /**
+     * 对于未知异常，不返回具体异常信息给客户端，而是生成一个参考号返回给前端，根据该参考号，与日志文件的异常堆栈信息方便对应上即可。
+     *
+     * @return
+     */
+    public static String generateRandomUnknownErrRefNo() {
+        String refNo = "#" + errorRefFormatPrefix.format(new Date());
+        refNo = refNo + errorRefFormatSuffix.format(randomErrorRefId.nextInt(10000));
+        return refNo;
+    }
+}

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace为对应对应Mapper接口，且SQL的id属性值必须与Mapper接口中的方法同名 -->
+<mapper namespace="com.cifpay.lc.core.db.dao.BTradeSyncDao">
+    <resultMap type="com.cifpay.lc.core.db.pojo.BTradeSync" id="TrdSyncMap">
+        <result property="journalNo" column="JOURNAL_NO" />
+        <result property="tradeChnType" column="TRADE_CHN_TYPE" />
+        <result property="tradeChnId" column="TRADE_CHN_ID" />
+        <result property="lcId" column="LC_ID" />
+        <result property="orderId" column="ORDER_ID" />
+        <result property="syncTime" column="SYNC_TIME" />
+        <result property="isSuccess" column="IS_SUCCESS" />
+        <result property="bankState" column="BANK_STATE" />
+	</resultMap>
+	<sql id="TrdSync_Column_List">
+	    trdSync.JOURNAL_NO,
+	    trdSync.TRADE_CHN_TYPE,
+	    trdSync.TRADE_CHN_ID,
+	    trdSync.LC_ID,
+	    trdSync.ORDER_ID,
+	    trdSync.SYNC_TIME,
+	    trdSync.IS_SUCCESS,
+	    trdSync.BANK_STATE
+	</sql>
+	
+	<select id="get" resultMap="TrdSyncMap">
+	    SELECT 
+	        <include refid="TrdSync_Column_List"/>
+	    FROM CIFPAY_B_TRD_SYNC trdSync
+	     WHERE trdSync.LC_ID = #{lcId}
+	     AND trdSync.ORDER_ID = #{orderId}
+	    AND trdSync.JOURNAL_NO=#{journalNo}
+	    ORDER BY trdSync.SYNC_TIME DESC
+		</select>
+
+	<sql id="DynamicSelectTrdSyncValue">
+	    <where>
+		     <trim suffix="" suffixOverrides="AND">
+			  	     <if test="journalNo != null and journalNo != '' ">
+						 AND JOURNAL_NO= #{journalNo}
+					 </if>
+			  	     <if test="tradeChnType != null and tradeChnType != '' ">
+						 AND TRADE_CHN_TYPE= #{tradeChnType}
+					 </if>
+			  	     <if test="tradeChnId != null and tradeChnId != '' ">
+						 AND TRADE_CHN_ID= #{tradeChnId}
+					 </if>
+			  	     <if test="lcId != null and lcId != '' ">
+						 AND LC_ID= #{lcId}
+					 </if>
+			  	     <if test="orderId != null and orderId != '' ">
+						 AND ORDER_ID= #{orderId}
+					 </if>
+			  	     <if test="syncTime != null and syncTime != '' ">
+						 AND SYNC_TIME= #{syncTime}
+					 </if>
+			  	     <if test="isSuccess != null and isSuccess != '' ">
+						 AND IS_SUCCESS= #{isSuccess}
+					 </if>
+			  	     <if test="bankState != null and bankState != '' ">
+						 AND BANK_STATE= #{bankState}
+					 </if>
+		     </trim>
+		 </where>
+	</sql>
+	<select id="selectList" parameterType="com.cifpay.lc.core.db.pojo.BTradeSync" resultMap="TrdSyncMap">
+	    SELECT 
+	        <include refid="TrdSync_Column_List"/>
+	    FROM CIFPAY_B_TRD_SYNC trdSync
+	    <include refid="DynamicSelectTrdSyncValue" />    
+	</select>
+	
+    <sql id="UserTrdSyncColume">
+		<trim suffix="" suffixOverrides=",">
+			  	<if test="journalNo != null and journalNo != '' ">
+					JOURNAL_NO,
+				</if>
+			  	<if test="tradeChnType != null and tradeChnType != '' ">
+					TRADE_CHN_TYPE,
+				</if>
+			  	<if test="tradeChnId != null and tradeChnId != '' ">
+					TRADE_CHN_ID,
+				</if>
+			  	<if test="lcId != null and lcId != '' ">
+					LC_ID,
+				</if>
+			  	<if test="orderId != null and orderId != '' ">
+					ORDER_ID,
+				</if>
+			  	<if test="syncTime != null and syncTime != '' ">
+					SYNC_TIME,
+				</if>
+			  	<if test="isSuccess != null and isSuccess != '' ">
+					IS_SUCCESS,
+				</if>
+			  	<if test="bankState != null and bankState != '' ">
+					BANK_STATE,
+				</if>
+		</trim>
+	</sql>
+	<sql id="UserTrdSyncValue">
+		<trim suffix="" suffixOverrides=",">
+			     <if test="journalNo != null and journalNo != '' ">
+					 #{journalNo},
+				 </if>				  
+			     <if test="tradeChnType != null and tradeChnType != '' ">
+					 #{tradeChnType},
+				 </if>				  
+			     <if test="tradeChnId != null and tradeChnId != '' ">
+					 #{tradeChnId},
+				 </if>				  
+			     <if test="lcId != null and lcId != '' ">
+					 #{lcId},
+				 </if>				  
+			     <if test="orderId != null and orderId != '' ">
+					 #{orderId},
+				 </if>				  
+			     <if test="syncTime != null and syncTime != '' ">
+					 #{syncTime},
+				 </if>				  
+			     <if test="isSuccess != null and isSuccess != '' ">
+					 #{isSuccess},
+				 </if>				  
+			     <if test="bankState != null and bankState != '' ">
+					 #{bankState},
+				 </if>				  
+		</trim>
+	</sql>
+	
+	<insert id="save" parameterType="com.cifpay.lc.core.db.pojo.BTradeSync">
+		INSERT INTO CIFPAY_B_TRD_SYNC(
+		<include refid="UserTrdSyncColume" />
+		) values (
+		<include refid="UserTrdSyncValue" />
+		)
+	</insert> 
+	
+	<sql id="DynamicUpdateTrdSyncValue">
+		<trim suffix="" suffixOverrides=",">
+			     <if test="journalNo != null and journalNo != '' ">
+					 JOURNAL_NO= #{journalNo},
+				 </if>				  
+			     <if test="tradeChnType != null and tradeChnType != '' ">
+					 TRADE_CHN_TYPE= #{tradeChnType},
+				 </if>				  
+			     <if test="tradeChnId != null and tradeChnId != '' ">
+					 TRADE_CHN_ID= #{tradeChnId},
+				 </if>				  
+			     <if test="lcId != null and lcId != '' ">
+					 LC_ID= #{lcId},
+				 </if>				  
+			     <if test="orderId != null and orderId != '' ">
+					 ORDER_ID= #{orderId},
+				 </if>				  
+			     <if test="syncTime != null and syncTime != '' ">
+					 SYNC_TIME= #{syncTime},
+				 </if>				  
+			     <if test="isSuccess != null and isSuccess != '' ">
+					 IS_SUCCESS= #{isSuccess},
+				 </if>				  
+			     <if test="bankState != null and bankState != '' ">
+					 BANK_STATE= #{bankState}
+				 </if>				  
+		</trim>
+	</sql>
+	
+	<update id="update" parameterType="com.cifpay.lc.core.db.pojo.BTradeSync">
+        UPDATE CIFPAY_B_TRD_SYNC SET
+        <include refid="DynamicUpdateTrdSyncValue" />       
+        <!-- <WHERE> 
+        	 trdSync.JOURNAL_NO = #{journalNo, jdbcType=VARCHAR}	
+        </WHERE>	 -->  
+    </update>
+    
+	<select id="sortBySyncTime" parameterType="com.cifpay.lc.core.db.pojo.BTradeSync" resultMap="TrdSyncMap">
+	    SELECT 
+	        <include refid="TrdSync_Column_List"/>
+	    FROM CIFPAY_B_TRD_SYNC trdSync
+	    <include refid="DynamicSelectTrdSyncValue" />  
+	    ORDER BY trdSync.SYNC_TIME DESC
+	</select>
+	
+	<update id="updateByTradeSyncAndOldIsSuccess" parameterType="map">
+        UPDATE CIFPAY_B_TRD_SYNC
+        <trim prefix="SET" suffixOverrides=",">
+			     <if test="trdSync.lcId != null and trdSync.lcId != '' ">
+					 LC_ID= #{trdSync.lcId},
+				 </if>				  
+			     <if test="trdSync.orderId != null and trdSync.orderId != '' ">
+					 ORDER_ID= #{trdSync.orderId},
+				 </if>				  
+		  	     <if test="trdSync.syncTime != null and trdSync.syncTime != '' ">
+					 SYNC_TIME= to_timestamp(#{trdSync.syncTime}, 'yyyy-mm-dd hh24:mi:ss'),
+				 </if>		  	
+			     <if test="trdSync.isSuccess != null and trdSync.isSuccess != '' ">
+					 IS_SUCCESS= #{trdSync.isSuccess},
+				 </if>				  
+			     <if test="trdSync.bankState != null and trdSync.bankState != '' ">
+					 BANK_STATE= #{trdSync.bankState}
+				 </if>				  
+			</trim>			       
+         WHERE  JOURNAL_NO=#{trdSync.journalNo}
+         AND BANK_STATE= #{trdSync.bankState}
+         AND IS_SUCCESS =#{oldIsSuccess}
+    </update>
+</mapper>

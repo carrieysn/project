@@ -1,0 +1,36 @@
+package com.cifpay.lc.api.gateway.query;
+
+import com.cifpay.lc.api.BusinessService;
+import com.cifpay.lc.constant.ResultHandler;
+import com.cifpay.lc.domain.query.LcDto;
+import com.cifpay.lc.domain.query.LcOpenDto;
+import com.cifpay.lc.domain.query.PreLcDto;
+
+public interface LcQueryService extends BusinessService {
+
+    /**
+     * 查询预开证信息(未付款)
+     *
+     * @param lcId
+     * @return
+     */
+    ResultHandler<PreLcDto> selectPreLcByLcId(Long lcId);
+
+    /**
+     * 查询银信证信息(已付款)
+     *
+     * @param lcId
+     * @return
+     */
+    ResultHandler<LcDto> selectLcByLcId(Long lcId);
+
+    /**
+     * 查询开证信息
+     *
+     * @param openId
+     * @return
+     */
+    ResultHandler<LcOpenDto> selectOpenLcById(Long openId);
+
+    ResultHandler<LcDto> selectLcByOrderId(String merId, String orderId);
+}

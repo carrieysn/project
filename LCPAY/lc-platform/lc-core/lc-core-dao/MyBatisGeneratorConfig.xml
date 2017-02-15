@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+	<!--<classPathEntry-->
+			<!--location="D:\soft\apache-maven-3.2.5\resp\mysql\mysql-connector-java\5.1.39\mysql-connector-java-5.1.39.jar" />-->
+
+	<classPathEntry
+		location="D:\jar\mysql-connector-java-5.1.38.jar" />
+
+<!-- 	<classPathEntry -->
+<!-- 		location="D:\DEV\repo-maven3\mysql\mysql-connector-java\5.1.38\mysql-connector-java-5.1.38.jar" /> -->
+
+<!--  	<classPathEntry -->
+<!-- 		location="E:\work\env\repo-maven3\mysql\mysql-connector-java\5.1.38\mysql-connector-java-5.1.38.jar" />  -->
+
+	<context id="MySQLTables" targetRuntime="MyBatis3"
+		defaultModelType="flat">
+
+		<commentGenerator>
+			<property name="suppressAllComments" value="true" />
+		</commentGenerator>
+
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://192.168.163.2:3306/cifpay_lc_platform?useUnicode=true&amp;characterEncoding=utf-8&amp;autoReconnect=true&amp;failOverReadOnly=false&amp;zeroDateTimeBehavior=convertToNull"
+			userId="orders"
+			password="123456">
+		</jdbcConnection>
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="com.cifpay.lc.core.db.pojo"
+                            targetProject="src\main\java">
+            <property name="enableSubPackages" value="false"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="com.cifpay.lc.core.db.mapper"
+                         targetProject="src\main\resources">
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>
+
+    
+		
+		<javaClientGenerator type="XMLMAPPER" targetPackage="com.cifpay.lc.core.db.dao"
+			targetProject="src\main\java">
+            <property name="enableSubPackages" value="false"/>
+        </javaClientGenerator>
+        
+        <table schema="address" tableName="address" domainObjectName="Address" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <property name="useActualColumnNames" value="false"/>
+        </table>
+        
+       <!--
+        <table schema="cifpay_lc" tableName="CIFPAY_LC" domainObjectName="Lc" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <property name="useActualColumnNames" value="false" />
+        </table>-->
+		<!--<table schema="cifpay_lc" tableName="CIFPAY_LC_TRD_UNIONPAY_MAIN" domainObjectName="UnionPayTrdMain" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+			<!--<property name="useActualColumnNames" value="false" />-->
+		<!--</table>-->
+		<!--<table schema="cifpay_lc" tableName="cifpay_lc_merchant" domainObjectName="LcMerchant" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+			<!--<property name="useActualColumnNames" value="false" />-->
+		<!--</table>-->
+
+<!-- 		<table schema="cifpay_lc" tableName="CIFPAY_LC_REFUND" domainObjectName="LcRefund" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+-->
+
+	<!--
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_ACC" domainObjectName="LcAcc" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_PAGE" domainObjectName="LcPage" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_PAGE_TEMPLATE" domainObjectName="LcPageTemplate" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC" domainObjectName="Lc" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_BANK" domainObjectName="LcBank" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_CONFIRM_PAY" domainObjectName="LcConfirmPay" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_INVALID" domainObjectName="LcInvalid" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_LOCK" domainObjectName="LcLock" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_LOG" domainObjectName="LcLog" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_PAY" domainObjectName="LcPay" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_PRODUCT" domainObjectName="LcProduct" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_RECV" domainObjectName="LcRecv" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_SEND" domainObjectName="LcSend" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_SEND_ORG" domainObjectName="LcSendOrg" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_STATUS_TYPE" domainObjectName="LcStatusType" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_TRADE" domainObjectName="LcTrade" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_TYPE" domainObjectName="LcType" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+
+		<table schema="cifpay_lc" tableName="CIFPAY_PRE_LC" domainObjectName="PreLc" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_TRD_FLOW" domainObjectName="TrdFlow" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_TRD_LOCK" domainObjectName="TrdLock" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_TRD_MAIN" domainObjectName="TrdMain" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_TRADE_TYPE" domainObjectName="TradeType" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_PRODUCT" domainObjectName="LcProduct" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+
+		<table schema="cifpay_lc" tableName="CIFPAY_B_SW_OPEN_QUEUE_MSG" domainObjectName="BSwOpenQueueMsg" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+
+
+		<table schema="cifpay_lc" tableName="CIFPAY_B_SW_WITHDRAW_QUEUE_MSG" domainObjectName="BSwWithdrawQueueMsg" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+
+		<table schema="cifpay_lc" tableName="CIFPAY_B_SW_RECV_DATE_QUEUE_MSG" domainObjectName="BSwRecvDateQueueMsg" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+		<table schema="cifpay_lc" tableName="CIFPAY_LC_OPEN" domainObjectName="LcOpen" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+			<property name="useActualColumnNames" value="false" />
+		</table>
+ -->
+
+<!-- 		<table schema="cifpay_lc" tableName="CIFPAY_THIRD_ICBCBANKENT_PAYENT" domainObjectName="ThirdICBCBankentPayent" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"> -->
+<!-- 			<property name="useActualColumnNames" value="false" /> -->
+<!-- 		</table> -->
+
+	</context>
+</generatorConfiguration>

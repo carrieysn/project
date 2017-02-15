@@ -1,0 +1,125 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.util.Date;
+
+public class AdminCredentials {
+    private Integer id;
+
+    private String creName;
+
+    private String crePath;
+
+    private Long creType;
+
+    private Date createTime;
+
+    private Integer userId;
+
+    private Integer creSum;
+
+    private String creRemark;
+
+    private Integer creState;
+
+    private String creFileName;
+
+    private String crePassword;
+
+    private byte[] creConent;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getCreName() {
+        return creName;
+    }
+
+    public void setCreName(String creName) {
+        this.creName = creName == null ? null : creName.trim();
+    }
+
+    public String getCrePath() {
+        return crePath;
+    }
+
+    public void setCrePath(String crePath) {
+        this.crePath = crePath == null ? null : crePath.trim();
+    }
+
+    public Long getCreType() {
+        return creType;
+    }
+
+    public void setCreType(Long creType) {
+        this.creType = creType;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getCreSum() {
+        return creSum;
+    }
+
+    public void setCreSum(Integer creSum) {
+        this.creSum = creSum;
+    }
+
+    public String getCreRemark() {
+        return creRemark;
+    }
+
+    public void setCreRemark(String creRemark) {
+        this.creRemark = creRemark == null ? null : creRemark.trim();
+    }
+
+    public Integer getCreState() {
+        return creState;
+    }
+
+    public void setCreState(Integer creState) {
+        this.creState = creState;
+    }
+
+    public String getCreFileName() {
+        return creFileName;
+    }
+
+    public void setCreFileName(String creFileName) {
+        this.creFileName = creFileName == null ? null : creFileName.trim();
+    }
+
+    public String getCrePassword() {
+        return crePassword;
+    }
+
+    public void setCrePassword(String crePassword) {
+        this.crePassword = crePassword == null ? null : crePassword.trim();
+    }
+
+    public byte[] getCreConent() {
+        return creConent;
+    }
+
+    public void setCreConent(byte[] creConent) {
+        this.creConent = creConent;
+    }
+}

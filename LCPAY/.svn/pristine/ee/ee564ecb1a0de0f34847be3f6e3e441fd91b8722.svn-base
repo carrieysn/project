@@ -1,0 +1,23 @@
+package com.cifpay.lc.api.xds.onlinepayment;
+
+import java.io.Serializable;
+
+/**
+ * Created by yx on 2016/5/3.
+ */
+public class AlipayQueryInputBean implements Serializable {
+    private static final long serialVersionUID = -8656981537718633507L;
+
+    private Long lcId;
+
+    public AlipayQueryInputBean() {
+    }
+
+    public Long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(Long lcId) {
+        this.lcId = lcId;
+    }
+}

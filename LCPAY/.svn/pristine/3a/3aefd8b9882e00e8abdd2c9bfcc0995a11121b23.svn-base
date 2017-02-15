@@ -1,0 +1,9 @@
+package com.cifpay.lc.domain.batch;
+
+import java.io.Serializable;
+
+public class BatchTransferInputBean implements Serializable {
+
+	private static final long serialVersionUID = 1767250197156464791L;
+
+}

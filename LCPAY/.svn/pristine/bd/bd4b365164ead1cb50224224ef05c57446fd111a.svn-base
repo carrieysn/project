@@ -1,0 +1,182 @@
+package com.cifpay.lc.std.business.merchant.lc;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.DeferLcService;
+import com.cifpay.lc.constant.BizConstants.LcTranCode;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.constant.enums.ProcessStatus;
+import com.cifpay.lc.core.cache.pojo.LcProductCache;
+import com.cifpay.lc.core.cache.pojo.LcSendCache;
+import com.cifpay.lc.core.common.*;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.dao.LcLogDao;
+import com.cifpay.lc.core.db.dao.LcSendDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcLog;
+import com.cifpay.lc.core.db.pojo.LcSend;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.core.uid.LcLogIdWorker;
+import com.cifpay.lc.domain.lc.DeferLcInputBean;
+import com.cifpay.lc.domain.lc.DeferLcOutputBean;
+import com.cifpay.lc.std.interceptor.BusinessLockInterceptor;
+import com.cifpay.lc.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * 展期，对证进行操作。增加申请解付有效期（固定7天）
+ *
+ * @author sweet
+ */
+
+@Service("deferLcService")
+@CoreBusinessInterceptorConfig({BusinessLockInterceptor.class})
+@CoreBusinessTranCode(LcTranCode.DEFER)
+public class DeferLcServiceImpl extends LcProductServiceImplBase<DeferLcInputBean, DeferLcOutputBean> implements DeferLcService {
+
+    final static int DEFER_DAY = 7;
+
+    @Autowired
+    private LcDao lcDao;
+
+    @Autowired
+    private LcLogDao lcLogDao;
+
+    @Autowired
+    private LcSendDao lcSendDao;    // 履约DAO
+
+    @Autowired
+    private DbTransactionHelper dbTransactionHelper;
+
+    @Autowired
+    private LcLogIdWorker lcLogIdWorker;
+
+    @Override
+    protected void validateInputParameters(DeferLcInputBean inputBean) throws CoreValidationRejectException {
+        if (inputBean.getLcId() <= 0) {
+            throw new CoreValidationRejectException(103200, "银信证ID不允许为空");
+        }
+    }
+
+    @Override
+    protected void validateLc(DeferLcInputBean inputBean, Lc lc) throws CoreValidationRejectException {
+        if (lc == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_NOT_EXISTS, "银信证记录不存在");
+        }
+        // 检查银信证状态
+        String lcStatus = lc.getLcStatus();
+        if (lcStatus == null) {
+            throw new CoreValidationRejectException(ReturnCode.UNKNOWN_ERROR, "银信证状态不正确");
+        }
+        if (LcStatusType.RETREAT.getStatusCode().compareTo(lcStatus) == 0) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_INVALID, "银信证已失效");
+        }
+        if (LcStatusType.PRE_INVALID.getStatusCode().compareTo(lcStatus) == 0) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_VALIDITY_FAIL, "银信证已失效");
+        }
+        if (LcStatusType.DEFER.getStatusCode().compareTo(lcStatus) == 0) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED_APPOINTMENT, "银信证已展期");
+        }
+        if (LcStatusType.APPOINTMENT_DONE.getStatusCode().compareTo(lcStatus) != 0 && LcStatusType.APPOINTMENT_PART_DONE.getStatusCode().compareTo(lcStatus) != 0) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED_APPOINTMENT, "银信证状态非【已履约】");
+        }
+        if (lc.getConfirmValidTime().getTime() < new Date().getTime()) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_VALIDITY_FAIL_APPLY, "申请解付有效期失效，不能执行展期");
+        }
+    }
+
+    @Override
+    protected void validateLcProductRule(DeferLcInputBean inputBean, LcProductCache lcProduct, CoreBusinessContext context) throws CoreValidationRejectException {
+
+        List<LcSend> lcSendList = lcSendDao.selectBylcId(inputBean.getLcId());
+        if (lcSendList == null || lcSendList.isEmpty()) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPOINTMENT_NOT_EXISTS, "履约记录不存在");
+        }
+        context.setAttribute("lcSendList", lcSendList);
+
+    }
+
+    @Override
+    protected BusinessOutput<DeferLcOutputBean> processBusiness(DeferLcInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+        logger.info("~~~进入申请解付交易");
+
+        Lc lc = (Lc) context.getAttribute("LC");
+        @SuppressWarnings("unchecked")
+        List<LcSendCache> lcSendList = (List<LcSendCache>) context.getAttribute("lcSendList");
+
+        Date now = new Date();
+
+        DbTransaction dbTransaction = dbTransactionHelper.beginTransaction();
+        try {
+
+            // 查询所有待处理的履约记录
+            List<LcSendCache> processSendList = new ArrayList<>();
+            for (LcSendCache lcSend : lcSendList) {
+                if (ProcessStatus.INPROCESS.getCode() == lcSend.getProcessStatus().intValue()) {
+                    processSendList.add(lcSend);
+                }
+            }
+            if (processSendList.isEmpty()) {
+                throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED_APPOINTMENT, "没有待处理的履约");
+            }
+
+            // 更新履约记录，增加有效期
+            for (LcSendCache appointment : processSendList) {
+                Date deferDate = DateUtil.addDay(appointment.getValidTime(), DEFER_DAY);
+
+                LcSend updateLcSend = new LcSend();
+                updateLcSend.setLcSendId(appointment.getLcSendId());
+                updateLcSend.setUpdateTime(now);
+                updateLcSend.setValidTime(deferDate);
+                // updateLcSend.setProcessStatus(ProcessStatus.DEFER.getCode());
+                lcSendDao.updateByPrimaryKeySelective(updateLcSend);
+            }
+
+            // 更新银信证记录
+            Date newConfirmDate = DateUtil.addDay(lc.getConfirmValidTime(), DEFER_DAY);
+            Date newPayDate = DateUtil.addDay(lc.getPayValidTime(), DEFER_DAY);
+
+            Lc updateLc = new Lc();
+            updateLc.setLcId(lc.getLcId());
+            updateLc.setUpdateTime(now);
+            updateLc.setConfirmValidTime(newConfirmDate);
+            updateLc.setPayValidTime(newPayDate);
+            updateLc.setLcStatus(LcStatusType.DEFER.getStatusCode());
+
+            lcDao.updateByPrimaryKeySelective(updateLc);
+
+            // 插入流水表
+            LcLog lcLog = new LcLog();
+            lcLog.setLogId(lcLogIdWorker.nextId());
+            lcLog.setCreateTime(now);
+            lcLog.setUpdateTime(now);
+            lcLog.setLcId(lc.getLcId());
+            lcLog.setTradeCode(LcTranCode.DEFER.getTranCodeStr());
+            lcLog.setLcStatus(updateLc.getLcStatus());
+            lcLog.setRemark("展期，" + inputBean.getRemark());
+            lcLogDao.insert(lcLog);
+
+            dbTransactionHelper.commitTransaction(dbTransaction);
+
+            DeferLcOutputBean outputBean = new DeferLcOutputBean();
+            outputBean.setLcId(lc.getLcId());
+            outputBean.setLcStatus(updateLc.getLcStatus());
+            outputBean.setLcStatusDesc(LcStatusType.getDesc(updateLc.getLcStatus()));
+            outputBean.setConfirmValidTime(updateLc.getConfirmValidTime());
+
+            return BusinessOutput.success(outputBean);
+        } catch (Throwable e) {
+            dbTransactionHelper.rollbackTransaction(dbTransaction);
+            CoreBusinessExceptionHelper.throwAsCoreBusinessException(e);
+        }
+
+        return BusinessOutput.fail(ReturnCode.UNKNOWN_ERROR, "展期失败");
+    }
+
+}

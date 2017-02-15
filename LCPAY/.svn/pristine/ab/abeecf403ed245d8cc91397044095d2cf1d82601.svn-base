@@ -1,0 +1,174 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay.domain.wap;
+
+import java.text.MessageFormat;
+
+/**
+ * 面向商户的银联在线支付接口请求参数
+ * 
+ * 
+ *
+ */
+public class UnionpayPaymentRequest {
+
+	// 请求ID
+	private String requestId;
+
+	// 请求时间
+	private String requestTime;
+
+	// 签名方式
+	private String sign;
+
+	// 商户ID
+	private String merId;
+
+	// 订单号
+	private String orderId;
+
+	// 订单描述
+	private String orderDesc;
+
+	// 1个人 2企业
+	private String type;
+
+	// 币种
+	private String currency;
+
+	// 金额 分
+	private String amount;
+
+	// 支付者手机号
+	private String payerMobile;
+
+	// 系统外用户编码
+	private String userCode;
+
+	// 商品展示地址
+	private String showUrl;
+
+	// 返回地址
+	private String returnUrl;
+	// 通知地址
+	private String noticeUrl;
+
+	public String getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
+	}
+
+	public String getRequestTime() {
+		return requestTime;
+	}
+
+	public void setRequestTime(String requestTime) {
+		this.requestTime = requestTime;
+	}
+
+	public String getSign() {
+		return sign;
+	}
+
+	public void setSign(String sign) {
+		this.sign = sign;
+	}
+
+	public String getMerId() {
+		return merId;
+	}
+
+	public void setMerId(String merId) {
+		this.merId = merId;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getOrderDesc() {
+		return orderDesc;
+	}
+
+	public void setOrderDesc(String orderDesc) {
+		this.orderDesc = orderDesc;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public String getAmount() {
+		return amount;
+	}
+
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+
+	public String getPayerMobile() {
+		return payerMobile;
+	}
+
+	public void setPayerMobile(String payerMobile) {
+		this.payerMobile = payerMobile;
+	}
+
+	public String getUserCode() {
+		return userCode;
+	}
+
+	public void setUserCode(String userCode) {
+		this.userCode = userCode;
+	}
+
+	public String getShowUrl() {
+		return showUrl;
+	}
+
+	public void setShowUrl(String showUrl) {
+		this.showUrl = showUrl;
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
+
+	public String getNoticeUrl() {
+		return noticeUrl;
+	}
+
+	public void setNoticeUrl(String noticeUrl) {
+		this.noticeUrl = noticeUrl;
+	}
+
+	@Override
+	public String toString() {
+		String pattern = "UnionpayPaymentRequest'{'requestId: {0}, requestTime: {1}, sign: {2}, merId: {3}, orderId: {4}, orderDesc: {5}, type: {6}, currency: {7}, amount: {8}, payerMobile: {9}, userCode: {10}, showUrl: {11}, returnUrl: {12}, noticeUrl: {13} '}'";
+		Object[] arguments = new Object[] { requestId, requestTime, sign, merId, orderId, orderDesc, type, currency,
+				amount, payerMobile, userCode, showUrl, returnUrl, noticeUrl };
+		return MessageFormat.format(pattern, arguments);
+	}
+
+}

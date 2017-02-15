@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 预开证异步消息处理
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.OpenLcFreezeMessageService"
+        stub="com.cifpay.lc.api.message.lc.OpenLcFreezeMessageServiceStub"
+        ref="openLcFreezeMessageService" protocol="dubbo"/>
+    -->
+
+    <dubbo:service interface="com.cifpay.lc.api.message.MqMessageService"
+                   ref="mqMessageService" protocol="dubbo"/>
+
+    <!-- 开证异步消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.OpenLcNotifyMessageService"
+                   stub="com.cifpay.lc.api.message.lc.OpenLcNotifyMessageServiceStub"
+                   ref="openLcNotifyMessageService" protocol="dubbo"/>
+
+    <!-- 自动履约消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.AutoAppointmentLcMessageService"
+                   ref="autoAppointmentLcMessageService" protocol="dubbo"/>
+
+    <!-- 自动收证消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.AutoRecvLcMessageService"
+                   ref="autoRecvLcMessageService" protocol="dubbo"/>
+
+    <!-- 自动申请付款消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.AutoApplyLcMessageService"
+                   ref="autoApplyLcMessageService" protocol="dubbo"/>
+
+    <!-- 自动转账消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.AutoTransferLcMessageService"
+                   ref="autoTransferLcMessageService" protocol="dubbo"/>
+
+    <!-- 发送短信处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.sms.SmsSendService"
+                   ref="smsSendService" protocol="dubbo"/>
+
+</beans>

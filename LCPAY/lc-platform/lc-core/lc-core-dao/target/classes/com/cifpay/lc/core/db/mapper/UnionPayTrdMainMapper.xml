@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTrdUnionPayMainDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+    <id column="BUSINESS_ID" property="businessId" jdbcType="BIGINT" />
+    <result column="LC_ID" property="lcId" jdbcType="BIGINT" />
+    <result column="TXN_ID" property="txnId" jdbcType="VARCHAR" />
+    <result column="TXN_TYPE" property="txnType" jdbcType="VARCHAR" />
+    <result column="TXN_SUB_TYPE" property="txnSubType" jdbcType="VARCHAR" />
+    <result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+    <result column="MER_ID" property="merId" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="TXN_TIME" property="txnTime" jdbcType="VARCHAR" />
+    <result column="TXN_AMT" property="txnAmt" jdbcType="BIGINT" />
+    <result column="CHANNEL_TYPE" property="channelType" jdbcType="VARCHAR" />
+    <result column="SUB_MER_ID" property="subMerId" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="ACC_TYPE" property="accType" jdbcType="VARCHAR" />
+    <result column="ACC_NO" property="accNo" jdbcType="VARCHAR" />
+    <result column="CURRENCY_CODE" property="currencyCode" jdbcType="VARCHAR" />
+    <result column="PHONE_NO" property="phoneNo" jdbcType="VARCHAR" />
+    <result column="REQ_RESERVED" property="reqReserved" jdbcType="VARCHAR" />
+    <result column="ORDER_DESC" property="orderDesc" jdbcType="VARCHAR" />
+    <result column="SYNC_RESP_CODE" property="syncRespCode" jdbcType="VARCHAR" />
+    <result column="SYNC_RESP_MSG" property="syncRespMsg" jdbcType="VARCHAR" />
+    <result column="ASYN_RESP_CODE" property="asynRespCode" jdbcType="VARCHAR" />
+    <result column="ASYN_RESP_MSG" property="asynRespMsg" jdbcType="VARCHAR" />
+    <result column="RTN_QUERY_ID" property="rtnQueryId" jdbcType="VARCHAR" />
+    <result column="RTN_SETTLE_DATE" property="rtnSettleDate" jdbcType="VARCHAR" />
+    <result column="SYNC_TRADE_RESULT" property="syncTradeResult" jdbcType="VARCHAR" />
+    <result column="ASYN_TRADE_RESULT" property="asynTradeResult" jdbcType="VARCHAR" />
+    <result column="FLOW_ID" property="flowId" jdbcType="BIGINT" />
+    <result column="INSERT_TIME" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="LAST_UPD_TIME" property="lastUpdTime" jdbcType="TIMESTAMP" />
+    <result column="QUERY_TIMES" property="queryTimes" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BUSINESS_ID, LC_ID, TXN_ID, TXN_TYPE, TXN_SUB_TYPE, BIZ_TYPE, MER_ID, ORDER_ID, TXN_TIME, 
+    TXN_AMT, CHANNEL_TYPE, SUB_MER_ID, USER_ID, ACC_TYPE, ACC_NO, CURRENCY_CODE, PHONE_NO, 
+    REQ_RESERVED, ORDER_DESC, SYNC_RESP_CODE, SYNC_RESP_MSG, ASYN_RESP_CODE, ASYN_RESP_MSG, 
+    RTN_QUERY_ID, RTN_SETTLE_DATE, SYNC_TRADE_RESULT, ASYN_TRADE_RESULT, FLOW_ID, INSERT_TIME, 
+    LAST_UPD_TIME, QUERY_TIMES
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_TRD_UNIONPAY_MAIN
+    where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC_TRD_UNIONPAY_MAIN
+    where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+    insert into CIFPAY_LC_TRD_UNIONPAY_MAIN (BUSINESS_ID, LC_ID, TXN_ID, 
+      TXN_TYPE, TXN_SUB_TYPE, BIZ_TYPE, 
+      MER_ID, ORDER_ID, TXN_TIME, 
+      TXN_AMT, CHANNEL_TYPE, SUB_MER_ID, 
+      USER_ID, ACC_TYPE, ACC_NO, 
+      CURRENCY_CODE, PHONE_NO, REQ_RESERVED, 
+      ORDER_DESC, SYNC_RESP_CODE, SYNC_RESP_MSG, 
+      ASYN_RESP_CODE, ASYN_RESP_MSG, RTN_QUERY_ID, 
+      RTN_SETTLE_DATE, SYNC_TRADE_RESULT, ASYN_TRADE_RESULT, 
+      FLOW_ID, INSERT_TIME, LAST_UPD_TIME, 
+      QUERY_TIMES)
+    values (#{businessId,jdbcType=BIGINT}, #{lcId,jdbcType=BIGINT}, #{txnId,jdbcType=VARCHAR}, 
+      #{txnType,jdbcType=VARCHAR}, #{txnSubType,jdbcType=VARCHAR}, #{bizType,jdbcType=VARCHAR}, 
+      #{merId,jdbcType=VARCHAR}, #{orderId,jdbcType=VARCHAR}, #{txnTime,jdbcType=VARCHAR}, 
+      #{txnAmt,jdbcType=BIGINT}, #{channelType,jdbcType=VARCHAR}, #{subMerId,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=VARCHAR}, #{accType,jdbcType=VARCHAR}, #{accNo,jdbcType=VARCHAR}, 
+      #{currencyCode,jdbcType=VARCHAR}, #{phoneNo,jdbcType=VARCHAR}, #{reqReserved,jdbcType=VARCHAR}, 
+      #{orderDesc,jdbcType=VARCHAR}, #{syncRespCode,jdbcType=VARCHAR}, #{syncRespMsg,jdbcType=VARCHAR}, 
+      #{asynRespCode,jdbcType=VARCHAR}, #{asynRespMsg,jdbcType=VARCHAR}, #{rtnQueryId,jdbcType=VARCHAR}, 
+      #{rtnSettleDate,jdbcType=VARCHAR}, #{syncTradeResult,jdbcType=VARCHAR}, #{asynTradeResult,jdbcType=VARCHAR}, 
+      #{flowId,jdbcType=BIGINT}, #{insertTime,jdbcType=TIMESTAMP}, #{lastUpdTime,jdbcType=TIMESTAMP}, 
+      #{queryTimes,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+    insert into CIFPAY_LC_TRD_UNIONPAY_MAIN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="businessId != null" >
+        BUSINESS_ID,
+      </if>
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+      <if test="txnId != null" >
+        TXN_ID,
+      </if>
+      <if test="txnType != null" >
+        TXN_TYPE,
+      </if>
+      <if test="txnSubType != null" >
+        TXN_SUB_TYPE,
+      </if>
+      <if test="bizType != null" >
+        BIZ_TYPE,
+      </if>
+      <if test="merId != null" >
+        MER_ID,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+      <if test="txnTime != null" >
+        TXN_TIME,
+      </if>
+      <if test="txnAmt != null" >
+        TXN_AMT,
+      </if>
+      <if test="channelType != null" >
+        CHANNEL_TYPE,
+      </if>
+      <if test="subMerId != null" >
+        SUB_MER_ID,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="accType != null" >
+        ACC_TYPE,
+      </if>
+      <if test="accNo != null" >
+        ACC_NO,
+      </if>
+      <if test="currencyCode != null" >
+        CURRENCY_CODE,
+      </if>
+      <if test="phoneNo != null" >
+        PHONE_NO,
+      </if>
+      <if test="reqReserved != null" >
+        REQ_RESERVED,
+      </if>
+      <if test="orderDesc != null" >
+        ORDER_DESC,
+      </if>
+      <if test="syncRespCode != null" >
+        SYNC_RESP_CODE,
+      </if>
+      <if test="syncRespMsg != null" >
+        SYNC_RESP_MSG,
+      </if>
+      <if test="asynRespCode != null" >
+        ASYN_RESP_CODE,
+      </if>
+      <if test="asynRespMsg != null" >
+        ASYN_RESP_MSG,
+      </if>
+      <if test="rtnQueryId != null" >
+        RTN_QUERY_ID,
+      </if>
+      <if test="rtnSettleDate != null" >
+        RTN_SETTLE_DATE,
+      </if>
+      <if test="syncTradeResult != null" >
+        SYNC_TRADE_RESULT,
+      </if>
+      <if test="asynTradeResult != null" >
+        ASYN_TRADE_RESULT,
+      </if>
+      <if test="flowId != null" >
+        FLOW_ID,
+      </if>
+      <if test="insertTime != null" >
+        INSERT_TIME,
+      </if>
+      <if test="lastUpdTime != null" >
+        LAST_UPD_TIME,
+      </if>
+      <if test="queryTimes != null" >
+        QUERY_TIMES,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="businessId != null" >
+        #{businessId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="txnId != null" >
+        #{txnId,jdbcType=VARCHAR},
+      </if>
+      <if test="txnType != null" >
+        #{txnType,jdbcType=VARCHAR},
+      </if>
+      <if test="txnSubType != null" >
+        #{txnSubType,jdbcType=VARCHAR},
+      </if>
+      <if test="bizType != null" >
+        #{bizType,jdbcType=VARCHAR},
+      </if>
+      <if test="merId != null" >
+        #{merId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="txnTime != null" >
+        #{txnTime,jdbcType=VARCHAR},
+      </if>
+      <if test="txnAmt != null" >
+        #{txnAmt,jdbcType=BIGINT},
+      </if>
+      <if test="channelType != null" >
+        #{channelType,jdbcType=VARCHAR},
+      </if>
+      <if test="subMerId != null" >
+        #{subMerId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="accType != null" >
+        #{accType,jdbcType=VARCHAR},
+      </if>
+      <if test="accNo != null" >
+        #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="currencyCode != null" >
+        #{currencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNo != null" >
+        #{phoneNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reqReserved != null" >
+        #{reqReserved,jdbcType=VARCHAR},
+      </if>
+      <if test="orderDesc != null" >
+        #{orderDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespCode != null" >
+        #{syncRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespMsg != null" >
+        #{syncRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespCode != null" >
+        #{asynRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespMsg != null" >
+        #{asynRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnQueryId != null" >
+        #{rtnQueryId,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnSettleDate != null" >
+        #{rtnSettleDate,jdbcType=VARCHAR},
+      </if>
+      <if test="syncTradeResult != null" >
+        #{syncTradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="asynTradeResult != null" >
+        #{asynTradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="flowId != null" >
+        #{flowId,jdbcType=BIGINT},
+      </if>
+      <if test="insertTime != null" >
+        #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdTime != null" >
+        #{lastUpdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="queryTimes != null" >
+        #{queryTimes,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+    update CIFPAY_LC_TRD_UNIONPAY_MAIN
+    <set >
+      <if test="lcId != null" >
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="txnId != null" >
+        TXN_ID = #{txnId,jdbcType=VARCHAR},
+      </if>
+      <if test="txnType != null" >
+        TXN_TYPE = #{txnType,jdbcType=VARCHAR},
+      </if>
+      <if test="txnSubType != null" >
+        TXN_SUB_TYPE = #{txnSubType,jdbcType=VARCHAR},
+      </if>
+      <if test="bizType != null" >
+        BIZ_TYPE = #{bizType,jdbcType=VARCHAR},
+      </if>
+      <if test="merId != null" >
+        MER_ID = #{merId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="txnTime != null" >
+        TXN_TIME = #{txnTime,jdbcType=VARCHAR},
+      </if>
+      <if test="txnAmt != null" >
+        TXN_AMT = #{txnAmt,jdbcType=BIGINT},
+      </if>
+      <if test="channelType != null" >
+        CHANNEL_TYPE = #{channelType,jdbcType=VARCHAR},
+      </if>
+      <if test="subMerId != null" >
+        SUB_MER_ID = #{subMerId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="accType != null" >
+        ACC_TYPE = #{accType,jdbcType=VARCHAR},
+      </if>
+      <if test="accNo != null" >
+        ACC_NO = #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="currencyCode != null" >
+        CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNo != null" >
+        PHONE_NO = #{phoneNo,jdbcType=VARCHAR},
+      </if>
+      <if test="reqReserved != null" >
+        REQ_RESERVED = #{reqReserved,jdbcType=VARCHAR},
+      </if>
+      <if test="orderDesc != null" >
+        ORDER_DESC = #{orderDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespCode != null" >
+        SYNC_RESP_CODE = #{syncRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespMsg != null" >
+        SYNC_RESP_MSG = #{syncRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespCode != null" >
+        ASYN_RESP_CODE = #{asynRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespMsg != null" >
+        ASYN_RESP_MSG = #{asynRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnQueryId != null" >
+        RTN_QUERY_ID = #{rtnQueryId,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnSettleDate != null" >
+        RTN_SETTLE_DATE = #{rtnSettleDate,jdbcType=VARCHAR},
+      </if>
+      <if test="syncTradeResult != null" >
+        SYNC_TRADE_RESULT = #{syncTradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="asynTradeResult != null" >
+        ASYN_TRADE_RESULT = #{asynTradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="flowId != null" >
+        FLOW_ID = #{flowId,jdbcType=BIGINT},
+      </if>
+      <if test="insertTime != null" >
+        INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdTime != null" >
+        LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="queryTimes != null" >
+        QUERY_TIMES = #{queryTimes,jdbcType=INTEGER},
+      </if>
+    </set>
+    where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+    update CIFPAY_LC_TRD_UNIONPAY_MAIN
+    set LC_ID = #{lcId,jdbcType=BIGINT},
+      TXN_ID = #{txnId,jdbcType=VARCHAR},
+      TXN_TYPE = #{txnType,jdbcType=VARCHAR},
+      TXN_SUB_TYPE = #{txnSubType,jdbcType=VARCHAR},
+      BIZ_TYPE = #{bizType,jdbcType=VARCHAR},
+      MER_ID = #{merId,jdbcType=VARCHAR},
+      ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      TXN_TIME = #{txnTime,jdbcType=VARCHAR},
+      TXN_AMT = #{txnAmt,jdbcType=BIGINT},
+      CHANNEL_TYPE = #{channelType,jdbcType=VARCHAR},
+      SUB_MER_ID = #{subMerId,jdbcType=VARCHAR},
+      USER_ID = #{userId,jdbcType=VARCHAR},
+      ACC_TYPE = #{accType,jdbcType=VARCHAR},
+      ACC_NO = #{accNo,jdbcType=VARCHAR},
+      CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR},
+      PHONE_NO = #{phoneNo,jdbcType=VARCHAR},
+      REQ_RESERVED = #{reqReserved,jdbcType=VARCHAR},
+      ORDER_DESC = #{orderDesc,jdbcType=VARCHAR},
+      SYNC_RESP_CODE = #{syncRespCode,jdbcType=VARCHAR},
+      SYNC_RESP_MSG = #{syncRespMsg,jdbcType=VARCHAR},
+      ASYN_RESP_CODE = #{asynRespCode,jdbcType=VARCHAR},
+      ASYN_RESP_MSG = #{asynRespMsg,jdbcType=VARCHAR},
+      RTN_QUERY_ID = #{rtnQueryId,jdbcType=VARCHAR},
+      RTN_SETTLE_DATE = #{rtnSettleDate,jdbcType=VARCHAR},
+      SYNC_TRADE_RESULT = #{syncTradeResult,jdbcType=VARCHAR},
+      ASYN_TRADE_RESULT = #{asynTradeResult,jdbcType=VARCHAR},
+      FLOW_ID = #{flowId,jdbcType=BIGINT},
+      INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP},
+      QUERY_TIMES = #{queryTimes,jdbcType=INTEGER}
+    where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+  </update>
+</mapper>

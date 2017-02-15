@@ -1,0 +1,107 @@
+package com.cifpay.lc.std.business.quickpay;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.quickpay.QuickPaySmsTokenApplyService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.LcCurrency;
+import com.cifpay.lc.constant.enums.PreLcStatus;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessServiceImplBase;
+import com.cifpay.lc.core.db.dao.LcBankDao;
+import com.cifpay.lc.core.db.dao.PreLcDao;
+import com.cifpay.lc.core.db.pojo.LcBank;
+import com.cifpay.lc.core.db.pojo.PreLc;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.domain.quickpay.QuickPaySmsTokenApplyInputBean;
+import com.cifpay.lc.domain.quickpay.QuickPaySmsTokenApplyOutputBean;
+
+/**
+ * 
+ *
+ */
+@Service("quickPaySmsTokenApplyService")
+public class QuickPaySmsTokenApplyServiceImpl
+		extends CoreBusinessServiceImplBase<QuickPaySmsTokenApplyInputBean, QuickPaySmsTokenApplyOutputBean>
+		implements QuickPaySmsTokenApplyService {
+
+	@Autowired
+	private LcBankDao lcBankDao;
+
+	@Autowired
+	private PreLcDao preLcDao;
+
+	@Override
+	protected void validate(QuickPaySmsTokenApplyInputBean inputBean, CoreBusinessContext context)
+			throws CoreValidationRejectException {
+
+		rejectIfNullOrEmptyString(inputBean.getMerchantId(), "商户ID");
+		rejectIfNullOrEmptyString(inputBean.getOrderNo(), "订单编号");
+		// --rejectIfStringNullOrEmpty(inputBean.getTradeName(), "交易名称");
+		rejectIfNullNumberOrNotGreaterThanZero(inputBean.getAmount(), "交易金额");
+		rejectIfNullObject(inputBean.getCurrency(), "币种");
+		rejectIfNullOrEmptyString(inputBean.getcBankAccountNo(), "付款人银行账户");
+		rejectIfNullOrEmptyString(inputBean.getcBankCode(), "付款人银行编码");
+		rejectIfNullOrEmptyString(inputBean.getmBankAccountNo(), "收款人银行账户");
+		rejectIfNullOrEmptyString(inputBean.getmBankCode(), "收款人银行编码");
+		rejectIfNullOrEmptyString(inputBean.getcBindBankPhone(), "付款人银行账户对应的手机号");
+		rejectIfNullOrEmptyString(inputBean.getcName(), "付款人真实姓名");
+		// --rejectIfNullObject(inputBean.getCretificationType(), "付款人证件类型");
+		if (null != inputBean.getCretificationType()) {
+			rejectIfNullOrEmptyString(inputBean.getCretification(), "付款人证件号码");
+		}
+
+		// FIXME 目前单币别，实现简单判断
+		if (!LcCurrency.CNY.equals(inputBean.getCurrency())) {
+			throw new CoreValidationRejectException(ReturnCode.CORE_NONSTD_CURRENCY_NOT_SUPPORTED, "交易币种目前仅支持CNY");
+		}
+
+		// 检查以确保不是重复的交易订单号，支付失败的交易订单号不计在此判断范围
+		/*List<PreLc> existPreLcs = preLcDao.selectByMidOrderId(inputBean.getMerchantId(), inputBean.getOrderNo());
+		if (null != existPreLcs && existPreLcs.size() > 0) {
+			for (PreLc preLc : existPreLcs) {
+				if (!PreLcStatus.FAIL.getCode().equals(preLc.getLcStatus())) {
+					throw new CoreValidationRejectException(ReturnCode.CORE_NONSTD_MERCHANT_ORDER_ID_DUPLICATE,
+							"订单编号重复");
+				}
+			}
+		}*/
+		
+		PreLc existPreLc = preLcDao.selectByMidOrderId(inputBean.getMerchantId(), inputBean.getOrderNo());
+		if (null != existPreLc) {
+			if (PreLcStatus.SUCCESS.getCode().equals(existPreLc.getLcStatus())) {
+				throw new CoreValidationRejectException(ReturnCode.CORE_NONSTD_MERCHANT_ORDER_ID_DUPLICATE,
+						"订单重复支付");
+			}
+		}
+
+		// 查询开证银行信息
+		LcBank payerBank = lcBankDao.selectByPrimaryKey(inputBean.getcBankCode());
+		if (payerBank == null) {
+			throw new CoreBusinessException(ReturnCode.CORE_NONSTD_LC_BANK_NOT_EXISTS, "无效的付款人银行编码");
+		}
+		context.setAttribute("LC_PAYER_BANK_POJO", payerBank);
+
+		// 查询收证银行信息
+		LcBank payeeBank = lcBankDao.selectByPrimaryKey(inputBean.getmBankCode());
+		if (payeeBank == null) {
+			throw new CoreBusinessException(ReturnCode.CORE_NONSTD_LC_BANK_NOT_EXISTS, "无效的收款人银行编码");
+		}
+		context.setAttribute("LC_PAYEE_BANK_POJO", payeeBank);
+
+	}
+
+	@Override
+	protected BusinessOutput<QuickPaySmsTokenApplyOutputBean> processBusiness(QuickPaySmsTokenApplyInputBean inputBean,
+			CoreBusinessContext context) throws CoreBusinessException {
+
+		LcBank payerBank = (LcBank) context.getAttribute("LC_PAYER_BANK_POJO");
+		LcBank payeeBank = (LcBank) context.getAttribute("LC_PAYEE_BANK_POJO");
+
+		return null;
+	}
+
+}

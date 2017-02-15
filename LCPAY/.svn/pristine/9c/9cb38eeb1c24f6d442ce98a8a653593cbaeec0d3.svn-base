@@ -1,0 +1,230 @@
+package com.cifpay.lc.std.business.bank.payment;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.gateway.bank.PaymentSuccessService;
+import com.cifpay.lc.api.message.MqMessageService;
+import com.cifpay.lc.bankadapter.api.IBankTradeService;
+import com.cifpay.lc.bankadapter.api.constant.TradeConfig;
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.input.unionpay.BackRcvResponseCifParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.OpenCardCallBackCifParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.OpenCardParam;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.constant.enums.MessageEnum;
+import com.cifpay.lc.constant.enums.PayChannel;
+import com.cifpay.lc.core.db.dao.AdminLcMerCreDao;
+import com.cifpay.lc.core.db.dao.LcOpenDao;
+import com.cifpay.lc.core.db.dao.PreLcDao;
+import com.cifpay.lc.core.db.dao.UnionUserAccountDao;
+import com.cifpay.lc.core.db.pojo.LcOpen;
+import com.cifpay.lc.core.db.pojo.PreLc;
+import com.cifpay.lc.core.db.pojo.UnionUserAccount;
+import com.cifpay.lc.core.uid.UnionUserAccountIdWorker;
+import com.cifpay.lc.domain.enums.AdminCardType;
+import com.cifpay.lc.domain.message.LcFreezeParamBean;
+import com.cifpay.lc.domain.message.union.CreditParam;
+
+/**
+ * 将银信证设置为已付款[定时任务、页面回调]使用
+ *
+ * @author sweet
+ */
+@Service("paymentSuccessService")
+public class PaymentSuccessServiceImpl implements PaymentSuccessService {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private LcOpenDao lcOpenDao;
+
+    @Autowired
+    private UnionUserAccountDao userAccountDao;
+
+    @Autowired
+    private AdminLcMerCreDao adminLcMerCreDao;
+
+    @Autowired
+    private PreLcDao preLcDao;
+    
+    @Autowired
+    private UnionUserAccountIdWorker unionUserAccountIdWorker;
+
+    @Autowired
+    private IBankTradeService tradeService;
+
+    @Autowired
+    private MqMessageService messageService;
+
+    @Override
+    public void GeneralCallBack(String encoding, HashMap<String, String> map) {
+
+        BackRcvResponseCifParam param = new BackRcvResponseCifParam();
+        param.setEncoding(encoding);
+        param.setReqParam(map);
+        param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_BACK_RCV_RESPONSE);
+        GeneralTradeResult result = tradeService.doTrade(param);
+/*
+        LcTranStatus tranStatus = null;
+
+        if (TradeConfig.TRADE_RESULT_SUCCEED_0.equals(result.getQueryTradeResult())) {
+            tranStatus = LcTranStatus.SUCCESS;
+        } else if (TradeConfig.TRADE_RESULT_FAIL_1.equalsIgnoreCase(result.getTradeResult())) {
+            tranStatus = LcTranStatus.FAIL;
+        } else if (TradeConfig.TRADE_RESULT_UNKNOWN_2.equalsIgnoreCase(result.getTradeResult())) {
+            tranStatus = LcTranStatus.UNCERTAIN;
+        } else {
+            tranStatus = LcTranStatus.INPROCESS;
+        }
+
+        String queryId = result.getQueryId();
+        long lcOpenId = Long.parseLong(result.getResultMap().get("orderId")); // LC_OPEN_ID
+
+        // TODO 根据reslut更新银信证业务逻辑
+        {
+            LcOpen lcOpen = lcOpenDao.selectByPrimaryKey(lcOpenId);
+            if (lcOpen == null) {
+                logger.error("银联回调，未找到银信证信息，lcOpenId=" + lcOpen);
+                return;
+            }
+
+            // 把冻结账户金额任务放入消息队列
+            CreditParam creditParam = new CreditParam();
+            creditParam.setTradeResult(result.getTradeResult());
+            creditParam.setResultDesc(result.getResultDesc());
+            creditParam.setTxnTime(null);
+
+            LcFreezeParamBean lcFreezeParamBean = new LcFreezeParamBean();
+            lcFreezeParamBean.setLcId(lcOpen.getLcId());
+            lcFreezeParamBean.setLcOpenId(lcOpen.getLcOpenId());
+            lcFreezeParamBean.setOpenChannel(PayChannel.parse(lcOpen.getLcOpenChannel()));
+            lcFreezeParamBean.setLcTranStatus(tranStatus);
+            lcFreezeParamBean.setSerialNo(queryId);
+            lcFreezeParamBean.setFreezeTime(new Date());
+            lcFreezeParamBean.setData(creditParam);
+            lcFreezeParamBean.setLcOpenResponse(result.getResultDesc() + "," + tranStatus);
+            messageService.sendMessage(MessageEnum.MsgType.LC, MessageEnum.Sence.OPENLC_NOTIFY, lcFreezeParamBean);
+//        lcOpenDao.updateLcState(lcOpenStatus, result.getResultDesc(), orderId, new Date(), new Date(), LcTranStatus.SUCCESS.toString());
+        }*/
+    }
+
+    @Override
+    public void openCardBack(String encoding, HashMap<String, String> map) {
+
+        OpenCardCallBackCifParam param = new OpenCardCallBackCifParam();
+        param.setEncoding(encoding);
+        param.setReqParam(map);
+        param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_OPEN_CARD_RESPONSE);
+        tradeService.doTrade(param);
+    }
+
+    @Override
+    public void openCardFront(String encoding, HashMap<String, String> map) {
+
+        OpenCardCallBackCifParam param = new OpenCardCallBackCifParam();
+        param.setEncoding(encoding);
+        param.setReqParam(map);
+        param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_OPEN_CARD_RESPONSE);
+        GeneralTradeResult reslut = tradeService.doTrade(param);
+
+//        if (!TradeConfig.TRADE_RESULT_SUCCEED_0.equalsIgnoreCase(reslut.getTradeResult())) {
+//            return;
+//        }
+
+        // 保存记录
+        String merId = map.get("merId");
+
+        long lcId = Long.parseLong(map.get("orderId"));
+
+        PreLc preLc = preLcDao.selectByLcId(lcId);
+
+        UnionUserAccount entry = userAccountDao.selectById(merId, preLc.getMerUserId(),
+                AdminCardType.DEPOSIT.getCode());
+        
+        String reqReserved = map.get("reqReserved");
+        String accNo = "";
+        
+        if (!StringUtils.isEmpty(reqReserved)) {
+            String[] paramArray = reqReserved.split("&");
+            accNo = paramArray[1].split("=")[1];
+        }
+
+        if (entry == null) {
+
+            UnionUserAccount unionUserAccount = new UnionUserAccount();
+            unionUserAccount.setpId(unionUserAccountIdWorker.nextId());
+            unionUserAccount.setMid(preLc.getMid());
+            unionUserAccount.setMerUserid(preLc.getMerUserId());
+            unionUserAccount.setPayerAccno(accNo);
+            unionUserAccount.setUserMobile("");
+            unionUserAccount.setAccnoType(AdminCardType.DEPOSIT.getCode());
+            unionUserAccount.setCreateDate(new Date());
+            userAccountDao.insert(unionUserAccount);
+        } 
+        else {
+            
+            entry.setPayerAccno(accNo);
+
+            userAccountDao.updateByPrimaryKeySelective(entry);
+        }
+    }
+
+    @Override
+    public String openCard() {
+        OpenCardParam param = new OpenCardParam();
+        param.setLcId(new Date().getTime());
+        param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_OPEN_CARD);// 无跳转全渠道开通支付
+        param.setTxnType("79");
+        param.setTxnSubType("00");
+        param.setBusinessId(0041075700l);
+        param.setMerId("777290058137015");
+        param.setSubMerId("777290058137015");
+        param.setAccNo("6216261000000000018");
+        String time = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+        param.setOrderId(time);
+        param.setTxnTime(time);
+        param.setChannelType("07");
+        param.setReqReserved("reqReserved-保留域");
+        GeneralTradeResult result = tradeService.doTrade(param);
+        Map<String, String> map = result.getResultMap();
+        String htmlData = map.get("data");
+        return htmlData;
+
+    }
+
+    @Override
+    public void testCallBack(Long lcId) {
+        LcOpen lcOpen = lcOpenDao.selectByLcId(lcId);
+        if (lcOpen == null) {
+            logger.error("银联回调，未找到银信证信息，lcOpenId=" + lcOpen);
+            return;
+        }
+
+        LcTranStatus tranStatus = LcTranStatus.SUCCESS;
+        // 把冻结账户金额任务放入消息队列
+        CreditParam creditParam = new CreditParam();
+        creditParam.setTradeResult("测试：0");
+        creditParam.setResultDesc("测试：交易成功");
+        creditParam.setTxnTime(null);
+
+        LcFreezeParamBean lcFreezeParamBean = new LcFreezeParamBean();
+        lcFreezeParamBean.setLcId(lcOpen.getLcId());
+        lcFreezeParamBean.setLcOpenId(lcOpen.getLcOpenId());
+        lcFreezeParamBean.setOpenChannel(PayChannel.parse(lcOpen.getLcOpenChannel()));
+        lcFreezeParamBean.setLcTranStatus(tranStatus);
+        lcFreezeParamBean.setSerialNo(String.valueOf(new Date().getTime()));
+        lcFreezeParamBean.setFreezeTime(new Date());
+        lcFreezeParamBean.setData(creditParam);
+        lcFreezeParamBean.setLcOpenResponse("测试：交易成功" + "," + tranStatus);
+        messageService.sendMessage(MessageEnum.MsgType.LC, MessageEnum.Sence.OPENLC_NOTIFY, lcFreezeParamBean);
+    }
+}

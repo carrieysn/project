@@ -1,0 +1,140 @@
+package com.cifpay.lc.versionb.recharge.online.alipay.util;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.httpclient.methods.multipart.FilePartSource;
+import org.apache.commons.httpclient.methods.multipart.PartSource;
+
+import com.cifpay.lc.versionb.recharge.online.alipay.util.httpclient.HttpProtocolHandler;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.httpclient.HttpRequest;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.httpclient.HttpResponse;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.httpclient.HttpResultType;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+/**
+ * 提供对外工具类
+ * Created by yx on 2016/3/16.
+ */
+public class AlipayUtil {
+
+    /**
+     * servlet调用
+     * 封装支付宝请求数据
+     * 返回string可直接跳转支付宝付款
+     * @param alipayParam
+     * @return string
+     */
+    public static String alipay(AlipayParam alipayParam){
+        Map<String,String> sParaTemp = AlipayCore.configInfo(alipayParam);
+        String result = AlipayCore.buildRequest(sParaTemp,"post","sButton");
+        return result;
+    }
+
+    /**
+     * controller调用
+     * 封装支付宝请求数据
+     * 返回string可直接跳转支付宝付款[servlet调用]
+     * @param alipayParam
+     * @return map
+     */
+    public static Map<String,String> alipayMap(AlipayParam alipayParam){
+        Map<String,String> sParaTemp = AlipayCore.configInfo(alipayParam);
+        return AlipayCore.buildRequestPara(sParaTemp);
+    }
+
+    /**
+     * 解析requestMap中数据
+     * @param backMap
+     * @return
+     * @throws Exception
+     */
+    public static Map<String,String> getAliBackMap(Map<String, String[]> backMap) throws Exception {
+        Map<String,String> params = new HashMap<String,String>();
+        for (Iterator<String> iter = backMap.keySet().iterator(); iter.hasNext(); ) {
+            String name = iter.next();
+            String[] values = backMap.get(name);
+            String valueStr = "";
+            for (int i = 0; i < values.length; i++) {
+                valueStr = (i == values.length - 1) ? valueStr + values[i]
+                        : valueStr + values[i] + ",";
+            }
+            //乱码解决，这段代码在出现乱码时使用。如果mysign和sign不相等也可以使用这段代码转化
+            //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+            params.put(name, valueStr);
+        }
+        return params;
+    }
+
+    /**
+     * 验证消息是否是支付宝发出的合法消息
+     * @param params 通知返回来的参数数组
+     * @return 验证结果
+     */
+    public static boolean verify(Map<String, String> params) {
+        //判断responsetTxt是否为true，isSign是否为true
+        //responsetTxt的结果不是true，与服务器设置问题、合作身份者ID、notify_id一分钟失效有关
+        //isSign不是true，与安全校验码、请求时的参数格式（如：带自定义参数等）、编码格式有关
+        String responseTxt = "false";
+        if(params.get("notify_id") != null) {
+            String notify_id = params.get("notify_id");
+            responseTxt = AlipayCore.verifyResponse(notify_id);
+        }
+        String sign = "";
+        if(params.get("sign") != null) {sign = params.get("sign");}
+        boolean isSign = AlipayCore.getSignVeryfy(params, sign);
+
+        //写日志记录
+        //String sWord = "responseTxt=" + responseTxt + "\n isSign=" + isSign + "\n 返回回来的参数：" + AlipayCore.createLinkString(params);
+        //AlipayCore.logResult(sWord);
+
+        if (isSign && responseTxt.equals("true")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 生成文件摘要
+     * @param strFilePath 文件路径
+     * @param file_digest_type 摘要算法
+     * @return 文件摘要结果
+     */
+    public static String getAbstract(String strFilePath, String file_digest_type) throws IOException {
+        PartSource file = new FilePartSource(new File(strFilePath));
+        if(file_digest_type.equals("MD5")){
+            return DigestUtils.md5Hex(file.createInputStream());
+        }else if(file_digest_type.equals("SHA")) {
+            return DigestUtils.sha256Hex(file.createInputStream());
+        }else {
+            return "";
+        }
+    }
+
+    /**
+     * 发送请求
+     * @param sMap 请求参数
+     * @param notifyUrl 请求地址
+     * @return string
+     * @throws Exception
+     */
+    public static String sendRequest(Map<String,String> sMap,String notifyUrl) throws Exception {
+        HttpProtocolHandler httpProtocolHandler = HttpProtocolHandler.getInstance();
+        HttpRequest request = new HttpRequest(HttpResultType.BYTES);
+        //设置编码集
+        request.setCharset(AlipayConfig.input_charset);
+        request.setParameters(AlipayCore.generatNameValuePair(sMap));
+        request.setUrl(notifyUrl);
+        HttpResponse response = httpProtocolHandler.execute(request,"","");
+        if (response == null) {
+            return null;
+        }
+        String strResult = response.getStringResult();
+        return strResult;
+    }
+
+}

@@ -1,0 +1,37 @@
+package com.cifpay.lc.gateway.input.quickpay;
+
+/**
+ * 
+ *
+ */
+public class QuickPayEnquiryRequest {
+
+	private String merchantId;
+	private String orderNo;
+	private String lcId;
+
+	public String getMerchantId() {
+		return merchantId;
+	}
+
+	public void setMerchantId(String merchantId) {
+		this.merchantId = merchantId;
+	}
+
+	public String getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+
+	public String getLcId() {
+		return lcId;
+	}
+
+	public void setLcId(String lcId) {
+		this.lcId = lcId;
+	}
+
+}

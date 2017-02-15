@@ -1,0 +1,79 @@
+package mock.merchant;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+import mock.merchant.servlet.GetFundServlet;
+import mock.merchant.servlet.GetLcListServlet;
+import mock.merchant.servlet.IndexServlet;
+import mock.merchant.servlet.LcServlet;
+import mock.merchant.servlet.XyServlet;
+
+/**
+ * Mock Merchant WEB应用初始化入口。
+ */
+@Configuration
+@EnableAutoConfiguration(exclude = {WebMvcAutoConfiguration.EnableWebMvcConfiguration.class, DataSourceAutoConfiguration.class})
+@ComponentScan(basePackageClasses = {LCMockMerchantApplication.class})
+@ImportResource({"classpath:/mock/merchant/config/spring-root-context.xml"})
+public class LCMockMerchantApplication extends SpringBootServletInitializer implements WebApplicationInitializer {
+
+    @Bean
+    public FilterRegistrationBean encodingFilter() {
+        FilterRegistrationBean registration = new FilterRegistrationBean(new CharacterEncodingFilter("UTF-8", true));
+        registration.addUrlPatterns("/*");
+        return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean indexServlet() {
+        ServletRegistrationBean registration = new ServletRegistrationBean(new IndexServlet(), "/index");
+        return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean lcServlet() {
+        ServletRegistrationBean registration = new ServletRegistrationBean(new LcServlet(), "*.lc");
+        return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean getLcListServlet() {
+        ServletRegistrationBean registration = new ServletRegistrationBean(new GetLcListServlet(), "/getLcListServlet");
+        return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean getFundServlet() {
+        ServletRegistrationBean registration = new ServletRegistrationBean(new GetFundServlet(), "/getFundServlet");
+        return registration;
+    }
+
+    @Bean
+    public ServletRegistrationBean xyServlet() {
+        ServletRegistrationBean registration = new ServletRegistrationBean(new XyServlet(), "/xy/*");
+        return registration;
+    }
+
+    @Bean
+    public InternalResourceViewResolver internalResourceViewResolver(@Value("${spring.mvc.view.prefix}") String prefix, @Value("${spring.mvc.view.suffix}") String suffix) {
+        InternalResourceViewResolver vr = new InternalResourceViewResolver();
+        vr.setContentType("text/html;charset=UTF-8");
+        vr.setPrefix(prefix);
+        vr.setSuffix(suffix);
+        return vr;
+    }
+
+}

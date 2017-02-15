@@ -1,0 +1,14 @@
+package com.cifpay.lc.domain.batch;
+
+import com.cifpay.lc.constant.enums.LoggerEnum;
+import com.cifpay.lc.domain.AbstractInputBean;
+
+/**
+ * Created by sweet on 16-12-23.
+ */
+public class AbstractBatchInputBean extends AbstractInputBean {
+
+    public AbstractBatchInputBean(LoggerEnum.Scene scene) {
+        this.setScene(scene);
+    }
+}

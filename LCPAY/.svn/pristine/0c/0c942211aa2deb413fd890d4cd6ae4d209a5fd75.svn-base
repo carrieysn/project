@@ -1,0 +1,37 @@
+package com.cifpay.lc.bankadapter.common.impl.unionpay;
+
+import java.util.Date;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cifpay.lc.bankadapter.BusinessJUnitTestBase;
+import com.cifpay.lc.bankadapter.api.IBankTradeService;
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.input.unionpay.OpenCifParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.PayCifParam;
+
+public class PayCifTradeStategyTest extends BusinessJUnitTestBase  {
+	@Autowired
+	IBankTradeService bankTradeService;
+	
+	@Test
+	public void  processTest() throws Exception  {
+		PayCifParam param = new PayCifParam();
+		param.setBusinessId(004122553l);
+		param.setLcId(new Long(100000012L));
+		param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_AUTH_FINISH);
+		param.setTxnType("03");
+		param.setTxnSubType("00");
+		param.setMerId("777290058137015");
+		param.setSubMerId("1000001");
+		param.setUserId("138000138000");
+		param.setOrderId("1000000000000025");
+		param.setTxnTime("20161014061359");
+		param.setTxnAmt(new Long(1001L));
+		param.setChannelType("07");
+		param.setOrigOryId("201610140613591549618");
+		
+		bankTradeService.doTrade(param);
+	}
+}

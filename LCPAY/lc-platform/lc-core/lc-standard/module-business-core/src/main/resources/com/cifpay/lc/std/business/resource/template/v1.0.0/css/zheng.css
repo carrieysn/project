@@ -1,0 +1,287 @@
+@charset "utf-8";
+/* CSS Document */
+
+/*清除浮动*/
+.clearfix:after{
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+* html .clearfix {height: 1%;}
+.clear{clear:both;}
+
+.card{
+	width: 375px;
+	background: url(##BgImg##) no-repeat;
+	height: 627px;
+	background-size: 100%;
+	padding-top: 1px;
+	padding: 20px;
+	margin: 0 auto;
+}
+.card h1{
+	text-align: center;
+	font-size: 16px;
+	margin: 94px 0 0;
+	color: #545454;
+
+}
+.card h2{
+	text-align: center;
+	font-size: 12px;
+	margin-top: 5px;
+}
+.money{
+	color:#c00;
+	font-size: 36px;
+	margin-top: 26px;
+	padding-left: 22px;
+	font-weight: 900;
+	font-family: impact;
+}
+.money label{
+	font-size: 14px;
+	color: #333;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+.moneyUpper{
+	margin: 14px 18px 0;
+	font-size: 15px;
+	padding-bottom: 10px;
+	border-bottom: 2px solid #dfbcba;
+}
+.moneyUpper label{
+	font-size: 13px;
+}
+
+.tabList{
+	margin: 12px auto 0;
+	width: 314px;
+}
+.tabList th{
+	color: #666;
+	font-size: 12px;
+	font-weight: normal;
+}
+.tabList td,.tabList th{
+	padding: 8px 0 4px;
+}
+
+.btn{
+	display: block;
+/*	width: 108px;*/
+	height: 34px;
+	line-height: 34px;
+	border-radius: 4px;
+	color: #fff;
+	text-decoration: none;
+	font-size: 14px;
+}
+.btn:hover{
+	text-decoration: none;
+	color: #fff;
+}
+.btn i{
+	display: block;
+	width: 26px;
+	height: 26px;
+	text-align: center;
+	line-height: 26px;
+	margin: 4px 6px 0;
+	background: #fff;
+	border-radius: 50%;
+	font-style: normal;
+	float: left;	
+}
+.btn-red{
+	background: #ec5d57;
+}
+.btn-red i{
+	color: #ec5d57;
+}
+.btn-blue{
+	background: #4990e2;
+}
+.btn-blue i{
+	color:#4990e2;
+}
+
+/*失效按钮*/
+.btn-invalid{
+	background: #dfbcba;
+}
+.btn-invalid i{
+	color: #dfbcba;
+}
+
+.tabList img,.imgAuto{
+	width: 100%;
+	max-width: 100%;
+}
+.tabList .color-text{
+	line-height: 16px;
+}
+.color-text div{
+	height: 48px;
+	overflow: hidden;
+}
+.colorRed{
+	color: #e10000;
+	
+}
+.colorBlue{
+	color: #4269a6;
+}
+
+/*bar*/
+.bar{
+	width: 260px;
+	margin: 0 auto;
+}
+.bar li{
+	float: left;
+}
+.number{
+	width: 26px;
+	height: 26px;
+	line-height: 20px;
+	text-align: center;
+	border-radius: 50%;
+	border:2px solid #dfbcba;
+	background-color: transparent;
+	color: #dfbcba;
+	font-size: 20px;
+	position: relative;
+	z-index: 99;
+}
+.lap{
+	width: 91px;
+	height: 2px;
+	background-color: #dfbcba;
+	margin-top: 12px;
+}
+.full{
+	background-color: #dfbcba;
+	color: #fff;
+}
+.bar-tip{
+	color: #dfbcba;
+	margin-left: 38px;
+	padding-top: 5px;
+}
+.tabList .iconRight{
+	padding: 0 6px;
+}
+
+.barBox{
+	position: relative;
+	width: 100%;
+	height: 24px;
+	line-height: 24px;
+}
+.barTip1,.barTip2,.barTip3{
+	position: absolute;
+	left: 15px;
+	font-size: 13px;
+	color: #dfbcba;
+}
+.barTip2{
+	left: 155px;
+}
+.barTip3{
+	left: 260px;
+}
+
+.foterTab{
+	margin-top: 15px;
+}
+
+/*barInfo*/
+.barInfo{
+	background:#dfbcba;
+	box-shadow: 0 4px 13px rgba(165,144,144,.75);
+	position: absolute;
+	border-radius: 2px;
+	color: #fff;
+	width: 332px;
+	height: 210px;
+	padding: 15px 0;
+	top: -220px;
+	z-index: 9;
+}
+.barInfo h3{
+	font-size: 16px;
+	text-align: center;
+	margin-bottom: 5px;
+}
+.barInfo dl{
+	margin:5px 0 0 20px;
+}
+.barInfo dd{
+	margin-left: 30px;
+}
+.barInfo:before{
+	position: absolute;
+	content: '';
+	width:0; 
+    height:0; 
+    border-left:15px solid transparent;
+    border-right:15px solid transparent;
+    border-top:15px solid #dfbcba;
+	bottom: -15px;
+	left: 35px;
+}
+.barInfo2:before{
+	left:154px;
+}
+.barInfo3:before{
+	left:270px;
+}
+
+/*失效页面*/
+.invalid{
+	background: url(##InvalidBgImg##) no-repeat;
+	background-size: 100%;
+}
+.invalid .money{
+	color:#6f6f6f;
+}
+.invalid .moneyUpper{
+	border-bottom-color:#d9d9d9;
+}
+
+.invalid .number{
+	border-color: #a8a8a8;
+	color: #a8a8a8;
+}
+
+.invalid .full{
+	background: #a8a8a8;
+	border-color: #a8a8a8;
+	color: #fff;
+}
+
+.invalid .lap{
+	background: #a8a8a8;	
+}
+.invalid .bar-tip,.invalid .barTip1, .invalid .barTip2, .invalid .barTip3{
+	color: #a8a8a8;
+}
+.invalid .color-text{
+	color: #6f6f6f;
+}
+/*遮罩*/
+.zhezhao{
+	position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+	display: none;
+    left: 0;
+    z-index: 2;
+/*	background-color:rgba(0,0,0,.5);*/
+	background-color: transparent;
+}

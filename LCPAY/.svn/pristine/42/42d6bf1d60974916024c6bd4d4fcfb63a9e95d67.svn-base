@@ -1,0 +1,16 @@
+package com.cifpay.lc.core.cache.reservice.api;
+
+import com.cifpay.lc.core.cache.bean.BaseCache;
+
+
+public interface InternalCacheService {
+	
+	 public BaseCache getCache(String paramValue);
+	 
+	 public BaseCache updateCache(String paramValue);
+	 
+	 public void removeCache(String paramValue);
+	 
+	 String getCacheKey();
+
+}

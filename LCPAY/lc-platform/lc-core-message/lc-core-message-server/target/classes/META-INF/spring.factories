@@ -1,0 +1,1 @@
+org.springframework.context.ApplicationContextInitializer=com.cifpay.lc.core.message.server.integration.MessageLogbackInitializer

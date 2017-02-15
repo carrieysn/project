@@ -1,0 +1,28 @@
+package com.cifpay.lc.std.domain.kernel;
+
+import java.io.Serializable;
+
+import com.cifpay.lc.core.db.pojo.LcOpen;
+
+public class RefundKernalInputBean implements Serializable {
+
+    private LcOpen lcOpen;
+    private static final long serialVersionUID = 420070130038349014L;
+
+    public LcOpen getLcOpen() {
+        return lcOpen;
+    }
+
+    public void setLcOpen(LcOpen lcOpen) {
+        this.lcOpen = lcOpen;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("RefundKernalInputBean [lcOpen=");
+        builder.append(lcOpen);
+        builder.append("]");
+        return builder.toString();
+    }
+}

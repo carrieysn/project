@@ -1,0 +1,249 @@
+package com.cifpay.lc.domain.lc;
+
+import com.cifpay.lc.constant.enums.AccountPropertyType;
+import com.cifpay.lc.constant.enums.LoggerEnum;
+import com.cifpay.lc.constant.enums.OpenChannel;
+import com.cifpay.lc.domain.AbstractInputBean;
+
+import java.math.BigDecimal;
+
+public class InitLcInputBean extends AbstractInputBean {
+
+	private static final long serialVersionUID = 7198185082409084930L;
+
+	private String merId; 			// 商户号
+	private String productCode; 	// 银信证产品代码
+	private String orderId; 		// 商户订单号
+	private String orderContent;	// 商户订单信息
+	private String merUserId;       // 商户用户标识
+
+	private BigDecimal amount; 		// 银信证开证金额
+	private String currency; 		// 银信证币种
+	private OpenChannel openChannel;// 支付渠道
+
+	private int openValidSecond;    // 开证失效时间（单位秒）
+	private int recvValidSecond; 	// 收证失效时间（单位秒）
+	private int sendValidSecond; 	// 履约失效时间（单位秒）
+	private int confirmValidSecond; // 申请解付失效时间（单位秒）
+	private int payValidSecond; 	// 执行解付到期时间（单位秒）
+
+	private String payerBankCode; 		// 付款方银行代码
+	private String payerBankAccountNo; 	// 付款人账号
+	private AccountPropertyType payerAccountType; // 付款人类型：1:个人 2:企业
+	private String payerMobile; 		// 付款人手机号
+
+	private String recvBankCode; 		// 收款方银行代码
+	private String recvBankAccountNo; 	// 收款人账号
+	private AccountPropertyType recvAccountType; // 收款人类型：1:个人 2:企业
+	private String recvMobile; 			// 收款人手机号
+
+	private String returnUrl; 	// 返回地址
+	private String noticeUrl; 	// 通知地址
+	private String mrchOrderUrl;// 商户订单详情地址
+
+	private String remark; 		// 备注
+
+	public InitLcInputBean() {
+		this.setScene(LoggerEnum.Scene.PREOPENLC);
+	}
+
+	public String getMerId() {
+		return merId;
+	}
+
+	public void setMerId(String merId) {
+		this.merId = merId;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+    public OpenChannel getOpenChannel() {
+        return openChannel;
+    }
+
+    public void setOpenChannel(OpenChannel openChannel) {
+        this.openChannel = openChannel;
+    }
+
+    public BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public String getPayerBankCode() {
+		return payerBankCode;
+	}
+
+	public void setPayerBankCode(String payerBankCode) {
+		this.payerBankCode = payerBankCode;
+	}
+
+	public String getPayerBankAccountNo() {
+		return payerBankAccountNo;
+	}
+
+	public void setPayerBankAccountNo(String payerBankAccountNo) {
+		this.payerBankAccountNo = payerBankAccountNo;
+	}
+
+	public String getRecvBankCode() {
+		return recvBankCode;
+	}
+
+	public void setRecvBankCode(String recvBankCode) {
+		this.recvBankCode = recvBankCode;
+	}
+
+	public String getRecvBankAccountNo() {
+		return recvBankAccountNo;
+	}
+
+	public void setRecvBankAccountNo(String recvBankAccountNo) {
+		this.recvBankAccountNo = recvBankAccountNo;
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
+
+	public String getNoticeUrl() {
+		return noticeUrl;
+	}
+
+	public void setNoticeUrl(String noticeUrl) {
+		this.noticeUrl = noticeUrl;
+	}
+
+	public String getMrchOrderUrl() {
+		return mrchOrderUrl;
+	}
+
+	public void setMrchOrderUrl(String mrchOrderUrl) {
+		this.mrchOrderUrl = mrchOrderUrl;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public AccountPropertyType getPayerAccountType() {
+		return payerAccountType;
+	}
+
+	public void setPayerAccountType(AccountPropertyType payerAccountType) {
+		this.payerAccountType = payerAccountType;
+	}
+
+	public AccountPropertyType getRecvAccountType() {
+		return recvAccountType;
+	}
+
+	public void setRecvAccountType(AccountPropertyType recvAccountType) {
+		this.recvAccountType = recvAccountType;
+	}
+
+	public int getRecvValidSecond() {
+		return recvValidSecond;
+	}
+
+	public void setRecvValidSecond(int recvValidSecond) {
+		this.recvValidSecond = recvValidSecond;
+	}
+
+	public int getSendValidSecond() {
+		return sendValidSecond;
+	}
+
+	public void setSendValidSecond(int sendValidSecond) {
+		this.sendValidSecond = sendValidSecond;
+	}
+
+	public int getConfirmValidSecond() {
+		return confirmValidSecond;
+	}
+
+	public void setConfirmValidSecond(int confirmValidSecond) {
+		this.confirmValidSecond = confirmValidSecond;
+	}
+
+	public int getPayValidSecond() {
+		return payValidSecond;
+	}
+
+	public void setPayValidSecond(int payValidSecond) {
+		this.payValidSecond = payValidSecond;
+	}
+
+	public String getPayerMobile() {
+		return payerMobile;
+	}
+
+	public void setPayerMobile(String payerMobile) {
+		this.payerMobile = payerMobile;
+	}
+
+	public String getRecvMobile() {
+		return recvMobile;
+	}
+
+	public void setRecvMobile(String recvMobile) {
+		this.recvMobile = recvMobile;
+	}
+
+	public String getOrderContent() {
+		return orderContent;
+	}
+
+	public void setOrderContent(String orderContent) {
+		this.orderContent = orderContent;
+	}
+
+	public int getOpenValidSecond() {
+		return openValidSecond;
+	}
+
+	public void setOpenValidSecond(int openValidSecond) {
+		this.openValidSecond = openValidSecond;
+	}
+
+    public String getMerUserId() {
+        return merUserId;
+    }
+
+    public void setMerUserId(String merUserId) {
+        this.merUserId = merUserId;
+    }
+}

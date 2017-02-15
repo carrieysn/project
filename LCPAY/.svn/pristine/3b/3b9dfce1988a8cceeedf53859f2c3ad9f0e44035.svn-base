@@ -1,0 +1,18 @@
+package com.cifpay.lc.domain.cache;
+
+import java.io.Serializable;
+
+public class MerchantInputBean extends CacheInput implements Serializable {
+
+    private static final long serialVersionUID = -1136380270049818143L;
+
+    private String merId;
+
+    public String getMerId() {
+        return merId;
+    }
+
+    public void setMerId(String merId) {
+        this.merId = merId;
+    }
+}

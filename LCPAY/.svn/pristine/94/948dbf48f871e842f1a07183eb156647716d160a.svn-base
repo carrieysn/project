@@ -1,0 +1,47 @@
+package com.cifpay.lc.core.cache.service;
+
+import com.cifpay.lc.core.cache.pojo.PreLcCache;
+import com.cifpay.lc.core.db.dao.PreLcDao;
+import com.cifpay.lc.core.db.pojo.PreLc;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.stereotype.Component;
+
+/**
+ * Created by sweet on 16-9-14.
+ */
+@Component
+public class PreLcCacheServant {
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    private static final String KEY_PREFIX = "PRE_LC_";
+
+    @Autowired
+    private PreLcDao preLcDao;
+
+    @Cacheable(value = KEY_PREFIX, key = "'PreLc_selectByLcId' + #lcId", unless = "#result == null")
+    public PreLcCache selectByLcId(Long lcId) {
+        PreLc preLc = preLcDao.selectByLcId(lcId);
+
+        if (preLc != null) {
+            PreLcCache preLcCache = new PreLcCache();
+            BeanUtils.copyProperties(preLc, preLcCache);
+
+            return preLcCache;
+        }
+
+        return null;
+    }
+
+    @Caching(evict = {@CacheEvict(value = KEY_PREFIX, key = "'PreLc_selectByLcId' + #lcId")})
+    public void removeCache(Long lcId) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("删除preLc缓存，lcId:{}", lcId);
+        }
+    }
+}

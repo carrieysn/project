@@ -1,0 +1,7 @@
+package com.cifpay.lc.versionb;
+
+//no any code
+//将B版本的支付宝充值、ICBC银企互联提现这两个接口先迁移到该包目录中。
+public interface VersionBPackage {
+
+}

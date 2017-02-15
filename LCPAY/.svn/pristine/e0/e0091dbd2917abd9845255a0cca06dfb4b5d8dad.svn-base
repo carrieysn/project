@@ -1,0 +1,92 @@
+package com.cifpay.lc.versionb.withdraw.icbcbankent;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.view.RedirectView;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.xds.withdraw.QueryBankEntTestTradeDateOutputBean;
+import com.cifpay.lc.api.xds.withdraw.QueryBankEntTestTradeDateService;
+import com.cifpay.lc.api.xds.withdraw.UpdateBankEntTestTradeDateInputBean;
+import com.cifpay.lc.api.xds.withdraw.UpdateBankEntTestTradeDateService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.gateway.common.exception.GatewayValidationRejectException;
+
+@Controller
+@RequestMapping("/test")
+public class UpdateVirtualTradeDatetimeController {
+	// 5/25/2016 6:02:28 PM
+	private SimpleDateFormat format = new SimpleDateFormat("M/d/yyyy h:mm:ss a");
+
+	@Autowired
+	private UpdateBankEntTestTradeDateService updateService;
+
+	@Autowired
+	private QueryBankEntTestTradeDateService queryService;
+
+	@RequestMapping(path = "/icbc/date", method = RequestMethod.GET)
+	public String inputICBCTestEnvironmentVirtualDate(@RequestParam(required = false) String check, Model model) {
+		Calendar c = Calendar.getInstance();
+		int a = c.get(Calendar.YEAR) % 2000;
+		int b = c.get(Calendar.MONTH) + 1;
+		int d = c.get(Calendar.DAY_OF_MONTH);
+		String chk = String.valueOf((a + b + d));
+		if (!chk.equals(check)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "NOT_ALLOWED");
+		}
+
+		model.addAttribute("checkCode", check);
+
+		BusinessInput<String> queryInput = new BusinessInput<String>("ICBC");
+		BusinessOutput<QueryBankEntTestTradeDateOutputBean> queryOutput = queryService.execute(queryInput);
+		if (queryOutput.isSuccess()) {
+			QueryBankEntTestTradeDateOutputBean resultData = queryOutput.getData();
+			model.addAttribute("runningInTestMode", resultData.isRunningInTestMode() ? "是" : "否");
+			model.addAttribute("currentVirtualDatetime", format.format(resultData.getTradeDateForTest()));
+		} else {
+			model.addAttribute("runningInTestMode", "查询失败");
+			model.addAttribute("currentVirtualDatetime", "查询失败");
+		}
+
+		return "bankent/UpdateICBCTestEnvironmentVirtualDate";
+	}
+
+	@RequestMapping(path = "/icbc/date", method = RequestMethod.POST)
+	public View updateICBCTestEnvironmentVirtualDate(@RequestParam String virtualTradeDatetime,
+			@RequestParam String checkCode, Model model) {
+		Date updatedDate = null;
+		String msg = null;
+		try {
+			updatedDate = format.parse(virtualTradeDatetime.trim());
+			UpdateBankEntTestTradeDateInputBean updateData = new UpdateBankEntTestTradeDateInputBean();
+			updateData.setBankCode("ICBC");
+			updateData.setTradeDateForTest(updatedDate);
+			BusinessInput<UpdateBankEntTestTradeDateInputBean> updateInput = new BusinessInput<UpdateBankEntTestTradeDateInputBean>(
+					updateData);
+			BusinessOutput<Date> updateOutput = updateService.execute(updateInput);
+			if (updateOutput.isSuccess()) {
+				msg = "更新成功";
+			} else {
+				msg = "更新失败：" + updateOutput.getReturnMsg();
+			}
+		} catch (Exception e) {
+			msg = "更新失败：" + e.getMessage();
+		}
+
+		RedirectView v = new RedirectView("/test/icbc/date", true);
+		v.getAttributesMap().put("check", checkCode);
+		v.getAttributesMap().put("msg", msg);
+		return v;
+	}
+
+}

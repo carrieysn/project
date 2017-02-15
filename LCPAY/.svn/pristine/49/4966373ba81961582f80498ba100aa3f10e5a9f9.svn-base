@@ -1,0 +1,182 @@
+package com.cifpay.lc.std.sched.task.bank;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.api.gateway.bank.PaymentSuccessService;
+import com.cifpay.lc.bankadapter.api.IBankTradeService;
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.input.unionpay.ExpiryCifParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.QueryTradeCifParam;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+import com.cifpay.lc.core.db.dao.LcTrdUnionPayMainDao;
+import com.cifpay.lc.core.db.pojo.UnionPayTrdMain;
+import com.cifpay.lc.core.uid.UnionPayOrderIdWorker;
+import com.cifpay.lc.std.sched.task.SimpleTask;
+
+@Component
+public class UnionPayQueryTask extends SimpleTask {
+
+	private static Logger logger = LoggerFactory.getLogger(UnionPayQueryTask.class);
+	@Autowired
+	LcTrdUnionPayMainDao mainDao;
+	@Autowired
+	private UnionPayOrderIdWorker orderIdWorker;
+	@Autowired
+	IBankTradeService tradeService;
+	@Autowired
+	PaymentSuccessService paymentSuccessServiceImpl;
+	public static String DINGGOU_BIZTYPE = "001001";// 定购
+	public static String WU_BIZTYPE = "000902";// 无跳转
+
+	@Scheduled(cron = "0/30 * *  * * ?")
+	public void queryTask() {
+		try {
+			logger.info(" ======== 开始扫描状态查询交易数据 ======== ");
+			execute();
+			logger.info(" ======== 结束扫描状态查询交易数据 ======== ");
+		} catch (Exception e) {
+			logger.error("银联查询交易失败", e);
+		}
+	}
+
+	public String DISTRIBUTE_LOCK_PREFIX = "/CIFPAY/LOCK/UNION_PAY_QUERY_TASK";
+
+	@Override
+	public String getLockName() {
+		return DISTRIBUTE_LOCK_PREFIX;
+	}
+
+	@Override
+	public void handleBusiness() {
+		List<UnionPayTrdMain> list = mainDao.selectToQueryTrade();
+		logger.info(" 待处理： {}条", list == null ? "0" : list.size());
+
+		if (list != null && list.size() > 0) {
+			for (UnionPayTrdMain main : list) {
+				QueryTradeCifParam param = new QueryTradeCifParam();
+				try {
+					BeanUtils.copyProperties(param, main);
+				} catch (Exception e) {
+					logger.error("↓↓↓↓ ↓↓↓↓ UionPayQueryTask 异常 ↓↓↓↓↓↓↓↓", e);
+				}
+				if (DINGGOU_BIZTYPE.equals(main.getBizType())) {
+					param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_QUERY);
+				} else if (WU_BIZTYPE.equals(main.getBizType())) {
+					param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_QUERY);
+				}
+				param.setTxnType("00");
+				param.setTxnSubType("00");
+				param.setOnline(true);
+				GeneralTradeResult result = tradeService.doTrade(param);
+
+				String txnType = main.getTxnType();
+				String txnSubType = main.getTxnSubType();
+				String asynTradeResult = result.getTradeResult();
+				String bizType = main.getBizType();
+
+				if ("32".equals(txnType) && "00".equals(txnSubType)) {
+					String reqReserved = main.getReqReserved();
+					if (!StringUtils.isEmpty(reqReserved) && reqReserved.contains("#sysReturnCode=")) {
+						// 预授权完成撤销触发的预授权撤销，特殊处理 - 返回预授权完成撤销的相关结果
+						logger.info("预授权完成撤销触发的预授权撤销，特殊处理 - 返回预授权完成撤销的相关结果");
+						result = new GeneralTradeResult();
+						String[] str = reqReserved.split("#");
+						String _queryId = str[0].split("=")[1];
+						String _orderId = str[1].split("=")[1];
+						String _reqReserved = str[2].split("=")[1];
+						// String _tradeResult = str[3].split("=")[1];
+						String _sysReturnCode = str[4].split("=")[1];
+						String _resultDesc = str[5].split("=")[1];
+						result.setQueryId(_queryId);
+						result.setSysReturnCode(Integer.valueOf(_sysReturnCode));
+						result.setResultDesc(_resultDesc);
+						result.setTradeResult(asynTradeResult);
+						HashMap<String, String> map = new HashMap<String, String>();
+						map.put("orderId", _orderId);
+						map.put("reqReserved", _reqReserved);
+						result.setResultMap(map);
+					}
+				}
+
+				if ("33".equals(txnType) && "00".equals(txnSubType)) {
+					// 预授权完成撤销类型的，需要再发起预授权撤销
+					try {
+						if (!TradeConstant.TRADE_CONFIG.TRADE_RESULT_SUCCEED_0.equals(asynTradeResult)) {
+							// 预授权完成撤销失败
+							logger.info("####预授权完成撤销失败.####");
+						} else {
+							// 结果将直接返回部分成功；
+							result.setTradeResult("3");
+							// 查询原交易
+							UnionPayTrdMain tm = new UnionPayTrdMain();
+							tm.setLcId(main.getLcId());
+							if (DINGGOU_BIZTYPE.equals(bizType)) {
+								tm.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_AUTH);
+							} else if (WU_BIZTYPE.equals(bizType)) {
+								tm.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_AUTH);
+							}
+							UnionPayTrdMain authTm = mainDao.selectBySelective(tm);
+
+							if (authTm == null) {
+								logger.error("####UionPayQueryTask处理错误####：{}", "原预授权记录为空!");
+							} else {
+								// 发起预授权撤销
+								ExpiryCifParam exParam = new ExpiryCifParam();
+								if (TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_AUTH_FINISH_UNDO
+										.equals(main.getTxnId())) {
+									// 定购预授权
+									exParam.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_AUTH_UNDO);
+								} else {
+									exParam.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_AUTH_UNDO);
+								}
+								exParam.setTxnType("32");
+								exParam.setTxnSubType("00");
+								exParam.setLcId(authTm.getLcId());
+								exParam.setChannelType(authTm.getChannelType());
+								exParam.setTxnAmt(authTm.getTxnAmt());
+								exParam.setCurrencyCode(authTm.getCurrencyCode());
+								exParam.setBizType(authTm.getBizType());
+								exParam.setSubMerId(authTm.getSubMerId());
+								exParam.setMerId(authTm.getMerId());
+								String time = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+								exParam.setOrderId(String.valueOf(orderIdWorker.nextId()));
+								exParam.setTxnTime(time);
+								exParam.setOrigOryId(authTm.getRtnQueryId());
+								String queryId = result.getQueryId();
+								String orderId = result.getResultMap().get("orderId");
+								String reqReserved = result.getResultMap().get("reqReserved");
+								reqReserved = StringUtils.isEmpty(reqReserved) ? "" : reqReserved;
+								exParam.setReqReserved("queryId=" + queryId + "#orderId=" + orderId + "#reqReserved="
+										+ reqReserved + "#tradeResult=" + result.getTradeResult() + "#sysReturnCode="
+										+ result.getSysReturnCode() + "#resultDesc=" + result.getResultDesc());// 完成撤销相关信息
+
+								tradeService.doTrade(exParam);
+							}
+						}
+
+					} catch (Exception e) {
+						logger.error("####UnionPayQueryTask处理错误####：{}", e);
+						// 如果异常，返回部分成功
+						result.setTradeResult("3");
+					}
+				}
+				if ("3".equals(result.getTradeResult())) {
+					return;
+				}
+
+				paymentSuccessServiceImpl.cifpayCallBack(result);
+			}
+		}
+	}
+}

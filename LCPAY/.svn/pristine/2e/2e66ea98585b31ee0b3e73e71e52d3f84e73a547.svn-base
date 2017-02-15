@@ -1,0 +1,61 @@
+package com.cifpay.lc.std.domain.kernel;
+
+import java.io.Serializable;
+
+import com.cifpay.lc.core.cache.pojo.LcCache;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcOpen;
+import com.cifpay.lc.core.db.pojo.LcPay;
+import com.cifpay.lc.core.db.pojo.LcRefund;
+
+public class RefundKernalInputBean implements Serializable {
+
+    private Lc lc;
+    private LcRefund lcRefund;
+
+    private LcOpen lcOpen;
+    private LcPay lcPay;
+    private static final long serialVersionUID = 420070130038349014L;
+
+    public LcOpen getLcOpen() {
+        return lcOpen;
+    }
+
+    public void setLcOpen(LcOpen lcOpen) {
+        this.lcOpen = lcOpen;
+    }
+
+    public Lc getLc() {
+        return lc;
+    }
+
+    public void setLc(Lc lc) {
+        this.lc = lc;
+    }
+
+    public LcRefund getLcRefund() {
+        return lcRefund;
+    }
+
+    public void setLcRefund(LcRefund lcRefund) {
+        this.lcRefund = lcRefund;
+    }
+
+    public LcPay getLcPay() {
+        return lcPay;
+    }
+
+    public void setLcPay(LcPay lcPay) {
+        this.lcPay = lcPay;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("RefundKernalInputBean [lcOpen=");
+        builder.append(lcOpen);
+        builder.append("]");
+        return builder.toString();
+    }
+
+}

@@ -1,0 +1,9 @@
+package com.cifpay.lc.std.business.message;
+
+import java.io.Serializable;
+
+import com.cifpay.lc.api.CoreBusinessService;
+import com.cifpay.lc.core.common.CoreBusinessServiceImplBase;
+
+public abstract class MessageServiceBase <I extends Serializable, O extends Serializable> extends CoreBusinessServiceImplBase<I, O> implements CoreBusinessService<I, O> {
+}

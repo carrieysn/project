@@ -1,0 +1,58 @@
+package com.cifpay.lc.versionb.recharge.offline;
+
+import com.cifpay.lc.versionb.VersionBMerchantSignValidator;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.ConvertTool;
+
+import org.springframework.util.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by yx on 2016/5/10.
+ */
+public class OfflinePayValidation {
+
+    public static Map<String,String> validation(OfflinePayReqData outLineParm,VersionBMerchantSignValidator versionBMerchantSignValidator){
+        Map<String,String> map = new HashMap<String,String>();
+        if (StringUtils.isEmpty(outLineParm.getMerId())){
+            map.put("returnCode","ERROR");
+            map.put("returnMessage","商户号不能为空");
+            return map;
+        }
+        if (StringUtils.isEmpty(outLineParm.getOrderId())){
+            map.put("returnCode","ERROR");
+            map.put("returnMessage","订单号不能为空");
+            return map;
+        }
+        if (StringUtils.isEmpty(outLineParm.getUserCode())){
+            map.put("returnCode","ERROR");
+            map.put("returnMessage","付款方用户Code不能为空");
+            return map;
+        }
+        if (StringUtils.isEmpty(outLineParm.getCurrency())){
+            map.put("returnCode","ERROR");
+            map.put("returnMessage","币种不能为空");
+            return map;
+        }
+        if (outLineParm.getAmount()==null || outLineParm.getAmount()<=0){
+            map.put("returnCode","ERROR");
+            map.put("returnMessage","金额不能为空且必须大于0");
+            return map;
+        }
+        String sign = outLineParm.getSign();
+        String merId = outLineParm.getMerId();
+        Map<String,String> params = ConvertTool.beanToMap(outLineParm);
+        params.remove("sign");
+        try{
+            versionBMerchantSignValidator.checkMerSignature(merId,params,sign);
+        }catch (Exception e){
+            map.put("returnCode","ERROR");
+            map.put("returnMessage","参数验签失败");
+            return map;
+        }
+        map.put("returnCode","SUCCESS");
+        map.put("returnMessage","验证通过");
+        return map;
+    }
+}

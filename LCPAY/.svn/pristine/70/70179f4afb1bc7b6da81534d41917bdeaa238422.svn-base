@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcSendDao" >
+
+  <select id="selectBylcSendIds" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_SEND
+    where LC_SEND_ID in
+    <foreach collection="lcSendIds" index="index" item="item" open="(" separator="," close=")" >  
+             #{item}
+    </foreach> 
+  </select>
+
+  <select id="selectBylcId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_SEND
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectBylcIds" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_SEND
+    where LC_ID in
+    <foreach collection="lcIds" index="index" item="item" open="(" separator="," close=")" >  
+             #{item}
+    </foreach> 
+  </select>
+
+  <update id="updateProcessStatus" parameterType="map" >
+	UPDATE CIFPAY_LC_SEND SET PROCESS_STATUS = #{processStatus,jdbcType=INTEGER}, 
+		   UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+	WHERE LC_SEND_ID IN 
+    <foreach collection="lcSendIds" index="index" item="item" open="(" separator="," close=")" >  
+             #{item}
+    </foreach> 
+  </update>
+  
+</mapper>

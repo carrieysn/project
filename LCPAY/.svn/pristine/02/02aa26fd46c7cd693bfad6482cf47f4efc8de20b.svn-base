@@ -1,0 +1,37 @@
+package com.cifpay.lc.domain.lc;
+
+import com.cifpay.lc.constant.enums.LcInvalidateType;
+
+public class InvalidateLcInputBean extends BaseLcInputBean {
+
+	private static final long serialVersionUID = -2373493037584692700L;
+
+	private LcInvalidateType invalidateType; 	// 失效类型(*)
+	private long lcAppointmentId; 				// 履约ID
+	private String remark;						// 备注
+
+	public LcInvalidateType getInvalidateType() {
+		return invalidateType;
+	}
+
+	public void setInvalidateType(LcInvalidateType invalidateType) {
+		this.invalidateType = invalidateType;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public long getLcAppointmentId() {
+		return lcAppointmentId;
+	}
+
+	public void setLcAppointmentId(long lcAppointmentId) {
+		this.lcAppointmentId = lcAppointmentId;
+	}
+
+}

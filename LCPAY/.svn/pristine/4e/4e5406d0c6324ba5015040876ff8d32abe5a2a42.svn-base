@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cifpay.lc.core.db.dao.AdminLcMerchantDao">
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.AdminLcMerchant">
+    <id column="MER_ID" jdbcType="INTEGER" property="merId" />
+    <result column="MER_CODE" jdbcType="VARCHAR" property="merCode" />
+    <result column="MERCHANT_NAME" jdbcType="VARCHAR" property="merchantName" />
+    <result column="MER_SITE_NAME" jdbcType="VARCHAR" property="merSiteName" />
+    <result column="MER_SITE_DOMAIN" jdbcType="VARCHAR" property="merSiteDomain" />
+    <result column="ENCRYPT_TYPE" jdbcType="VARCHAR" property="encryptType" />
+    <result column="ENCRYPT_KEY" jdbcType="VARCHAR" property="encryptKey" />
+    <result column="DECRYPT_KEY" jdbcType="VARCHAR" property="decryptKey" />
+    <result column="DEF_LC_TYPE" jdbcType="VARCHAR" property="defLcType" />
+    <result column="DEF_PAYEE_BANK_CODE" jdbcType="VARCHAR" property="defPayeeBankCode" />
+    <result column="DEF_PAYEE_BANK_ACCT" jdbcType="VARCHAR" property="defPayeeBankAcct" />
+    <result column="MERCHANT_STATUS" jdbcType="CHAR" property="merchantStatus" />
+    <result column="CREATED_DT" jdbcType="TIMESTAMP" property="createdDt" />
+    <result column="UPDATED_DT" jdbcType="TIMESTAMP" property="updatedDt" />
+    <result column="MER_TYPE" jdbcType="CHAR" property="merType" />
+    <result column="BUSINESS_LICENSE" jdbcType="VARCHAR" property="businessLicense" />
+    <result column="ORGANIZATION_IMG" jdbcType="VARCHAR" property="organizationImg" />
+    <result column="LICENSE_IMG" jdbcType="VARCHAR" property="licenseImg" />
+    <result column="MER_LOGO" jdbcType="VARCHAR" property="merLogo" />
+    <result column="BANK_NAME" jdbcType="VARCHAR" property="bankName" />
+    <result column="ACCOUNT_NAME" jdbcType="VARCHAR" property="accountName" />
+    <result column="BANK_ACCOUNT" jdbcType="VARCHAR" property="bankAccount" />
+    <result column="PERSONAL_NAME" jdbcType="VARCHAR" property="personalName" />
+    <result column="IDENTITY_CARD" jdbcType="VARCHAR" property="identityCard" />
+    <result column="ID_CARD_IMG" jdbcType="VARCHAR" property="idCardImg" />
+    <result column="CONTACT_NAME" jdbcType="VARCHAR" property="contactName" />
+    <result column="TELEPHONE" jdbcType="VARCHAR" property="telephone" />
+    <result column="FIXED_TELEPHONE" jdbcType="VARCHAR" property="fixedTelephone" />
+    <result column="CONTACT_EMAIL" jdbcType="VARCHAR" property="contactEmail" />
+    <result column="CONTACT_ADDRESS" jdbcType="VARCHAR" property="contactAddress" />
+    <result column="REFEREE" jdbcType="VARCHAR" property="referee" />
+    <result column="MER_REVIEW" jdbcType="CHAR" property="merReview" />
+    <result column="REVIEW_REMARK" jdbcType="VARCHAR" property="reviewRemark" />
+    <result column="USER_ID" jdbcType="INTEGER" property="userId" />
+    <result column="REVIEW_DT" jdbcType="TIMESTAMP" property="reviewDt" />
+    <result column="CIFPAY_MER_ID" jdbcType="VARCHAR" property="cifpayMerId" />
+    <result column="CIFPAY_KEY" jdbcType="VARCHAR" property="cifpayKey" />
+    <result column="CHANNEL_MER_ID" jdbcType="VARCHAR" property="channelMerId" />
+    <result column="CHANNEL_KEY" jdbcType="VARCHAR" property="channelKey" />
+    <result column="TR_ID" jdbcType="VARCHAR" property="trId" />
+    <result column="TOKEN_TYPE" jdbcType="VARCHAR" property="tokenType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    MER_ID, MER_CODE, MERCHANT_NAME, MER_SITE_NAME, MER_SITE_DOMAIN, ENCRYPT_TYPE, ENCRYPT_KEY, 
+    DECRYPT_KEY, DEF_LC_TYPE, DEF_PAYEE_BANK_CODE, DEF_PAYEE_BANK_ACCT, MERCHANT_STATUS, 
+    CREATED_DT, UPDATED_DT, MER_TYPE, BUSINESS_LICENSE, ORGANIZATION_IMG, LICENSE_IMG, 
+    MER_LOGO, BANK_NAME, ACCOUNT_NAME, BANK_ACCOUNT, PERSONAL_NAME, IDENTITY_CARD, ID_CARD_IMG, 
+    CONTACT_NAME, TELEPHONE, FIXED_TELEPHONE, CONTACT_EMAIL, CONTACT_ADDRESS, REFEREE, 
+    MER_REVIEW, REVIEW_REMARK, USER_ID, REVIEW_DT, CIFPAY_MER_ID, CIFPAY_KEY, CHANNEL_MER_ID, 
+    CHANNEL_KEY, TR_ID, TOKEN_TYPE
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ADMIN_CIFPAY_LC_MERCHANT
+    where MER_ID = #{merId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ADMIN_CIFPAY_LC_MERCHANT
+    where MER_ID = #{merId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.AdminLcMerchant">
+    insert into ADMIN_CIFPAY_LC_MERCHANT (MER_ID, MER_CODE, MERCHANT_NAME, 
+      MER_SITE_NAME, MER_SITE_DOMAIN, ENCRYPT_TYPE, 
+      ENCRYPT_KEY, DECRYPT_KEY, DEF_LC_TYPE, 
+      DEF_PAYEE_BANK_CODE, DEF_PAYEE_BANK_ACCT, MERCHANT_STATUS, 
+      CREATED_DT, UPDATED_DT, MER_TYPE, 
+      BUSINESS_LICENSE, ORGANIZATION_IMG, LICENSE_IMG, 
+      MER_LOGO, BANK_NAME, ACCOUNT_NAME, 
+      BANK_ACCOUNT, PERSONAL_NAME, IDENTITY_CARD, 
+      ID_CARD_IMG, CONTACT_NAME, TELEPHONE, 
+      FIXED_TELEPHONE, CONTACT_EMAIL, CONTACT_ADDRESS, 
+      REFEREE, MER_REVIEW, REVIEW_REMARK, 
+      USER_ID, REVIEW_DT, CIFPAY_MER_ID, 
+      CIFPAY_KEY, CHANNEL_MER_ID, CHANNEL_KEY, 
+      TR_ID, TOKEN_TYPE)
+    values (#{merId,jdbcType=INTEGER}, #{merCode,jdbcType=VARCHAR}, #{merchantName,jdbcType=VARCHAR}, 
+      #{merSiteName,jdbcType=VARCHAR}, #{merSiteDomain,jdbcType=VARCHAR}, #{encryptType,jdbcType=VARCHAR}, 
+      #{encryptKey,jdbcType=VARCHAR}, #{decryptKey,jdbcType=VARCHAR}, #{defLcType,jdbcType=VARCHAR}, 
+      #{defPayeeBankCode,jdbcType=VARCHAR}, #{defPayeeBankAcct,jdbcType=VARCHAR}, #{merchantStatus,jdbcType=CHAR}, 
+      #{createdDt,jdbcType=TIMESTAMP}, #{updatedDt,jdbcType=TIMESTAMP}, #{merType,jdbcType=CHAR}, 
+      #{businessLicense,jdbcType=VARCHAR}, #{organizationImg,jdbcType=VARCHAR}, #{licenseImg,jdbcType=VARCHAR}, 
+      #{merLogo,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR}, 
+      #{bankAccount,jdbcType=VARCHAR}, #{personalName,jdbcType=VARCHAR}, #{identityCard,jdbcType=VARCHAR}, 
+      #{idCardImg,jdbcType=VARCHAR}, #{contactName,jdbcType=VARCHAR}, #{telephone,jdbcType=VARCHAR}, 
+      #{fixedTelephone,jdbcType=VARCHAR}, #{contactEmail,jdbcType=VARCHAR}, #{contactAddress,jdbcType=VARCHAR}, 
+      #{referee,jdbcType=VARCHAR}, #{merReview,jdbcType=CHAR}, #{reviewRemark,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=INTEGER}, #{reviewDt,jdbcType=TIMESTAMP}, #{cifpayMerId,jdbcType=VARCHAR}, 
+      #{cifpayKey,jdbcType=VARCHAR}, #{channelMerId,jdbcType=VARCHAR}, #{channelKey,jdbcType=VARCHAR}, 
+      #{trId,jdbcType=VARCHAR}, #{tokenType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.AdminLcMerchant">
+    insert into ADMIN_CIFPAY_LC_MERCHANT
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="merId != null">
+        MER_ID,
+      </if>
+      <if test="merCode != null">
+        MER_CODE,
+      </if>
+      <if test="merchantName != null">
+        MERCHANT_NAME,
+      </if>
+      <if test="merSiteName != null">
+        MER_SITE_NAME,
+      </if>
+      <if test="merSiteDomain != null">
+        MER_SITE_DOMAIN,
+      </if>
+      <if test="encryptType != null">
+        ENCRYPT_TYPE,
+      </if>
+      <if test="encryptKey != null">
+        ENCRYPT_KEY,
+      </if>
+      <if test="decryptKey != null">
+        DECRYPT_KEY,
+      </if>
+      <if test="defLcType != null">
+        DEF_LC_TYPE,
+      </if>
+      <if test="defPayeeBankCode != null">
+        DEF_PAYEE_BANK_CODE,
+      </if>
+      <if test="defPayeeBankAcct != null">
+        DEF_PAYEE_BANK_ACCT,
+      </if>
+      <if test="merchantStatus != null">
+        MERCHANT_STATUS,
+      </if>
+      <if test="createdDt != null">
+        CREATED_DT,
+      </if>
+      <if test="updatedDt != null">
+        UPDATED_DT,
+      </if>
+      <if test="merType != null">
+        MER_TYPE,
+      </if>
+      <if test="businessLicense != null">
+        BUSINESS_LICENSE,
+      </if>
+      <if test="organizationImg != null">
+        ORGANIZATION_IMG,
+      </if>
+      <if test="licenseImg != null">
+        LICENSE_IMG,
+      </if>
+      <if test="merLogo != null">
+        MER_LOGO,
+      </if>
+      <if test="bankName != null">
+        BANK_NAME,
+      </if>
+      <if test="accountName != null">
+        ACCOUNT_NAME,
+      </if>
+      <if test="bankAccount != null">
+        BANK_ACCOUNT,
+      </if>
+      <if test="personalName != null">
+        PERSONAL_NAME,
+      </if>
+      <if test="identityCard != null">
+        IDENTITY_CARD,
+      </if>
+      <if test="idCardImg != null">
+        ID_CARD_IMG,
+      </if>
+      <if test="contactName != null">
+        CONTACT_NAME,
+      </if>
+      <if test="telephone != null">
+        TELEPHONE,
+      </if>
+      <if test="fixedTelephone != null">
+        FIXED_TELEPHONE,
+      </if>
+      <if test="contactEmail != null">
+        CONTACT_EMAIL,
+      </if>
+      <if test="contactAddress != null">
+        CONTACT_ADDRESS,
+      </if>
+      <if test="referee != null">
+        REFEREE,
+      </if>
+      <if test="merReview != null">
+        MER_REVIEW,
+      </if>
+      <if test="reviewRemark != null">
+        REVIEW_REMARK,
+      </if>
+      <if test="userId != null">
+        USER_ID,
+      </if>
+      <if test="reviewDt != null">
+        REVIEW_DT,
+      </if>
+      <if test="cifpayMerId != null">
+        CIFPAY_MER_ID,
+      </if>
+      <if test="cifpayKey != null">
+        CIFPAY_KEY,
+      </if>
+      <if test="channelMerId != null">
+        CHANNEL_MER_ID,
+      </if>
+      <if test="channelKey != null">
+        CHANNEL_KEY,
+      </if>
+      <if test="trId != null">
+        TR_ID,
+      </if>
+      <if test="tokenType != null">
+        TOKEN_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="merId != null">
+        #{merId,jdbcType=INTEGER},
+      </if>
+      <if test="merCode != null">
+        #{merCode,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantName != null">
+        #{merchantName,jdbcType=VARCHAR},
+      </if>
+      <if test="merSiteName != null">
+        #{merSiteName,jdbcType=VARCHAR},
+      </if>
+      <if test="merSiteDomain != null">
+        #{merSiteDomain,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptType != null">
+        #{encryptType,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptKey != null">
+        #{encryptKey,jdbcType=VARCHAR},
+      </if>
+      <if test="decryptKey != null">
+        #{decryptKey,jdbcType=VARCHAR},
+      </if>
+      <if test="defLcType != null">
+        #{defLcType,jdbcType=VARCHAR},
+      </if>
+      <if test="defPayeeBankCode != null">
+        #{defPayeeBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="defPayeeBankAcct != null">
+        #{defPayeeBankAcct,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantStatus != null">
+        #{merchantStatus,jdbcType=CHAR},
+      </if>
+      <if test="createdDt != null">
+        #{createdDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedDt != null">
+        #{updatedDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="merType != null">
+        #{merType,jdbcType=CHAR},
+      </if>
+      <if test="businessLicense != null">
+        #{businessLicense,jdbcType=VARCHAR},
+      </if>
+      <if test="organizationImg != null">
+        #{organizationImg,jdbcType=VARCHAR},
+      </if>
+      <if test="licenseImg != null">
+        #{licenseImg,jdbcType=VARCHAR},
+      </if>
+      <if test="merLogo != null">
+        #{merLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null">
+        #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountName != null">
+        #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAccount != null">
+        #{bankAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="personalName != null">
+        #{personalName,jdbcType=VARCHAR},
+      </if>
+      <if test="identityCard != null">
+        #{identityCard,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardImg != null">
+        #{idCardImg,jdbcType=VARCHAR},
+      </if>
+      <if test="contactName != null">
+        #{contactName,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null">
+        #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="fixedTelephone != null">
+        #{fixedTelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="contactEmail != null">
+        #{contactEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="contactAddress != null">
+        #{contactAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="referee != null">
+        #{referee,jdbcType=VARCHAR},
+      </if>
+      <if test="merReview != null">
+        #{merReview,jdbcType=CHAR},
+      </if>
+      <if test="reviewRemark != null">
+        #{reviewRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="reviewDt != null">
+        #{reviewDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cifpayMerId != null">
+        #{cifpayMerId,jdbcType=VARCHAR},
+      </if>
+      <if test="cifpayKey != null">
+        #{cifpayKey,jdbcType=VARCHAR},
+      </if>
+      <if test="channelMerId != null">
+        #{channelMerId,jdbcType=VARCHAR},
+      </if>
+      <if test="channelKey != null">
+        #{channelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="trId != null">
+        #{trId,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenType != null">
+        #{tokenType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.AdminLcMerchant">
+    update ADMIN_CIFPAY_LC_MERCHANT
+    <set>
+      <if test="merCode != null">
+        MER_CODE = #{merCode,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantName != null">
+        MERCHANT_NAME = #{merchantName,jdbcType=VARCHAR},
+      </if>
+      <if test="merSiteName != null">
+        MER_SITE_NAME = #{merSiteName,jdbcType=VARCHAR},
+      </if>
+      <if test="merSiteDomain != null">
+        MER_SITE_DOMAIN = #{merSiteDomain,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptType != null">
+        ENCRYPT_TYPE = #{encryptType,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptKey != null">
+        ENCRYPT_KEY = #{encryptKey,jdbcType=VARCHAR},
+      </if>
+      <if test="decryptKey != null">
+        DECRYPT_KEY = #{decryptKey,jdbcType=VARCHAR},
+      </if>
+      <if test="defLcType != null">
+        DEF_LC_TYPE = #{defLcType,jdbcType=VARCHAR},
+      </if>
+      <if test="defPayeeBankCode != null">
+        DEF_PAYEE_BANK_CODE = #{defPayeeBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="defPayeeBankAcct != null">
+        DEF_PAYEE_BANK_ACCT = #{defPayeeBankAcct,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantStatus != null">
+        MERCHANT_STATUS = #{merchantStatus,jdbcType=CHAR},
+      </if>
+      <if test="createdDt != null">
+        CREATED_DT = #{createdDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedDt != null">
+        UPDATED_DT = #{updatedDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="merType != null">
+        MER_TYPE = #{merType,jdbcType=CHAR},
+      </if>
+      <if test="businessLicense != null">
+        BUSINESS_LICENSE = #{businessLicense,jdbcType=VARCHAR},
+      </if>
+      <if test="organizationImg != null">
+        ORGANIZATION_IMG = #{organizationImg,jdbcType=VARCHAR},
+      </if>
+      <if test="licenseImg != null">
+        LICENSE_IMG = #{licenseImg,jdbcType=VARCHAR},
+      </if>
+      <if test="merLogo != null">
+        MER_LOGO = #{merLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null">
+        BANK_NAME = #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="accountName != null">
+        ACCOUNT_NAME = #{accountName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAccount != null">
+        BANK_ACCOUNT = #{bankAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="personalName != null">
+        PERSONAL_NAME = #{personalName,jdbcType=VARCHAR},
+      </if>
+      <if test="identityCard != null">
+        IDENTITY_CARD = #{identityCard,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardImg != null">
+        ID_CARD_IMG = #{idCardImg,jdbcType=VARCHAR},
+      </if>
+      <if test="contactName != null">
+        CONTACT_NAME = #{contactName,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null">
+        TELEPHONE = #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="fixedTelephone != null">
+        FIXED_TELEPHONE = #{fixedTelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="contactEmail != null">
+        CONTACT_EMAIL = #{contactEmail,jdbcType=VARCHAR},
+      </if>
+      <if test="contactAddress != null">
+        CONTACT_ADDRESS = #{contactAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="referee != null">
+        REFEREE = #{referee,jdbcType=VARCHAR},
+      </if>
+      <if test="merReview != null">
+        MER_REVIEW = #{merReview,jdbcType=CHAR},
+      </if>
+      <if test="reviewRemark != null">
+        REVIEW_REMARK = #{reviewRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        USER_ID = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="reviewDt != null">
+        REVIEW_DT = #{reviewDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cifpayMerId != null">
+        CIFPAY_MER_ID = #{cifpayMerId,jdbcType=VARCHAR},
+      </if>
+      <if test="cifpayKey != null">
+        CIFPAY_KEY = #{cifpayKey,jdbcType=VARCHAR},
+      </if>
+      <if test="channelMerId != null">
+        CHANNEL_MER_ID = #{channelMerId,jdbcType=VARCHAR},
+      </if>
+      <if test="channelKey != null">
+        CHANNEL_KEY = #{channelKey,jdbcType=VARCHAR},
+      </if>
+      <if test="trId != null">
+        TR_ID = #{trId,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenType != null">
+        TOKEN_TYPE = #{tokenType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where MER_ID = #{merId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.AdminLcMerchant">
+    update ADMIN_CIFPAY_LC_MERCHANT
+    set MER_CODE = #{merCode,jdbcType=VARCHAR},
+      MERCHANT_NAME = #{merchantName,jdbcType=VARCHAR},
+      MER_SITE_NAME = #{merSiteName,jdbcType=VARCHAR},
+      MER_SITE_DOMAIN = #{merSiteDomain,jdbcType=VARCHAR},
+      ENCRYPT_TYPE = #{encryptType,jdbcType=VARCHAR},
+      ENCRYPT_KEY = #{encryptKey,jdbcType=VARCHAR},
+      DECRYPT_KEY = #{decryptKey,jdbcType=VARCHAR},
+      DEF_LC_TYPE = #{defLcType,jdbcType=VARCHAR},
+      DEF_PAYEE_BANK_CODE = #{defPayeeBankCode,jdbcType=VARCHAR},
+      DEF_PAYEE_BANK_ACCT = #{defPayeeBankAcct,jdbcType=VARCHAR},
+      MERCHANT_STATUS = #{merchantStatus,jdbcType=CHAR},
+      CREATED_DT = #{createdDt,jdbcType=TIMESTAMP},
+      UPDATED_DT = #{updatedDt,jdbcType=TIMESTAMP},
+      MER_TYPE = #{merType,jdbcType=CHAR},
+      BUSINESS_LICENSE = #{businessLicense,jdbcType=VARCHAR},
+      ORGANIZATION_IMG = #{organizationImg,jdbcType=VARCHAR},
+      LICENSE_IMG = #{licenseImg,jdbcType=VARCHAR},
+      MER_LOGO = #{merLogo,jdbcType=VARCHAR},
+      BANK_NAME = #{bankName,jdbcType=VARCHAR},
+      ACCOUNT_NAME = #{accountName,jdbcType=VARCHAR},
+      BANK_ACCOUNT = #{bankAccount,jdbcType=VARCHAR},
+      PERSONAL_NAME = #{personalName,jdbcType=VARCHAR},
+      IDENTITY_CARD = #{identityCard,jdbcType=VARCHAR},
+      ID_CARD_IMG = #{idCardImg,jdbcType=VARCHAR},
+      CONTACT_NAME = #{contactName,jdbcType=VARCHAR},
+      TELEPHONE = #{telephone,jdbcType=VARCHAR},
+      FIXED_TELEPHONE = #{fixedTelephone,jdbcType=VARCHAR},
+      CONTACT_EMAIL = #{contactEmail,jdbcType=VARCHAR},
+      CONTACT_ADDRESS = #{contactAddress,jdbcType=VARCHAR},
+      REFEREE = #{referee,jdbcType=VARCHAR},
+      MER_REVIEW = #{merReview,jdbcType=CHAR},
+      REVIEW_REMARK = #{reviewRemark,jdbcType=VARCHAR},
+      USER_ID = #{userId,jdbcType=INTEGER},
+      REVIEW_DT = #{reviewDt,jdbcType=TIMESTAMP},
+      CIFPAY_MER_ID = #{cifpayMerId,jdbcType=VARCHAR},
+      CIFPAY_KEY = #{cifpayKey,jdbcType=VARCHAR},
+      CHANNEL_MER_ID = #{channelMerId,jdbcType=VARCHAR},
+      CHANNEL_KEY = #{channelKey,jdbcType=VARCHAR},
+      TR_ID = #{trId,jdbcType=VARCHAR},
+      TOKEN_TYPE = #{tokenType,jdbcType=VARCHAR}
+    where MER_ID = #{merId,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

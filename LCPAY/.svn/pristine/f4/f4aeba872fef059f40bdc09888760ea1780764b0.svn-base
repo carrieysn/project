@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.ThirdICBCBankentPayentDao" >
+
+  <update id="updateAllDetailRecordsByBatchSeqNoSelective" parameterType="com.cifpay.lc.core.db.pojo.ThirdICBCBankentPayent" >
+    update CIFPAY_THIRD_ICBCBANKENT_PAYENT
+    <set >
+      <if test="crossBankFlag != null" >
+        CROSS_BANK_FLAG = #{crossBankFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="sameCityFlag != null" >
+        SAME_CITY_FLAG = #{sameCityFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="txnResultStatus != null" >
+        TXN_RESULT_STATUS = #{txnResultStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="bankRetBatchSerialNo != null" >
+        BANK_RET_BATCH_SERIAL_NO = #{bankRetBatchSerialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankRetDetailOrderNo != null" >
+        BANK_RET_DETAIL_ORDER_NO = #{bankRetDetailOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankOriDetailResultCode != null" >
+        BANK_ORI_DETAIL_RESULT_CODE = #{bankOriDetailResultCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiBatchReturnCode != null" >
+        BANK_ADDI_BATCH_RETURN_CODE = #{bankAddiBatchReturnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiBatchReturnMsg != null" >
+        BANK_ADDI_BATCH_RETURN_MSG = #{bankAddiBatchReturnMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiDetailReturnCode != null" >
+        BANK_ADDI_DETAIL_RETURN_CODE = #{bankAddiDetailReturnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiDetailReturnMsg != null" >
+        BANK_ADDI_DETAIL_RETURN_MSG = #{bankAddiDetailReturnMsg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where BATCH_SEQNO = #{batchSeqno,jdbcType=VARCHAR}
+  </update>
+  
+  <select id="selectDetailByInstructionDetailNo" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_THIRD_ICBCBANKENT_PAYENT
+    where CALLER_CODE = #{callerCode,jdbcType=VARCHAR}
+      and CALLER_INSTRUCTION_DETAIL_NO = #{callerInstructionDetailNo,jdbcType=VARCHAR}
+      and CALLER_INSTRUCTION_NO = #{callerInstructionNo,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

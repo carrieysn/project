@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.BLcNotificationDao" >
+  
+  <update id="updateAsPendingBeforeSend" parameterType="map">
+  	update CIFPAY_B_LC_NOTIFICATION set HANDLE_STATUS = #{statusProcessing,jdbcType=VARCHAR}, 
+  	UPDATED_DT = #{lockDate,jdbcType=TIMESTAMP}, 
+  	HANDLED_BY_SERVER_NODE = #{serverNode,jdbcType=VARCHAR} 
+  	where (HANDLE_STATUS = #{statusNew,jdbcType=VARCHAR} or HANDLE_STATUS = #{statusSendingFailed,jdbcType=VARCHAR} or HANDLE_STATUS = #{statusRecieverAnsweredFailed,jdbcType=VARCHAR} 
+  	or (HANDLE_STATUS = #{statusProcessing,jdbcType=VARCHAR} and <![CDATA[HANDLED_BY_SERVER_NODE <> ]]> #{serverNode,jdbcType=VARCHAR} and  <![CDATA[UPDATED_DT < ]]> #{timeoutLockedDate,jdbcType=TIMESTAMP}) 
+  	or (HANDLE_STATUS = #{statusProcessing,jdbcType=VARCHAR} and HANDLED_BY_SERVER_NODE = #{serverNode,jdbcType=VARCHAR}) 
+  	) and NOTICE_TYPE = #{noticeType,jdbcType=VARCHAR} 
+  	order by CREATED_DT limit #{lockRowsCnt,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectPendingList" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_B_LC_NOTIFICATION
+    where HANDLE_STATUS = #{statusProcessing,jdbcType=VARCHAR} and NOTICE_TYPE = #{noticeType,jdbcType=VARCHAR} and HANDLED_BY_SERVER_NODE = #{serverNode,jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

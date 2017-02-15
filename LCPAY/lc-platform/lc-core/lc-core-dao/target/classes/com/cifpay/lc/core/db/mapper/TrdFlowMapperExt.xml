@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTrdFlowDao" > 
+  <update id="updateResult" parameterType="com.cifpay.lc.core.db.pojo.TrdFlow" >
+  update CIFPAY_LC_TRD_FLOW
+    set 
+      RTN_SERIAL_NO = #{rtnSerialNo,jdbcType=VARCHAR},
+      RTN_TRADE_DATE = #{rtnTradeDate,jdbcType=VARCHAR},
+      RTN_CODE = #{rtnCode,jdbcType=VARCHAR},
+      RTN_MSG = #{rtnMsg,jdbcType=VARCHAR},
+      <if test="rtnCreateFreezeDate != null" >
+        RTN_CREATE_FREEZE_DATE = #{rtnCreateFreezeDate,jdbcType=VARCHAR},
+      </if>
+      TRADE_RESULT = #{tradeResult,jdbcType=VARCHAR}
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+</update>
+ <select id="queryLastFlowByBizId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+		SELECT
+		     <include refid="Base_Column_List" />
+		FROM
+			CIFPAY_LC_TRD_FLOW flow
+		WHERE
+			flow.BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+		ORDER BY
+			flow.INSERT_TIME DESC
+		LIMIT 0,1
+  </select>
+</mapper>

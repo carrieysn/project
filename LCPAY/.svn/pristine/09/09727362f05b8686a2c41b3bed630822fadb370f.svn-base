@@ -1,0 +1,221 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.util.Date;
+
+public class BSwWithdrawQueueMsg {
+	public static final String HANDLE_STATUS_PROCESSING = "1";
+	public static final String HANDLE_STATUS_WITHDRAW_OK = "8";
+	public static final String HANDLE_STATUS_WITHDRAW_FAILED = "9";
+
+	public static final String SW_SEND_STATUS_PENDING = "0";
+	public static final String SW_SEND_STATUS_OK = "8";
+	public static final String SW_SEND_STATUS_FAILED = "9";
+
+	public static final String ACC_SEND_STATUS_PENDING = "0";
+	public static final String ACC_SEND_STATUS_NA = "5";
+	public static final String ACC_SEND_STATUS_OK = "8";
+	public static final String ACC_SEND_STATUS_FAILED = "9";
+
+	public static final String LOCKED_STATUS_YES = "1";
+	public static final String LOCKED_STATUS_NO = "0";
+
+	private Long lcId;
+
+	private String mid;
+
+	private String withdrawOrderId;
+
+	private String handleStatus;
+
+	private String handleFailDesc;
+
+	private Integer waitOpenRetryCnt;
+
+	private String swOutputExchangeName;
+
+	private String swOutputQueueName;
+
+	private String swSendStatus;
+
+	private String swSendFailDesc;
+
+	private String accOutputExchangeName;
+
+	private String accOutputQueueName;
+
+	private String accSendStatus;
+
+	private String accSendFailDesc;
+
+	private Date swLastSendTime;
+
+	private Date accLastSendTime;
+
+	private Date createTime;
+
+	private Date updateTime;
+
+	private String lockedStatus;
+
+	private String lockedByNode;
+
+	public Long getLcId() {
+		return lcId;
+	}
+
+	public void setLcId(Long lcId) {
+		this.lcId = lcId;
+	}
+
+	public String getMid() {
+		return mid;
+	}
+
+	public void setMid(String mid) {
+		this.mid = mid == null ? null : mid.trim();
+	}
+
+	public String getWithdrawOrderId() {
+		return withdrawOrderId;
+	}
+
+	public void setWithdrawOrderId(String withdrawOrderId) {
+		this.withdrawOrderId = withdrawOrderId == null ? null : withdrawOrderId.trim();
+	}
+
+	public String getHandleStatus() {
+		return handleStatus;
+	}
+
+	public void setHandleStatus(String handleStatus) {
+		this.handleStatus = handleStatus == null ? null : handleStatus.trim();
+	}
+
+	public String getHandleFailDesc() {
+		return handleFailDesc;
+	}
+
+	public void setHandleFailDesc(String handleFailDesc) {
+		this.handleFailDesc = handleFailDesc == null ? null : handleFailDesc.trim();
+	}
+
+	public Integer getWaitOpenRetryCnt() {
+		return waitOpenRetryCnt;
+	}
+
+	public void setWaitOpenRetryCnt(Integer waitOpenRetryCnt) {
+		this.waitOpenRetryCnt = waitOpenRetryCnt;
+	}
+
+	public String getSwOutputExchangeName() {
+		return swOutputExchangeName;
+	}
+
+	public void setSwOutputExchangeName(String swOutputExchangeName) {
+		this.swOutputExchangeName = swOutputExchangeName == null ? null : swOutputExchangeName.trim();
+	}
+
+	public String getSwOutputQueueName() {
+		return swOutputQueueName;
+	}
+
+	public void setSwOutputQueueName(String swOutputQueueName) {
+		this.swOutputQueueName = swOutputQueueName == null ? null : swOutputQueueName.trim();
+	}
+
+	public String getSwSendStatus() {
+		return swSendStatus;
+	}
+
+	public void setSwSendStatus(String swSendStatus) {
+		this.swSendStatus = swSendStatus == null ? null : swSendStatus.trim();
+	}
+
+	public String getSwSendFailDesc() {
+		return swSendFailDesc;
+	}
+
+	public void setSwSendFailDesc(String swSendFailDesc) {
+		this.swSendFailDesc = swSendFailDesc == null ? null : swSendFailDesc.trim();
+	}
+
+	public String getAccOutputExchangeName() {
+		return accOutputExchangeName;
+	}
+
+	public void setAccOutputExchangeName(String accOutputExchangeName) {
+		this.accOutputExchangeName = accOutputExchangeName == null ? null : accOutputExchangeName.trim();
+	}
+
+	public String getAccOutputQueueName() {
+		return accOutputQueueName;
+	}
+
+	public void setAccOutputQueueName(String accOutputQueueName) {
+		this.accOutputQueueName = accOutputQueueName == null ? null : accOutputQueueName.trim();
+	}
+
+	public String getAccSendStatus() {
+		return accSendStatus;
+	}
+
+	public void setAccSendStatus(String accSendStatus) {
+		this.accSendStatus = accSendStatus == null ? null : accSendStatus.trim();
+	}
+
+	public String getAccSendFailDesc() {
+		return accSendFailDesc;
+	}
+
+	public void setAccSendFailDesc(String accSendFailDesc) {
+		this.accSendFailDesc = accSendFailDesc == null ? null : accSendFailDesc.trim();
+	}
+
+	public Date getSwLastSendTime() {
+		return swLastSendTime;
+	}
+
+	public void setSwLastSendTime(Date swLastSendTime) {
+		this.swLastSendTime = swLastSendTime;
+	}
+
+	public Date getAccLastSendTime() {
+		return accLastSendTime;
+	}
+
+	public void setAccLastSendTime(Date accLastSendTime) {
+		this.accLastSendTime = accLastSendTime;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public String getLockedStatus() {
+		return lockedStatus;
+	}
+
+	public void setLockedStatus(String lockedStatus) {
+		this.lockedStatus = lockedStatus == null ? null : lockedStatus.trim();
+	}
+
+	public String getLockedByNode() {
+		return lockedByNode;
+	}
+
+	public void setLockedByNode(String lockedByNode) {
+		this.lockedByNode = lockedByNode == null ? null : lockedByNode.trim();
+	}
+}

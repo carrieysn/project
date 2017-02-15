@@ -1,0 +1,203 @@
+package com.cifpay.lc.bankadapter.universal.impl.unionpay;
+
+import java.util.Date;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.input.AbsTradeParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.ExpiryCifParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.RefundCifParam;
+import com.cifpay.lc.bankadapter.api.output.AbsBusinessResult;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+import com.cifpay.lc.bankadapter.universal.ITradeStrategy;
+import com.cifpay.lc.bankadapter.universal.service.UnionPayTrdBusinessService;
+import com.cifpay.lc.bankadapter.universal.service.impl.unionpay.UnionPayStategyService;
+import com.cifpay.lc.bankadapter.universal.tool.BusinessTradeLock;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.db.pojo.UnionPayTrdMain;
+import com.cifpay.lc.core.exception.BankAdapterException;
+import com.cifpay.lc.core.uid.LcTrdMainIdWorker;
+
+@Component
+public class RefundCifTradeStrategy implements ITradeStrategy {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RefundCifTradeStrategy.class);
+	@Autowired
+	private UnionPayTrdBusinessService businessService;
+	@Autowired
+	private BusinessTradeLock lock;
+	@Autowired
+	private LcTrdMainIdWorker idWork;
+	@Autowired
+	private UnionPayStategyService stategyService;
+
+	@Override
+	public AbsBusinessResult process(AbsTradeParam tradeParam) throws Exception {
+		LOGGER.info("RefundCifTradeStrategy 开始处理请求...");
+		// 1. 检查参数
+		stategyService.stopRefundCif();
+		new RefundCifValidate().validate(tradeParam);
+		RefundCifParam param = (RefundCifParam) tradeParam;
+		Long lcId = tradeParam.getLcId();
+		GeneralTradeResult reslut = null;
+		UnionPayTrdMain payTm = null;
+		Long businessId = null;
+		try {
+			// 2. 锁定记录
+			lock.lockLcId(lcId);
+			// 3. 检查状态
+			// 3.1查询原交易
+			payTm = stategyService.getPay(param.getOrigOryId());
+			boolean isPay = stategyService.checkPay(payTm);
+			if (!isPay) {
+				throw new BankAdapterException(ReturnCode.CORE_BA_NORECORD_EXCEPTION_N105004, "无成功的原交易记录！");
+			}
+			// 3.2 检查已退证金额
+			Long refundedAmt = businessService.selectToRefund(lcId);
+			if (refundedAmt != null && (refundedAmt + param.getTxnAmt()) > payTm.getTxnAmt()) {
+				// ------------------处理预授权完成撤销成功，预授权撤销失败情况 start----------------
+				UnionPayTrdMain undoQueryTm = new UnionPayTrdMain();
+				undoQueryTm.setLcId(param.getLcId());
+				undoQueryTm.setBizType(param.getBizType());
+				undoQueryTm.setTxnType("33");
+				undoQueryTm.setTxnSubType("00");
+				undoQueryTm.setAsynTradeResult("0");
+				UnionPayTrdMain finishUndoTm = businessService.selectUndo(undoQueryTm);
+				if (finishUndoTm != null) {
+					// 有成功的完成撤销，再判断是否有失败的撤销
+					undoQueryTm.setTxnType("32");
+					undoQueryTm.setAsynTradeResult("1");
+					UnionPayTrdMain undoTm = businessService.selectUndo(undoQueryTm);
+					if (undoTm != null) {
+						// 有失败的撤销交易，进行撤销交易
+						ExpiryCifParam ecParam = new ExpiryCifParam();
+						BeanUtils.copyProperties(param, ecParam);
+						ecParam.setTxnId(undoTm.getTxnId());
+						ecParam.setTxnSubType(undoTm.getTxnSubType());
+						ecParam.setTxnId(undoTm.getTxnId());
+
+						return reslut = (GeneralTradeResult) stategyService.tradeDealAdapter(ecParam);
+						// ----------end----------
+					}
+				}
+				throw new BankAdapterException(ReturnCode.CORE_BA_UNDEFINE_N105999, "退证金额不正确！");
+			}
+
+			// 3.3检查是否部分退证
+			boolean partTxn = false;
+			if (payTm.getTxnAmt() > param.getTxnAmt()) {
+				// 部分交易
+				partTxn = true;
+			}
+
+			boolean isClearing = stategyService.isClearing(payTm);
+			// boolean isClearing = true;
+			if (isClearing || partTxn) {
+				// 已清算或者部分退款，直接调用退货交易
+				if (TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_200_0_00.equals(tradeParam.getTxnId())) {
+					// cp200 借记卡-->无跳转退货交易
+					param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_CONSUME_REFUND);
+				} else if (TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_200_1_00.equals(tradeParam.getTxnId())) {
+					// cp200 信用卡-->订购退货交易
+					param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_CONSUME_REFUND);
+				} else if (TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_300_0_00.equals(tradeParam.getTxnId())) {
+					// cp300 借记卡-->无跳转退货交易
+					param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_CONSUME_REFUND);
+				} else if (TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_300_1_00.equals(tradeParam.getTxnId())) {
+					// cp300 信用卡-->订购退货交易
+					param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_CONSUME_REFUND);
+				}
+				param.setTxnType("04");
+				param.setTxnSubType("00");
+			} else {
+				// 未清算
+				if (TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_200_0_00.equals(tradeParam.getTxnId())) {
+					// cp200 借记卡-->无跳转消费撤销交易
+					param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_CONSUME_UNDO);
+					param.setTxnType("31");
+					param.setTxnSubType("00");
+				} else if (TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_200_1_00.equals(tradeParam.getTxnId())) {
+					// cp200 信用卡-->无跳转消费撤销类交易
+					param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_CONSUME_UNDO);
+					param.setTxnType("31");
+					param.setTxnSubType("00");
+				} else if (TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_300_0_00.equals(tradeParam.getTxnId())) {
+					// cp300 借记卡-->无跳转完成撤销+撤销
+					param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_AUTH_FINISH_UNDO);
+					param.setTxnType("33");
+					param.setTxnSubType("00");
+				} else if (TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_300_1_00.equals(tradeParam.getTxnId())) {
+					// cp300 信用卡-->订购完成撤销+撤销
+					param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_AUTH_FINISH_UNDO);
+					param.setTxnType("33");
+					param.setTxnSubType("00");
+				}
+			}
+			// 新业务，插入业务表
+			UnionPayTrdMain tmp = new UnionPayTrdMain();
+			businessId = idWork.nextId();// 新业务，生成业务ID
+			tmp.setBusinessId(businessId);
+			tmp.setLcId(param.getLcId());
+			tmp.setTxnId(param.getTxnId());
+			tmp.setTxnType(param.getTxnType());
+			tmp.setTxnSubType(param.getTxnSubType());
+			tmp.setBizType(param.getBizType());
+			tmp.setMerId(param.getMerId());
+			tmp.setOrderId(param.getOrderId());// 生成新ID
+			tmp.setTxnTime(param.getTxnTime());
+			tmp.setTxnAmt(param.getTxnAmt());
+			tmp.setChannelType(param.getChannelType());
+			// tmp.setMerId(UnionPaySettingUtil.getMerId(param.getBizType()));
+			tmp.setSubMerId(param.getSubMerId());
+			tmp.setUserId(param.getUserId());
+			tmp.setReqReserved(param.getReqReserved());
+
+			tmp.setSyncTradeResult(TradeConstant.TRADE_CONFIG.TRADE_RESULT_UNKNOWN_2);// 2同步交易状态未知
+			tmp.setInsertTime(new Date());// 插入时间
+
+			LOGGER.info("无交易记录，往业务交易表插入记录!");
+			businessService.insertMainSelective(tmp);
+
+			// 4.进行联机交易操作
+			param.setBusinessId(businessId);
+			reslut = (GeneralTradeResult) stategyService.tradeDealAdapter(param);
+
+			if (reslut != null) {
+				// 更新交易业务表
+				UnionPayTrdMain target = new UnionPayTrdMain();
+				Map<String, String> resultMap = reslut.getResultMap();
+				String syncRespCode = (String) resultMap.get("respCode");
+				String syncRespMsg = (String) resultMap.get("respMsg");
+				target.setSyncRespCode(syncRespCode);
+				target.setSyncRespMsg(syncRespMsg);
+				target.setSyncTradeResult(reslut.getTradeResult());// 交易结果
+				target.setRtnQueryId(reslut.getQueryId());
+				target.setFlowId(reslut.getFlowId());
+				target.setLastUpdTime(new Date());
+				target.setBusinessId(businessId);
+				LOGGER.info("联机交易结果，更新返回结果!");
+				businessService.updateMainResult(target);
+			}
+
+		} catch (Exception e) {
+			LOGGER.error("####RefundCifTradeStrategy处理错误####：{}", e.getMessage());
+			e.printStackTrace();
+			throw e;
+		} finally {
+			lock.unLockLcId(lcId);
+		}
+
+		return reslut;
+	}
+
+	@Override
+	public String getStrategyType() {
+		return RefundCifParam.class.getName();
+	}
+
+}

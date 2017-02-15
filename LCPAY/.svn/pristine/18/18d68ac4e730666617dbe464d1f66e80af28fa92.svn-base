@@ -1,0 +1,25 @@
+package com.cifpay.lc.api.xds.chinapay;
+
+import java.io.Serializable;
+
+/**
+ * Created by yx on 2016/5/3.
+ */
+public class UnionpayQueryInputBean implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6956972657736366602L;
+	private Long lcId;
+
+    public UnionpayQueryInputBean() {
+    }
+
+    public Long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(Long lcId) {
+        this.lcId = lcId;
+    }
+}

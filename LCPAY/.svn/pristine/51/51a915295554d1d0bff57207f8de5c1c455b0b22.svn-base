@@ -1,0 +1,80 @@
+package com.cifpay.lc.std.business.message.lc;
+
+import com.alibaba.fastjson.JSON;
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.AppointmentService;
+import com.cifpay.lc.api.message.lc.AutoAppointmentLcMessageService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.MessageEnum;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.db.dao.MessageDao;
+import com.cifpay.lc.core.db.pojo.Message;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.domain.lc.AppointmentInputBean;
+import com.cifpay.lc.domain.lc.AppointmentOutputBean;
+import com.cifpay.lc.domain.message.LcAppointmentParamBean;
+import com.cifpay.lc.domain.message.MessageInputBean;
+import com.cifpay.lc.domain.message.MessageOutputBean;
+import com.cifpay.lc.exception.MessageBusinessException;
+import com.cifpay.lc.std.business.message.LcMessageServiceBase;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.interceptor.MessageLockInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+@Service("autoAppointmentLcMessageService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class, MessageLockInterceptor.class})
+public class AutoAppointmentLcMessageServiceImpl extends LcMessageServiceBase<MessageInputBean, MessageOutputBean> implements AutoAppointmentLcMessageService {
+
+    @Autowired
+    MessageDao messageDao;
+
+    @Autowired
+    AppointmentService appointmentService;
+
+    @Override
+    protected void validate(MessageInputBean inputBean, CoreBusinessContext context) throws CoreValidationRejectException {
+        Message message = messageDao.selectByPrimaryKey(inputBean.getMsgId());
+        if (message == null) {
+            throw new MessageBusinessException(ReturnCode.CORE_MSG_NOT_FOUND_EXCEPTION_N108001, "message不存在");
+        }
+        context.setAttribute("LC_OPEN_MESSAGE", message);
+
+        if (StringUtils.isEmpty(message.getParams())) {
+            throw new MessageBusinessException(ReturnCode.SERVER_PARAM_ERROR, "消息参数不正确，不能为空");
+        }
+        LcAppointmentParamBean autoFlowBean = JSON.parseObject(message.getParams(), LcAppointmentParamBean.class);
+        context.setAttribute("AUTO_FLOW_BEAN", autoFlowBean);
+    }
+
+    @Override
+    protected BusinessOutput<MessageOutputBean> _processBusiness(MessageInputBean inputBean, CoreBusinessContext context)
+            throws CoreBusinessException {
+
+        Message message = (Message) context.getAttribute("LC_OPEN_MESSAGE");
+        LcAppointmentParamBean autoFlowBean = (LcAppointmentParamBean) context.getAttribute("AUTO_FLOW_BEAN");
+
+        AppointmentInputBean appointmentInputBean = new AppointmentInputBean();
+        appointmentInputBean.setLcId(autoFlowBean.getLcId());
+        appointmentInputBean.setMerId(autoFlowBean.getMerId());
+        appointmentInputBean.setOrderId(autoFlowBean.getOrderId());
+        appointmentInputBean.setOrderAmount(autoFlowBean.getOrderAmount());
+        appointmentInputBean.setRemark("收证阶段自动履约");
+
+        BusinessOutput<AppointmentOutputBean> output = appointmentService.execute(new BusinessInput<AppointmentInputBean>(appointmentInputBean));
+
+        if (output.isSuccess()) {
+            return BusinessOutput.success(new MessageOutputBean(true));
+        } else {
+            BusinessOutput<MessageOutputBean> result = BusinessOutput.fail(ReturnCode.CORE_PRE_LC_APPOINTMENT_FAIL_N106408, "履约不成功");
+            if (message.getCount() >= MessageEnum.MAX_COUNT) {
+                result.setData(new MessageOutputBean(true));
+            }
+            return result;
+        }
+    }
+}

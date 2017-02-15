@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.BLcNotificationDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.BLcNotification" >
+    <id column="NOTICE_ID" property="noticeId" jdbcType="BIGINT" />
+    <result column="NOTICE_TYPE" property="noticeType" jdbcType="VARCHAR" />
+    <result column="LC_ID" property="lcId" jdbcType="BIGINT" />
+    <result column="HANDLE_STATUS" property="handleStatus" jdbcType="VARCHAR" />
+    <result column="CREATED_DT" property="createdDt" jdbcType="TIMESTAMP" />
+    <result column="UPDATED_DT" property="updatedDt" jdbcType="TIMESTAMP" />
+    <result column="LAST_SENT_DT" property="lastSentDt" jdbcType="TIMESTAMP" />
+    <result column="RETRY_COUNT" property="retryCount" jdbcType="INTEGER" />
+    <result column="RECIEVER_TYPE" property="recieverType" jdbcType="CHAR" />
+    <result column="RECIEVER_ID" property="recieverId" jdbcType="VARCHAR" />
+    <result column="NOTIFY_URL" property="notifyUrl" jdbcType="VARCHAR" />
+    <result column="MSG_BLOCK_CNT" property="msgBlockCnt" jdbcType="INTEGER" />
+    <result column="MSG_BLOCK1" property="msgBlock1" jdbcType="VARCHAR" />
+    <result column="MSG_BLOCK2" property="msgBlock2" jdbcType="VARCHAR" />
+    <result column="MSG_BLOCK3" property="msgBlock3" jdbcType="VARCHAR" />
+    <result column="HANDLED_BY_SERVER_NODE" property="handledByServerNode" jdbcType="VARCHAR" />
+    <result column="REC_VALIDATE_HASH" property="recValidateHash" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    NOTICE_ID, NOTICE_TYPE, LC_ID, HANDLE_STATUS, CREATED_DT, UPDATED_DT, LAST_SENT_DT, 
+    RETRY_COUNT, RECIEVER_TYPE, RECIEVER_ID, NOTIFY_URL, MSG_BLOCK_CNT, MSG_BLOCK1, MSG_BLOCK2, 
+    MSG_BLOCK3, HANDLED_BY_SERVER_NODE, REC_VALIDATE_HASH
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_B_LC_NOTIFICATION
+    where NOTICE_ID = #{noticeId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_B_LC_NOTIFICATION
+    where NOTICE_ID = #{noticeId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.BLcNotification" >
+    insert into CIFPAY_B_LC_NOTIFICATION (NOTICE_ID, NOTICE_TYPE, LC_ID, 
+      HANDLE_STATUS, CREATED_DT, UPDATED_DT, 
+      LAST_SENT_DT, RETRY_COUNT, RECIEVER_TYPE, 
+      RECIEVER_ID, NOTIFY_URL, MSG_BLOCK_CNT, 
+      MSG_BLOCK1, MSG_BLOCK2, MSG_BLOCK3, 
+      HANDLED_BY_SERVER_NODE, REC_VALIDATE_HASH)
+    values (#{noticeId,jdbcType=BIGINT}, #{noticeType,jdbcType=VARCHAR}, #{lcId,jdbcType=BIGINT}, 
+      #{handleStatus,jdbcType=VARCHAR}, #{createdDt,jdbcType=TIMESTAMP}, #{updatedDt,jdbcType=TIMESTAMP}, 
+      #{lastSentDt,jdbcType=TIMESTAMP}, #{retryCount,jdbcType=INTEGER}, #{recieverType,jdbcType=CHAR}, 
+      #{recieverId,jdbcType=VARCHAR}, #{notifyUrl,jdbcType=VARCHAR}, #{msgBlockCnt,jdbcType=INTEGER}, 
+      #{msgBlock1,jdbcType=VARCHAR}, #{msgBlock2,jdbcType=VARCHAR}, #{msgBlock3,jdbcType=VARCHAR}, 
+      #{handledByServerNode,jdbcType=VARCHAR}, #{recValidateHash,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.BLcNotification" >
+    insert into CIFPAY_B_LC_NOTIFICATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="noticeId != null" >
+        NOTICE_ID,
+      </if>
+      <if test="noticeType != null" >
+        NOTICE_TYPE,
+      </if>
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+      <if test="handleStatus != null" >
+        HANDLE_STATUS,
+      </if>
+      <if test="createdDt != null" >
+        CREATED_DT,
+      </if>
+      <if test="updatedDt != null" >
+        UPDATED_DT,
+      </if>
+      <if test="lastSentDt != null" >
+        LAST_SENT_DT,
+      </if>
+      <if test="retryCount != null" >
+        RETRY_COUNT,
+      </if>
+      <if test="recieverType != null" >
+        RECIEVER_TYPE,
+      </if>
+      <if test="recieverId != null" >
+        RECIEVER_ID,
+      </if>
+      <if test="notifyUrl != null" >
+        NOTIFY_URL,
+      </if>
+      <if test="msgBlockCnt != null" >
+        MSG_BLOCK_CNT,
+      </if>
+      <if test="msgBlock1 != null" >
+        MSG_BLOCK1,
+      </if>
+      <if test="msgBlock2 != null" >
+        MSG_BLOCK2,
+      </if>
+      <if test="msgBlock3 != null" >
+        MSG_BLOCK3,
+      </if>
+      <if test="handledByServerNode != null" >
+        HANDLED_BY_SERVER_NODE,
+      </if>
+      <if test="recValidateHash != null" >
+        REC_VALIDATE_HASH,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="noticeId != null" >
+        #{noticeId,jdbcType=BIGINT},
+      </if>
+      <if test="noticeType != null" >
+        #{noticeType,jdbcType=VARCHAR},
+      </if>
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="handleStatus != null" >
+        #{handleStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDt != null" >
+        #{createdDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedDt != null" >
+        #{updatedDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastSentDt != null" >
+        #{lastSentDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="retryCount != null" >
+        #{retryCount,jdbcType=INTEGER},
+      </if>
+      <if test="recieverType != null" >
+        #{recieverType,jdbcType=CHAR},
+      </if>
+      <if test="recieverId != null" >
+        #{recieverId,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyUrl != null" >
+        #{notifyUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="msgBlockCnt != null" >
+        #{msgBlockCnt,jdbcType=INTEGER},
+      </if>
+      <if test="msgBlock1 != null" >
+        #{msgBlock1,jdbcType=VARCHAR},
+      </if>
+      <if test="msgBlock2 != null" >
+        #{msgBlock2,jdbcType=VARCHAR},
+      </if>
+      <if test="msgBlock3 != null" >
+        #{msgBlock3,jdbcType=VARCHAR},
+      </if>
+      <if test="handledByServerNode != null" >
+        #{handledByServerNode,jdbcType=VARCHAR},
+      </if>
+      <if test="recValidateHash != null" >
+        #{recValidateHash,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.BLcNotification" >
+    update CIFPAY_B_LC_NOTIFICATION
+    <set >
+      <if test="noticeType != null" >
+        NOTICE_TYPE = #{noticeType,jdbcType=VARCHAR},
+      </if>
+      <if test="lcId != null" >
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="handleStatus != null" >
+        HANDLE_STATUS = #{handleStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="createdDt != null" >
+        CREATED_DT = #{createdDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedDt != null" >
+        UPDATED_DT = #{updatedDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastSentDt != null" >
+        LAST_SENT_DT = #{lastSentDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="retryCount != null" >
+        RETRY_COUNT = #{retryCount,jdbcType=INTEGER},
+      </if>
+      <if test="recieverType != null" >
+        RECIEVER_TYPE = #{recieverType,jdbcType=CHAR},
+      </if>
+      <if test="recieverId != null" >
+        RECIEVER_ID = #{recieverId,jdbcType=VARCHAR},
+      </if>
+      <if test="notifyUrl != null" >
+        NOTIFY_URL = #{notifyUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="msgBlockCnt != null" >
+        MSG_BLOCK_CNT = #{msgBlockCnt,jdbcType=INTEGER},
+      </if>
+      <if test="msgBlock1 != null" >
+        MSG_BLOCK1 = #{msgBlock1,jdbcType=VARCHAR},
+      </if>
+      <if test="msgBlock2 != null" >
+        MSG_BLOCK2 = #{msgBlock2,jdbcType=VARCHAR},
+      </if>
+      <if test="msgBlock3 != null" >
+        MSG_BLOCK3 = #{msgBlock3,jdbcType=VARCHAR},
+      </if>
+      <if test="handledByServerNode != null" >
+        HANDLED_BY_SERVER_NODE = #{handledByServerNode,jdbcType=VARCHAR},
+      </if>
+      <if test="recValidateHash != null" >
+        REC_VALIDATE_HASH = #{recValidateHash,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where NOTICE_ID = #{noticeId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.BLcNotification" >
+    update CIFPAY_B_LC_NOTIFICATION
+    set NOTICE_TYPE = #{noticeType,jdbcType=VARCHAR},
+      LC_ID = #{lcId,jdbcType=BIGINT},
+      HANDLE_STATUS = #{handleStatus,jdbcType=VARCHAR},
+      CREATED_DT = #{createdDt,jdbcType=TIMESTAMP},
+      UPDATED_DT = #{updatedDt,jdbcType=TIMESTAMP},
+      LAST_SENT_DT = #{lastSentDt,jdbcType=TIMESTAMP},
+      RETRY_COUNT = #{retryCount,jdbcType=INTEGER},
+      RECIEVER_TYPE = #{recieverType,jdbcType=CHAR},
+      RECIEVER_ID = #{recieverId,jdbcType=VARCHAR},
+      NOTIFY_URL = #{notifyUrl,jdbcType=VARCHAR},
+      MSG_BLOCK_CNT = #{msgBlockCnt,jdbcType=INTEGER},
+      MSG_BLOCK1 = #{msgBlock1,jdbcType=VARCHAR},
+      MSG_BLOCK2 = #{msgBlock2,jdbcType=VARCHAR},
+      MSG_BLOCK3 = #{msgBlock3,jdbcType=VARCHAR},
+      HANDLED_BY_SERVER_NODE = #{handledByServerNode,jdbcType=VARCHAR},
+      REC_VALIDATE_HASH = #{recValidateHash,jdbcType=VARCHAR}
+    where NOTICE_ID = #{noticeId,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

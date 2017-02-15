@@ -1,0 +1,7 @@
+package com.cifpay.lc.domain.lc;
+
+public class RecvLcOutputBean extends AbstractLcOutputBean {
+
+    private static final long serialVersionUID = 7433159208758154930L;
+
+}

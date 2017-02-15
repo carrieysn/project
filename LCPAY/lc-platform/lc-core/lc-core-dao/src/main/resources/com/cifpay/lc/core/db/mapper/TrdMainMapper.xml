@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTrdMainDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.TrdMain" >
+    <id column="BUSINESS_ID" property="businessId" jdbcType="BIGINT" />
+    <result column="LC_ID" property="lcId" jdbcType="BIGINT" />
+    <result column="TRADE_TYPE" property="tradeType" jdbcType="VARCHAR" />
+    <result column="TRADE_BANK_CODE" property="tradeBankCode" jdbcType="VARCHAR" />
+    <result column="UNFREEZE_SERIAL_NO" property="unfreezeSerialNo" jdbcType="BIGINT" />
+    <result column="PAYER_BANK_CODE" property="payerBankCode" jdbcType="VARCHAR" />
+    <result column="PAYEE_BANK_CODE" property="payeeBankCode" jdbcType="VARCHAR" />
+    <result column="ACCOUNT_NO" property="accountNo" jdbcType="VARCHAR" />
+    <result column="CARD_NO" property="cardNo" jdbcType="VARCHAR" />
+    <result column="CURRENCY" property="currency" jdbcType="VARCHAR" />
+    <result column="AMOUNT" property="amount" jdbcType="DECIMAL" />
+    <result column="HOLD_DATE" property="holdDate" jdbcType="VARCHAR" />
+    <result column="HOLD_TYPE" property="holdType" jdbcType="VARCHAR" />
+    <result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="THIRD_ID" property="thirdId" jdbcType="VARCHAR" />
+    <result column="PAYEE_CARD_NO" property="payeeCardNo" jdbcType="VARCHAR" />
+    <result column="PAYEE_ACCOUNT_NO" property="payeeAccountNo" jdbcType="VARCHAR" />
+    <result column="BRANCH_NO" property="branchNo" jdbcType="VARCHAR" />
+    <result column="RTN_SERIAL_NO" property="rtnSerialNo" jdbcType="VARCHAR" />
+    <result column="RTN_TRADE_DATE" property="rtnTradeDate" jdbcType="VARCHAR" />
+    <result column="RTN_CODE" property="rtnCode" jdbcType="VARCHAR" />
+    <result column="RTN_MSG" property="rtnMsg" jdbcType="VARCHAR" />
+    <result column="RTN_CREATE_FREEZE_DATE" property="rtnCreateFreezeDate" jdbcType="VARCHAR" />
+    <result column="FLOW_ID" property="flowId" jdbcType="BIGINT" />
+    <result column="TRADE_RESULT" property="tradeResult" jdbcType="VARCHAR" />
+    <result column="SYS_RETURN_CODE" property="sysReturnCode" jdbcType="INTEGER" />
+    <result column="INSERT_TIME" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="LAST_UPD_TIME" property="lastUpdTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BUSINESS_ID, LC_ID, TRADE_TYPE, TRADE_BANK_CODE, UNFREEZE_SERIAL_NO, PAYER_BANK_CODE, 
+    PAYEE_BANK_CODE, ACCOUNT_NO, CARD_NO, CURRENCY, AMOUNT, HOLD_DATE, HOLD_TYPE, MOBILE, 
+    ORDER_ID, THIRD_ID, PAYEE_CARD_NO, PAYEE_ACCOUNT_NO, BRANCH_NO, RTN_SERIAL_NO, RTN_TRADE_DATE, 
+    RTN_CODE, RTN_MSG, RTN_CREATE_FREEZE_DATE, FLOW_ID, TRADE_RESULT, SYS_RETURN_CODE, 
+    INSERT_TIME, LAST_UPD_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_TRD_MAIN
+    where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC_TRD_MAIN
+    where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.TrdMain" >
+    insert into CIFPAY_LC_TRD_MAIN (BUSINESS_ID, LC_ID, TRADE_TYPE, 
+      TRADE_BANK_CODE, UNFREEZE_SERIAL_NO, PAYER_BANK_CODE, 
+      PAYEE_BANK_CODE, ACCOUNT_NO, CARD_NO, 
+      CURRENCY, AMOUNT, HOLD_DATE, 
+      HOLD_TYPE, MOBILE, ORDER_ID, 
+      THIRD_ID, PAYEE_CARD_NO, PAYEE_ACCOUNT_NO, 
+      BRANCH_NO, RTN_SERIAL_NO, RTN_TRADE_DATE, 
+      RTN_CODE, RTN_MSG, RTN_CREATE_FREEZE_DATE, 
+      FLOW_ID, TRADE_RESULT, SYS_RETURN_CODE, 
+      INSERT_TIME, LAST_UPD_TIME)
+    values (#{businessId,jdbcType=BIGINT}, #{lcId,jdbcType=BIGINT}, #{tradeType,jdbcType=VARCHAR}, 
+      #{tradeBankCode,jdbcType=VARCHAR}, #{unfreezeSerialNo,jdbcType=BIGINT}, #{payerBankCode,jdbcType=VARCHAR}, 
+      #{payeeBankCode,jdbcType=VARCHAR}, #{accountNo,jdbcType=VARCHAR}, #{cardNo,jdbcType=VARCHAR}, 
+      #{currency,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, #{holdDate,jdbcType=VARCHAR}, 
+      #{holdType,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, #{orderId,jdbcType=VARCHAR}, 
+      #{thirdId,jdbcType=VARCHAR}, #{payeeCardNo,jdbcType=VARCHAR}, #{payeeAccountNo,jdbcType=VARCHAR}, 
+      #{branchNo,jdbcType=VARCHAR}, #{rtnSerialNo,jdbcType=VARCHAR}, #{rtnTradeDate,jdbcType=VARCHAR}, 
+      #{rtnCode,jdbcType=VARCHAR}, #{rtnMsg,jdbcType=VARCHAR}, #{rtnCreateFreezeDate,jdbcType=VARCHAR}, 
+      #{flowId,jdbcType=BIGINT}, #{tradeResult,jdbcType=VARCHAR}, #{sysReturnCode,jdbcType=INTEGER}, 
+      #{insertTime,jdbcType=TIMESTAMP}, #{lastUpdTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.TrdMain" >
+    insert into CIFPAY_LC_TRD_MAIN
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="businessId != null" >
+        BUSINESS_ID,
+      </if>
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+      <if test="tradeType != null" >
+        TRADE_TYPE,
+      </if>
+      <if test="tradeBankCode != null" >
+        TRADE_BANK_CODE,
+      </if>
+      <if test="unfreezeSerialNo != null" >
+        UNFREEZE_SERIAL_NO,
+      </if>
+      <if test="payerBankCode != null" >
+        PAYER_BANK_CODE,
+      </if>
+      <if test="payeeBankCode != null" >
+        PAYEE_BANK_CODE,
+      </if>
+      <if test="accountNo != null" >
+        ACCOUNT_NO,
+      </if>
+      <if test="cardNo != null" >
+        CARD_NO,
+      </if>
+      <if test="currency != null" >
+        CURRENCY,
+      </if>
+      <if test="amount != null" >
+        AMOUNT,
+      </if>
+      <if test="holdDate != null" >
+        HOLD_DATE,
+      </if>
+      <if test="holdType != null" >
+        HOLD_TYPE,
+      </if>
+      <if test="mobile != null" >
+        MOBILE,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+      <if test="thirdId != null" >
+        THIRD_ID,
+      </if>
+      <if test="payeeCardNo != null" >
+        PAYEE_CARD_NO,
+      </if>
+      <if test="payeeAccountNo != null" >
+        PAYEE_ACCOUNT_NO,
+      </if>
+      <if test="branchNo != null" >
+        BRANCH_NO,
+      </if>
+      <if test="rtnSerialNo != null" >
+        RTN_SERIAL_NO,
+      </if>
+      <if test="rtnTradeDate != null" >
+        RTN_TRADE_DATE,
+      </if>
+      <if test="rtnCode != null" >
+        RTN_CODE,
+      </if>
+      <if test="rtnMsg != null" >
+        RTN_MSG,
+      </if>
+      <if test="rtnCreateFreezeDate != null" >
+        RTN_CREATE_FREEZE_DATE,
+      </if>
+      <if test="flowId != null" >
+        FLOW_ID,
+      </if>
+      <if test="tradeResult != null" >
+        TRADE_RESULT,
+      </if>
+      <if test="sysReturnCode != null" >
+        SYS_RETURN_CODE,
+      </if>
+      <if test="insertTime != null" >
+        INSERT_TIME,
+      </if>
+      <if test="lastUpdTime != null" >
+        LAST_UPD_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="businessId != null" >
+        #{businessId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="tradeType != null" >
+        #{tradeType,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeBankCode != null" >
+        #{tradeBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="unfreezeSerialNo != null" >
+        #{unfreezeSerialNo,jdbcType=BIGINT},
+      </if>
+      <if test="payerBankCode != null" >
+        #{payerBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="payeeBankCode != null" >
+        #{payeeBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="accountNo != null" >
+        #{accountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNo != null" >
+        #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null" >
+        #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="holdDate != null" >
+        #{holdDate,jdbcType=VARCHAR},
+      </if>
+      <if test="holdType != null" >
+        #{holdType,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdId != null" >
+        #{thirdId,jdbcType=VARCHAR},
+      </if>
+      <if test="payeeCardNo != null" >
+        #{payeeCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payeeAccountNo != null" >
+        #{payeeAccountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="branchNo != null" >
+        #{branchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnSerialNo != null" >
+        #{rtnSerialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnTradeDate != null" >
+        #{rtnTradeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnCode != null" >
+        #{rtnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnMsg != null" >
+        #{rtnMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnCreateFreezeDate != null" >
+        #{rtnCreateFreezeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="flowId != null" >
+        #{flowId,jdbcType=BIGINT},
+      </if>
+      <if test="tradeResult != null" >
+        #{tradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="sysReturnCode != null" >
+        #{sysReturnCode,jdbcType=INTEGER},
+      </if>
+      <if test="insertTime != null" >
+        #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdTime != null" >
+        NOW(),
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.TrdMain" >
+    update CIFPAY_LC_TRD_MAIN
+    <set >
+      <if test="lcId != null" >
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="tradeType != null" >
+        TRADE_TYPE = #{tradeType,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeBankCode != null" >
+        TRADE_BANK_CODE = #{tradeBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="unfreezeSerialNo != null" >
+        UNFREEZE_SERIAL_NO = #{unfreezeSerialNo,jdbcType=BIGINT},
+      </if>
+      <if test="payerBankCode != null" >
+        PAYER_BANK_CODE = #{payerBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="payeeBankCode != null" >
+        PAYEE_BANK_CODE = #{payeeBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="accountNo != null" >
+        ACCOUNT_NO = #{accountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="cardNo != null" >
+        CARD_NO = #{cardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="currency != null" >
+        CURRENCY = #{currency,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        AMOUNT = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="holdDate != null" >
+        HOLD_DATE = #{holdDate,jdbcType=VARCHAR},
+      </if>
+      <if test="holdType != null" >
+        HOLD_TYPE = #{holdType,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        MOBILE = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdId != null" >
+        THIRD_ID = #{thirdId,jdbcType=VARCHAR},
+      </if>
+      <if test="payeeCardNo != null" >
+        PAYEE_CARD_NO = #{payeeCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payeeAccountNo != null" >
+        PAYEE_ACCOUNT_NO = #{payeeAccountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="branchNo != null" >
+        BRANCH_NO = #{branchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnSerialNo != null" >
+        RTN_SERIAL_NO = #{rtnSerialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnTradeDate != null" >
+        RTN_TRADE_DATE = #{rtnTradeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnCode != null" >
+        RTN_CODE = #{rtnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnMsg != null" >
+        RTN_MSG = #{rtnMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnCreateFreezeDate != null" >
+        RTN_CREATE_FREEZE_DATE = #{rtnCreateFreezeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="flowId != null" >
+        FLOW_ID = #{flowId,jdbcType=BIGINT},
+      </if>
+      <if test="tradeResult != null" >
+        TRADE_RESULT = #{tradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="sysReturnCode != null" >
+        SYS_RETURN_CODE = #{sysReturnCode,jdbcType=INTEGER},
+      </if>
+      <if test="insertTime != null" >
+        INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdTime != null" >
+        LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.TrdMain" >
+    update CIFPAY_LC_TRD_MAIN
+    set LC_ID = #{lcId,jdbcType=BIGINT},
+      TRADE_TYPE = #{tradeType,jdbcType=VARCHAR},
+      TRADE_BANK_CODE = #{tradeBankCode,jdbcType=VARCHAR},
+      UNFREEZE_SERIAL_NO = #{unfreezeSerialNo,jdbcType=BIGINT},
+      PAYER_BANK_CODE = #{payerBankCode,jdbcType=VARCHAR},
+      PAYEE_BANK_CODE = #{payeeBankCode,jdbcType=VARCHAR},
+      ACCOUNT_NO = #{accountNo,jdbcType=VARCHAR},
+      CARD_NO = #{cardNo,jdbcType=VARCHAR},
+      CURRENCY = #{currency,jdbcType=VARCHAR},
+      AMOUNT = #{amount,jdbcType=DECIMAL},
+      HOLD_DATE = #{holdDate,jdbcType=VARCHAR},
+      HOLD_TYPE = #{holdType,jdbcType=VARCHAR},
+      MOBILE = #{mobile,jdbcType=VARCHAR},
+      ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      THIRD_ID = #{thirdId,jdbcType=VARCHAR},
+      PAYEE_CARD_NO = #{payeeCardNo,jdbcType=VARCHAR},
+      PAYEE_ACCOUNT_NO = #{payeeAccountNo,jdbcType=VARCHAR},
+      BRANCH_NO = #{branchNo,jdbcType=VARCHAR},
+      RTN_SERIAL_NO = #{rtnSerialNo,jdbcType=VARCHAR},
+      RTN_TRADE_DATE = #{rtnTradeDate,jdbcType=VARCHAR},
+      RTN_CODE = #{rtnCode,jdbcType=VARCHAR},
+      RTN_MSG = #{rtnMsg,jdbcType=VARCHAR},
+      RTN_CREATE_FREEZE_DATE = #{rtnCreateFreezeDate,jdbcType=VARCHAR},
+      FLOW_ID = #{flowId,jdbcType=BIGINT},
+      TRADE_RESULT = #{tradeResult,jdbcType=VARCHAR},
+      SYS_RETURN_CODE = #{sysReturnCode,jdbcType=INTEGER},
+      INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP}
+    where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

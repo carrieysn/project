@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTrdUnionPayTokenDao" >
+
+   <update id="updateTokenResult" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdToken" >
+    update CIFPAY_LC_TRD_UNIONPAY_TOKEN
+    <set >
+      <if test="token != null" >
+        TOKEN = #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenLevel != null" >
+        TOKEN_LEVEL = #{tokenLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenBegin != null" >
+        TOKEN_BEGIN = #{tokenBegin,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenEnd != null" >
+        TOKEN_END = #{tokenEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenType != null" >
+        TOKEN_TYPE = #{tokenType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    WHERE MER_ID = #{merId,jdbcType=VARCHAR}
+      AND ACC_NO = #{accNo,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

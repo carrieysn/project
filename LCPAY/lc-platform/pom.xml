@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.cifpay.lc</groupId>
+        <artifactId>lc-dependencies</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../lc-dependencies</relativePath>
+    </parent>
+    <artifactId>lc-platform-parent</artifactId>
+    <name>lc-platform-parent</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>lc-core</module>
+        <module>lc-core-api</module>
+        <module>lc-gateway</module>
+        <module>lc-core-autoconfigure</module>
+        <module>lc-core-message</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cifpay.lc</groupId>
+            <artifactId>lc-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+    </dependencies>
+
+    
+</project>

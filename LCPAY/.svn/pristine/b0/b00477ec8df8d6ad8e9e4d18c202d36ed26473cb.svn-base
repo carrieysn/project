@@ -1,0 +1,16 @@
+package com.cifpay.lc.gateway.controller.webpay.pc;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * 确认并执行交易
+ * 
+ * 
+ *
+ */
+@Controller
+@RequestMapping("/webpay/pc")
+public class PCWebPayTradeController {
+
+}

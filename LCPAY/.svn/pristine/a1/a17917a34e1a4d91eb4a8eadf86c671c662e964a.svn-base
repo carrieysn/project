@@ -1,0 +1,39 @@
+package com.cifpay.lc.core.message.server.listener.cache;
+
+import com.cifpay.lc.api.message.MessageService;
+import com.cifpay.lc.constant.enums.MessageEnum;
+import com.cifpay.lc.core.message.server.listener.BaseMessageListener;
+import com.cifpay.lc.domain.message.MessageInputBean;
+import com.cifpay.lc.domain.message.UpdateCacheParamBean;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+
+/**
+ * 监听业务操作，更新银信证系统中缓存数据
+ */
+public class UpdateCacheMessageServiceListener extends BaseMessageListener<UpdateCacheParamBean> {
+
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(value = MessageEnum.QUE_UPDATECACHE, durable = "true", autoDelete = "false"),
+            exchange = @Exchange(value = MessageEnum.EXC_CACHE, durable = "true", autoDelete = "false"),
+            key = MessageEnum.QUE_UPDATECACHE))
+    public void onMessage(MessageInputBean messageInputBean) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("======== 处理更新缓存消息开始 ==============");
+        }
+
+        handleMessage(messageInputBean);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("======== 处理更新缓存消息结束 ==============");
+        }
+    }
+
+    @Override
+    public MessageService<UpdateCacheParamBean> getMessageService() {
+        System.out.println("收到更新缓存消息");
+        return null;
+    }
+}

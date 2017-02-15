@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcRefundDao" >
+	<select id="selectByMidOrderId" resultMap="BaseResultMap" parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from CIFPAY_LC_REFUND
+		where MID = #{mid,jdbcType=VARCHAR} and ORDER_ID =
+		#{orderId,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectByLcId" parameterType="map" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from CIFPAY_LC_REFUND
+		where LC_ID in
+		<foreach close=")" collection="lcIds" index="index" item="item"
+			open="(" separator=",">
+			#{item}
+		</foreach>
+	</select>
+</mapper>

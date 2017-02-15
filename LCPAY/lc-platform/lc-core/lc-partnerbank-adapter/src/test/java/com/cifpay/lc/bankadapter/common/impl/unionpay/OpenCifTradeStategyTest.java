@@ -1,0 +1,136 @@
+package com.cifpay.lc.bankadapter.common.impl.unionpay;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cifpay.lc.bankadapter.BusinessJUnitTestBase;
+import com.cifpay.lc.bankadapter.api.IBankTradeService;
+import com.cifpay.lc.bankadapter.api.helper.GetTradeParamHelper;
+import com.cifpay.lc.bankadapter.api.input.unionpay.OpenCifParam;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+
+public class OpenCifTradeStategyTest extends BusinessJUnitTestBase {
+	@Autowired
+	IBankTradeService bankTradeService;
+
+	@Test
+	public void processTest_TRADE_UNIONPAY_DINGGOU_CONSUME() throws Exception {
+		/**
+		 * 定购 开证 CP200 信用卡
+		 */
+		OpenCifParam param = GetTradeParamHelper.getInstance(GetTradeParamHelper.UNION_PAY)
+				.getTradeParam(OpenCifParam.class, "CP200", "30");
+		Date date = new Date();
+		param.setLcId(date.getTime());
+		String time = new SimpleDateFormat("yyyyMMddHHmmss").format(date);
+		param.setOrderId(time);
+		param.setTxnTime(time);
+		param.setTxnAmt(new Long(1001L));
+		param.setChannelType("07");
+		param.setSubMerId("777290058137015");
+		param.setAccType("01");
+		param.setAccNo("6221558812340000");
+
+		param.setCvn2("123");
+		param.setExpired("1711");
+		param.setPhoneNo("13552535506");
+		// param.setReqReserved("定购 开证 CP200 信用卡");
+		param.setOrderDesc("订单描述。。");
+
+		GeneralTradeResult result = bankTradeService.doTrade(param);
+
+		System.out.println("/n~~~++++++++++LcId~+++++++++++： " + param.getLcId());
+		System.out.println("/n~~~++++++++++orderId~+++++++++++： " + param.getOrderId());
+		System.out.println("/n~~~++++++++++queryId~+++++++++++： " + result.getQueryId());
+	}
+
+    //@Test
+	public void processTest_TRADE_UNIONPAY_WU_CONSUME() throws Exception {
+		/**
+		 * 无跳转 开证 CP200 储蓄卡
+		 */
+		OpenCifParam param = GetTradeParamHelper.getInstance(GetTradeParamHelper.UNION_PAY)
+				.getTradeParam(OpenCifParam.class, "CP200", "10");
+		Date date = new Date();
+		param.setLcId(date.getTime());
+		String time = new SimpleDateFormat("yyyyMMddHHmmss").format(date);
+		param.setOrderId(time);
+		param.setTxnTime(time);
+		param.setTxnAmt(new Long(1002L));
+		param.setChannelType("07");
+		param.setSubMerId("777290058137015");
+		param.setAccType("01");
+		param.setAccNo("6216261000000000018");
+		//param.setPhoneNo("13552535506");
+		param.setSmsCode("111122");
+		// param.setReqReserved("无跳转 开证 CP200 储蓄卡");
+		param.setOrderDesc("订单描述。。");
+
+		GeneralTradeResult result = bankTradeService.doTrade(param);
+
+		System.out.println("/n~~~++++++++++LcId~+++++++++++： " + param.getLcId());
+		System.out.println("/n~~~++++++++++orderId~+++++++++++： " + param.getOrderId());
+		System.out.println("/n~~~++++++++++queryId~+++++++++++： " + result.getQueryId());
+	}
+
+	//@Test
+	public void processTest_TRADE_UNIONPAY_DINGGOU_AUTH() throws Exception {
+		/**
+		 * 定购 开证 CP300 信用卡
+		 */
+		OpenCifParam param = GetTradeParamHelper.getInstance(GetTradeParamHelper.UNION_PAY)
+				.getTradeParam(OpenCifParam.class, "CP300", "30");
+		Date date = new Date();
+		param.setLcId(date.getTime());
+		String time = new SimpleDateFormat("yyyyMMddHHmmss").format(date);
+		param.setOrderId(time);
+		param.setTxnTime(time);
+		param.setTxnAmt(new Long(1002L));
+		param.setChannelType("07");
+		param.setSubMerId("777290058137015");
+		param.setAccType("01");
+		param.setAccNo("6221558812340000");
+
+		param.setCvn2("123");
+		param.setExpired("1711");
+		param.setPhoneNo("13552535506");
+		// param.setCustomerNm("互联网");
+		// param.setReqReserved("定购 开证 CP300 信用卡");
+		param.setOrderDesc("订单描述。。");
+
+		GeneralTradeResult result = bankTradeService.doTrade(param);
+
+		System.out.println("/n~~~++++++++++LcId~+++++++++++： " + param.getLcId());
+		System.out.println("/n~~~++++++++++orderId~+++++++++++： " + param.getOrderId());
+		System.out.println("/n~~~++++++++++queryId~+++++++++++： " + result.getQueryId());
+	}
+
+	// @Test
+	public void processTest_TRADE_UNIONPAY_WU_AUTH() throws Exception {
+		/**
+		 * 无跳转 开证 CP300 储蓄卡
+		 */
+		OpenCifParam param = GetTradeParamHelper.getInstance(GetTradeParamHelper.UNION_PAY)
+				.getTradeParam(OpenCifParam.class, "CP300", "10");
+		Date date = new Date();
+		param.setLcId(date.getTime());
+		String time = new SimpleDateFormat("yyyyMMddHHmmss").format(date);
+		param.setOrderId(time);
+		param.setTxnTime(time);
+		param.setTxnAmt(new Long(1002L));
+		param.setChannelType("07");
+		param.setSubMerId("777290058137015");
+		param.setAccType("01");
+		param.setAccNo("6216261000000000018");
+
+		param.setPhoneNo("13552535506");
+		param.setReqReserved("无跳转 开证 CP300 储蓄卡");
+		param.setOrderDesc("订单描述。。");
+
+		bankTradeService.doTrade(param);
+	}
+
+}

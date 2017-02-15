@@ -1,0 +1,117 @@
+package com.cifpay.lc.std.business.cache;
+
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.gateway.cache.CacheBusinessService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.cache.bean.BaseCache;
+import com.cifpay.lc.core.cache.pojo.LcBankCache;
+import com.cifpay.lc.core.cache.pojo.MerchantCache;
+import com.cifpay.lc.core.cache.reservice.api.InternalCacheService;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.domain.cache.CacheInput;
+import com.cifpay.lc.domain.cache.CacheOutput;
+import com.cifpay.lc.domain.cache.LcBankCacheBean;
+import com.cifpay.lc.domain.cache.LcMerchantBean;
+import com.cifpay.lc.exception.CoreBusinessException;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+
+@Service("cacheBusinessService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class})
+public class CacheBusinessServiceImpl  implements CacheBusinessService {
+
+	 private final Logger logger = LoggerFactory.getLogger(getClass());
+
+	 private final Map<String, InternalCacheService> cacheProcessersMap = new HashMap<String, InternalCacheService>();
+	 
+	@Autowired
+	public void initBankDealProcessers(List<InternalCacheService> cacheProcessers) {
+		if (null != cacheProcessers) {
+			for (InternalCacheService bd : cacheProcessers) {
+				cacheProcessersMap.put(bd.getCacheKey(), bd);
+			}
+		}
+	}
+
+	@Override
+	public CacheOutput getCache(CacheInput paramValue) {
+		logger.info("getCache(CacheInput paramValue)");
+		CacheOutput outPut = null;
+		try {
+			    InternalCacheService dealCache = tradeDealAdapter(paramValue);
+				BaseCache getCacheObj = dealCache.getCache(paramValue.getBusinessParam());
+				outPut = transBean(outPut,getCacheObj);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return outPut;
+	}
+
+	@Override
+	public CacheOutput updateCache(CacheInput paramValue) {
+		logger.info("updateCache(CacheInput paramValue)");
+		CacheOutput outPut = null;
+		try {
+		    InternalCacheService dealCache = tradeDealAdapter(paramValue);
+			BaseCache getCacheObj = dealCache.updateCache(paramValue.getBusinessParam());
+			outPut = transBean(outPut,getCacheObj);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return outPut;
+	}
+
+	@Override
+	public void removeCache(CacheInput paramValue) {
+		
+		logger.info("updateCache(CacheInput paramValue)");
+		
+		try {
+		    InternalCacheService dealCache = tradeDealAdapter(paramValue);
+			dealCache.removeCache(paramValue.getBusinessParam());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	
+	public  InternalCacheService tradeDealAdapter(CacheInput paramValue) throws Exception{
+		
+		InternalCacheService dealCache = cacheProcessersMap.get(paramValue.getCacheKey());
+		logger.info("=====选择处理类-dealCache:{}", dealCache);
+		if (dealCache == null) {
+			throw new CoreBusinessException(ReturnCode.CORE_BA_PARAM_EXCEPTION_N105001,
+					"未找到适配的处理器! " + paramValue.getCacheKey());
+		}
+		return dealCache;
+	}
+	
+	public CacheOutput transBean(CacheOutput outPut,BaseCache getCacheObj){
+		if(getCacheObj instanceof LcBankCache){
+			 LcBankCache cache = (LcBankCache)getCacheObj;
+			 LcBankCacheBean bankBean = new LcBankCacheBean();
+			 BeanUtils.copyProperties(cache, bankBean);
+			 outPut = bankBean;
+		}else if(getCacheObj instanceof MerchantCache){
+			MerchantCache merchantCache = (MerchantCache)getCacheObj;
+			LcMerchantBean merchantBean = new LcMerchantBean();
+			 BeanUtils.copyProperties(merchantCache, merchantBean);
+			 outPut = merchantBean;
+		}
+		return outPut;
+		
+	}
+
+}

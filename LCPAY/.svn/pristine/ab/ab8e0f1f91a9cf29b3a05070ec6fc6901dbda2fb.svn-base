@@ -1,0 +1,16 @@
+package com.cifpay.lc.std.paychannel;
+
+import com.cifpay.lc.domain.lc.InvalidateLcInputBean;
+import com.cifpay.lc.domain.lc.InvalidateLcOutputBean;
+import com.cifpay.lc.std.domain.paychannel.ExpiryOutputBean;
+import com.cifpay.lc.std.domain.paychannel.ExpiryInputBean;
+
+/**
+ * 失效（撤销）接口
+ *
+ * @param <I>
+ * @param <O>
+ */
+public interface ExpiryInterface<I extends InvalidateLcInputBean, O extends InvalidateLcOutputBean> extends BankChannel {
+    ExpiryOutputBean expiry(I inputBean, ExpiryInputBean expiryInputBean);
+}

@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>银信证</title>
+
+
+<link rel="stylesheet" href="css/mreset.css">
+<link rel="stylesheet" href="css/zheng.css">
+
+<script type="text/javascript" src="js/jquery.js"></script>
+</head>
+
+<body>
+	<div class="card invalid">
+		<h1>银行记账式全新消费体验</h1>
+		<h2>购物消费只需在自己银行账户记账,货到满意银行再帮你付款</h2>
+		<div class="money"><label for="">人民币</label>￥5080<small>.00</small></div>
+		<div class="moneyUpper"><label for="">（大写）</label>伍仟零捌拾元整</div>
+		<table class="tabList">
+		<tr>
+				<th>委托记账付款银行</td>
+				<th width="42">&nbsp;</td>
+				<th>委托记账收款银行</td>
+			</tr>
+			<tr>
+				<td><img class="imgAuto" src="images/pingan.png"></td>
+				<td>&nbsp;</td>
+				<td><img class="imgAuto" src="images/icbc.png"></td>
+			</tr>
+			<tr>
+				<td><a class="btn btn-invalid"><i>付</i>待记账付款</a></td>
+				<td width="42" class="iconRight"><img src="images/icon-right.png" class="imgAuto"></td>
+				<td><a class="btn btn-invalid"><i>收</i>待记账收款</a></td>
+			</tr>
+			<tr>
+				<td class="color-text" valign="top"><div>付款人:<b>星电商科技有限公司</b></div></td>
+				<td>&nbsp;</td>
+				<td class="color-text" valign="top"><div >操作时效：<b>20小时18分钟</b><br>记账人：<b>李四</b></div></td>
+			</tr>
+		</table>
+		<div class="barBox">
+			<div class="barTip1">收付双方记账	</div>
+			<div class="barTip2">收款</div>
+			<div class="barTip3">划款到账</div>
+		</div>
+		<ul class="bar clearfix">
+			<li class="number one full">1</li>
+			<li class="lap"></li>
+			<li class="number two">2</li>
+			<li class="lap"></li>
+			<li class="number three">3</li>
+		</ul>
+		<div class="bar-tip">待收款人发起收款申请</div>
+		
+		<table class="foterTab" width="100%">
+			<tr>
+				<td width="100">发出银行</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td ><img class="imgAuto" src="images/pingan.png"></td>
+				<td class="text-right">平安银行 CP200 3294334050</td>
+			</tr>
+		</table>
+	</div>
+	
+</body>
+</html>

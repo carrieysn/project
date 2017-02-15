@@ -1,0 +1,36 @@
+package com.cifpay.lc.bankadapter.common.impl.unionpay;
+
+import java.util.Date;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cifpay.lc.bankadapter.BusinessJUnitTestBase;
+import com.cifpay.lc.bankadapter.api.IBankTradeService;
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.input.unionpay.QueryTradeCifParam;
+
+public class QueryStatusStategyTest extends BusinessJUnitTestBase{
+
+	
+	@Autowired
+	IBankTradeService bankTradeService;
+
+	@Test
+	public void processTest() throws Exception {
+		
+		QueryTradeCifParam param = new QueryTradeCifParam();
+		param.setLcId(new Date().getTime());
+		param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_QUERY);
+		param.setTxnType("00");
+		param.setTxnSubType("00");
+		param.setSubMerId("777290058137015");
+		param.setOrderId("20161024144301");
+		param.setTxnTime("20161024144301");
+		param.setBusinessId(11133444l);
+		param.setOnline(true);
+		bankTradeService.doTrade(param);
+		
+	}
+	
+}

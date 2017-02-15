@@ -1,0 +1,51 @@
+package com.cifpay.lc.std.component.impl;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.security.SecurityService;
+import com.cifpay.lc.core.http.HttpUtils;
+import com.cifpay.lc.domain.security.FinalSignedMerchantResponse;
+import com.cifpay.lc.std.component.NotifyService;
+import com.cifpay.lc.std.domain.component.notify.AbstractNotifyBean;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by sweet on 16-11-2.
+ */
+@Component
+public class HttpNotifyServiceImpl implements NotifyService {
+
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private HttpUtils httpServant;
+
+
+    @Override
+    public BusinessOutput notify(String merId, String url, AbstractNotifyBean notifyBean) {
+        //TODO: 修改为异步
+        
+        // 加密参数
+        Map map = new ObjectMapper().convertValue(notifyBean, Map.class);
+        BusinessOutput<FinalSignedMerchantResponse> encryptResponse = securityService.encryptData(merId, map);
+        if (encryptResponse.isFailed()) {
+            return BusinessOutput.fail(encryptResponse.getReturnCode(), encryptResponse.getReturnMsg());
+        }
+
+        FinalSignedMerchantResponse data = encryptResponse.getData();
+
+        Map<String, String> request = new HashMap<>();
+        request.put("encodedJsonData", data.getEncodedJsonData());
+        request.put("sign", data.getSign());
+
+        // 商户收到通知后响应信息
+        String response = httpServant.post(url, request);//MerchantRequest<?>
+
+        return BusinessOutput.success(null);
+    }
+}

@@ -1,0 +1,59 @@
+package com.cifpay.lc.gateway.controller.lc;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.RefundLcService;
+import com.cifpay.lc.domain.lc.RefundLcInputBean;
+import com.cifpay.lc.domain.lc.RefundLcOutputBean;
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+import com.cifpay.lc.domain.security.MerchantRequest;
+import com.cifpay.lc.gateway.input.freeze.RefundReq;
+import com.cifpay.lc.gateway.output.lc.RecvResp;
+
+@RestController
+@RequestMapping("/lc")
+public class ReFundController extends GatewayBaseController {
+
+    @Autowired
+    private RefundLcService reFundService;
+
+    @ResponseBody
+    @RequestMapping("/reFund")
+    public RecvResp recv(@RequestBody MerchantRequest<RefundReq> merReq) {
+        logger.info("===进入recv");
+        RefundReq request = merReq.getData();
+        RefundLcInputBean inputBean = new RefundLcInputBean();
+        inputBean.setMerId(merReq.getMerId());
+        inputBean.setLcId(new Long(request.getLcId()));
+        inputBean.setRefundOrderId(request.getRefundOrderId());
+        inputBean.setRefundAmount(request.getAmount());
+
+//		inputBean.set
+//		inputBean.setRecvBankCode(request.getRecvBankCode());
+//		inputBean.setRecvBankAccountNo(request.getRecvBankAccountNo());
+//		inputBean.setRecvAccountType(request.getRecvAccountType().equalsIgnoreCase("c") ? AccountPropertyType.PERSONAL : AccountPropertyType.CORPORATE);
+//		inputBean.setRemark(request.getRemark());
+
+        BusinessOutput<RefundLcOutputBean> output = reFundService.execute(new BusinessInput<RefundLcInputBean>(inputBean));
+
+        RecvResp response = new RecvResp();
+        response.setReturnCode(output.getReturnCode());
+        response.setReturnMsg(output.getReturnMsg());
+
+        if (output.isSuccess()) {
+            RefundLcOutputBean outputBean = output.getData();
+
+            response.setLcId(Long.toString(outputBean.getLcId()));
+            response.setLcStatus(outputBean.getLcStatus());
+            response.setLcStatusDesc(outputBean.getLcStatusDesc());
+        }
+        return response;
+    }
+
+}

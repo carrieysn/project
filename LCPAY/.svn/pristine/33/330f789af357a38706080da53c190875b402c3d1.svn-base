@@ -1,0 +1,39 @@
+package com.cifpay.lc.domain.message;
+
+import java.io.Serializable;
+
+public class MessageInputBean implements Serializable {
+
+    private static final long serialVersionUID = -4869490821560743194L;
+
+    private Long msgId;
+
+    private Integer msgType;
+
+    private String sence;
+
+    public Long getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(Long msgId) {
+        this.msgId = msgId;
+    }
+
+    public Integer getMsgType() {
+        return msgType;
+    }
+
+    public void setMsgType(Integer msgType) {
+        this.msgType = msgType;
+    }
+
+    public String getSence() {
+        return sence;
+    }
+
+    public void setSence(String sence) {
+        this.sence = sence;
+    }
+
+}

@@ -1,0 +1,36 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_OPEN_BATCH
+DROP TABLE IF EXISTS `CIFPAY_LC_OPEN_BATCH`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_OPEN_BATCH` (
+  `BATCH_OPEN_ID` bigint(20) NOT NULL COMMENT '批次号',
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `ORDER_ID` varchar(128) DEFAULT NULL COMMENT '批次订单号',
+  `LC_CURRENCY` varchar(50) DEFAULT NULL COMMENT '币种：CHY',
+  `LC_BATCH_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '批次开证总额(单位分)',
+  `LC_BATCH_BALANCE` decimal(19,2) DEFAULT NULL COMMENT '批次开证余额',
+  `PAYER_ID` varchar(32) DEFAULT NULL COMMENT '开证人标识信息',
+  `PAYER_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `PAYER_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：1:个人 2:企业',
+  `PAYER_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '开证人银行代码：ICBC、ALIPAY',
+  `PAYER_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改日期',
+  PRIMARY KEY (`BATCH_OPEN_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='批量开证记录表，保存批量开证时的操作结果';
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

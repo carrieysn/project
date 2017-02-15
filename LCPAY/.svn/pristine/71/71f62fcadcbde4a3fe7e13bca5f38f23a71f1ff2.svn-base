@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/tx
+  http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- 扫描并初始化bean实例 -->
+	<context:component-scan base-package="com.cifpay.lc.std,com.cifpay.lc.core">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+		<context:exclude-filter type="annotation" expression="com.alibaba.dubbo.config.annotation.Service" />
+	</context:component-scan>
+
+	<!-- Properties文件加载 -->
+	<bean id="environmentSpecifiedProperties"
+		class="com.cifpay.lc.util.spring.StrictProgramExternalPropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>file:/app/cifpaylc/#{T(com.cifpay.lc.util.AppNodeInfoHelper).getAppNameOverriddenByJVM('standard-business')}/config/jdbc.properties</value>
+				<value>file:/app/cifpaylc/#{T(com.cifpay.lc.util.AppNodeInfoHelper).getAppNameOverriddenByJVM('standard-business')}/config/system-config.xml</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="properties" ref="defaultEmbedProperties" />
+	</bean>
+	
+	<bean id="defaultEmbedProperties"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean" >
+		<property name="locations">
+			<list>
+				<value>classpath:com/cifpay/lc/std/business/config/jdbc.properties</value>
+				<value>classpath:com/cifpay/lc/std/business/config/system-config.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- [BEGIN] DAO相关配置 -->
+	<!-- 
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	 -->
+	<!-- 使用编程式事务管理的方式 -->
+	<bean id="dbTransactionHelper" class="com.cifpay.lc.core.common.DbTransactionHelper">
+		<constructor-arg ref="transactionManager" />
+	</bean>
+	
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="stdBusinessDataSource" />
+	</bean>
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.cifpay.lc.core.db.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="stdBusinessDataSource" />
+		<property name="configLocation" value="classpath:com/cifpay/lc/std/business/config/mybatis-global-config.xml" />
+		<property name="typeAliasesPackage" value="com.cifpay.lc.core.db.pojo" />
+		<property name="mapperLocations" value="classpath*:com/cifpay/lc/core/db/mapper/*.xml" />
+	</bean>
+	
+	<bean name="stdBusinessDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${cifpaylc.jdbc.url}" />
+		<property name="username" value="${cifpaylc.jdbc.username}" />
+		<property name="password" value="${cifpaylc.jdbc.password}" />
+		<property name="initialSize" value="5" />
+		<property name="maxActive" value="500" />
+		<property name="minIdle" value="1" />
+		<property name="maxWait" value="180000" />
+		<property name="validationQuery" value="${cifpaylc.jdbc.validationQuery}" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="testWhileIdle" value="true" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="25200000" />
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="1800" />
+		<property name="logAbandoned" value="true" />
+	</bean>
+	<!-- [END] DAO相关配置 -->
+
+
+	<!--&lt;!&ndash; 业务锁助手类 &ndash;&gt;-->
+	<!--<bean id="lcBusinessLockHelper" class="com.cifpay.lc.core.component.LcBusinessLockHelper">-->
+		<!--<constructor-arg>-->
+			<!--<bean class="com.cifpay.lc.core.common.DbBusinessLockProvider" />-->
+		<!--</constructor-arg>-->
+	<!--</bean>-->
+	
+	<bean id="coreBusinessInterceptorHandler" class="com.cifpay.lc.core.common.CoreBusinessInterceptorHandler">
+	</bean>
+
+
+	<!-- Dubbo服务提供者配置 -->
+	<beans profile="!JUNIT">
+		<import resource="classpath:com/cifpay/lc/std/business/config/dubbo-provider.xml" />
+		<import resource="classpath:com/cifpay/lc/std/business/config/dubbo-message-provider.xml" />
+		<import resource="classpath:com/cifpay/lc/std/business/config/dubbo-consumer.xml" />
+	</beans>
+</beans>

@@ -1,0 +1,5 @@
+package com.cifpay.lc.std.business.bank.payment;
+
+public class CheckPaymentServiceImpl {
+
+}

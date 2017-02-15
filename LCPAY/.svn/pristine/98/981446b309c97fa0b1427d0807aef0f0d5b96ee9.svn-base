@@ -1,0 +1,49 @@
+package com.cifpay.lc.gateway.controller.cache;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.cache.CacheBusinessService;
+import com.cifpay.lc.api.message.MqMessageService;
+import com.cifpay.lc.constant.enums.MessageEnum;
+import com.cifpay.lc.domain.cache.CacheInput;
+import com.cifpay.lc.domain.cache.CacheOutput;
+import com.cifpay.lc.domain.message.SendMessageOutput;
+import com.cifpay.lc.domain.message.UpdateCacheParamBean;
+import com.cifpay.lc.domain.security.MerchantRequest;
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+@RequestMapping("/cache")
+public class CacheBusinessController extends GatewayBaseController {
+
+    @Autowired
+    private CacheBusinessService cacheBusinessService;
+
+    @Autowired
+    private MqMessageService mqMessageService;
+
+    @RequestMapping(path = "/updateCache", method = RequestMethod.POST)
+    @ResponseBody
+    public CacheOutput updateCache(@RequestBody MerchantRequest<CacheInput> merReq) {
+        CacheInput cacheInput = merReq.getData();
+        CacheOutput output = new CacheOutput();
+        BusinessOutput<CacheOutput> updateCache = cacheBusinessService.updateCache(cacheInput);
+        output = updateCache.getData();
+        output.setReturnCode(updateCache.getReturnCode());
+        output.setReturnMsg(updateCache.getReturnMsg());
+        return output;
+    }
+
+    @RequestMapping(path = "/test", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public String test() {
+        BusinessOutput<SendMessageOutput> outputBusinessOutput = mqMessageService.sendMessage(MessageEnum.MsgType.CACHE, MessageEnum.Scene.UPDATECACHE, new UpdateCacheParamBean());
+
+        return outputBusinessOutput.getReturnMsg();
+    }
+}

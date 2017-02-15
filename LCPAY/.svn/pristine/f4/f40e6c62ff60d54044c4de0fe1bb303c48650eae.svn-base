@@ -1,0 +1,26 @@
+server:
+  port: 9100
+  
+spring:
+  jmx:
+    default-domain: lc-gateway
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
+cifpay:
+  dubbo:
+    enable: true 
+  jmx:
+    enable: true
+  redis:
+    enable: true
+  lock:
+    enable: false
+  amqp:
+    enable: false
+  sms:
+    enable: false
+  mongodb:
+    enable: true

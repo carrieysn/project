@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.AdminSmsTemplateDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.AdminSmsTemplate" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="SMS_TEM_NAME" property="smsTemName" jdbcType="VARCHAR" />
+    <result column="SMS_TEM_CONTENT" property="smsTemContent" jdbcType="VARCHAR" />
+    <result column="SMS_TEM_TYPE" property="smsTemType" jdbcType="INTEGER" />
+    <result column="USER_ID" property="userId" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="SMS_STATE" property="smsState" jdbcType="INTEGER" />
+    <result column="SMS_REMARK" property="smsRemark" jdbcType="VARCHAR" />
+    <result column="SMS_TEM_PARAM" property="smsTemParam" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, SMS_TEM_NAME, SMS_TEM_CONTENT, SMS_TEM_TYPE, USER_ID, CREATE_TIME, SMS_STATE, 
+    SMS_REMARK, SMS_TEM_PARAM
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ADMIN_SMS_TEMPLATE
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectBysmsType" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ADMIN_SMS_TEMPLATE
+    where SMS_TEM_TYPE = #{smsType,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ADMIN_SMS_TEMPLATE
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.AdminSmsTemplate" >
+    insert into ADMIN_SMS_TEMPLATE (ID, SMS_TEM_NAME, SMS_TEM_CONTENT, 
+      SMS_TEM_TYPE, USER_ID, CREATE_TIME, 
+      SMS_STATE, SMS_REMARK, SMS_TEM_PARAM
+      )
+    values (#{id,jdbcType=INTEGER}, #{smsTemName,jdbcType=VARCHAR}, #{smsTemContent,jdbcType=VARCHAR}, 
+      #{smsTemType,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{smsState,jdbcType=INTEGER}, #{smsRemark,jdbcType=VARCHAR}, #{smsTemParam,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.AdminSmsTemplate" >
+    insert into ADMIN_SMS_TEMPLATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="smsTemName != null" >
+        SMS_TEM_NAME,
+      </if>
+      <if test="smsTemContent != null" >
+        SMS_TEM_CONTENT,
+      </if>
+      <if test="smsTemType != null" >
+        SMS_TEM_TYPE,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="smsState != null" >
+        SMS_STATE,
+      </if>
+      <if test="smsRemark != null" >
+        SMS_REMARK,
+      </if>
+      <if test="smsTemParam != null" >
+        SMS_TEM_PARAM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="smsTemName != null" >
+        #{smsTemName,jdbcType=VARCHAR},
+      </if>
+      <if test="smsTemContent != null" >
+        #{smsTemContent,jdbcType=VARCHAR},
+      </if>
+      <if test="smsTemType != null" >
+        #{smsTemType,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="smsState != null" >
+        #{smsState,jdbcType=INTEGER},
+      </if>
+      <if test="smsRemark != null" >
+        #{smsRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="smsTemParam != null" >
+        #{smsTemParam,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.AdminSmsTemplate" >
+    update ADMIN_SMS_TEMPLATE
+    <set >
+      <if test="smsTemName != null" >
+        SMS_TEM_NAME = #{smsTemName,jdbcType=VARCHAR},
+      </if>
+      <if test="smsTemContent != null" >
+        SMS_TEM_CONTENT = #{smsTemContent,jdbcType=VARCHAR},
+      </if>
+      <if test="smsTemType != null" >
+        SMS_TEM_TYPE = #{smsTemType,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="smsState != null" >
+        SMS_STATE = #{smsState,jdbcType=INTEGER},
+      </if>
+      <if test="smsRemark != null" >
+        SMS_REMARK = #{smsRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="smsTemParam != null" >
+        SMS_TEM_PARAM = #{smsTemParam,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.AdminSmsTemplate" >
+    update ADMIN_SMS_TEMPLATE
+    set SMS_TEM_NAME = #{smsTemName,jdbcType=VARCHAR},
+      SMS_TEM_CONTENT = #{smsTemContent,jdbcType=VARCHAR},
+      SMS_TEM_TYPE = #{smsTemType,jdbcType=INTEGER},
+      USER_ID = #{userId,jdbcType=INTEGER},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      SMS_STATE = #{smsState,jdbcType=INTEGER},
+      SMS_REMARK = #{smsRemark,jdbcType=VARCHAR},
+      SMS_TEM_PARAM = #{smsTemParam,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

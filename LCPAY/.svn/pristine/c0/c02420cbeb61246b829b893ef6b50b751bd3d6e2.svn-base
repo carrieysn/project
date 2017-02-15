@@ -1,0 +1,121 @@
+package com.cifpay.lc.bankadapter.common.impl.unionpay;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cifpay.lc.bankadapter.BusinessJUnitTestBase;
+import com.cifpay.lc.bankadapter.api.IBankTradeService;
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.input.unionpay.RefundCifParam;
+
+public class RefundCifTradeStategyTest extends BusinessJUnitTestBase{
+	
+	@Autowired
+	IBankTradeService bankTradeService;
+	/**
+	 * 订购消费撤销 测试
+	 * @throws Exception
+	 */
+	 @Test
+    public  void  processTest() throws Exception  {
+		
+		RefundCifParam param = new RefundCifParam();
+		param.setLcId(new Long(1477648936130l));
+		param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_200_1_00);
+		param.setMerId("777290058137015");
+		param.setUserId("138000138000");
+		String txnTime = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+		param.setOrderId(txnTime);
+		param.setTxnTime(txnTime);
+		param.setTxnAmt(new Long(1001L));
+		param.setChannelType("07");
+		param.setSubMerId("777290058137015");
+		param.setOrigOryId("72545723459555328");
+		
+		
+		bankTradeService.doTrade(param);
+	}
+	
+	/**
+	 * 预授权完成撤销
+	 * @throws Exception
+	 */
+
+    public  void  processAuthFinishUndoTest() throws Exception  {
+		
+		RefundCifParam param = new RefundCifParam();
+		param.setLcId(new Long(100000012L));
+		param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_AUTH_FINISH_UNDO);
+		param.setTxnType("33");
+		param.setTxnSubType("00");
+		param.setMerId("777290058137015");
+		param.setOrigOryId("201610140613592226738");
+		param.setUserId("138000138000");
+		param.setOrderId("1000000000000029");
+		String txnTime = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+		param.setTxnTime(txnTime);
+		param.setTxnAmt(new Long(1001L));
+		param.setChannelType("07");
+		param.setSubMerId("1000001");
+		
+		
+		bankTradeService.doTrade(param);
+	}
+    
+    
+	/**
+	 * 无跳转消费撤销 测试
+	 * @throws Exception
+	 */
+   
+    public  void  processWuConsumeUndoTest() throws Exception  {
+		
+		RefundCifParam param = new RefundCifParam();
+		param.setLcId(1477291375579l);
+		param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_200_0_00);
+		param.setTxnType("31");
+		param.setTxnSubType("00");
+		param.setMerId("777290058137015");
+		param.setSubMerId("777290058137015");
+		String time = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		param.setOrderId(time);
+		param.setTxnTime(time);
+		param.setTxnAmt(new Long(1001L));
+		param.setChannelType("07");
+		param.setOrigOryId("201610241443014252978");
+		
+		
+		bankTradeService.doTrade(param);
+	}
+	
+    
+	/**
+	 * 无跳转退货 测试
+	 * @throws Exception
+	 */
+   
+    public  void  processRefundUndoTest() throws Exception  {
+		
+		RefundCifParam param = new RefundCifParam();
+		param.setLcId(1477305311369l);
+		param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_00_00_200_0_00);
+		param.setTxnType("04");
+		param.setTxnSubType("00");
+		param.setMerId("777290058137015");
+		param.setSubMerId("777290058137015");
+		String time = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		param.setOrderId(time);
+		param.setTxnTime(time);
+		param.setTxnAmt(new Long(1001L));
+		param.setChannelType("07");
+		param.setOrigOryId("201610241835112921288");
+		
+		
+		bankTradeService.doTrade(param);
+	}
+	
+
+}

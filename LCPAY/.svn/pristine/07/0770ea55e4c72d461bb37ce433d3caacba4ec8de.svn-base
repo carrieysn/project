@@ -1,0 +1,21 @@
+package mock.merchant.common.tool;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+public class ConnectionTool {
+
+	public static Connection getConnection() {
+		Connection conn = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://192.168.163.33:3306/cifpay_lc_platform_sit?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&zeroDateTimeBehavior=convertToNull",
+					"cifpaysit", "cifpaysit");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return conn;
+
+	}
+}

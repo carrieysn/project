@@ -1,0 +1,5 @@
+package com.cifpay.lc.api.message;
+
+public class BaseMessageService {
+
+}

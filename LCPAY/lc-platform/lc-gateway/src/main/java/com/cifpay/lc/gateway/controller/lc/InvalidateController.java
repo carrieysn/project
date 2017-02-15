@@ -1,0 +1,101 @@
+package com.cifpay.lc.gateway.controller.lc;
+
+import com.cifpay.lc.gateway.common.exception.GatewayLcException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.InvalidateLcService;
+import com.cifpay.lc.api.gateway.lc.RefundLcService;
+import com.cifpay.lc.constant.BizConstants;
+import com.cifpay.lc.constant.enums.LcInvalidateType;
+import com.cifpay.lc.domain.lc.InvalidateLcInputBean;
+import com.cifpay.lc.domain.lc.InvalidateLcOutputBean;
+import com.cifpay.lc.domain.lc.RefundLcInputBean;
+import com.cifpay.lc.domain.lc.RefundLcOutputBean;
+import com.cifpay.lc.domain.security.MerchantRequest;
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+import com.cifpay.lc.gateway.input.lc.InvalidateReq;
+import com.cifpay.lc.gateway.output.lc.InvalidateResp;
+
+/**
+ * 退证
+ *
+ * @author liwenfu
+ */
+@RestController
+@RequestMapping("/lc")
+public class InvalidateController extends GatewayBaseController {
+
+    @Autowired
+    private InvalidateLcService invalidateLcService;
+
+    @Autowired
+    private RefundLcService reFundService;
+
+    @ResponseBody
+    @RequestMapping("/invalidate")
+    public InvalidateResp handleRequest(@RequestBody MerchantRequest<InvalidateReq> merReq) {
+
+        logger.debug("~~~进入invalidate");
+
+        InvalidateReq request = merReq.getData();
+
+        String strMerId = merReq.getMerId();
+        String strInvalidateType = request.getInvalidateType();
+        String strRemark = request.getRemark();
+
+        if ("3".equals(request.getInvalidateType())) {
+            logger.debug("===进入reFund");
+            RefundLcInputBean inputBean = new RefundLcInputBean();
+            inputBean.setMerId(strMerId);
+            inputBean.setLcId(request.getLcId());
+            inputBean.setRefundOrderId(request.getRefundOrderId());
+            inputBean.setRefundAmount(request.getAmount());
+
+            BusinessOutput<RefundLcOutputBean> output = reFundService.execute(new BusinessInput<RefundLcInputBean>(inputBean));
+
+            if (output.isSuccess()) {
+                RefundLcOutputBean outputBean = output.getData();
+
+                InvalidateResp response = new InvalidateResp();
+                response.setLcId(Long.toString(outputBean.getLcId()));
+                response.setLcStatus(outputBean.getLcStatus());
+                response.setLcStatusDesc(outputBean.getLcStatusDesc());
+                return response;
+            }
+
+            throw new GatewayLcException(output.getReturnCode(), output.getReturnMsg());
+        } else {
+
+            InvalidateLcInputBean inputBean = new InvalidateLcInputBean();
+            inputBean.setMerId(strMerId);
+            inputBean.setLcId(request.getLcId());
+            inputBean.setInvalidateType(LcInvalidateType.parseCode(strInvalidateType));
+            inputBean.setLcAppointmentId(request.getLcAppointmentId());
+            inputBean.setAmount(request.getAmount());
+            inputBean.setRemark(strRemark);
+
+            BusinessOutput<InvalidateLcOutputBean> output = invalidateLcService
+                    .execute(new BusinessInput<InvalidateLcInputBean>(inputBean));
+
+            if (output.isSuccess()) {
+                InvalidateLcOutputBean outputBean = output.getData();
+
+                InvalidateResp response = new InvalidateResp();
+                response.setLcId(String.valueOf(outputBean.getLcId()));
+                response.setLcStatus(outputBean.getLcStatus());
+                response.setLcStatusDesc(outputBean.getLcStatusDesc());
+                response.setInvalidateId(String.valueOf(outputBean.getLcInvalidateId()));
+                response.setInvalidateAmount(BizConstants.decimalFormat.format(outputBean.getInvalidateAmount()));
+                return response;
+            }
+
+            throw new GatewayLcException(output.getReturnCode(), output.getReturnMsg());
+        }
+    }
+}

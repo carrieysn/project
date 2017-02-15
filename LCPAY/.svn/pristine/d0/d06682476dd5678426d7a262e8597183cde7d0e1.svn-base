@@ -1,0 +1,210 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay;
+
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.gateway.common.exception.GatewayValidationRejectException;
+import com.cifpay.lc.versionb.VersionBMerchantSignValidator;
+
+/**
+ * 银企直联划款接口输入参数校验
+ */
+@Component
+public class UnionpayAdvanceInputValidator {
+	protected Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Autowired
+	private VersionBMerchantSignValidator versionBMerchantSignValidator;
+
+	public void validate(Map<String, String> reqParams) {
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("~~~开始校验商户的请求参数");
+		}
+
+		String merId = reqParams.get("merId");
+		String sign = reqParams.get("sign");
+
+		// 输入参数基本校验
+		validateInputParams(reqParams);
+
+		// 校验签名
+		versionBMerchantSignValidator.checkMerSignature(merId, reqParams, sign);
+
+	}
+
+	private void validateInputParams(Map<String, String> reqParams) throws GatewayValidationRejectException {
+		String requestId = reqParams.get("requestId");
+		String requestTime = reqParams.get("requestTime");
+		String merId = reqParams.get("merId");
+		String sign = reqParams.get("sign");
+
+		String userCode = reqParams.get("userCode");
+		String orderId = reqParams.get("orderId");
+		String orderDesc = reqParams.get("orderDesc");
+		String amount = reqParams.get("amount");
+		String currency = reqParams.get("currency");
+		String payerBankCode = reqParams.get("payerBankCode");
+		String payerBankAcctNo = reqParams.get("payerBankAcctNo");
+		// String payerMobile = reqParams.get("payerMobile");
+		String payeeBankCode = reqParams.get("payeeBankCode");
+		String payeeBankAcctNo = reqParams.get("payeeBankAcctNo");
+		String payeeName = reqParams.get("payeeName");
+		// String payeeMobile = reqParams.get("payeeMobile");
+		String payeeAcctType = reqParams.get("payeeAcctType");
+		String payeeBankName = reqParams.get("payeeBankName");
+		String payeeCityName = reqParams.get("payeeCityName");
+		String noticeUrl = reqParams.get("noticeUrl");
+
+		if (!StringUtils.hasText(requestId)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "requestId不允许为空");
+		}
+		if (requestId.getBytes().length > 32) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "requestId长度超过限制");
+		}
+
+		if (!StringUtils.hasText(requestTime)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "requestTime不允许为空");
+		}
+		if (!requestTime.matches("^2[0-9]{3}[01][0-9][0-3][0-9][0-2][0-9][0-5][0-9][0-5][0-9]$")) {
+			// 对时间串进行简单的格式校验
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "requestTime格式不正确");
+		}
+
+		if (!StringUtils.hasText(merId)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "merId不允许为空");
+		}
+		if (merId.getBytes().length > 32) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "merId长度超过限制");
+		}
+
+		if (!StringUtils.hasText(sign)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "sign不允许为空");
+		}
+		if (sign.getBytes().length > 32) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "sign长度超过限制");
+		}
+
+		//根据20160509邮件提示的需求，提现接口需支持游客，故userCode改为非必填字段。
+//		if (!StringUtils.hasText(userCode)) {
+//			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "userCode不允许为空");
+//		}
+		if (StringUtils.hasText(userCode) && userCode.getBytes().length > 32) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "userCode长度超过限制");
+		}
+
+		if (!StringUtils.hasText(orderId)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "orderId不允许为空");
+		}
+		if (orderId.getBytes().length > 32) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "orderId长度超过限制");
+		}
+
+		if (!StringUtils.hasText(orderDesc)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "orderDesc不允许为空");
+		}
+		if (orderDesc.getBytes().length > 100) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+					"orderDesc长度超过限制（100）");
+		}
+
+		if (!StringUtils.hasText(amount)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "amount不允许为空");
+		}
+		if (!amount.matches("^[1-9][0-9]{0,15}$")) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "amount金额范围不合法");
+		}
+
+		if (!StringUtils.hasText(currency)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "currency不允许为空");
+		}
+		// TODO 目前单币别，实现简单判断
+		if (!"CNY".equals(currency)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "currency目前仅支持CNY");
+		}
+
+		if (!StringUtils.hasText(payerBankCode)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "payerBankCode不允许为空");
+		}
+		if (payerBankCode.getBytes().length > 32) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+					"payerBankCode长度超过限制");
+		}
+
+		if (!StringUtils.hasText(payerBankAcctNo)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+					"payerBankAcctNo不允许为空");
+		}
+		if (payerBankAcctNo.getBytes().length > 19) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+					"payerBankAcctNo长度超过限制");
+		}
+
+		if (!StringUtils.hasText(payeeBankCode)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "payeeBankCode不允许为空");
+		}
+		if (payeeBankCode.getBytes().length > 32) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+					"payeeBankCode长度超过限制");
+		}
+
+		if (!StringUtils.hasText(payeeBankAcctNo)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+					"payeeBankAcctNo不允许为空");
+		}
+		if (payeeBankAcctNo.getBytes().length > 32) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+					"payeeBankAcctNo长度超过限制");
+		}
+
+		if (!StringUtils.hasText(payeeName)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "payeeName不允许为空");
+		}
+		if (payeeName.getBytes().length > 100) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "payeeName长度超过限制");
+		}
+
+		if (!StringUtils.hasText(noticeUrl)) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "noticeUrl不允许为空");
+		}
+		if (noticeUrl.getBytes().length > 512) {
+			throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "noticeUrl长度超过限制");
+		}
+
+		// 若为跨行的情况，需指定收款账户的类型（对公、对私）、收款行的中文名称、收款行所在的城市名称
+		if (!payerBankCode.equals(payeeBankCode)) {
+			if (!StringUtils.hasText(payeeAcctType)) {
+				throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+						"payeeAcctType不允许为空");
+			}
+			if ("0".equals(payeeAcctType) && !"1".equals(payeeAcctType)) {
+				throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+						"payeeAcctType值不正确");
+			}
+			if (!StringUtils.hasText(payeeBankName)) {
+				throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+						"payeeBankName不允许为空");
+			}
+			if (payeeBankName.getBytes().length > 60) {
+				throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+						"payeeBankName长度超过限制");
+			}
+			if (!StringUtils.hasText(payeeCityName)) {
+				throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+						"payeeCityName不允许为空");
+			}
+			if (payeeCityName.getBytes().length > 40) {
+				throw new GatewayValidationRejectException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED,
+						"payeeCityName长度超过限制");
+			}
+		}
+
+	}
+
+}

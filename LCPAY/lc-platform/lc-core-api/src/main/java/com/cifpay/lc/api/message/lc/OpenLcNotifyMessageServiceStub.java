@@ -1,0 +1,34 @@
+package com.cifpay.lc.api.message.lc;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.domain.message.MessageInputBean;
+import com.cifpay.lc.domain.message.MessageOutputBean;
+
+public class OpenLcNotifyMessageServiceStub implements OpenLcNotifyMessageService {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    private OpenLcNotifyMessageService remote;
+
+    public OpenLcNotifyMessageServiceStub(OpenLcNotifyMessageService remote) {
+        this.remote = remote;
+    }
+
+    @Override
+    public BusinessOutput<MessageOutputBean> execute(BusinessInput<MessageInputBean> input) {
+        try {
+            return remote.execute(input);
+        } catch (Exception e) {
+            logger.error("开证消息服务暂时不可用，err:{}", e);
+            BusinessOutput<MessageOutputBean> output = new BusinessOutput<MessageOutputBean>();
+            output.setReturnCode(ReturnCode.SERVER_UNAVALIABLE);
+            output.setReturnMsg("开证消息服务暂时不可用");
+            return output;
+        }
+    }
+}

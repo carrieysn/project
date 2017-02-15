@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>银联在线支付所需的配置信息--企业</comment>
+	
+	<!-- the location of verify file -->
+	<entry key="chinapay.corp.verify.file">D:\\certs\\b2b\\cp.cer</entry>
+	<entry key="chinapay.corp.sign.filePath">/opt/secss</entry>
+	<!-- location of sign file -->
+	<entry key="chinapay.corp.sign.file">D:\\certs\\b2b\\B2Bprivate.pfx</entry>
+	<entry key="chinapay.corp.sign.file.password">cpay9999</entry>
+	<entry key="chinapay.corp.sign.cert.type">PKCS12</entry>
+	<entry key="chinapay.corp.sign.invalid.fields">Signature,CertId</entry>
+	<entry key="chinapay.corp.signature.field">Signature</entry>
+	<entry key="chinapay.corp.log4j.name">CONSOLE</entry>
+
+</properties>

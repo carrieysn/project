@@ -1,0 +1,226 @@
+package com.cifpay.lc.core.common;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.CoreBusinessService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.util.Collection;
+
+public abstract class CoreBusinessServiceImplBase<I extends Serializable, O extends Serializable> implements CoreBusinessService<I, O> {
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+    protected final boolean loggerDebugEnabled = logger.isDebugEnabled();
+
+    @Autowired(required = false)
+    private CoreBusinessInterceptorHandler interceptorHandler;
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public final BusinessOutput<O> execute(BusinessInput<I> input) {
+        BusinessOutput<O> output = null;
+        CoreBusinessContext context = new CoreBusinessContext();
+
+        try {
+            if (null == input) {
+                throw new CoreValidationRejectException(ReturnCode.CORE_COMMON_MISSING_BUSINESS_INPUT,
+                        "缺少服务调用参数BusinessInput");
+            }
+            validate(input.getData(), context);
+            if (null != interceptorHandler) {
+                interceptorHandler.applyPreProcessBusiness(this, input.getData(), context);
+            }
+            output = processBusiness(input.getData(), context);
+            if (null != interceptorHandler) {
+                interceptorHandler.applyPostProcessBusiness(this, input.getData(), (BusinessOutput<Serializable>) output, context);
+            }
+
+            if (null == output) {
+                output = new BusinessOutput<O>();
+                output.setReturnCode(ReturnCode.CORE_COMMON_MISSING_BUSINESS_OUTPUT);
+                output.setReturnMsg("代码级错误，" + getClass().getSimpleName() + "的processBusiness()方法未返回BusinessOutput对象，请检查代码逻辑");
+                logger.error("!!!代码级错误!!!，{}的processBusiness()方法未返回BusinessOutput对象，请检查代码逻辑", getClass().getSimpleName());
+            } else if (ReturnCode.UNDEFINED_RETURN_CODE == output.getReturnCode()) {
+                logger.error("!!!代码级错误!!!，{}的processBusiness()方法未设置returnCode、returnMsg，请检查代码逻辑",
+                        getClass().getSimpleName());
+            }
+        } catch (Throwable e) {
+            output = handleExecuteException(e);
+            if (null != interceptorHandler) {
+                try {
+                    interceptorHandler.applyOnProcessBusinessException(this, input.getData(),
+                            (BusinessOutput<Serializable>) output, e, context);
+                } catch (Throwable ee) {
+                    output = handleExecuteException(ee);
+                }
+            }
+        }
+
+        return output;
+    }
+
+    /**
+     * 判断指定的String参数值是否为NULL或空，如果是，则抛出CoreValidationRejectException异常。
+     *
+     * @param argValue
+     * @param argName
+     * @throws CoreValidationRejectException
+     */
+    protected void rejectIfNullOrEmptyString(String argValue, String argName) throws CoreValidationRejectException {
+        if (!StringUtils.hasText(argValue)) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_COMMON_VALIDATION_REJECTED,
+                    "参数[" + argName + "]不允许为空");
+        }
+    }
+
+    /**
+     * 判断指定的数组参数是否为NULL或元素个数为0，如果是，则抛出CoreValidationRejectException异常。
+     *
+     * @param argArray
+     * @param argName
+     * @throws CoreValidationRejectException
+     */
+    protected void rejectIfNullOrEmptyArray(Object[] argArray, String argName) throws CoreValidationRejectException {
+        if (null == argArray || 0 == argArray.length) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_COMMON_VALIDATION_REJECTED,
+                    "数组参数[" + argName + "]不允许为NULL且必须至少包含一个元素以上");
+        }
+    }
+
+    /**
+     * 判断指定的集合参数对象是否为NULL或元素个数为0，如果是，则抛出CoreValidationRejectException异常。
+     *
+     * @param argCollection
+     * @param argName
+     * @throws CoreValidationRejectException
+     */
+    protected void rejectIfNullOrEmptyCollection(Collection<?> argCollection, String argName)
+            throws CoreValidationRejectException {
+        if (null == argCollection || argCollection.isEmpty()) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_COMMON_VALIDATION_REJECTED,
+                    "集合参数[" + argName + "]不允许为NULL且必须至少包含一个元素以上");
+        }
+    }
+
+    /**
+     * 判断指定的数值参数是否为NULL或小于零，如果是，则抛出CoreValidationRejectException异常。
+     *
+     * @param argLongValue
+     * @param argName
+     * @throws CoreValidationRejectException
+     */
+    protected void rejectIfNullNumberOrLessThanZero(Long argLongValue, String argName)
+            throws CoreValidationRejectException {
+        if (null == argLongValue || argLongValue.longValue() < 0) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_COMMON_VALIDATION_REJECTED,
+                    "参数[" + argName + "]不允许为NULL且必须大于或等于0");
+        }
+    }
+
+    /**
+     * 判断指定的数值参数是否为NULL、小于或等于零，如果是，则抛出CoreValidationRejectException异常。
+     *
+     * @param argLongValue
+     * @param argName
+     * @throws CoreValidationRejectException
+     */
+    protected void rejectIfNullNumberOrNotGreaterThanZero(Long argLongValue, String argName)
+            throws CoreValidationRejectException {
+        if (null == argLongValue || argLongValue.longValue() <= 0) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_COMMON_VALIDATION_REJECTED,
+                    "参数[" + argName + "]不允许为NULL且必须大于0");
+        }
+    }
+
+    /**
+     * 判断指定的参数对象是否为NULL，如果是，则抛出CoreValidationRejectException异常。
+     *
+     * @param argObject
+     * @param argName
+     * @throws CoreValidationRejectException
+     */
+    protected void rejectIfNullObject(Object argObject, String argName) throws CoreValidationRejectException {
+        if (null == argObject) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_COMMON_VALIDATION_REJECTED,
+                    "参数对象[" + argName + "]不允许为NULL");
+        }
+    }
+
+    private BusinessOutput<O> handleExecuteException(Throwable e) {
+        if (logger == null) {
+            logger = LoggerFactory.getLogger(getClass());
+        }
+
+        int returnCode;
+        String returnMsg;
+        if (e instanceof CoreValidationRejectException) {
+            CoreValidationRejectException vrEx = (CoreValidationRejectException) e;
+            returnCode = vrEx.getReturnCode();
+            returnMsg = vrEx.getMessage();
+            if (loggerDebugEnabled) {
+                logger.debug("请求参数校验未通过 ，returnCode：{}, returnMsg: {}.", returnCode, returnMsg);
+            }
+        } else if (e instanceof CoreException) {
+            CoreException vrEx = (CoreException) e;
+
+            returnCode = vrEx.getReturnCode();
+            if (ReturnCode.UNKNOWN_ERROR == vrEx.getReturnCode()) {
+                String unknownErrRefNo = CoreBusinessExceptionHelper.generateRandomUnknownErrRefNo();
+                returnMsg = vrEx.getMessage() + "[" + unknownErrRefNo + "]";
+                logger.error("进行核心业务处理时，发生未知异常，错误信息()：{}", unknownErrRefNo, String.valueOf(e.getMessage()), e);
+            } else {
+                returnMsg = vrEx.getMessage();
+
+                logger.warn("进行核心业务处理时，发生业务异常，错误信息：{}", returnMsg, e);
+            }
+        } else {
+            CoreBusinessException cbEx = CoreBusinessExceptionHelper.convertToCoreBusinessException(e);
+            returnCode = cbEx.getReturnCode();
+            returnMsg = cbEx.getMessage();
+            logger.error("进行核心业务处理时，发生未知异常，错误信息()：{}", String.valueOf(e.getMessage()), e);
+        }
+
+        if (returnCode >= 0) {
+            logger.warn("****异常类{}对象中使用的错误码{}不符合规范，错误码必须为负的整数值，使用{}代替。", e.getClass().getName(), returnCode,
+                    ReturnCode.UNKNOWN_ERROR);
+            returnCode = ReturnCode.UNKNOWN_ERROR;
+        }
+        if (null == returnMsg || 0 == returnMsg.length()) {
+            returnMsg = "Unknown error.";
+        }
+
+        BusinessOutput<O> output = new BusinessOutput<O>();
+        output.setReturnCode(returnCode);
+        output.setReturnMsg(returnMsg);
+        return output;
+
+    }
+
+
+    /**
+     * 输入 校验
+     *
+     * @param inputBean
+     * @param context
+     */
+    protected abstract void validate(I inputBean, CoreBusinessContext context) throws CoreValidationRejectException;
+
+    /**
+     * 业务处理实现
+     *
+     * @param inputBean
+     * @param context
+     * @return
+     */
+    protected abstract BusinessOutput<O> processBusiness(I inputBean, CoreBusinessContext context)
+            throws CoreBusinessException;
+
+}

@@ -1,0 +1,120 @@
+package com.cifpay.lc.std.business.lc;
+
+import java.math.BigDecimal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.AppointmentService;
+import com.cifpay.lc.constant.BizConstants.LcTranCode;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.LcPayType;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.core.cache.pojo.LcProductCache;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.common.CoreBusinessTranCode;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.domain.lc.AppointmentInputBean;
+import com.cifpay.lc.domain.lc.AppointmentOutputBean;
+import com.cifpay.lc.std.interceptor.BusinessLockInterceptor;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.interceptor.LcAutoFlowProcessingInterceptor;
+import com.cifpay.lc.std.domain.kernel.AppointmentKernelInputBean;
+import com.cifpay.lc.std.domain.kernel.AppointmentKernelOutputBean;
+import com.cifpay.lc.std.kernel.lc.AppointmentKernel;
+import com.cifpay.lc.std.mapper.lc.input.AppointmentInputBeanMapper;
+import com.cifpay.lc.std.mapper.lc.output.AppointmentKernelOutputBeanMapper;
+
+/**
+ * 履约
+ * 
+ * @author sweet
+ *
+ */
+@Service("appointmentService")
+@CoreBusinessInterceptorConfig({ BusinessLoggingInterceptor.class, BusinessLockInterceptor.class, LcAutoFlowProcessingInterceptor.class })
+@CoreBusinessTranCode(LcTranCode.APPOINTMENT)
+public class AppointmentServiceImpl extends LcProductServiceImplBase<AppointmentInputBean, AppointmentOutputBean> implements AppointmentService {
+
+	@Autowired
+	private AppointmentKernel appointment;
+
+	@Override
+	public void validateInputParameters(AppointmentInputBean inputBean) throws CoreValidationRejectException {
+
+		if (inputBean.getLcId() <= 0) {
+			throw new CoreValidationRejectException(103200, "银信证ID不允许为空");
+		}
+
+		if (inputBean.getOrderAmount() == null) {
+			inputBean.setOrderAmount(BigDecimal.ZERO);
+		}
+
+		if (inputBean.getOrderAmount().compareTo(BigDecimal.ZERO) < 0) {
+			throw new CoreValidationRejectException(103100, "金额不正确");
+		}
+	}
+
+	@Override
+	protected void validateLc(AppointmentInputBean inputBean, Lc lc) throws CoreValidationRejectException {
+		if (lc == null) {
+			throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_NOT_EXISTS, "银信证记录不存在");
+		}
+		if (lc.getLcStatus() != null && LcStatusType.RETREAT.getStatusCode().compareTo(lc.getLcStatus()) == 0) {
+			throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_INVALID, "银信证已失效");
+		}
+
+		// 如果银信证状态不是“已收证”（部分履约），则抛出异常
+		String lcStatus = lc.getLcStatus();
+		boolean isAppointmentDone = lcStatus.equals(LcStatusType.RECIEVED.getStatusCode()) || lcStatus.equals(LcStatusType.APPOINTMENT_PART_DONE.getStatusCode());
+		if (!isAppointmentDone) {
+			throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED, "银信证状态不正确");
+		}
+
+		// 验证 履约金额
+		BigDecimal appointmentAmount = inputBean.getOrderAmount();
+		BigDecimal lcBalance = lc.getLcBalance();
+		if (appointmentAmount.compareTo(lcBalance) > 0) {
+			throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPOINTMENT_AMT_EXCEED, "交易金额超限");
+		}
+
+		// 验证 履约类型
+		String strPayType = lc.getPayType(); // 解付类型：SINGLE单次解付、MULTIPLE同收款人多次解付、
+		BigDecimal inputAmount = inputBean.getOrderAmount();
+
+		if (LcPayType.SINGLE_PAY.getCode().compareTo(strPayType) == 0) { // 单次解付判断金额是否相等
+			inputBean.setOrderAmount(lc.getLcAmount()); // 单次解付时，使用余额
+		} else if (LcPayType.MULTIPAY_PAY_WITH_SAME_PAYEE.getCode().compareTo(strPayType) == 0) { // 多次解付判断金额是否小于可用余额
+			if (inputAmount.compareTo(lc.getLcBalance()) > 0) {
+				throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPOINTMENT_AMT_EXCEED, "履约金额超限");
+			}
+		}
+	}
+
+	@Override
+	public void validateLcProductRule(AppointmentInputBean inputBean, LcProductCache lcProduct, CoreBusinessContext context) throws CoreValidationRejectException {
+
+		context.setAttribute("LC_PRODUCT_POJO", lcProduct);
+	}
+
+	@Override
+	public BusinessOutput<AppointmentOutputBean> processBusiness(AppointmentInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+		logger.info("~~~yyyy1进入履约业务处理");
+
+		AppointmentKernelInputBean kernelInputBean = AppointmentInputBeanMapper.toAppointmentKernelInputBean(inputBean);
+		BusinessOutput<AppointmentKernelOutputBean> kernelOutputBean = appointment.invokeKernel(kernelInputBean, context);
+
+		if (kernelOutputBean.isSuccess()) {
+			AppointmentOutputBean outputBean = AppointmentKernelOutputBeanMapper.toAppointmentOutputBean(kernelOutputBean.getData());
+
+			return BusinessOutput.success(outputBean);
+		}
+
+		return BusinessOutput.fail(kernelOutputBean.getReturnCode(), kernelOutputBean.getReturnMsg());
+	}
+
+}

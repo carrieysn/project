@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>Gateway应用所需的配置信息</comment>
+	
+	<entry key="dubbo.registry.zookeeper.address">127.0.0.1:2181</entry>
+	<entry key="dubbo.registry.cacheFilePathPrefix">c:/app/cifpaylc/gateway/data/dubbo.registry.cache</entry>
+	
+	<!-- 支付宝支付回调URL -->
+	<entry key="alipay.returnUrl">http://127.0.0.1:9100/gw/alipay/urlReturn</entry>
+	<entry key="alipay.noticeUrl">http://127.0.0.1:9100/gw/alipay/urlNotice</entry>
+	
+	<!-- 财付通支付回调URL -->
+	<entry key="tenpay.returnUrl">http://127.0.0.1:9100/gw/tenpay/tpayReturn</entry>
+	<entry key="tenpay.noticeUrl">http://127.0.0.1:9100/gw/tenpay/tpayNotice</entry>
+	
+	
+	<!-- 模拟支付宝交易，如果为true，则程序不走真正的支付宝接口，而是直接模拟返回交易成功的结果 -->
+	<!-- ******************** #特别注意# ********************* -->
+	<!-- ########## 请不要随意将该标记位设为true  ########## -->
+	<!-- ########## 只要需要进行模拟测试时，才有可能设为true  -->
+	<entry key="alipay.mockAlipayAndAlwaysReturnSuccess">true</entry>
+	
+	
+	<!-- 银联在线支付回调URL -->
+	<entry key="unionpay.returnUrl">http://127.0.0.1:9100/gw/unionpay/handleReturn</entry>
+	<entry key="unionpay.noticeUrl">http://127.0.0.1:9100/gw/unionpay/handleNotice</entry>
+	
+</properties>

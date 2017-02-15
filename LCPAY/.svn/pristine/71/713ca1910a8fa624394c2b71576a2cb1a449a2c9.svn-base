@@ -1,0 +1,14 @@
+package com.cifpay.lc.api.xds.withdraw;
+
+import com.cifpay.lc.api.CoreBusinessService;
+
+/**
+ * 银企互联转账服务接口。
+ * 
+ * 
+ *
+ */
+public interface BankEnterpriseTransferService
+		extends CoreBusinessService<BankEnterpriseTransferInputBean, BankEnterpriseTransferOutputBean> {
+
+}

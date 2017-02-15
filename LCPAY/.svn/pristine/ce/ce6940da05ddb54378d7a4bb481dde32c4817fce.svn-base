@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTypeDao">
+	<resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcType">
+		<id column="LC_TYPE" property="lcType" jdbcType="VARCHAR" />
+		<result column="LC_TYPE_DESC" property="lcTypeDesc" jdbcType="VARCHAR" />
+		<result column="MAX_DAYS_TO_RECEIVE" property="maxDaysToReceive"
+			jdbcType="INTEGER" />
+		<result column="MAX_DAYS_TO_SEND" property="maxDaysToSend"
+			jdbcType="INTEGER" />
+		<result column="MAX_DAYS_TO_CONFIRM_PAY" property="maxDaysToConfirmPay"
+			jdbcType="INTEGER" />
+		<result column="MAX_DAYS_TO_PAY" property="maxDaysToPay"
+			jdbcType="INTEGER" />
+		<result column="IS_VALID" property="isValid" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		LC_TYPE, LC_TYPE_DESC, MAX_DAYS_TO_RECEIVE,
+		MAX_DAYS_TO_SEND,
+		MAX_DAYS_TO_CONFIRM_PAY,
+		MAX_DAYS_TO_PAY, IS_VALID
+	</sql>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from CIFPAY_LC_TYPE
+		where LC_TYPE = #{lcType,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		CIFPAY_LC_TYPE
+		where LC_TYPE = #{lcType,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcType">
+		insert into CIFPAY_LC_TYPE
+		(LC_TYPE, LC_TYPE_DESC,
+		MAX_DAYS_TO_RECEIVE,
+		MAX_DAYS_TO_SEND,
+		MAX_DAYS_TO_CONFIRM_PAY, MAX_DAYS_TO_PAY,
+		IS_VALID)
+		values
+		(#{lcType,jdbcType=VARCHAR}, #{lcTypeDesc,jdbcType=VARCHAR},
+		#{maxDaysToReceive,jdbcType=INTEGER},
+		#{maxDaysToSend,jdbcType=INTEGER},
+		#{maxDaysToConfirmPay,jdbcType=INTEGER},
+		#{maxDaysToPay,jdbcType=INTEGER},
+		#{isValid,jdbcType=INTEGER})
+	</insert>
+
+	<insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcType">
+		insert into CIFPAY_LC_TYPE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="lcType != null">
+				LC_TYPE,
+			</if>
+			<if test="lcTypeDesc != null">
+				LC_TYPE_DESC,
+			</if>
+			<if test="maxDaysToReceive != null">
+				MAX_DAYS_TO_RECEIVE,
+			</if>
+			<if test="maxDaysToSend != null">
+				MAX_DAYS_TO_SEND,
+			</if>
+			<if test="maxDaysToConfirmPay != null">
+				MAX_DAYS_TO_CONFIRM_PAY,
+			</if>
+			<if test="maxDaysToPay != null">
+				MAX_DAYS_TO_PAY,
+			</if>
+			<if test="isValid != null">
+				IS_VALID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="lcType != null">
+				#{lcType,jdbcType=VARCHAR},
+			</if>
+			<if test="lcTypeDesc != null">
+				#{lcTypeDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="maxDaysToReceive != null">
+				#{maxDaysToReceive,jdbcType=INTEGER},
+			</if>
+			<if test="maxDaysToSend != null">
+				#{maxDaysToSend,jdbcType=INTEGER},
+			</if>
+			<if test="maxDaysToConfirmPay != null">
+				#{maxDaysToConfirmPay,jdbcType=INTEGER},
+			</if>
+			<if test="maxDaysToPay != null">
+				#{maxDaysToPay,jdbcType=INTEGER},
+			</if>
+			<if test="isValid != null">
+				#{isValid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcType">
+		update CIFPAY_LC_TYPE
+		<set>
+			<if test="lcTypeDesc != null">
+				LC_TYPE_DESC = #{lcTypeDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="maxDaysToReceive != null">
+				MAX_DAYS_TO_RECEIVE =
+				#{maxDaysToReceive,jdbcType=INTEGER},
+			</if>
+			<if test="maxDaysToSend != null">
+				MAX_DAYS_TO_SEND = #{maxDaysToSend,jdbcType=INTEGER},
+			</if>
+			<if test="maxDaysToConfirmPay != null">
+				MAX_DAYS_TO_CONFIRM_PAY =
+				#{maxDaysToConfirmPay,jdbcType=INTEGER},
+			</if>
+			<if test="maxDaysToPay != null">
+				MAX_DAYS_TO_PAY = #{maxDaysToPay,jdbcType=INTEGER},
+			</if>
+			<if test="isValid != null">
+				IS_VALID = #{isValid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where LC_TYPE = #{lcType,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcType">
+		update
+		CIFPAY_LC_TYPE
+		set LC_TYPE_DESC = #{lcTypeDesc,jdbcType=VARCHAR},
+		MAX_DAYS_TO_RECEIVE = #{maxDaysToReceive,jdbcType=INTEGER},
+		MAX_DAYS_TO_SEND = #{maxDaysToSend,jdbcType=INTEGER},
+		MAX_DAYS_TO_CONFIRM_PAY = #{maxDaysToConfirmPay,jdbcType=INTEGER},
+		MAX_DAYS_TO_PAY = #{maxDaysToPay,jdbcType=INTEGER},
+		IS_VALID =
+		#{isValid,jdbcType=INTEGER}
+		where LC_TYPE = #{lcType,jdbcType=VARCHAR}
+	</update>
+</mapper>

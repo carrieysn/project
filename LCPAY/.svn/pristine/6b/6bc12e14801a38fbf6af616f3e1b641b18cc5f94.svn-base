@@ -1,0 +1,32 @@
+package com.cifpay.lc.api.message;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.BusinessService;
+import com.cifpay.lc.constant.enums.MessageEnum;
+import com.cifpay.lc.domain.message.MessageParamBean;
+import com.cifpay.lc.domain.message.RetryParam;
+
+/**
+ * Created by sweet on 16-10-26.
+ */
+public interface MqMessageService extends BusinessService {
+    /**
+     * 发送消息
+     *
+     * @param msgType
+     * @param sence
+     * @param messageParamBean
+     * @return
+     */
+    BusinessOutput sendMessage(MessageEnum.MsgType msgType, MessageEnum.Sence sence, MessageParamBean messageParamBean);
+
+    /**
+     * 重发某一类型的消息
+     *
+     * @param msgType
+     * @param sence
+     * @param retryParam
+     * @return
+     */
+    BusinessOutput retryMessage(MessageEnum.MsgType msgType, MessageEnum.Sence sence, RetryParam retryParam);
+}

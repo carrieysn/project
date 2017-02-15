@@ -1,0 +1,71 @@
+package com.cifpay.lc.constant;
+
+/**
+ * core层公共的返回码，范围是102xxx，其中使用负数表示失败（错误码），即 -102xxx 用于表示失败。
+ * 
+ * 
+ * 在此文件中定义的返回码常量名必须全部以“CORE_COMMON_”开头，例如：
+ * 
+ * @{@code int CORE_COMMON_BAD_RPC_REQUEST = -102001; }
+ * 
+ *
+ */
+interface CoreCommonReturnCode {
+	// 在此文件中定义的常量名全部以“CORE_COMMON_”开头
+
+	/**
+	 * 通用的DB错误
+	 */
+	int CORE_COMMON_DB_ERROR = -102000;
+	
+	/**
+	 * 期望的DB记录不存在
+	 */
+	int CORE_COMMON_DB_RECORD_NOT_FOUND = -102001;
+
+	/**
+	 * 数据长度超出DB字段限制
+	 */
+	int CORE_COMMON_OVER_DB_FIELD_LENGTH = -102002;
+
+	/**
+	 * 开户DB事务失败
+	 */
+	int CORE_COMMON_BEGIN_DB_TRANSACTION_FAILED = -102003;
+	
+	/**
+	 * 业务加锁失败
+	 */
+	int CORE_COMMON_BEGIN_BUSINESS_LOCK_FAILED = -102004;
+
+	/**
+	 * 加解密失败
+	 */
+	int CORE_COMMON_SECURITY_ERROR = -102005;
+
+	/**
+	 * 不支持业务加锁
+	 */
+	int CORE_COMMON_UNSUPPORT_BUSINESS_LOCK = -102006;
+	
+	
+	/**
+	 * 远程服务端输入校验未通过
+	 */
+	int CORE_COMMON_VALIDATION_REJECTED = -102996;
+	
+	/**
+	 * 远程服务暂时不可用
+	 */
+	int CORE_COMMON_REMOTE_SERVICE_TEMP_UNAVAILABLE = -102997;
+	
+	/**
+	 * 代码级错误，远程服务调用程序未提供BusinessInput对象或BusinessInput对象中未提供data对象
+	 */
+	int CORE_COMMON_MISSING_BUSINESS_INPUT = -102998;
+	
+	/**
+	 * 代码级错误，业务程序未返回BusinessOutput对象
+	 */
+	int CORE_COMMON_MISSING_BUSINESS_OUTPUT = -102999;
+}

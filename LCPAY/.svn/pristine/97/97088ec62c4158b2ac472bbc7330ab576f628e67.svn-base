@@ -1,0 +1,5 @@
+package com.cifpay.lc.gateway.controller;
+
+public class NormalGatewayController {
+
+}

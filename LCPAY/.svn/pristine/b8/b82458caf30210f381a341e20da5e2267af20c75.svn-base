@@ -1,0 +1,32 @@
+package com.cifpay.lc.gateway.input.freeze;
+
+public class PayReq {
+	private Long lcID; 		// 银信证ID(*)
+
+	private String orderId; // 订单ID
+	private String confirm; // 确认支付还是退款，确认支付：0 ，退款：1
+
+	public String getConfirm() {
+		return confirm;
+	}
+
+	public void setConfirm(String confirm) {
+		this.confirm = confirm;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public Long getLcID() {
+		return lcID;
+	}
+
+	public void setLcID(Long lcID) {
+		this.lcID = lcID;
+	}
+}

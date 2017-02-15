@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.AdminLcMerchantDao" >
+  
+    <resultMap id="MerchantAndCertResultMap" type="com.cifpay.lc.core.db.pojo.AdminLcMerchant">
+    <id column="MER_ID" jdbcType="INTEGER" property="merId" />
+    <result column="MER_CODE" jdbcType="VARCHAR" property="merCode" />
+    <result column="MERCHANT_NAME" jdbcType="VARCHAR" property="merchantName" />
+    <result column="MER_SITE_NAME" jdbcType="VARCHAR" property="merSiteName" />
+    <result column="MER_SITE_DOMAIN" jdbcType="VARCHAR" property="merSiteDomain" />
+    <result column="ENCRYPT_TYPE" jdbcType="VARCHAR" property="encryptType" />
+    <result column="ENCRYPT_KEY" jdbcType="VARCHAR" property="encryptKey" />
+    <result column="DECRYPT_KEY" jdbcType="VARCHAR" property="decryptKey" />
+    <result column="DEF_LC_TYPE" jdbcType="VARCHAR" property="defLcType" />
+    <result column="DEF_PAYEE_BANK_CODE" jdbcType="VARCHAR" property="defPayeeBankCode" />
+    <result column="DEF_PAYEE_BANK_ACCT" jdbcType="VARCHAR" property="defPayeeBankAcct" />
+    <result column="MERCHANT_STATUS" jdbcType="CHAR" property="merchantStatus" />
+    <result column="CREATED_DT" jdbcType="TIMESTAMP" property="createdDt" />
+    <result column="UPDATED_DT" jdbcType="TIMESTAMP" property="updatedDt" />
+    <result column="MER_TYPE" jdbcType="CHAR" property="merType" />
+    <result column="BUSINESS_LICENSE" jdbcType="VARCHAR" property="businessLicense" />
+    <result column="ORGANIZATION_IMG" jdbcType="VARCHAR" property="organizationImg" />
+    <result column="LICENSE_IMG" jdbcType="VARCHAR" property="licenseImg" />
+    <result column="MER_LOGO" jdbcType="VARCHAR" property="merLogo" />
+    <result column="BANK_NAME" jdbcType="VARCHAR" property="bankName" />
+    <result column="ACCOUNT_NAME" jdbcType="VARCHAR" property="accountName" />
+    <result column="BANK_ACCOUNT" jdbcType="VARCHAR" property="bankAccount" />
+    <result column="PERSONAL_NAME" jdbcType="VARCHAR" property="personalName" />
+    <result column="IDENTITY_CARD" jdbcType="VARCHAR" property="identityCard" />
+    <result column="ID_CARD_IMG" jdbcType="VARCHAR" property="idCardImg" />
+    <result column="CONTACT_NAME" jdbcType="VARCHAR" property="contactName" />
+    <result column="TELEPHONE" jdbcType="VARCHAR" property="telephone" />
+    <result column="FIXED_TELEPHONE" jdbcType="VARCHAR" property="fixedTelephone" />
+    <result column="CONTACT_EMAIL" jdbcType="VARCHAR" property="contactEmail" />
+    <result column="CONTACT_ADDRESS" jdbcType="VARCHAR" property="contactAddress" />
+    <result column="REFEREE" jdbcType="VARCHAR" property="referee" />
+    <result column="MER_REVIEW" jdbcType="CHAR" property="merReview" />
+    <result column="REVIEW_REMARK" jdbcType="VARCHAR" property="reviewRemark" />
+    <result column="USER_ID" jdbcType="INTEGER" property="userId" />
+    <result column="REVIEW_DT" jdbcType="TIMESTAMP" property="reviewDt" />
+    <result column="CIFPAY_MER_ID" jdbcType="VARCHAR" property="cifpayMerId" />
+    <result column="CHANNEL_MER_ID" jdbcType="VARCHAR" property="channelMerId" />
+    <result column="CHANNEL_KEY" jdbcType="VARCHAR" property="channelKey" />
+    <result column="TR_ID" jdbcType="VARCHAR" property="trId" />
+    <result column="TOKEN_TYPE" jdbcType="VARCHAR" property="tokenType" />
+    <association property="adminCredentials" javaType="com.cifpay.lc.core.db.pojo.AdminCredentials">
+	    <id column="ID" property="id" jdbcType="INTEGER" />
+	    <result column="CRE_NAME" property="creName" jdbcType="VARCHAR" />
+	    <result column="CRE_PATH" property="crePath" jdbcType="VARCHAR" />
+	    <result column="CRE_TYPE" property="creType" jdbcType="BIGINT" />
+	    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	    <result column="USER_ID" property="userId" jdbcType="INTEGER" />
+	    <result column="CRE_SUM" property="creSum" jdbcType="INTEGER" />
+	    <result column="CRE_REMARK" property="creRemark" jdbcType="VARCHAR" />
+	    <result column="CRE_STATE" property="creState" jdbcType="INTEGER" />
+	    <result column="CRE_FILE_NAME" property="creFileName" jdbcType="VARCHAR" />
+	    <result column="CRE_PASSWORD" property="crePassword" jdbcType="VARCHAR" />
+    </association>
+  </resultMap>
+  
+  <select id="selectAdminLcMerchant" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from ADMIN_CIFPAY_LC_MERCHANT
+    where MER_CODE = #{merCode,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectMerchantInfos"  resultMap="MerchantAndCertResultMap" parameterType="java.lang.String" >
+      SELECT c.*,r.* FROM ADMIN_CIFPAY_LC_MERCHANT c 
+      LEFT JOIN ADMIN_CIFPAY_LC_MER_CRE b  ON c.MER_ID = b.MER_ID 
+      LEFT JOIN ADMIN_CREDENTIALS r ON b.CRE_ID = r.ID 
+      WHERE b.XN_MER_ID = #{merCode,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

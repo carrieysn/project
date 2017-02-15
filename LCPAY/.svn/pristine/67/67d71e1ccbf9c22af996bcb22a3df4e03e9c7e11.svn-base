@@ -1,0 +1,230 @@
+package com.cifpay.lc.bankadapter.api.input.unionpay;
+
+import com.cifpay.lc.bankadapter.api.helper.StringTool;
+import com.cifpay.lc.bankadapter.api.input.AbsTradeParam;
+import com.cifpay.lc.util.logging.LoggerEnum;
+
+/**
+ * 银联实现开证所需参数实体封装
+ *
+ * @author Administrator
+ */
+public class OpenCifParam extends AbsTradeParam {
+	private static final long serialVersionUID = -1456565968736510573L;
+
+	private Long businessId; // 业务ID
+	private String txnType; // 交易类型
+	private String txnSubType; // 交易子类型
+	private String merId; // 商户代码
+	private String userId; // 商户用户唯一ID
+	private String orderId; // 商户订单号(银联操作ID)
+	private String txnTime; // 订单发送时间(格式YYYYMMDDHHmmss)
+	private Long txnAmt; // 交易金额(分)
+	private String channelType; // 渠道类型(07:互联网)
+	private String subMerId; // 二级商户代码
+	private String accType; // 账号类型
+	private String accNo; // 账号
+	private String currencyCode;// 交易币种 (默认:RMB 156)
+	private String certifTp; // 证件类型（可选）
+	private String certifId; // 证件号码（可选）
+	private String customerNm; // 姓名（可选）
+	private String smsCode; // 短信验证码
+	private String cvn2; // CVN2
+	private String expired; // 有效期(格式 YYMM)
+	private String phoneNo; // 手机号
+	private String reqReserved; // 请求方保留域（可选）
+	private String orderDesc; // 订单描述
+
+	public OpenCifParam() {
+		super(LoggerEnum.Scene.UNION_OPEN);
+	}
+
+	public Long getBusinessId() {
+		return businessId;
+	}
+
+	public void setBusinessId(Long businessId) {
+		this.businessId = businessId;
+	}
+
+	public String getTxnType() {
+		return txnType;
+	}
+
+	public void setTxnType(String txnType) {
+		this.txnType = txnType;
+	}
+
+	public String getTxnSubType() {
+		return txnSubType;
+	}
+
+	public void setTxnSubType(String txnSubType) {
+		this.txnSubType = txnSubType;
+	}
+
+	public String getMerId() {
+		return merId;
+	}
+
+	public void setMerId(String merId) {
+		this.merId = merId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getTxnTime() {
+		return txnTime;
+	}
+
+	public void setTxnTime(String txnTime) {
+		this.txnTime = txnTime;
+	}
+
+	public Long getTxnAmt() {
+		return txnAmt;
+	}
+
+	public void setTxnAmt(Long txnAmt) {
+		this.txnAmt = txnAmt;
+	}
+
+	public String getChannelType() {
+		return channelType;
+	}
+
+	public void setChannelType(String channelType) {
+		this.channelType = channelType;
+	}
+
+	public String getSubMerId() {
+		return subMerId;
+	}
+
+	public void setSubMerId(String subMerId) {
+		this.subMerId = subMerId;
+	}
+
+	public String getAccType() {
+		return accType;
+	}
+
+	public void setAccType(String accType) {
+		this.accType = accType;
+	}
+
+	public String getAccNo() {
+		return accNo;
+	}
+
+	public void setAccNo(String accNo) {
+		this.accNo = accNo;
+	}
+
+	public String getCurrencyCode() {
+		return currencyCode;
+	}
+
+	public void setCurrencyCode(String currencyCode) {
+		this.currencyCode = currencyCode;
+	}
+
+	public String getCertifTp() {
+		return certifTp;
+	}
+
+	public void setCertifTp(String certifTp) {
+		this.certifTp = certifTp;
+	}
+
+	public String getCertifId() {
+		return certifId;
+	}
+
+	public void setCertifId(String certifId) {
+		this.certifId = certifId;
+	}
+
+	public String getCustomerNm() {
+		return customerNm;
+	}
+
+	public void setCustomerNm(String customerNm) {
+		this.customerNm = customerNm;
+	}
+
+	public String getSmsCode() {
+		return smsCode;
+	}
+
+	public void setSmsCode(String smsCode) {
+		this.smsCode = smsCode;
+	}
+
+	public String getCvn2() {
+		return cvn2;
+	}
+
+	public void setCvn2(String cvn2) {
+		this.cvn2 = cvn2;
+	}
+
+	public String getExpired() {
+		return expired;
+	}
+
+	public void setExpired(String expired) {
+		this.expired = expired;
+	}
+
+	public String getPhoneNo() {
+		return phoneNo;
+	}
+
+	public void setPhoneNo(String phoneNo) {
+		this.phoneNo = phoneNo;
+	}
+
+	public String getReqReserved() {
+		return reqReserved;
+	}
+
+	public void setReqReserved(String reqReserved) {
+		this.reqReserved = reqReserved;
+	}
+
+	public String getOrderDesc() {
+		return orderDesc;
+	}
+
+	public void setOrderDesc(String orderDesc) {
+		this.orderDesc = orderDesc;
+	}
+
+	@Override
+	public String toString() {
+		return "OpenCifParam [businessId=" + businessId + ", txnType=" + txnType + ", txnSubType=" + txnSubType
+				+ ", merId=" + merId + ", userId=" + userId + ", orderId=" + orderId + ", txnTime=" + txnTime
+				+ ", txnAmt=" + txnAmt + ", channelType=" + channelType + ", subMerId=" + subMerId + ", accType="
+				+ accType + ", accNo=" + StringTool.printCard(accNo) + ", currencyCode=" + currencyCode + ", certifTp="
+				+ certifTp + ", certifId=" + certifId + ", customerNm=" + customerNm + ", smsCode="
+				+ StringTool.printCard(smsCode) + ", cvn2=***" + ", expired=****," + "phoneNo="
+				+ StringTool.printPhone(phoneNo) + ", reqReserved=" + reqReserved + ", orderDesc=" + orderDesc
+				+ ", getLcId()=" + getLcId() + ", getTxnId()=" + getTxnId() + ", getBizType()=" + getBizType() + "]";
+	}
+
+}

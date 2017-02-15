@@ -1,0 +1,36 @@
+package com.cifpay.lc.std.business.batch;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.batch.BatchOpenLcService;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.domain.batch.BatchOpenLcInputBean;
+import com.cifpay.lc.domain.batch.BatchOpenLcOutputBean;
+import com.cifpay.lc.std.business.lc.LcServiceImplBase;
+import com.cifpay.lc.std.kernel.batchLc.BatchOpenLcKernel;
+
+@Service("batchOpenLcService")
+public class BatchOpenLcServiceImpl extends LcServiceImplBase<BatchOpenLcInputBean, BatchOpenLcOutputBean> implements BatchOpenLcService {
+
+	@Autowired
+	private BatchOpenLcKernel batchOpenLcKernel;
+
+	@Override
+	protected void validateInputParameters(BatchOpenLcInputBean inputBean) throws CoreValidationRejectException {
+	}
+
+	@Override
+	protected void validateLcProductRule(BatchOpenLcInputBean inputBean, CoreBusinessContext context) throws CoreValidationRejectException {
+		batchOpenLcKernel.validateOnly(inputBean, context);
+	}
+
+	@Override
+	protected BusinessOutput<BatchOpenLcOutputBean> processLcBusiness(BatchOpenLcInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+		return batchOpenLcKernel.invokeKernel(inputBean, context);
+	}
+
+}

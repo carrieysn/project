@@ -1,0 +1,31 @@
+package mock.merchant.integration;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+@Configuration
+@AutoConfigureAfter(WebMvcAutoConfiguration.class)
+public class MvcConfiguration extends WebMvcAutoConfiguration.EnableWebMvcConfiguration {
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**").addResourceLocations("/resources/");
+    }
+
+
+    @Bean
+    public InternalResourceViewResolver internalResourceViewResolver(@Value("${spring.mvc.view.prefix}") String prefix,
+                                                                     @Value("${spring.mvc.view.suffix}") String suffix) {
+        InternalResourceViewResolver vr = new InternalResourceViewResolver();
+        vr.setContentType("text/html;charset=UTF-8");
+        vr.setPrefix(prefix);
+        vr.setSuffix(suffix);
+        return vr;
+    }
+
+}

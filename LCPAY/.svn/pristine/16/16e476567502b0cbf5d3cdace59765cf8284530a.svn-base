@@ -1,0 +1,433 @@
+package com.cifpay.lc.versionb.recharge.online.alipay;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.xds.onlinepayment.AlipayBusinessInputBean;
+import com.cifpay.lc.api.xds.onlinepayment.AlipayBusinessOutputBean;
+import com.cifpay.lc.api.xds.onlinepayment.AlipayBusinessService;
+import com.cifpay.lc.api.xds.onlinepayment.AlipayQueryInputBean;
+import com.cifpay.lc.api.xds.onlinepayment.AlipayQueryOutputBean;
+import com.cifpay.lc.api.xds.onlinepayment.AlipayQueryService;
+import com.cifpay.lc.api.xds.onlinepayment.AlipayTransferInputBean;
+import com.cifpay.lc.api.xds.onlinepayment.AlipayTransferOutputBean;
+import com.cifpay.lc.api.xds.onlinepayment.AlipayTransferService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.AccountPropertyType;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.constant.enums.PreLcStatus;
+import com.cifpay.lc.util.DateUtil;
+import com.cifpay.lc.versionb.VersionBMerchantSignValidator;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.AlipayConfig;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.AlipayParam;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.AlipayUtil;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.ConvertTool;
+
+/**
+ * Created by yx on 2016/4/29.
+ */
+@Controller
+@RequestMapping("/alipay")
+public class AlipayTransferOutController {
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	private boolean isLoggerDebugEnabled = logger.isDebugEnabled();
+
+	@Autowired
+	private AlipayTransferService alipayTransferService;
+
+	@Autowired
+	private AlipayQueryService alipayQueryService;
+
+	@Autowired
+	private AlipayBusinessService alipayBusinessService;
+
+	@Autowired
+	private VersionBMerchantSignValidator versionBMerchantSignValidator;
+
+	@Value("${alipay.returnUrl}")
+	private String alipayReturnUrl;
+
+	@Value("${alipay.noticeUrl}")
+	private String alipayNoticeUrl;
+
+	// 是否模拟支付宝交易网关总是返回交易成功的结果
+	@Value("${alipay.mockAlipayAndAlwaysReturnSuccess:true}")
+	private boolean mockAlipayAndAlwaysReturnSuccess;
+
+	@RequestMapping(value = "/transferOut", method = RequestMethod.POST)
+	public String aliPay(@ModelAttribute AliPayPara aliPayPara, RedirectAttributes attributes) {
+		if (isLoggerDebugEnabled) {
+			logger.debug("~~~接收到商户的HTTP充值请求: {}", aliPayPara);
+		}
+		AliPayRtnMsg msg = new AliPayRtnMsg();
+		Map<String, String> validMap = AliPayParaValidation.validation(aliPayPara, versionBMerchantSignValidator);
+		if (!"SUCCESS".equals(validMap.get("retCode"))) {
+			msg.setOrderId(aliPayPara.getOrderId());
+			msg.setRequestId(aliPayPara.getRequestId());
+			msg.setUserCode(aliPayPara.getUserCode());
+			msg.setReturnCode("ERROR");
+			msg.setReturnMessage(validMap.get("retMsg"));
+			Map<String, String> attsMap = ConvertTool.beanToMap(msg);
+			versionBMerchantSignValidator.addSign(aliPayPara.getMerId(), attsMap);// 加签
+			attributes.addAllAttributes(attsMap);
+
+			// 校验未通过，直接返回商户
+			return "redirect:" + aliPayPara.getReturnUrl();
+		}
+
+		// 创建预开证记录
+		BusinessInput<AlipayTransferInputBean> businessInput = new BusinessInput<AlipayTransferInputBean>();
+		AlipayTransferInputBean inputBean = new AlipayTransferInputBean();
+		inputBean.setRequestId(aliPayPara.getRequestId());
+		inputBean.setOrderId(aliPayPara.getOrderId());
+		inputBean.setMid(aliPayPara.getMerId());
+		inputBean.setOrderDesc(aliPayPara.getOrderDesc());
+		inputBean.setCurrency(aliPayPara.getCurrency());
+		inputBean.setAmount(new BigDecimal(aliPayPara.getAmount()));
+		inputBean.setLcReturnUrl(aliPayPara.getReturnUrl());
+		inputBean.setLcNotifyUrl(aliPayPara.getNoticeUrl());
+		inputBean.setPayerBankCode("ALIPAY");
+		inputBean.setPayerBankName("支付宝");
+		inputBean.setPayerId(aliPayPara.getUserCode());
+		inputBean.setPayerType(AccountPropertyType.parseCode(aliPayPara.getType()));
+		inputBean.setRecvAccno(AlipayConfig.alipay_no);
+		inputBean.setRecvBankCode("ALIPAY");
+		inputBean.setRecvBankName("支付宝");
+		inputBean.setRecvId(AlipayConfig.partner);
+		inputBean.setRecvType(AccountPropertyType.CORPORATE.getCode());
+		businessInput.setData(inputBean);
+		BusinessOutput<AlipayTransferOutputBean> businessOutput = alipayTransferService.execute(businessInput);
+		if (businessOutput.getReturnCode() != ReturnCode.GENERAL_SUCCESS) {
+			msg.setOrderId(aliPayPara.getOrderId());
+			msg.setRequestId(aliPayPara.getRequestId());
+			msg.setUserCode(aliPayPara.getUserCode());
+			msg.setReturnCode("ERROR");
+			msg.setReturnMessage(businessOutput.getReturnMsg());
+			Map<String, String> attsMap = ConvertTool.beanToMap(msg);
+			versionBMerchantSignValidator.addSign(aliPayPara.getMerId(), attsMap);// 加签
+			attributes.addAllAttributes(attsMap);
+
+			// 创建预开证记录不成功，则直接返回商户
+			return "redirect:" + aliPayPara.getReturnUrl();
+		}
+		AlipayTransferOutputBean outputBean = businessOutput.getData();
+		AlipayParam param = new AlipayParam();
+		param.setOut_trade_no(outputBean.getLcId().toString());// 开证ID
+		param.setSubject(aliPayPara.getOrderDesc());
+		param.setTotal_fee(new DecimalFormat("#0.00").format(new BigDecimal(aliPayPara.getAmount()).divide(new BigDecimal(100))));
+		param.setShow_url(!StringUtils.isEmpty(aliPayPara.getShowUrl()) ? aliPayPara.getShowUrl() : AlipayConfig.partner_url);
+		param.setReturn_url(alipayReturnUrl);
+		param.setNotify_url(alipayNoticeUrl);
+
+		logger.info("银信证传递给支付宝的交易编号: {}", outputBean.getLcId());
+		if (isLoggerDebugEnabled) {
+			logger.debug("银信证传递给支付宝的回调地址：returnUrl: {}, noticeUrl: {}", alipayReturnUrl, alipayNoticeUrl);
+		}
+		param.setBody("买家付款");
+		param.setIt_b_pay("1h");// 超时最小1分钟
+		Map<String, String> paramMap = AlipayUtil.alipayMap(param);
+
+		logger.info("银信证传递给支付宝的请求参数: {}", paramMap);
+		attributes.addAllAttributes(paramMap);
+
+		if (mockAlipayAndAlwaysReturnSuccess) {
+			// 如果开启了挡板程序模式，则总是返回交易成功的结果
+
+			// 挡板程序，模拟支付宝交易结果，总是返回交易成功
+			logger.info("*********************************************************");
+			logger.info("*********************************************************");
+			logger.info("*********************************************************");
+			logger.info("** 支付宝交易运行在模拟模式时，该模式仅用于测试目的；");
+			logger.info("** 该模式下，程序将模拟支付宝，【总是】返回交易成功的结果；");
+			logger.info("** 请确认当前环境是否真正需要运行在模拟模式。");
+			logger.info("*********************************************************");
+			logger.info("*********************************************************");
+			logger.info("*********************************************************");
+
+			// 模拟支付宝跳转返回银信证
+
+			String amtYuan = new DecimalFormat("#0.00").format(new BigDecimal(aliPayPara.getAmount()).divide(new BigDecimal(100)));
+
+			// 调支付宝接口状态
+			String is_success = "T";
+			// 支付宝返回订单号
+			String out_trade_no = outputBean.getLcId().toString();
+			// 支付宝流水号
+			String trade_no = "Mock" + String.valueOf(System.currentTimeMillis());
+			// 支付宝业务处理状态
+			String trade_status = "TRADE_SUCCESS";
+			// 通知时间
+			String notify_time = DateUtil.format(new Date());
+
+			attributes.addAttribute("is_success", is_success);
+			attributes.addAttribute("out_trade_no", out_trade_no);
+			attributes.addAttribute("trade_no", trade_no);
+			attributes.addAttribute("trade_status", trade_status);
+			attributes.addAttribute("notify_time", notify_time);
+			attributes.addAttribute("total_fee", amtYuan);
+
+			logger.info("模拟支付宝返回参数:is_success=" + is_success + ",out_trade_no=" + out_trade_no + ",trade_no=" + trade_no + ",trade_status=" + trade_status + ",total_fee=" + amtYuan + ",notify_time=" + notify_time);
+
+			// 模拟来自支付宝的回调
+			mockNotifySentFromAlipay(out_trade_no, trade_no, notify_time, amtYuan);
+
+			return "redirect:" + alipayReturnUrl;
+
+		} else {
+			// 跳转至支付宝网关URL
+			return "redirect:" + AlipayConfig.alipay_getway_url;
+		}
+	}
+
+	@RequestMapping("/urlReturn")
+	public String aliReturn(HttpServletRequest request, RedirectAttributes attributes) throws Exception {
+		Map<String, String[]> map = request.getParameterMap();
+		// 调支付宝接口状态
+		String is_success = new String(request.getParameter("is_success").getBytes("ISO-8859-1"), "UTF-8");
+		// 支付宝返回订单号
+		String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"), "UTF-8");
+		// 支付宝流水号
+		String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"), "UTF-8");
+		// 支付宝业务处理状态
+		String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
+		// 通知时间
+		String notify_time = new String(request.getParameter("notify_time").getBytes("ISO-8859-1"), "UTF-8");
+		// 交易金额
+		String total_fee = new String(request.getParameter("total_fee").getBytes("ISO-8859-1"), "UTF-8");
+		// 解析map数据准备验签
+		Map<String, String> paraMap = AlipayUtil.getAliBackMap(map);
+
+		logger.info("支付宝返回参数:is_success=" + is_success + ",out_trade_no=" + out_trade_no + ",trade_no=" + trade_no + ",trade_status=" + trade_status + ",total_fee=" + total_fee + ",notify_time=" + notify_time);
+
+		BusinessInput<AlipayQueryInputBean> businessInput = new BusinessInput<AlipayQueryInputBean>();
+		AlipayQueryInputBean inputBean = new AlipayQueryInputBean();
+		inputBean.setLcId(Long.valueOf(out_trade_no));
+		businessInput.setData(inputBean);
+		BusinessOutput<AlipayQueryOutputBean> businessOutput = alipayQueryService.execute(businessInput);
+		AlipayQueryOutputBean outputBean = businessOutput.getData();
+		AliPayRtnMsg msg = new AliPayRtnMsg();
+		// T表示调支付宝接口成功，业务处理成功看trade_status
+		if ("T".equals(is_success)) {
+			// 计算得出通知验证结果
+			boolean verify_result = mockAlipayAndAlwaysReturnSuccess ? true : AlipayUtil.verify(paraMap);
+			if (verify_result) {// 验签成功
+				if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
+					// 支付宝返回交易成功
+					if (!verifyAmt(outputBean, total_fee)) {
+						// 通过支付宝实际交易的金额跟订单金额不一致，系统将认为非法交易，当作失败交易处理
+						logger.warn("实际支付金额跟订单金额不一致，商户号：{}，订单号：{}，订单金额（分）：{}，实际支付金额（元）：{}", outputBean.getMid(), outputBean.getOrderId(), outputBean.getAmount(), total_fee);
+						msg = processReturn(outputBean, notify_time, PreLcStatus.FAIL.getCode(), "", "ERROR", "实际支付金额跟订单金额不一致");
+					} else {
+						// 调用核心业务记录充值交易的结果
+						BusinessInput<AlipayBusinessInputBean> businessInput1 = new BusinessInput<AlipayBusinessInputBean>();
+						AlipayBusinessInputBean inputBean1 = new AlipayBusinessInputBean();
+						inputBean1.setLcId(Long.valueOf(out_trade_no));
+						inputBean1.setAliAcctNo(null);
+						inputBean1.setAliTradeNo(trade_no);
+						inputBean1.setTradeTime(notify_time);
+						inputBean1.setNeedSendNoticeToMerchant(false); // 此时先不通知商户
+						inputBean1.setNeedSendNoticeToAccCenter(false); // 此时先不通知账务中心
+						businessInput1.setData(inputBean1);
+
+						logger.info("[BEGIN]调用核心业务层AlipayBusinessService记录成功交易的结果...");
+						BusinessOutput<AlipayBusinessOutputBean> businessOutput1 = alipayBusinessService.execute(businessInput1);
+						logger.info("[END]调用核心业务层AlipayBusinessService记录成功交易的结果，核心业务层返回 returnCode: {}, returnMsg: {}", businessOutput1.getReturnCode(), businessOutput1.getReturnMsg());
+						msg = processReturn(outputBean, notify_time, LcStatusType.SUCCESS.getStatusCode(), "", "SUCCESS", "充值成功");
+					}
+				} else {
+					// 支付宝返回交易失败
+					msg = processReturn(outputBean, notify_time, PreLcStatus.FAIL.getCode(), "", "ERROR", "支付宝交易失败");
+				}
+			} else {// 验签失败
+				msg = processReturn(outputBean, notify_time, PreLcStatus.FAIL.getCode(), "", "ERROR", "返回验签失败");
+			}
+		} else {
+			// 调支付宝接口失败
+			msg = processReturn(outputBean, notify_time, PreLcStatus.FAIL.getCode(), "", "ERROR", "调支付宝接口失败");
+		}
+
+		Map<String, String> attsMap = ConvertTool.beanToMap(msg);
+		attsMap.remove("sign");
+		versionBMerchantSignValidator.addSign(outputBean.getMid(), attsMap);// 加签
+		// 封装返回红包参数,并添加到attributes
+		attributes.addAllAttributes(attsMap);
+		logger.info("returnUrl:" + outputBean.getLcReturnUrl() + "\n 返回参数" + attsMap);
+		return "redirect:" + outputBean.getLcReturnUrl();
+	}
+
+	@RequestMapping("/urlNotice")
+	@ResponseBody
+	public String aliNotice(HttpServletRequest request) {
+		try {
+			// 获取支付宝GET过来反馈信息
+			Map<String, String> params = AlipayUtil.getAliBackMap(request.getParameterMap());
+			// 支付宝返回订单号
+			String out_trade_no = new String(request.getParameter("out_trade_no").getBytes("ISO-8859-1"), "UTF-8");
+			// 通知时间
+			String notify_time = new String(request.getParameter("notify_time").getBytes("ISO-8859-1"), "UTF-8");
+			// 支付宝流水号
+			String trade_no = new String(request.getParameter("trade_no").getBytes("ISO-8859-1"), "UTF-8");
+			// 支付宝返回交易状态
+			String trade_status = new String(request.getParameter("trade_status").getBytes("ISO-8859-1"), "UTF-8");
+			// 交易创建时间
+			String gmt_create = new String(request.getParameter("gmt_create").getBytes("ISO-8859-1"), "UTF-8");
+			// 交易付款时间
+			String gmt_payment = new String(request.getParameter("gmt_payment").getBytes("ISO-8859-1"), "UTF-8");
+			// 交易关闭时间(无此返回参数了)
+			// String gmt_close = new
+			// String(request.getParameter("gmt_close").getBytes("ISO-8859-1"),"UTF-8");
+			// 买家支付宝账号
+			String buyer_email = new String(request.getParameter("buyer_email").getBytes("ISO-8859-1"), "UTF-8");
+			// 买家支付宝账户号
+			String buyer_id = new String(request.getParameter("buyer_id").getBytes("ISO-8859-1"), "UTF-8");
+			// 交易金额
+			String total_fee = new String(request.getParameter("total_fee").getBytes("ISO-8859-1"), "UTF-8");
+
+			logger.info("支付宝异步通知返回参数:out_trade_no=" + out_trade_no + ",trade_no=" + trade_no + ",trade_status=" + trade_status + ",notify_time=" + notify_time + ",gmt_create=" + gmt_create + ",gmt_payment=" + gmt_payment + ",buyer_email=" + buyer_email + ",total_fee=" + total_fee);
+
+			BusinessInput<AlipayQueryInputBean> businessInput = new BusinessInput<AlipayQueryInputBean>();
+			AlipayQueryInputBean inputBean = new AlipayQueryInputBean();
+			inputBean.setLcId(Long.valueOf(out_trade_no));
+			businessInput.setData(inputBean);
+			BusinessOutput<AlipayQueryOutputBean> businessOutput = alipayQueryService.execute(businessInput);
+			AlipayQueryOutputBean outputBean = businessOutput.getData();
+			AliPayRtnMsg msg = new AliPayRtnMsg();
+
+			// 验证消息是否是支付宝发出的合法消息
+			boolean verify_result = mockAlipayAndAlwaysReturnSuccess ? true : AlipayUtil.verify(params);
+
+			// true验签通过
+			if (verify_result) {
+				if (trade_status.equals("TRADE_FINISHED") || trade_status.equals("TRADE_SUCCESS")) {
+					// 支付宝通知银信证：交易成功
+					BusinessInput<AlipayBusinessInputBean> businessInput1 = new BusinessInput<AlipayBusinessInputBean>();
+					AlipayBusinessInputBean inputBean1 = new AlipayBusinessInputBean();
+					inputBean1.setLcId(Long.valueOf(out_trade_no));
+					inputBean1.setAliAcctNo(buyer_email);
+					inputBean1.setAliTradeNo(trade_no);
+					inputBean1.setTradeTime(notify_time);
+					inputBean1.setNeedSendNoticeToMerchant(true);
+					inputBean1.setNeedSendNoticeToAccCenter(true);
+					businessInput1.setData(inputBean1);
+
+					// 调用核心业务记录充值交易的结果
+					logger.info("[BEGIN]调用核心业务层AlipayBusinessService记录成功交易的结果...");
+					BusinessOutput<AlipayBusinessOutputBean> businessOutput1 = alipayBusinessService.execute(businessInput1);
+					logger.info("[END]调用核心业务层AlipayBusinessService记录成功交易的结果，核心业务层返回 returnCode: {}, returnMsg: {}", businessOutput1.getReturnCode(), businessOutput1.getReturnMsg());
+
+					if (ReturnCode.GENERAL_SUCCESS == businessOutput1.getReturnCode()) {
+						// FIXME: 发现对于交易成功，目前是由核心业务层通知商户的
+						return "success";
+					}
+					return "fail";
+				} else {
+					// 支付宝通知银信证：交易失败
+					msg = processReturn(outputBean, notify_time, PreLcStatus.FAIL.getCode(), "", "ERROR", "支付宝交易失败");
+					Map<String, String> attsMap = ConvertTool.beanToMap(msg);
+					versionBMerchantSignValidator.addSign(outputBean.getMid(), attsMap);// 加签
+					logger.info("noticeUrl:" + outputBean.getLcNotifyUrl() + "\n 返回参数:" + attsMap);
+					AlipayUtil.sendRequest(attsMap, outputBean.getLcNotifyUrl());
+					return "fail";
+				}
+			} else {
+				// 对支付宝返回的消息验签未通过
+				msg = processReturn(outputBean, notify_time, PreLcStatus.FAIL.getCode(), "", "ERROR", "返回验签失败");
+				Map<String, String> attsMap = ConvertTool.beanToMap(msg);
+				versionBMerchantSignValidator.addSign(outputBean.getMid(), attsMap);// 加签
+				logger.info("noticeUrl:" + outputBean.getLcNotifyUrl() + "\n 返回参数:" + attsMap);
+
+				// 通知商户
+				AlipayUtil.sendRequest(attsMap, outputBean.getLcNotifyUrl());
+
+				return "fail";
+			}
+		} catch (Exception e) {
+			logger.error("接收支付宝异步通知异常: {}", e.getMessage(), e);
+			return "fail";
+		}
+	}
+
+	// 验证两边金额是否一致
+	private boolean verifyAmt(AlipayQueryOutputBean outputBean, String tradeAmtYuanFromAlipay) {
+		BigDecimal expectedTradeAmtFen = outputBean.getAmount();
+		BigDecimal tradeFee = new BigDecimal(tradeAmtYuanFromAlipay).multiply(new BigDecimal(100));
+		// 判断支付宝返回金额和冻结金额是否相等
+		if (expectedTradeAmtFen.compareTo(tradeFee) != 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private AliPayRtnMsg processReturn(AlipayQueryOutputBean outputBean, String tradeTime, String lcState, String aliAcctNo, String retCode, String retMsg) {
+		AliPayRtnMsg msg = new AliPayRtnMsg();
+		msg.setOrderId(outputBean.getOrderId());
+		msg.setMerId(outputBean.getMid());
+		msg.setRequestId(outputBean.getRequestId());
+		msg.setLcId(outputBean.getLcId().toString());
+		msg.setResponseTime(DateUtil.format(new Date()));
+		msg.setSign("MD5");
+		msg.setTradeAmt(outputBean.getAmount().toString());
+		msg.setTradeTime(tradeTime);
+		msg.setUserCode(outputBean.getUserCode());
+		msg.setAliAcctNo(aliAcctNo);
+		msg.setState(lcState);
+		msg.setReturnCode(retCode);
+		msg.setReturnMessage(retMsg);
+		return msg;
+	}
+
+	// 模拟支付宝异步通知
+	private void mockNotifySentFromAlipay(String out_trade_no, String trade_no, String notify_time, String amtYuan) {
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+			public void run() {
+				try {
+					String buyer_email = "alipay-mock@cifpay.com";
+					String buyer_id = String.valueOf(System.currentTimeMillis());
+
+					Map<String, String> pmap = new HashMap<String, String>();
+					pmap.put("out_trade_no", out_trade_no);
+					pmap.put("notify_time", notify_time);
+					pmap.put("trade_no", trade_no);
+					pmap.put("trade_status", "TRADE_SUCCESS");
+					pmap.put("gmt_create", DateUtil.format(new Date()));
+					pmap.put("gmt_payment", DateUtil.format(new Date()));
+					pmap.put("buyer_email", buyer_email);
+					pmap.put("buyer_id", buyer_id);
+					pmap.put("total_fee", amtYuan);
+
+					logger.info("模拟支付宝异步通知银信证平台：{}", pmap);
+
+					AlipayUtil.sendRequest(pmap, alipayNoticeUrl);
+				} catch (Exception e) {
+					logger.error("模拟支付宝异步通知异常", e);
+					System.out.println("模拟支付宝异步通知异常" + e.getMessage());
+				}
+				timer.cancel();
+			}
+		}, 15000);// 单位毫秒
+	}
+
+}

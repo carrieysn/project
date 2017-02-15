@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.GuidWorkerIdDao" >
+  
+  <insert id="insertBaseCurrentMaxWorkerId" parameterType="com.cifpay.lc.core.db.pojo.GuidWorkerId" >
+    INSERT INTO CIFPAY_GUID_WORKER_ID (
+      MACHINE_ID,
+      APP_INSTANCE_ID,
+      WORKER_ID,
+      MACHINE_NAME,
+      APP_BINARY_PATH,
+      INITIALIZED_DATE,
+      APP_LAST_STARTED_DATE
+    ) SELECT
+      #{machineId,jdbcType=VARCHAR} AS MACHINE_ID,
+      #{appInstanceId,jdbcType=VARCHAR} AS APP_INSTANCE_ID,
+      IFNULL(MAX(WORKER_ID) ,- 1) + 1 AS WORKER_ID,
+      #{machineName,jdbcType=VARCHAR} AS MACHINE_NAME,
+      #{appBinaryPath,jdbcType=VARCHAR} AS APP_BINARY_PATH,
+      #{initializedDate,jdbcType=TIMESTAMP} AS INITIALIZED_DATE,
+      #{appLastStartedDate,jdbcType=TIMESTAMP} AS APP_LAST_STARTED_DATE
+    FROM CIFPAY_GUID_WORKER_ID
+  </insert>
+  <select id="countWithSameWorkerId" resultType="java.lang.Integer" parameterType="map" >
+    SELECT COUNT(1) AS DUPLICATE_CNT FROM CIFPAY_GUID_WORKER_ID
+    WHERE MACHINE_ID = #{machineId,jdbcType=VARCHAR}
+      AND APP_INSTANCE_ID = #{appInstanceId,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

@@ -1,0 +1,14 @@
+package com.cifpay.lc.api.xds.withdraw;
+
+import com.cifpay.lc.api.CoreBusinessService;
+
+/**
+ * 查询银企互联转账服务测试环境的交易日期。
+ * 
+ * 
+ *
+ */
+public interface QueryBankEntTestTradeDateService
+		extends CoreBusinessService<String, QueryBankEntTestTradeDateOutputBean> {
+
+}

@@ -1,0 +1,46 @@
+package com.cifpay.lc.gateway.output.freeze;
+
+import com.cifpay.lc.gateway.output.NormalResponse;
+
+public class SubmitResult extends NormalResponse {
+
+	private String lcID;			// 银信证ID
+//	private String lcStatus; 		// 银信证状态
+//	private String lcStatusDesc; 	// 银信证状态描述
+
+	private String tradeNo;			// 银行交易流水
+	private String tradeStatus;		// 交易状态
+	private String orderId; 	// 商户订单号
+	private String amount; 		// 银信证开证金额（单位分）
+	
+	public String getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+	public String getAmount() {
+		return amount;
+	}
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+	public String getTradeNo() {
+		return tradeNo;
+	}
+	public void setTradeNo(String tradeNo) {
+		this.tradeNo = tradeNo;
+	}
+	public String getTradeStatus() {
+		return tradeStatus;
+	}
+	public void setTradeStatus(String tradeStatus) {
+		this.tradeStatus = tradeStatus;
+	}
+	public String getLcID() {
+		return lcID;
+	}
+	public void setLcID(String lcID) {
+		this.lcID = lcID;
+	}
+}

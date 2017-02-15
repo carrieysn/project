@@ -1,0 +1,15 @@
+package com.cifpay.lc.api.gateway.quickpay;
+
+import com.cifpay.lc.api.CoreBusinessService;
+import com.cifpay.lc.domain.quickpay.QuickPayTradeInputBean;
+import com.cifpay.lc.domain.quickpay.QuickPayTradeOutputBean;
+
+/**
+ * 提交支付交易，需要同时提供申请到的交易验证码。
+ * 
+ * 
+ *
+ */
+public interface QuickPayTradeService extends CoreBusinessService<QuickPayTradeInputBean, QuickPayTradeOutputBean> {
+
+}

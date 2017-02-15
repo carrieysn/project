@@ -1,0 +1,19 @@
+package com.cifpay.lc.gateway.output.batch;
+
+import java.util.List;
+
+import com.cifpay.lc.domain.security.MerchantResponseData;
+
+public class BatchWithdrawResp extends MerchantResponseData {
+
+	private List<WithdrawResp> listWithdrawResp;
+
+	public List<WithdrawResp> getListWithdrawResp() {
+		return listWithdrawResp;
+	}
+
+	public void setListWithdrawResp(List<WithdrawResp> listWithdrawResp) {
+		this.listWithdrawResp = listWithdrawResp;
+	}
+
+}

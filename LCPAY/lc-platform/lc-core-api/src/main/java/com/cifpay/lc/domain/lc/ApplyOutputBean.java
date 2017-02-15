@@ -1,0 +1,45 @@
+package com.cifpay.lc.domain.lc;
+
+import java.math.BigDecimal;
+
+public class ApplyOutputBean extends AbstractLcOutputBean {
+
+    private static final long serialVersionUID = 7433159208758154930L;
+
+    private Long lcAppointmentId;    // 履约ID
+    private Long lcConfirmId;        // 申请解付ID
+    private BigDecimal lcPayAmount; // 申请解付金额
+
+    public Long getLcConfirmId() {
+        return lcConfirmId;
+    }
+
+    public void setLcConfirmId(Long lcConfirmId) {
+        this.lcConfirmId = lcConfirmId;
+    }
+
+    public Long getLcAppointmentId() {
+        return lcAppointmentId;
+    }
+
+    public void setLcAppointmentId(Long lcAppointmentId) {
+        this.lcAppointmentId = lcAppointmentId;
+    }
+
+    public BigDecimal getLcPayAmount() {
+        return lcPayAmount;
+    }
+
+    public void setLcPayAmount(BigDecimal lcPayAmount) {
+        this.lcPayAmount = lcPayAmount;
+    }
+
+    @Override
+    public String toString() {
+        return "ApplyOutputBean{" +
+                "lcAppointmentId=" + lcAppointmentId +
+                ", lcConfirmId=" + lcConfirmId +
+                ", lcPayAmount=" + lcPayAmount +
+                '}';
+    }
+}

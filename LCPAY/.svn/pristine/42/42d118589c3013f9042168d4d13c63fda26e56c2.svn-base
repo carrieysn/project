@@ -1,0 +1,449 @@
+$red: #ec5d57;
+$blue: #4990e2;
+.red{
+	color: $red;
+}
+.blue{
+	color: $blue;
+}
+.ellipsis{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.zcx-cardwrapper{
+	position: relative;
+	width: 7.2rem;
+	height: 12.8rem;
+	background: url('../../../img/webpay/mobile/bg.jpg') no-repeat;
+	background-size: 100% 100%;
+	&.disabled{
+		&:before{
+			position: absolute;
+			content: ' ';
+			display: inline-block;
+			width: 2.12rem;
+			height: 1.97rem;
+			background-image: url('../../../img/webpay/mobile/dis.png');
+			background-size: 100%;
+			right: 0;
+			top: .05rem;
+		}
+		background-image: url('../../../img/webpay/mobile/bg2.jpg');
+		.moneywrap > dl > dd.num,.moneywrap > dl > dd.uppercase{
+			color: #666;
+		}
+		.bankwrap .cont .statu{
+			background-color: #dfbcba;
+			&:before{
+				color: #dfbcba;
+			}
+		}
+		.bankwrap .cont .other{
+			color: #c0c0c0;
+		}
+		.stepwrap > li:before, .stepwrap > li:after, .stepwrap > li, .stepintro{
+			border-color: #a8a8a8;
+			color: #a8a8a8;
+		}
+		.stepwrap > li.on:before{
+			background: #a8a8a8;
+		}
+
+	}
+	.logowrap{
+		height: 2.08rem;
+		background: url('../../../img/webpay/mobile/logo.png') no-repeat center .63rem;
+		background-size: 1.41rem;
+	}
+	.introWrap{
+		text-align: center;
+		padding: .2rem;
+		line-height: 1.3;
+		> h3{
+			font-size: .32rem;
+			color: #545454;
+		}
+		> p{
+			font-size: .24rem;
+			color: #9c9c9c;
+		}
+	}
+	.moneywrap{
+		padding: .375rem .98rem;
+		line-height: 1.9;
+		>dl >dt{
+			display: inline-block;
+			width: 1.2rem;
+			font-size: .3rem;
+			color: #333333;
+			text-align: left;
+		}
+		>dl >dd{
+			display: inline-block;
+			font-weight: bold;
+			&.num{
+				font-family: Impact;
+				color: #cc0000;
+				font-size: .5rem;
+				.big{
+					font-size: .63rem;
+				}
+			}
+			&.uppercase{
+				width: 3.8rem;
+				font-size: .36rem;
+				color: #1e2226;
+			}
+		}
+	}
+	.bankwrap{
+		height: 4rem;
+		padding: 0 .75rem;
+		.cont{
+			width: 2.35rem;
+			.identity{
+				font-size: .2rem;
+				color: #666666;
+				text-align: center;
+			}
+			.banklogo{
+				margin: .38rem auto;
+				&.empty{
+					position: relative;
+					width: 2.27rem;
+					height: .53rem;
+					background-color: #dfbcba;
+					&:before{
+						position: absolute;
+						left: .04rem;
+						top: .04rem;
+						width: 2.15rem;
+						height: .43rem;
+						line-height: .43rem;
+						text-align: center;
+						content: '未指定';
+						color: white;
+						border: 1px dashed white;
+					}
+				}
+				> img{
+					width: 100%;
+				}
+			}
+			.statu{
+				position: relative;
+				display: block;
+				height: .7rem;
+				line-height: .7rem;
+				border-radius: 3px;
+				padding-left: .7rem;
+				font-size: .24rem;
+				&:before{
+					position: absolute;
+					left: .1rem;
+					top: .1rem;
+					display: inline-block;	
+					height: .5rem;
+					width: .5rem;
+					line-height: .5rem;
+					text-align: center;
+					background: white;
+					border-radius: 50%;
+					font-size: .3rem;
+					
+				}
+			}
+			.fu{
+				background: $red;
+				color: white;
+				&:before{
+					content: '付';
+					display: inline-block;
+					color: $red;	
+				}
+				&:after{
+					position: absolute;
+					right: -.8rem;
+					top: .05rem;
+					content: '';
+					display: inline-block;
+					width: .6rem;
+					height: .6rem;
+					background-image: url('../../../img/webpay/mobile/arrow.png');
+					background-size: 100%;
+				}
+			}
+			.shou{
+				background: $blue;
+				color: white;
+				&:before{
+					content: '收';
+					display: inline-block;
+					color: $blue;	
+				}
+			}
+			.other{
+				padding: .18rem 0;
+				font-size: .18rem;
+				// line-height: 1.5;
+				word-break: break-all;
+			}
+		}
+	}
+	.stepwrap{
+		position: relative;
+		height: .95rem;
+		.intro{
+			position: absolute;
+			width: 6rem;
+			height: 4rem;
+			left: 50%;
+			padding: .3rem;
+			transform: translateX(-50%);
+			background: white;
+			color: #545454;
+			bottom: 1.2rem;
+			border-radius: 1px;
+			box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.3);
+			> h3{
+				font-size: .34rem;
+				font-weight: normal;
+				text-align: center;
+				padding-bottom: .1rem;
+			}
+			> dl{
+				line-height: 2;
+				font-size: .24rem;
+				> dt{
+
+				}
+			}
+		}
+		.intro1:before{
+			content: ' ';
+			display: inline-block;
+			position: absolute;
+			bottom: -.3rem;
+			left: .6rem;
+			width: 0;
+			height: 0;
+			border: .2rem solid red;
+			border-color: white rgba(0,0,0,0)  rgba(0,0,0,0) rgba(0,0,0,0);
+		}
+		.intro3:before{
+			content: ' ';
+			display: inline-block;
+			position: absolute;
+			bottom: -.3rem;
+			right: .4rem;
+			width: 0;
+			height: 0;
+			border: .2rem solid red;
+			border-color: white rgba(0,0,0,0)  rgba(0,0,0,0) rgba(0,0,0,0);
+		}
+		.intro2:before{
+			content: ' ';
+			display: inline-block;
+			position: absolute;
+			bottom: -.3rem;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 0;
+			height: 0;
+			border: .2rem solid red;
+			border-color: white rgba(0,0,0,0)  rgba(0,0,0,0) rgba(0,0,0,0);
+		}
+		.step{
+			position: absolute;
+			color: #dfbcba;
+			font-size: .23rem;
+			top: 0;
+			&:after{
+				position: absolute;
+				top: .575rem;
+				display: inline-block;
+				content: '';
+				border: 1px solid #dfbcba;
+			}
+			&:before{
+				content: '1';
+				position: absolute;
+				left: 50%;
+				transform: translateX(-50%);
+				top: .35rem;
+				display: inline-block;
+				width: .45rem;
+				height: .45rem;
+				line-height: .45rem;
+				text-align: center;
+				border: 2px solid #dfbcba;
+				color: #dfbcba;
+				border-radius: 50%;
+				font-size: .44rem;
+			}
+			&.on:before{
+				background: #dfbcba;
+				color: white;
+			}
+		}
+		.step1{
+			&:before{
+				content: '1'
+			}
+			left: .75rem;
+			&:after{
+				width: 1.6rem;
+				left: .95rem;
+			}
+		}
+		.step2{
+			&:before{
+				content: '2'
+			}
+			left: 50%;
+			transform: translate(-50%);
+			&:after{
+				width: 1.9rem;
+				left: .45rem;
+			}
+		}
+		.step3{
+			&:before{
+				content: '3'
+			}
+			right: .75rem;
+			&:after{
+				display: none;
+			}
+		}
+	}
+	.stepintro{
+		padding: 0 0 0 1.16rem;
+		font-size: .22rem;
+		color: #dfbcba;
+	}
+	.footerwrap{
+		position: absolute;
+		width: 100%;
+		padding: 0 .55rem;
+		bottom: .46rem;
+		font-size: .18rem;
+		color: #333;
+		.bank{
+			line-height: 2;
+			font-size: .16rem;
+			> img{
+				display: block;
+				max-width: 2rem;
+			}
+		}
+		.cardcode{
+			position: absolute;
+			right: .55rem;
+			bottom: 0;
+		}
+	}
+}
+.paymentwrap{
+	display: none;
+	position: absolute;
+	left: .36rem;
+	right: .36rem;
+	top: 50%;
+	transform: translateY(-50%);
+	background-color: white;
+	padding: .5rem;
+	color: #545454;
+	box-shadow: 2px 1px 10px 2px rgba(0, 0, 0, 0.3);
+	border-radius: 3px;
+	> h3{
+		font-size: .34rem;
+		text-align: center;
+		font-weight: normal;
+		margin-bottom: .3rem;
+	}
+	.formgroup{
+		position: relative;
+		font-size: .28rem;
+		line-height: 3;
+		> span{
+			display: inline-block;
+			width: 1.4rem;
+		}
+		> input[type='text'],> input[type=number],> input[type=tel]{
+			width: 3.9rem;
+			height: .6rem;
+			background-color: rgba(0,0,0,0);
+			padding-left: .1rem;
+			border: 1px solid #ddbab8;
+			border-radius: 2px;
+		}
+		.code{
+			position: absolute;
+			top: .16rem;
+			left: 3.68rem;
+			display: inline-block;
+			width: 1.75rem;
+			height: .6rem;
+			line-height: .6rem;
+			text-align: center;
+			color: #545454;
+			background-color: #f7dadb;
+			border-radius: 2px;
+		}
+		.button{
+			margin: .7rem .1rem .2rem;
+			display: inline-block;
+			width: 2.25rem;
+			height: .8rem;
+			text-align: center;
+			color: #bf9592;
+			background: #ddbab8;
+			border-radius: 3px;
+			&.confirm{
+				color: white;
+			}
+			&.cancel{
+				background-color: white;
+				border: 1px solid #ddbab8;
+			}
+		}
+		.showtips{
+			display: none;
+			position: absolute;
+			left: 0;
+			width: 100%;
+			text-align: center;
+			color: #cc3333;
+			line-height: 2;
+		}
+	}
+
+}
+
+.zcx-bar{
+	position: relative;
+	height: 44px;
+	text-align: center;
+	color: #333;
+	margin-bottom: .1rem;
+	border-bottom: 1px solid #ddd;
+	.button{
+		position: absolute;
+		top: 50%;
+		left: .1rem;
+		transform: translateY(-50%);
+		color: #333;
+		> img{
+			width: 18px;
+		}
+	}
+	.title{
+		display: inline-block;
+		line-height: 44px;
+		font-size: .18rem;
+		font-weight: normal;
+	}
+}

@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.AdminCifpayLcBankDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.AdminCifpayLcBank" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="BANK_CODE" property="bankCode" jdbcType="VARCHAR" />
+    <result column="BANK_NAME" property="bankName" jdbcType="VARCHAR" />
+    <result column="BANK_TYPE" property="bankType" jdbcType="VARCHAR" />
+    <result column="IS_VALID" property="isValid" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="LANDING_AGENCY" property="landingAgency" jdbcType="VARCHAR" />
+    <result column="BANK_ACCOUNT" property="bankAccount" jdbcType="VARCHAR" />
+    <result column="INTER_BANK" property="interBank" jdbcType="BIT" />
+    <result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+    <result column="CONTACT_NAME" property="contactName" jdbcType="VARCHAR" />
+    <result column="TELEPHONE" property="telephone" jdbcType="VARCHAR" />
+    <result column="FIXED_TELEPHONE" property="fixedTelephone" jdbcType="VARCHAR" />
+    <result column="EMAIL" property="email" jdbcType="VARCHAR" />
+    <result column="BANK_STATE" property="bankState" jdbcType="INTEGER" />
+    <result column="BANK_REVIEW" property="bankReview" jdbcType="CHAR" />
+    <result column="REVIEW_REMARK" property="reviewRemark" jdbcType="VARCHAR" />
+    <result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+    <result column="BANK_OTHER" property="bankOther" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, BANK_CODE, BANK_NAME, BANK_TYPE, IS_VALID, CREATE_TIME, UPDATE_TIME, LANDING_AGENCY, 
+    BANK_ACCOUNT, INTER_BANK, ADDRESS, CONTACT_NAME, TELEPHONE, FIXED_TELEPHONE, EMAIL, 
+    BANK_STATE, BANK_REVIEW, REVIEW_REMARK, USER_ID, BANK_OTHER
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from ADMIN_CIFPAY_LC_BANK
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from ADMIN_CIFPAY_LC_BANK
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.AdminCifpayLcBank" >
+    insert into ADMIN_CIFPAY_LC_BANK (ID, BANK_CODE, BANK_NAME, 
+      BANK_TYPE, IS_VALID, CREATE_TIME, 
+      UPDATE_TIME, LANDING_AGENCY, BANK_ACCOUNT, 
+      INTER_BANK, ADDRESS, CONTACT_NAME, 
+      TELEPHONE, FIXED_TELEPHONE, EMAIL, 
+      BANK_STATE, BANK_REVIEW, REVIEW_REMARK, 
+      USER_ID, BANK_OTHER)
+    values (#{id,jdbcType=VARCHAR}, #{bankCode,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR}, 
+      #{bankType,jdbcType=VARCHAR}, #{isValid,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{landingAgency,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, 
+      #{interBank,jdbcType=BIT}, #{address,jdbcType=VARCHAR}, #{contactName,jdbcType=VARCHAR}, 
+      #{telephone,jdbcType=VARCHAR}, #{fixedTelephone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{bankState,jdbcType=INTEGER}, #{bankReview,jdbcType=CHAR}, #{reviewRemark,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=VARCHAR}, #{bankOther,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.AdminCifpayLcBank" >
+    insert into ADMIN_CIFPAY_LC_BANK
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="bankCode != null" >
+        BANK_CODE,
+      </if>
+      <if test="bankName != null" >
+        BANK_NAME,
+      </if>
+      <if test="bankType != null" >
+        BANK_TYPE,
+      </if>
+      <if test="isValid != null" >
+        IS_VALID,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+      <if test="landingAgency != null" >
+        LANDING_AGENCY,
+      </if>
+      <if test="bankAccount != null" >
+        BANK_ACCOUNT,
+      </if>
+      <if test="interBank != null" >
+        INTER_BANK,
+      </if>
+      <if test="address != null" >
+        ADDRESS,
+      </if>
+      <if test="contactName != null" >
+        CONTACT_NAME,
+      </if>
+      <if test="telephone != null" >
+        TELEPHONE,
+      </if>
+      <if test="fixedTelephone != null" >
+        FIXED_TELEPHONE,
+      </if>
+      <if test="email != null" >
+        EMAIL,
+      </if>
+      <if test="bankState != null" >
+        BANK_STATE,
+      </if>
+      <if test="bankReview != null" >
+        BANK_REVIEW,
+      </if>
+      <if test="reviewRemark != null" >
+        REVIEW_REMARK,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="bankOther != null" >
+        BANK_OTHER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="bankCode != null" >
+        #{bankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankType != null" >
+        #{bankType,jdbcType=VARCHAR},
+      </if>
+      <if test="isValid != null" >
+        #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="landingAgency != null" >
+        #{landingAgency,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAccount != null" >
+        #{bankAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="interBank != null" >
+        #{interBank,jdbcType=BIT},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="contactName != null" >
+        #{contactName,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null" >
+        #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="fixedTelephone != null" >
+        #{fixedTelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="bankState != null" >
+        #{bankState,jdbcType=INTEGER},
+      </if>
+      <if test="bankReview != null" >
+        #{bankReview,jdbcType=CHAR},
+      </if>
+      <if test="reviewRemark != null" >
+        #{reviewRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankOther != null" >
+        #{bankOther,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.AdminCifpayLcBank" >
+    update ADMIN_CIFPAY_LC_BANK
+    <set >
+      <if test="bankCode != null" >
+        BANK_CODE = #{bankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        BANK_NAME = #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankType != null" >
+        BANK_TYPE = #{bankType,jdbcType=VARCHAR},
+      </if>
+      <if test="isValid != null" >
+        IS_VALID = #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="landingAgency != null" >
+        LANDING_AGENCY = #{landingAgency,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAccount != null" >
+        BANK_ACCOUNT = #{bankAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="interBank != null" >
+        INTER_BANK = #{interBank,jdbcType=BIT},
+      </if>
+      <if test="address != null" >
+        ADDRESS = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="contactName != null" >
+        CONTACT_NAME = #{contactName,jdbcType=VARCHAR},
+      </if>
+      <if test="telephone != null" >
+        TELEPHONE = #{telephone,jdbcType=VARCHAR},
+      </if>
+      <if test="fixedTelephone != null" >
+        FIXED_TELEPHONE = #{fixedTelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        EMAIL = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="bankState != null" >
+        BANK_STATE = #{bankState,jdbcType=INTEGER},
+      </if>
+      <if test="bankReview != null" >
+        BANK_REVIEW = #{bankReview,jdbcType=CHAR},
+      </if>
+      <if test="reviewRemark != null" >
+        REVIEW_REMARK = #{reviewRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="bankOther != null" >
+        BANK_OTHER = #{bankOther,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.AdminCifpayLcBank" >
+    update ADMIN_CIFPAY_LC_BANK
+    set BANK_CODE = #{bankCode,jdbcType=VARCHAR},
+      BANK_NAME = #{bankName,jdbcType=VARCHAR},
+      BANK_TYPE = #{bankType,jdbcType=VARCHAR},
+      IS_VALID = #{isValid,jdbcType=INTEGER},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      LANDING_AGENCY = #{landingAgency,jdbcType=VARCHAR},
+      BANK_ACCOUNT = #{bankAccount,jdbcType=VARCHAR},
+      INTER_BANK = #{interBank,jdbcType=BIT},
+      ADDRESS = #{address,jdbcType=VARCHAR},
+      CONTACT_NAME = #{contactName,jdbcType=VARCHAR},
+      TELEPHONE = #{telephone,jdbcType=VARCHAR},
+      FIXED_TELEPHONE = #{fixedTelephone,jdbcType=VARCHAR},
+      EMAIL = #{email,jdbcType=VARCHAR},
+      BANK_STATE = #{bankState,jdbcType=INTEGER},
+      BANK_REVIEW = #{bankReview,jdbcType=CHAR},
+      REVIEW_REMARK = #{reviewRemark,jdbcType=VARCHAR},
+      USER_ID = #{userId,jdbcType=VARCHAR},
+      BANK_OTHER = #{bankOther,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

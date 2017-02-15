@@ -1,0 +1,193 @@
+package com.cifpay.lc.api.xds.chinapay;
+
+import com.cifpay.lc.util.logging.LoggerEnum;
+import com.cifpay.lc.util.logging.AbstractInputBean;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+/**
+ * Created by yx on 2016/4/29.
+ */
+public class UnionpayTransferInputBean extends AbstractInputBean {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -4607279326429397917L;
+    private String requestId;
+    private Date requestTime;
+    private String mid;
+    private String orderId;
+    private String orderDesc;
+    private BigDecimal amount;
+    private String currency;
+    private String payerId;
+    private String payerAccno;
+    private String payerType;
+    private String payerBankCode;
+    private String payerBankName;
+    private String recvId;
+    private String recvAccno;
+    private String recvType;
+    private String recvBankCode;
+    private String recvBankName;
+    private String lcReturnUrl;
+    private String lcNotifyUrl;
+
+    public UnionpayTransferInputBean(LoggerEnum.Scene scene) {
+        super(scene);
+    }
+
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public Date getRequestTime() {
+        return requestTime;
+    }
+
+    public void setRequestTime(Date requestTime) {
+        this.requestTime = requestTime;
+    }
+
+    public String getMid() {
+        return mid;
+    }
+
+    public void setMid(String mid) {
+        this.mid = mid;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getOrderDesc() {
+        return orderDesc;
+    }
+
+    public void setOrderDesc(String orderDesc) {
+        this.orderDesc = orderDesc;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getPayerId() {
+        return payerId;
+    }
+
+    public void setPayerId(String payerId) {
+        this.payerId = payerId;
+    }
+
+    public String getPayerAccno() {
+        return payerAccno;
+    }
+
+    public void setPayerAccno(String payerAccno) {
+        this.payerAccno = payerAccno;
+    }
+
+    public String getPayerType() {
+        return payerType;
+    }
+
+    public void setPayerType(String payerType) {
+        this.payerType = payerType;
+    }
+
+    public String getPayerBankCode() {
+        return payerBankCode;
+    }
+
+    public void setPayerBankCode(String payerBankCode) {
+        this.payerBankCode = payerBankCode;
+    }
+
+    public String getPayerBankName() {
+        return payerBankName;
+    }
+
+    public void setPayerBankName(String payerBankName) {
+        this.payerBankName = payerBankName;
+    }
+
+    public String getRecvId() {
+        return recvId;
+    }
+
+    public void setRecvId(String recvId) {
+        this.recvId = recvId;
+    }
+
+    public String getRecvAccno() {
+        return recvAccno;
+    }
+
+    public void setRecvAccno(String recvAccno) {
+        this.recvAccno = recvAccno;
+    }
+
+    public String getRecvType() {
+        return recvType;
+    }
+
+    public void setRecvType(String recvType) {
+        this.recvType = recvType;
+    }
+
+    public String getRecvBankCode() {
+        return recvBankCode;
+    }
+
+    public void setRecvBankCode(String recvBankCode) {
+        this.recvBankCode = recvBankCode;
+    }
+
+    public String getRecvBankName() {
+        return recvBankName;
+    }
+
+    public void setRecvBankName(String recvBankName) {
+        this.recvBankName = recvBankName;
+    }
+
+    public String getLcReturnUrl() {
+        return lcReturnUrl;
+    }
+
+    public void setLcReturnUrl(String lcReturnUrl) {
+        this.lcReturnUrl = lcReturnUrl;
+    }
+
+    public String getLcNotifyUrl() {
+        return lcNotifyUrl;
+    }
+
+    public void setLcNotifyUrl(String lcNotifyUrl) {
+        this.lcNotifyUrl = lcNotifyUrl;
+    }
+}

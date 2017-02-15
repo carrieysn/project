@@ -1,0 +1,86 @@
+package com.cifpay.lc.versionb.recharge.offline;
+
+import java.io.Serializable;
+
+/**
+ * Created by yx on 2016/5/10.
+ */
+public class OfflinePayResData implements Serializable {
+    private static final long serialVersionUID = 8332968159228357021L;
+
+    //订单号
+    private String orderId;
+    //请求ID
+    private String requestId;
+    //交易金额
+    private Long tradeAmt;
+    //交易时间
+    private String tradeTime;
+    //返回代码
+    private String returnCode;
+    //返回信息
+    private String returnMessage;
+
+    public OfflinePayResData() {
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public Long getTradeAmt() {
+        return tradeAmt;
+    }
+
+    public void setTradeAmt(Long tradeAmt) {
+        this.tradeAmt = tradeAmt;
+    }
+
+    public String getTradeTime() {
+        return tradeTime;
+    }
+
+    public void setTradeTime(String tradeTime) {
+        this.tradeTime = tradeTime;
+    }
+
+    public String getReturnCode() {
+        return returnCode;
+    }
+
+    public void setReturnCode(String returnCode) {
+        this.returnCode = returnCode;
+    }
+
+    public String getReturnMessage() {
+        return returnMessage;
+    }
+
+    public void setReturnMessage(String returnMessage) {
+        this.returnMessage = returnMessage;
+    }
+
+    @Override
+    public String toString() {
+        return "OfflinePayResData{" +
+                "orderId='" + orderId + '\'' +
+                ", requestId='" + requestId + '\'' +
+                ", tradeAmt='" + tradeAmt + '\'' +
+                ", tradeTime='" + tradeTime + '\'' +
+                ", returnCode='" + returnCode + '\'' +
+                ", returnMessage='" + returnMessage + '\'' +
+                '}';
+    }
+}

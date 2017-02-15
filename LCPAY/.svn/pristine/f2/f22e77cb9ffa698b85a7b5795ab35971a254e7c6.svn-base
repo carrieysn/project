@@ -1,0 +1,51 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_TRD_MAIN
+DROP TABLE IF EXISTS `CIFPAY_LC_TRD_MAIN`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_TRD_MAIN` (
+  `BUSINESS_ID` bigint(20) NOT NULL COMMENT '表主键',
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `TRADE_TYPE` varchar(10) NOT NULL COMMENT '交易类型：FREEZE、UNFREEZE、PAY、QUERY',
+  `TRADE_BANK_CODE` varchar(10) NOT NULL COMMENT '交易银行代码：ICBC、BOC、ABC ...',
+  `UNFREEZE_SERIAL_NO` bigint(20) DEFAULT NULL COMMENT '解冻流水ID,一次冻结多次解付使用',
+  `PAYER_BANK_CODE` varchar(10) DEFAULT NULL COMMENT '付款方银行代码(标识)',
+  `PAYEE_BANK_CODE` varchar(10) DEFAULT NULL COMMENT '收款方银行代码(标识)',
+  `ACCOUNT_NO` varchar(30) DEFAULT NULL COMMENT '冻结帐号、解冻帐号、付款人帐号',
+  `CARD_NO` varchar(30) DEFAULT NULL COMMENT '冻结卡号、解冻卡号、付款人卡号',
+  `CURRENCY` varchar(10) NOT NULL COMMENT '币种',
+  `AMOUNT` decimal(19,2) NOT NULL COMMENT '交易金额',
+  `HOLD_DATE` varchar(10) DEFAULT NULL COMMENT '截至(保留)日期 格式yyyy-mm-dd',
+  `HOLD_TYPE` varchar(1) DEFAULT NULL COMMENT '保留类型：3全额冻结 ',
+  `MOBILE` varchar(20) DEFAULT NULL COMMENT '电话号码',
+  `ORDER_ID` varchar(30) DEFAULT NULL COMMENT ' 订单号',
+  `THIRD_ID` varchar(30) DEFAULT NULL COMMENT '第三方商家号 ',
+  `PAYEE_CARD_NO` varchar(30) DEFAULT NULL COMMENT '收款人卡号',
+  `PAYEE_ACCOUNT_NO` varchar(30) DEFAULT NULL COMMENT '收款方帐号',
+  `BRANCH_NO` varchar(10) DEFAULT NULL COMMENT '开卡行号',
+  `RTN_SERIAL_NO` varchar(20) DEFAULT NULL COMMENT '(最新)返回交易流水',
+  `RTN_TRADE_DATE` varchar(10) DEFAULT NULL COMMENT '(最新)返回交易日期',
+  `RTN_CODE` varchar(10) DEFAULT NULL COMMENT '(最新)返回响应码',
+  `RTN_MSG` varchar(800) DEFAULT NULL COMMENT '(最新)返回响应信息',
+  `RTN_CREATE_FREEZE_DATE` varchar(10) DEFAULT NULL COMMENT '建立保留日期 格式yyyy-mm-dd',
+  `FLOW_ID` bigint(20) DEFAULT NULL,
+  `TRADE_RESULT` varchar(5) DEFAULT NULL COMMENT '经转化的交易结果 0成功 1失败 2状态未明',
+  `SYS_RETURN_CODE` int(8) DEFAULT NULL,
+  `INSERT_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',
+  `LAST_UPD_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+  PRIMARY KEY (`BUSINESS_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

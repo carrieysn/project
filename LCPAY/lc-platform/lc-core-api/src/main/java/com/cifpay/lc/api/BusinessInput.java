@@ -1,0 +1,35 @@
+package com.cifpay.lc.api;
+
+import java.io.Serializable;
+import java.util.Formatter;
+
+public class BusinessInput<I extends Serializable> implements Serializable {
+    private static final long serialVersionUID = -295060032301235555L;
+
+    private I data;
+
+    public BusinessInput() {
+    }
+
+    public BusinessInput(I data) {
+        this.data = data;
+    }
+
+    public I getData() {
+        return data;
+    }
+
+    public void setData(I data) {
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        try (Formatter f = new Formatter()) {
+            return f.format("{data:%s}", new Object[]{data}).toString();
+        } catch (Exception e) {
+            return super.toString();
+        }
+    }
+
+}

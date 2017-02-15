@@ -1,0 +1,94 @@
+package com.cifpay.lc.bankadapter.api.input.unionpay;
+
+import com.cifpay.lc.bankadapter.api.input.AbsTradeParam;
+
+/**
+ * 银联查询交易参数
+ * 
+ * @author linql
+ *
+ */
+public class QueryTradeCifParam extends AbsTradeParam {
+	private Long businessId;// 业务ID
+	private String txnType;// 交易类型
+	private String txnSubType;// 交易子类型
+	private String merId;// 商户代码
+	private String userId;// 商户用户唯一ID
+	private String subMerId;// 二级商户代码(*)
+	private String orderId;// 商户订单号(*)
+	private String txnTime;// 订单发送时间(*)
+	
+	private boolean isOnline;//是否联机查询银联结果
+	public Long getBusinessId() {
+		return businessId;
+	}
+
+	public void setBusinessId(Long businessId) {
+		this.businessId = businessId;
+	}
+
+	public String getTxnType() {
+		return txnType;
+	}
+
+	public void setTxnType(String txnType) {
+		this.txnType = txnType;
+	}
+
+	public String getTxnSubType() {
+		return txnSubType;
+	}
+
+	public void setTxnSubType(String txnSubType) {
+		this.txnSubType = txnSubType;
+	}
+
+	public String getMerId() {
+		return merId;
+	}
+
+	public void setMerId(String merId) {
+		this.merId = merId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public String getSubMerId() {
+		return subMerId;
+	}
+
+	public void setSubMerId(String subMerId) {
+		this.subMerId = subMerId;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getTxnTime() {
+		return txnTime;
+	}
+
+	public void setTxnTime(String txnTime) {
+		this.txnTime = txnTime;
+	}
+
+	public boolean isOnline() {
+		return isOnline;
+	}
+
+	public void setOnline(boolean isOnline) {
+		this.isOnline = isOnline;
+	}
+	
+}

@@ -1,0 +1,79 @@
+package com.cifpay.lc.api;
+
+import java.io.Serializable;
+import java.util.Formatter;
+
+import com.cifpay.lc.constant.ReturnCode;
+
+public class BusinessOutput<O extends Serializable> implements Serializable {
+	private static final long serialVersionUID = -295060032301235555L;
+
+	// 默认返回码为未定义
+	private int returnCode = ReturnCode.UNDEFINED_RETURN_CODE;
+	private String returnMsg = "代码级错误，业务方法未设置returnCode、returnMsg";
+
+	private O data;
+
+	public BusinessOutput() {
+	}
+
+	public BusinessOutput(O data) {
+		this.data = data;
+	}
+
+	public int getReturnCode() {
+		return returnCode;
+	}
+
+	public void setReturnCode(int returnCode) {
+		this.returnCode = returnCode;
+	}
+
+	public String getReturnMsg() {
+		return returnMsg;
+	}
+
+	public void setReturnMsg(String returnMsg) {
+		this.returnMsg = returnMsg;
+	}
+
+	public O getData() {
+		return data;
+	}
+
+	public void setData(O data) {
+		this.data = data;
+	}
+
+	public boolean isSuccess() {
+		return returnCode >= 0;
+	}
+
+	public boolean isFailed() {
+		return returnCode < 0;
+	}
+
+	public static <O extends Serializable> BusinessOutput<O> success(O data) {
+		BusinessOutput<O> output = new BusinessOutput<O>(data);
+		output.setReturnCode(ReturnCode.GENERAL_SUCCESS);
+		output.setReturnMsg("成功");
+		return output;
+	}
+
+	public static <O extends Serializable> BusinessOutput<O> fail(int returnCode, String message) {
+		BusinessOutput<O> output = new BusinessOutput<O>();
+		output.setReturnCode(returnCode);
+		output.setReturnMsg(message);
+		return output;
+	}
+
+	@Override
+	public String toString() {
+		try (Formatter f = new Formatter()) {
+			return f.format("{returnCode:\"%s\", returnMsg:\"%s\", data:%s}", new Object[] { returnCode, returnMsg, data }).toString();
+		} catch (Exception e) {
+			return super.toString();
+		}
+	}
+
+}

@@ -1,0 +1,15 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay.constant;
+
+
+public class BaseConstant {
+	// 银联WAP支付星电商商户号
+	public static String MERID = "531111605180009";
+	// 银联版本号固定值
+	public static String UNIONPAY_VERSION = "20140728";
+	// 交易类型，企业网银
+	public static String UNIONPAY_TRANTYPE_CORP = "0002";
+	// 交易类型，个人网银
+	public static String UNIONPAY_TRANTYPE_PERS = "0001";
+	// 业务类型，0001
+	public static String UNIONPAY_BUSITYPE = "0001";
+}

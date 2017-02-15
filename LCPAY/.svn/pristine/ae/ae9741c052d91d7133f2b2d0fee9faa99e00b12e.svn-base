@@ -1,0 +1,11 @@
+package com.cifpay.lc.std.sched.task;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+
+public class NoticeTask {
+
+	@Autowired
+	private RedisTemplate reids;
+
+}

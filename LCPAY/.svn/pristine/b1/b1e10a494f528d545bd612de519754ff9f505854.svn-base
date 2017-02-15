@@ -1,0 +1,5 @@
+package com.cifpay.lc.api;
+
+public interface BusinessService {
+
+}

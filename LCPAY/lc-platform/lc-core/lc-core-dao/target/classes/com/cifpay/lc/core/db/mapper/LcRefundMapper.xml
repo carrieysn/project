@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcRefundDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcRefund" >
+    <id column="LC_REFUND_ID" property="lcRefundId" jdbcType="BIGINT" />
+    <result column="LC_ID" property="lcId" jdbcType="BIGINT" />
+    <result column="MID" property="mid" jdbcType="VARCHAR" />
+    <result column="REFUND_ORDER_ID" property="refundOrderId" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="REFUND_AMOUNT" property="refundAmount" jdbcType="DECIMAL" />
+    <result column="REFUND_STATUS" property="refundStatus" jdbcType="INTEGER" />
+    <result column="REFUND_DATE" property="refundDate" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LC_REFUND_ID, LC_ID, MID, REFUND_ORDER_ID, ORDER_ID, REFUND_AMOUNT, REFUND_STATUS, 
+    REFUND_DATE, REMARK, CREATE_TIME, UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_REFUND
+    where LC_REFUND_ID = #{lcRefundId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC_REFUND
+    where LC_REFUND_ID = #{lcRefundId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcRefund" >
+    insert into CIFPAY_LC_REFUND (LC_REFUND_ID, LC_ID, MID, 
+      REFUND_ORDER_ID, ORDER_ID, REFUND_AMOUNT, 
+      REFUND_STATUS, REFUND_DATE, REMARK, 
+      CREATE_TIME, UPDATE_TIME)
+    values (#{lcRefundId,jdbcType=BIGINT}, #{lcId,jdbcType=BIGINT}, #{mid,jdbcType=VARCHAR}, 
+      #{refundOrderId,jdbcType=VARCHAR}, #{orderId,jdbcType=VARCHAR}, #{refundAmount,jdbcType=DECIMAL}, 
+      #{refundStatus,jdbcType=INTEGER}, #{refundDate,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcRefund" >
+    insert into CIFPAY_LC_REFUND
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="lcRefundId != null" >
+        LC_REFUND_ID,
+      </if>
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+      <if test="mid != null" >
+        MID,
+      </if>
+      <if test="refundOrderId != null" >
+        REFUND_ORDER_ID,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+      <if test="refundAmount != null" >
+        REFUND_AMOUNT,
+      </if>
+      <if test="refundStatus != null" >
+        REFUND_STATUS,
+      </if>
+      <if test="refundDate != null" >
+        REFUND_DATE,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="lcRefundId != null" >
+        #{lcRefundId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="mid != null" >
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="refundOrderId != null" >
+        #{refundOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="refundAmount != null" >
+        #{refundAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="refundStatus != null" >
+        #{refundStatus,jdbcType=INTEGER},
+      </if>
+      <if test="refundDate != null" >
+        #{refundDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcRefund" >
+    update CIFPAY_LC_REFUND
+    <set >
+      <if test="lcId != null" >
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="mid != null" >
+        MID = #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="refundOrderId != null" >
+        REFUND_ORDER_ID = #{refundOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="refundAmount != null" >
+        REFUND_AMOUNT = #{refundAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="refundStatus != null" >
+        REFUND_STATUS = #{refundStatus,jdbcType=INTEGER},
+      </if>
+      <if test="refundDate != null" >
+        REFUND_DATE = #{refundDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where LC_REFUND_ID = #{lcRefundId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcRefund" >
+    update CIFPAY_LC_REFUND
+    set LC_ID = #{lcId,jdbcType=BIGINT},
+      MID = #{mid,jdbcType=VARCHAR},
+      REFUND_ORDER_ID = #{refundOrderId,jdbcType=VARCHAR},
+      ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      REFUND_AMOUNT = #{refundAmount,jdbcType=DECIMAL},
+      REFUND_STATUS = #{refundStatus,jdbcType=INTEGER},
+      REFUND_DATE = #{refundDate,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where LC_REFUND_ID = #{lcRefundId,jdbcType=BIGINT}
+  </update>
+</mapper>

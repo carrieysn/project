@@ -1,0 +1,26 @@
+package com.cifpay.lc.domain.lc;
+
+public class TransferInputBean extends BaseLcInputBean {
+
+	private static final long serialVersionUID = 4100379068773292602L;
+
+	private long applyId; 	// 申请解付ID(*)
+	private String remark; 	// 备注
+
+	public long getApplyId() {
+		return applyId;
+	}
+
+	public void setApplyId(long applyId) {
+		this.applyId = applyId;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+}

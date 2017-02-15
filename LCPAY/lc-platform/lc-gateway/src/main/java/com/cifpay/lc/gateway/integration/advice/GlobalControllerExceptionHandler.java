@@ -1,0 +1,103 @@
+package com.cifpay.lc.gateway.integration.advice;
+
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.gateway.common.exception.*;
+import com.cifpay.lc.gateway.output.FinalUnsignedFailureResponse;
+import com.cifpay.lc.util.ClientIpUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * Controller全局共用的异常处理。
+ */
+@ControllerAdvice
+public class GlobalControllerExceptionHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final boolean isLoggerDebugEnabled = logger.isDebugEnabled();
+
+    @ResponseStatus(HttpStatus.CONFLICT) // 409
+    @ExceptionHandler(Throwable.class)
+    @ResponseBody
+    public Object handleException(Throwable ex) {
+
+        String returnCode;
+        String returnMsg;
+
+        try {
+            throw ex;
+        } catch (GatewayValidationRejectException gwEx) {
+            returnCode = gwEx.getFormatedReturnCode();
+            returnMsg = gwEx.getMessage();
+            if (isLoggerDebugEnabled) {
+                logger.debug("~~~Gateway请求校验未通过，错误码：{}，错误信息：{}", String.valueOf(returnCode), returnMsg);
+            }
+
+        } catch (com.fasterxml.jackson.databind.JsonMappingException fastEx) {
+            String message = "参数不正确：" + (fastEx.getPath().isEmpty() ? "" : fastEx.getPath().get(0).getFieldName());
+            if (isLoggerDebugEnabled) {
+                logger.debug(message);
+            }
+            returnCode = AbstractGatewayException.getFormatedReturnCode(GatewayValidationRejectException.FORMATED_RETURN_CODE_PREFIX, ReturnCode.GW_GENERIC_VALIDATION_REJECTED);
+            returnMsg = message;
+        } catch (AbstractGatewayException gwEx) {
+            returnCode = gwEx.getFormatedReturnCode();
+            returnMsg = gwEx.getMessage();
+            logger.warn("处理Gateway请求过程中发生错误，错误码：{}，错误信息：{}", String.valueOf(returnCode), returnMsg, gwEx);
+        } catch (HttpMessageNotReadableException | HttpMediaTypeNotSupportedException | HttpMediaTypeNotAcceptableException | MissingServletRequestParameterException | HttpRequestMethodNotSupportedException e) {
+            if (isLoggerDebugEnabled) {
+                ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                HttpServletRequest req = sra.getRequest();
+                String clientIp = ClientIpUtil.getClientIpAddr(req);
+                logger.debug("~~~请求Gateway的方式不正确，客户端IP: {}, 错误信息：{}", String.valueOf(clientIp), ex.getMessage());
+            }
+            returnCode = AbstractGatewayException.getFormatedReturnCode(GatewayValidationRejectException.FORMATED_RETURN_CODE_PREFIX, ReturnCode.GW_BAD_REQUEST);
+            returnMsg = "请求方式不正确";
+        } catch (Throwable e) {
+            logger.error("处理Gateway请求过程中发生未知错误：{}", ex.getMessage(), ex);
+            returnCode = AbstractGatewayException.getFormatedReturnCode("UN", ReturnCode.UNKNOWN_ERROR);
+            returnMsg = "系统繁忙";
+        }
+
+        FinalUnsignedFailureResponse failureRes = new FinalUnsignedFailureResponse();
+        failureRes.setReturnCode(returnCode);
+        failureRes.setReturnMsg(returnMsg);
+        return failureRes;
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT) // 409
+    @ExceptionHandler(AbstractGatewayViewException.class)
+    @ResponseBody
+    public Object handleViewException(AbstractGatewayViewException viewEx) {
+
+        if (viewEx.getClass().equals(GatewayUnionException.class)) {
+            ModelAndView view = new ModelAndView();
+            view.setViewName("share/error_union");
+            view.addObject("message", viewEx.getMessage());
+
+            return view;
+        }
+
+        ModelAndView view = new ModelAndView();
+        view.setViewName("share/error_union");
+        view.addObject("message", viewEx.getMessage());
+
+        return view;
+    }
+
+}

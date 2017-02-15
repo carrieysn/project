@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cifpay.lc.core.db.dao.UnionUserAccountDao">
+   <select id="selectById" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_USER_ACCOUNT
+    where MID = #{mid} 
+    and MER_USERID = #{merUserid}
+    and ACCNO_TYPE = #{accNoType}
+    order by CREATE_DATE DESC
+    limit 1
+  </select>
+</mapper>

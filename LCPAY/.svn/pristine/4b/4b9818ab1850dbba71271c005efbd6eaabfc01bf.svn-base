@@ -1,0 +1,28 @@
+package com.cifpay.lc.core.autoconfigure.mongodb;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+
+@Configuration
+//@ConditionalOnProperty(name = "cifpay.mongodb.enable", havingValue = "true")
+public class MongoDbConfiguration {
+
+    @Value("${cifpay.mongodb.uri:}")
+    private String uri;
+
+    @Bean
+    @Primary
+    public MongoProperties mongoProperties() {
+        //MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory);
+        MongoProperties mongoProperties = new MongoProperties();
+        mongoProperties.setUri(uri);
+//        mongoProperties.setHost(host);
+//        mongoProperties.setPort(port);
+//        mongoProperties.setDatabase(database);
+        return mongoProperties;
+    }
+}

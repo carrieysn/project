@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTrdUnionPayTokenDao">
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.UnionPayTrdToken">
+    <id column="MER_ID" jdbcType="VARCHAR" property="merId" />
+    <id column="ACC_NO" jdbcType="VARCHAR" property="accNo" />
+    <result column="TOKEN" jdbcType="VARCHAR" property="token" />
+    <result column="TR_ID" jdbcType="VARCHAR" property="trId" />
+    <result column="TOKEN_LEVEL" jdbcType="VARCHAR" property="tokenLevel" />
+    <result column="TOKEN_BEGIN" jdbcType="VARCHAR" property="tokenBegin" />
+    <result column="TOKEN_END" jdbcType="VARCHAR" property="tokenEnd" />
+    <result column="TOKEN_TYPE" jdbcType="VARCHAR" property="tokenType" />
+    <result column="PHONE_NO" jdbcType="VARCHAR" property="phoneNo" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    MER_ID, ACC_NO, TOKEN, TR_ID, TOKEN_LEVEL, TOKEN_BEGIN, TOKEN_END, TOKEN_TYPE, PHONE_NO
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_TRD_UNIONPAY_TOKEN
+    where MER_ID = #{merId,jdbcType=VARCHAR}
+      and ACC_NO = #{accNo,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from CIFPAY_LC_TRD_UNIONPAY_TOKEN
+    where MER_ID = #{merId,jdbcType=VARCHAR}
+      and ACC_NO = #{accNo,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdToken">
+    insert into CIFPAY_LC_TRD_UNIONPAY_TOKEN (MER_ID, ACC_NO, TOKEN, 
+      TR_ID, TOKEN_LEVEL, TOKEN_BEGIN, 
+      TOKEN_END, TOKEN_TYPE, PHONE_NO
+      )
+    values (#{merId,jdbcType=VARCHAR}, #{accNo,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR}, 
+      #{trId,jdbcType=VARCHAR}, #{tokenLevel,jdbcType=VARCHAR}, #{tokenBegin,jdbcType=VARCHAR}, 
+      #{tokenEnd,jdbcType=VARCHAR}, #{tokenType,jdbcType=VARCHAR}, #{phoneNo,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdToken">
+    insert into CIFPAY_LC_TRD_UNIONPAY_TOKEN
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="merId != null">
+        MER_ID,
+      </if>
+      <if test="accNo != null">
+        ACC_NO,
+      </if>
+      <if test="token != null">
+        TOKEN,
+      </if>
+      <if test="trId != null">
+        TR_ID,
+      </if>
+      <if test="tokenLevel != null">
+        TOKEN_LEVEL,
+      </if>
+      <if test="tokenBegin != null">
+        TOKEN_BEGIN,
+      </if>
+      <if test="tokenEnd != null">
+        TOKEN_END,
+      </if>
+      <if test="tokenType != null">
+        TOKEN_TYPE,
+      </if>
+      <if test="phoneNo != null">
+        PHONE_NO,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="merId != null">
+        #{merId,jdbcType=VARCHAR},
+      </if>
+      <if test="accNo != null">
+        #{accNo,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null">
+        #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="trId != null">
+        #{trId,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenLevel != null">
+        #{tokenLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenBegin != null">
+        #{tokenBegin,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenEnd != null">
+        #{tokenEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenType != null">
+        #{tokenType,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNo != null">
+        #{phoneNo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdToken">
+    update CIFPAY_LC_TRD_UNIONPAY_TOKEN
+    <set>
+      <if test="token != null">
+        TOKEN = #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="trId != null">
+        TR_ID = #{trId,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenLevel != null">
+        TOKEN_LEVEL = #{tokenLevel,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenBegin != null">
+        TOKEN_BEGIN = #{tokenBegin,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenEnd != null">
+        TOKEN_END = #{tokenEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="tokenType != null">
+        TOKEN_TYPE = #{tokenType,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNo != null">
+        PHONE_NO = #{phoneNo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where MER_ID = #{merId,jdbcType=VARCHAR}
+      and ACC_NO = #{accNo,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdToken">
+    update CIFPAY_LC_TRD_UNIONPAY_TOKEN
+    set TOKEN = #{token,jdbcType=VARCHAR},
+      TR_ID = #{trId,jdbcType=VARCHAR},
+      TOKEN_LEVEL = #{tokenLevel,jdbcType=VARCHAR},
+      TOKEN_BEGIN = #{tokenBegin,jdbcType=VARCHAR},
+      TOKEN_END = #{tokenEnd,jdbcType=VARCHAR},
+      TOKEN_TYPE = #{tokenType,jdbcType=VARCHAR},
+      PHONE_NO = #{phoneNo,jdbcType=VARCHAR}
+    where MER_ID = #{merId,jdbcType=VARCHAR}
+      and ACC_NO = #{accNo,jdbcType=VARCHAR}
+  </update>
+</mapper>

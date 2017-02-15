@@ -1,0 +1,81 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.versionb.VersionBMerchantSignValidator;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.ConvertTool;
+import com.cifpay.lc.versionb.recharge.online.chinapay.domain.wap.UnionpayPaymentRequest;
+
+/**
+ * Created by yx on 2016/3/17.
+ */
+public class UnionpayParaValidation {
+
+    public static boolean validate(UnionpayPaymentRequest aliPayPara){
+    	
+        if (StringUtils.isEmpty(aliPayPara.getMerId())){
+            return false;
+        }
+        if (StringUtils.isEmpty(aliPayPara.getOrderId())){
+            return false;
+        }
+        if (StringUtils.isEmpty(aliPayPara.getCurrency())){
+            return false;
+        }
+        if (StringUtils.isEmpty(aliPayPara.getAmount())){
+            return false;
+        }
+        
+        try {
+			if (new BigDecimal(aliPayPara.getAmount()).compareTo(new BigDecimal(0))<=0){
+			    return false;
+			}
+		} catch (NumberFormatException e) {
+			return false;
+		}
+        
+        if (StringUtils.isEmpty(aliPayPara.getNoticeUrl()) && StringUtils.isEmpty(aliPayPara.getReturnUrl())){
+            return false;
+        }
+        if (!aliPayPara.getReturnUrl().startsWith("http://") && !aliPayPara.getReturnUrl().startsWith("https://")){
+            return false;
+        }
+        if (!aliPayPara.getNoticeUrl().startsWith("http://") && !aliPayPara.getNoticeUrl().startsWith("https://")){
+            return false;
+        }
+        if (StringUtils.isEmpty(aliPayPara.getType()) || (!"1".equals(aliPayPara.getType()) && !"2".equals(aliPayPara.getType()))){
+            return false;
+        }
+        if (StringUtils.isEmpty(aliPayPara.getSign())){
+            return false;
+        }
+        return true;
+    }
+
+    public static Map<String,String> validation(UnionpayPaymentRequest aliPayPara, VersionBMerchantSignValidator versionBMerchantSignValidator){
+        Map<String,String> result = new HashMap<String,String>();
+        if (!validate(aliPayPara)){
+            result.put("retCode","ERROR");
+            result.put("retMsg","参数验证不通过");
+            return result;
+        }
+        String sign = aliPayPara.getSign();
+        String merId = aliPayPara.getMerId();
+        Map<String,String> params = ConvertTool.beanToMap(aliPayPara);
+        params.remove("sign");
+        try{
+            versionBMerchantSignValidator.checkMerSignature(merId,params,sign);
+        }catch (Exception e){
+            result.put("retCode","ERROR");
+            result.put("retMsg","参数验签失败");
+            return result;
+        }
+        result.put("retCode","SUCCESS");
+        result.put("retMsg","参数验证通过");
+        return result;
+    }
+}

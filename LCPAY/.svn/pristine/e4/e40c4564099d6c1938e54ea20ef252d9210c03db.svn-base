@@ -1,0 +1,36 @@
+package com.cifpay.lc.constant;
+
+/**
+ * gateway层的返回码，范围是106xxx，其中使用负数表示失败（错误码），即 -106xxx 用于表示失败。
+ * <p>
+ * 在此文件中定义的返回码常量名必须全部以“CORE_PRE_LC 或 CORE_LC”开头，例如：
+ *
+ * @{@code int CORE_MSG_NOT_EXISTS = -106001; }
+ */
+public interface CoreLcReturnCode {
+
+    //预开证已经存在
+    int CORE_PRE_LC_EXISTS_N106401 = -106401;
+
+    //开证记录不存在
+    int CORE_LC_NOT_FOUND_N106402 = -106402;
+
+    //开证不成功
+    int CORE_LC_OPEN_FAIL_N106403 = -106403;
+
+    //预开证不存在
+    int CORE_PRE_LC_NOT_FOUND_N106404 = -106404;
+
+    //收证不成功
+    int CORE_PRE_LC_RECV_FAIL_N106405 = -106405;
+
+    //银信证状态不无效
+    int CORE_LC_FLOW_INVALID_N106406 = -106406;
+
+    //银信证已经存在
+    int CORE_LC_EXISTS_N106407 = -106407;
+
+    //自动履约不成功
+    int CORE_PRE_LC_APPOINTMENT_FAIL_N106408 = -106408;
+
+}

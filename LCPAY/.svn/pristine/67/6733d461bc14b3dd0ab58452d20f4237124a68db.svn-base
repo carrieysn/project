@@ -1,0 +1,12 @@
+package com.cifpay.lc.api.xds.offlinepayment;
+
+import java.io.Serializable;
+
+/**
+ * Created by yx on 2016/5/10.
+ */
+public class OfflinePayOutputBean implements Serializable {
+    private static final long serialVersionUID = 6538149143396706388L;
+
+
+}

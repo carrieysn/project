@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://code.alibabatech.com/schema/dubbo 
+	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+    <dubbo:application name="lc-standard-scheduler" owner="cifpaylc"
+                       organization="cifpay"/>
+
+    <!-- 使用multicast广播注册中心暴露发现服务地址 -->
+    <!-- address：注册中心服务器地址，如果地址没有端口缺省为9090，同一集群内的多个地址用逗号分隔，如：ip:port,ip:port，不同集群的注册中心，请配置多个<dubbo:registry>标签。
+        username：登录注册中心用户名，如果注册中心不需要验证可不填。 password：登录注册中心密码，如果注册中心不需要验证可不填。 timeout：注册中心请求超时时间(毫秒)，默认5000。
+        file：使用文件缓存注册中心地址列表及服务提供者列表，应用重启时将基于此文件恢复，注意：两个注册中心不能使用同一文件存储。 check：注册中心不存在时，是否报错，默认true。 -->
+    <dubbo:registry protocol="zookeeper" address="${dubbo.registry.zookeeper.address}" client="curator"
+                    timeout="10000"
+                    file="${dubbo.registry.cacheFilePathPrefix}_#{T(com.cifpay.lc.util.AppNodeInfoHelper).getLocalRuntimePathIdentifier()}"/>
+
+    <!-- 消费端全局默认参数设置： check: 启动时检查提供者是否存在，true报错，false忽略. timeout: 远程服务调用超时时间(毫秒).
+        retries: 远程服务调用重试次数，不包括第一次调用，不需要重试请设为0. -->
+    <!-- 禁用消费端的dubbo重试功能，防止产生重复交易，因为有些交易比较耗时，会被dubbo消费误以为连接超时 -->
+    <!-- 为保险起见，超时设置为20分钟 -->
+    <dubbo:consumer check="false" timeout="1200000" retries="0"/>
+
+    <!-- 生成远程服务代理，可以和本地bean一样使用远程的Service -->
+
+    <!-- 银信证合作银行统一交易服务接口 -->
+    <dubbo:reference id="bankTradeService" interface="com.cifpay.lc.bankadapter.api.IBankTradeService"/>
+    
+    <dubbo:reference id="bankTradeService2" interface="com.cifpay.lc.bankadapter.api.output.bank.IBankTradeService"/>
+
+    <!-- 银信证失效 -->
+    <dubbo:reference id="invalidateLcService" interface="com.cifpay.lc.api.gateway.lc.InvalidateLcService"/>
+
+    <!-- 银信证解付 -->
+    <dubbo:reference id="transferService" interface="com.cifpay.lc.api.gateway.lc.TransferService"/>
+
+    <!-- 银信证查询银行信息 -->
+    <dubbo:reference id="paymentSuccessService" interface="com.cifpay.lc.api.gateway.bank.PaymentSuccessService"/>
+
+
+</beans>

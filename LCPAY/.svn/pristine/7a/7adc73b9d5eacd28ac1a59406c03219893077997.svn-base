@@ -1,0 +1,18 @@
+//package com.cifpay.lc.security;
+//
+//import com.cifpay.lc.domain.security.FinalSignedMerchantResponse;
+//import com.cifpay.lc.domain.security.MerchantResponseData;
+//
+///**
+// * Created by sweet on 16-9-21.
+// */
+//public interface SecurityService {
+//    /**
+//     * 将数据加密并签名
+//     *
+//     * @param merId 商户号
+//     * @param resp  加密数据明文
+//     * @return 数据密文
+//     */
+//    FinalSignedMerchantResponse encryptData(String merId, MerchantResponseData resp);
+//}

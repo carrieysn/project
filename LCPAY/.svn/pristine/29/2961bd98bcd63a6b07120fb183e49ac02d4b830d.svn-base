@@ -1,0 +1,229 @@
+package com.cifpay.lc.std.kernel.lc;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.constant.BizConstants;
+import com.cifpay.lc.constant.ResultHandler;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.LcPayType;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.constant.enums.ProcessStatus;
+import com.cifpay.lc.core.cache.pojo.LcCache;
+import com.cifpay.lc.core.cache.pojo.LcSendCache;
+import com.cifpay.lc.core.cache.service.LcCacheServant;
+import com.cifpay.lc.core.cache.service.LcSendCacheServant;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessExceptionHelper;
+import com.cifpay.lc.core.common.DbTransaction;
+import com.cifpay.lc.core.common.DbTransactionHelper;
+import com.cifpay.lc.core.db.dao.LcLogDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcLog;
+import com.cifpay.lc.core.db.pojo.LcSend;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.core.uid.LcLogIdWorker;
+import com.cifpay.lc.core.uid.LcSendIdWorker;
+import com.cifpay.lc.std.kernel.LcBaseKernel;
+import com.cifpay.lc.std.domain.kernel.AppointmentKernelInputBean;
+import com.cifpay.lc.std.domain.kernel.AppointmentKernelOutputBean;
+import com.cifpay.lc.std.kernel.lc.appointment.AppointmentStrategy;
+import com.cifpay.lc.util.MathUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 履约
+ *
+ * @author sweet
+ */
+@Component
+public class AppointmentKernel extends LcBaseKernel<AppointmentKernelInputBean, AppointmentKernelOutputBean> {
+
+    @Autowired
+    private LcCacheServant lcCacheServant;  // 银信证DAO
+
+    @Autowired
+    private LcSendCacheServant lcSendCacheServant;
+
+    @Autowired
+    private LcLogDao lcLogDao; // 流水DAO
+
+    @Autowired
+    private LcLogIdWorker lcLogIdWorker;
+
+    @Autowired
+    private LcSendIdWorker lcSendIdWorker;
+    @Autowired
+    private DbTransactionHelper dbTransactionHelper;
+
+    private Map<String, AppointmentStrategy> appointmentStrategyMappings;
+
+    @Autowired
+    public void setAppointmentStrategys(List<AppointmentStrategy> appointmentStrategys) {
+        this.appointmentStrategyMappings = new HashMap<String, AppointmentStrategy>();
+        for (AppointmentStrategy st : appointmentStrategys) {
+            this.appointmentStrategyMappings.put(st.getLcType(), st);
+        }
+    }
+
+    @Override
+    protected void validateLcStatus(AppointmentKernelInputBean inputBean, CoreBusinessContext context) throws CoreValidationRejectException {
+
+        if (inputBean.getOrderAmount().compareTo(BigDecimal.valueOf(0)) <= 0) {
+            throw new CoreValidationRejectException(ReturnCode.UNKNOWN_ERROR, "履约金额不正确");
+        }
+
+        // 查找银信证
+        LcCache lc = lcCacheServant.selectByPrimaryKey(inputBean.getLcId());
+        if (lc == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_NOT_EXISTS, "银信证记录不存在");
+        }
+        context.setAttribute("Lc", lc);
+
+        // 检查银信证状态“已收证”或“多次解付”
+        // 1）单笔
+        // 2）批量
+        String lcStatus = lc.getLcStatus();
+        String payType = lc.getPayType();
+
+        if (LcPayType.SINGLE_PAY.getCode().compareTo(payType) == 0) {
+            if (lcStatus.compareTo(LcStatusType.RECIEVED.getStatusCode()) != 0) {
+                throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED_APPOINTMENT, "履约交易状态校验不通过");
+            }
+            // 检查不存在履约记录
+            List<LcSendCache> lcSends = lcSendCacheServant.selectBylcId(lc.getLcId());
+            boolean hasSuccess = lcSends.stream().anyMatch(x -> LcTranStatus.SUCCESS.getTranStatusStr().compareTo(x.getSendStatus()) == 0);
+            if (hasSuccess) {
+                throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED_APPOINTMENT, "银信证已履约");
+            }
+        }
+        if (LcPayType.MULTIPAY_PAY_WITH_SAME_PAYEE.getCode().compareTo(payType) == 0) {
+            if (lcStatus.compareTo(LcStatusType.RECIEVED.getStatusCode()) != 0 && lcStatus.compareTo(LcStatusType.APPOINTMENT_PART_DONE.getStatusCode()) != 0 && lcStatus.compareTo(LcStatusType.DEFER.getStatusCode()) != 0) {
+                throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED_APPOINTMENT, "履约交易状态校验不通过");
+            }
+        }
+
+    }
+
+    @Override
+    protected void validateLcValidity(AppointmentKernelInputBean inputBean, CoreBusinessContext context) throws CoreValidationRejectException {
+        // 收证时间符合提示解付的时间规则
+        // 1）收证时间检查
+        // 2）临界时间处理
+
+        // 查看银信证表的履约有效期是否过期，（定时任务也会操作，存在可能没来得及修改状态）
+        LcCache lc = (LcCache) context.getAttribute("Lc");
+        Date sendValidate = lc.getSendValidTime();
+        Date now = new Date();
+        if (sendValidate.getTime() < now.getTime()) { // 如果履约有效期小于当前时间，则过期
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_VALIDITY_FAIL_APPOINTMENT, "已过履约有效期");
+        }
+
+    }
+
+    @Override
+    protected BusinessOutput<AppointmentKernelOutputBean> processLcKernelLogic(AppointmentKernelInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+
+        logger.info("---进入履约交易:" + inputBean.getLcId());
+
+        DbTransaction dbTransaction = dbTransactionHelper.beginTransaction();
+        try {
+            BusinessOutput<AppointmentKernelOutputBean> result = _processBusiness(inputBean, context);
+            dbTransactionHelper.commitTransaction(dbTransaction);
+            return result;
+        } catch (Throwable e) {
+            dbTransactionHelper.rollbackTransaction(dbTransaction);
+            CoreBusinessExceptionHelper.throwAsCoreBusinessException(e);
+        }
+
+        throw new CoreBusinessException(ReturnCode.UNKNOWN_ERROR, "履约失败");
+    }
+
+    private BusinessOutput<AppointmentKernelOutputBean> _processBusiness(AppointmentKernelInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+
+        LcCache lc = (LcCache) context.getAttribute("Lc"); // 银信证表数据
+        Date now = new Date();
+
+        AppointmentStrategy strategy = appointmentStrategyMappings.get(lc.getLcType());
+        if (strategy == null) {
+            throw new CoreBusinessException(ReturnCode.UNKNOWN_ERROR, "暂不支持当前类型的履约操作");
+        }
+
+        LcSend rawlcSend = new LcSend();
+        rawlcSend.setLcId(lc.getLcId());
+        rawlcSend.setLcSendId(lcSendIdWorker.nextId());
+        rawlcSend.setMid(lc.getMid());
+        rawlcSend.setSendType(lc.getLcType());
+        rawlcSend.setSendStatus(LcTranStatus.INPROCESS.getTranStatusStr());
+        rawlcSend.setProcessStatus(ProcessStatus.INPROCESS.getCode());
+        rawlcSend.setValidTime(lc.getConfirmValidTime());
+
+        // 进行履约操作
+        ResultHandler<LcSend> response = strategy.processAppointment(rawlcSend, inputBean);
+
+        // 插入履约表
+        LcSend lcSend = response.getData();
+        rawlcSend.setLcId(lc.getLcId());
+        lcSend.setLcBalance(lc.getLcBalance());
+        lcSend.setSendTime(now);
+        lcSend.setCreateTime(now);
+        lcSend.setUpdateTime(now);
+        lcSendCacheServant.insert(lcSend);
+
+        if (!response.isSuccess()) {
+            throw new CoreBusinessException(ReturnCode.UNKNOWN_ERROR, response.getMessage());
+        }
+
+        // 更新银信证表状态（单次解付、多次解付）
+        BigDecimal maxAmount = lc.getLcBalance(); // 可用金额
+        BigDecimal sendAmount = maxAmount.min(lcSend.getOrderAmount()); // 履约金额
+
+        Lc updateLc = new Lc();
+        updateLc.setLcId(lc.getLcId());
+        updateLc.setUpdateTime(now);
+        updateLc.setLcStatus(lc.getLcStatus());
+        updateLc.setLcFreezingAmount(MathUtil.add(lc.getLcFreezingAmount(), sendAmount));
+        updateLc.setLcBalance(MathUtil.sub(lc.getLcBalance(), sendAmount));
+
+        if (lc.getLcStatus().compareTo(LcStatusType.RECIEVED.getStatusCode()) == 0 && lc.getPayType().compareTo(LcPayType.MULTIPAY_PAY_WITH_SAME_PAYEE.getCode()) == 0) {
+            updateLc.setLcStatus(LcStatusType.APPOINTMENT_PART_DONE.getStatusCode());
+        }
+        if (lc.getLcStatus().compareTo(LcStatusType.RECIEVED.getStatusCode()) == 0 && lc.getPayType().compareTo(LcPayType.SINGLE_PAY.getCode()) == 0) {
+            updateLc.setLcStatus(LcStatusType.APPOINTMENT_DONE.getStatusCode());
+        }
+
+        lcCacheServant.updateByPrimaryKeySelective(updateLc);
+
+        // 插入流水表
+        LcLog lcLog = new LcLog();
+        long logId = lcLogIdWorker.nextId();
+        lcLog.setLogId(logId);
+        lcLog.setLcId(updateLc.getLcId());
+        lcLog.setStepLogId(lcSend.getLcSendId());
+        lcLog.setTradeCode(BizConstants.LcTranCode.APPOINTMENT.getTranCodeStr());
+        lcLog.setLcStatus(updateLc.getLcStatus());
+        lcLog.setLcResponse(lcSend.getSendStatus());
+        lcLog.setRemark("履约");
+        lcLog.setCreateTime(now);
+        lcLogDao.insertSelective(lcLog);
+
+        AppointmentKernelOutputBean appointmentOutputBean = new AppointmentKernelOutputBean();
+        appointmentOutputBean.setLcId(lc.getLcId());
+        appointmentOutputBean.setLcStatus(updateLc.getLcStatus());
+        appointmentOutputBean.setLcStatusDesc(LcStatusType.getDesc(updateLc.getLcStatus()));
+        appointmentOutputBean.setAppointmentId(lcSend.getLcSendId());
+        appointmentOutputBean.setAppointmentAmount(lcSend.getOrderAmount());
+
+        logger.info("---离开履约业务处理");
+
+        return BusinessOutput.success(appointmentOutputBean);
+    }
+
+}

@@ -1,0 +1,24 @@
+package com.cifpay.lc.core.db.dao;
+
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.LcMerchant;
+
+@Repository
+public interface LcMerchantDao {
+
+	public LcMerchant selectByMerchantCode(String merCode);
+	
+	int deleteByPrimaryKey(Integer merId);
+
+    int insert(LcMerchant record);
+
+    int insertSelective(LcMerchant record);
+
+    LcMerchant selectByPrimaryKey(Integer merId);
+
+    int updateByPrimaryKeySelective(LcMerchant record);
+
+    int updateByPrimaryKey(LcMerchant record);
+    
+}

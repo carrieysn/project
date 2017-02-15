@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="true">
+   <!-- 控制台输出日志 -->  
+<appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+			    %d{yy/MM/dd HH:mm:ss.SSS}-%5level [%thread]  %logger{36}#[%M] - %X{rid} %msg %n
+			</Pattern>
+		</layout>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>TRACE</level>
+		</filter>
+	</appender>
+  	<appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- <File>${x.logfile}</File> -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		    <fileNamePattern>d:/cifpay-lc/bankadapte/%d{yyyy-MM-dd}/testlog.%i.log</fileNamePattern>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
+			<!-- 日志文件最大为5M，超过5M自动生成一个新文件 -->
+			<TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+    			<MaxFileSize>5MB</MaxFileSize>
+   			</TimeBasedFileNamingAndTriggeringPolicy>			
+		</rollingPolicy>
+ 
+		<encoder>
+			<Pattern>%d{yy/MM/dd HH:mm:ss.SSS}-%5level [%thread]  %logger{36}#[%M] - %X{rid} %msg %n</Pattern>
+		</encoder> 	    
+  	</appender>
+	
+	<!-- project default level -->
+	<logger name="com.cifpay.lc.std.bankadapte" level="debug">
+	 </logger>
+
+	<root level="debug">
+ 		<appender-ref ref="dailyRollingFileAppender"/> 
+		<appender-ref ref="consoleAppender" />
+	</root>
+</configuration>

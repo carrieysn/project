@@ -1,0 +1,18 @@
+package com.cifpay.lc.gateway.controller.webpay.pc;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+
+/**
+ * 输入支付信息
+ * 
+ * 
+ *
+ */
+@Controller
+@RequestMapping("/webpay/pc")
+public class PCWebPayInputController extends GatewayBaseController {
+
+}

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcAccDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcAcc" >
+    <id column="LC_ACC_ID" property="lcAccId" jdbcType="BIGINT" />
+    <result column="LC_ID" property="lcId" jdbcType="BIGINT" />
+    <result column="LC_OPEN_AMT" property="lcOpenAmt" jdbcType="DECIMAL" />
+    <result column="LC_FREEZE_AMT" property="lcFreezeAmt" jdbcType="DECIMAL" />
+    <result column="LC_AVAILABLE_AMT" property="lcAvailableAmt" jdbcType="DECIMAL" />
+    <result column="LC_APPOINTMENT_AMT" property="lcAppointmentAmt" jdbcType="DECIMAL" />
+    <result column="CHANGE_AMT" property="changeAmt" jdbcType="DECIMAL" />
+    <result column="BIZ_TABLE" property="bizTable" jdbcType="VARCHAR" />
+    <result column="BIZ_SEQNO" property="bizSeqno" jdbcType="BIGINT" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LC_ACC_ID, LC_ID, LC_OPEN_AMT, LC_FREEZE_AMT, LC_AVAILABLE_AMT, LC_APPOINTMENT_AMT, 
+    CHANGE_AMT, BIZ_TABLE, BIZ_SEQNO, CREATE_TIME, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_ACC
+    where LC_ACC_ID = #{lcAccId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC_ACC
+    where LC_ACC_ID = #{lcAccId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcAcc" >
+    insert into CIFPAY_LC_ACC (LC_ACC_ID, LC_ID, LC_OPEN_AMT, 
+      LC_FREEZE_AMT, LC_AVAILABLE_AMT, LC_APPOINTMENT_AMT, 
+      CHANGE_AMT, BIZ_TABLE, BIZ_SEQNO, 
+      CREATE_TIME, REMARK)
+    values (#{lcAccId,jdbcType=BIGINT}, #{lcId,jdbcType=BIGINT}, #{lcOpenAmt,jdbcType=DECIMAL}, 
+      #{lcFreezeAmt,jdbcType=DECIMAL}, #{lcAvailableAmt,jdbcType=DECIMAL}, #{lcAppointmentAmt,jdbcType=DECIMAL}, 
+      #{changeAmt,jdbcType=DECIMAL}, #{bizTable,jdbcType=VARCHAR}, #{bizSeqno,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcAcc" >
+    insert into CIFPAY_LC_ACC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="lcAccId != null" >
+        LC_ACC_ID,
+      </if>
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+      <if test="lcOpenAmt != null" >
+        LC_OPEN_AMT,
+      </if>
+      <if test="lcFreezeAmt != null" >
+        LC_FREEZE_AMT,
+      </if>
+      <if test="lcAvailableAmt != null" >
+        LC_AVAILABLE_AMT,
+      </if>
+      <if test="lcAppointmentAmt != null" >
+        LC_APPOINTMENT_AMT,
+      </if>
+      <if test="changeAmt != null" >
+        CHANGE_AMT,
+      </if>
+      <if test="bizTable != null" >
+        BIZ_TABLE,
+      </if>
+      <if test="bizSeqno != null" >
+        BIZ_SEQNO,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="lcAccId != null" >
+        #{lcAccId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="lcOpenAmt != null" >
+        #{lcOpenAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="lcFreezeAmt != null" >
+        #{lcFreezeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="lcAvailableAmt != null" >
+        #{lcAvailableAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="lcAppointmentAmt != null" >
+        #{lcAppointmentAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="changeAmt != null" >
+        #{changeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="bizTable != null" >
+        #{bizTable,jdbcType=VARCHAR},
+      </if>
+      <if test="bizSeqno != null" >
+        #{bizSeqno,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcAcc" >
+    update CIFPAY_LC_ACC
+    <set >
+      <if test="lcId != null" >
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="lcOpenAmt != null" >
+        LC_OPEN_AMT = #{lcOpenAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="lcFreezeAmt != null" >
+        LC_FREEZE_AMT = #{lcFreezeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="lcAvailableAmt != null" >
+        LC_AVAILABLE_AMT = #{lcAvailableAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="lcAppointmentAmt != null" >
+        LC_APPOINTMENT_AMT = #{lcAppointmentAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="changeAmt != null" >
+        CHANGE_AMT = #{changeAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="bizTable != null" >
+        BIZ_TABLE = #{bizTable,jdbcType=VARCHAR},
+      </if>
+      <if test="bizSeqno != null" >
+        BIZ_SEQNO = #{bizSeqno,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where LC_ACC_ID = #{lcAccId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcAcc" >
+    update CIFPAY_LC_ACC
+    set LC_ID = #{lcId,jdbcType=BIGINT},
+      LC_OPEN_AMT = #{lcOpenAmt,jdbcType=DECIMAL},
+      LC_FREEZE_AMT = #{lcFreezeAmt,jdbcType=DECIMAL},
+      LC_AVAILABLE_AMT = #{lcAvailableAmt,jdbcType=DECIMAL},
+      LC_APPOINTMENT_AMT = #{lcAppointmentAmt,jdbcType=DECIMAL},
+      CHANGE_AMT = #{changeAmt,jdbcType=DECIMAL},
+      BIZ_TABLE = #{bizTable,jdbcType=VARCHAR},
+      BIZ_SEQNO = #{bizSeqno,jdbcType=BIGINT},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where LC_ACC_ID = #{lcAccId,jdbcType=BIGINT}
+  </update>
+</mapper>

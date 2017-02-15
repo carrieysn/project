@@ -1,0 +1,264 @@
+package com.cifpay.lc.std.kernel.lc;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.message.MqMessageService;
+import com.cifpay.lc.constant.BizConstants;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.*;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessExceptionHelper;
+import com.cifpay.lc.core.common.DbTransaction;
+import com.cifpay.lc.core.common.DbTransactionHelper;
+import com.cifpay.lc.core.db.dao.*;
+import com.cifpay.lc.core.db.pojo.*;
+import com.cifpay.lc.core.db.pojo.LcLog;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.core.uid.LcInvalidIdWorker;
+import com.cifpay.lc.core.uid.LcLogIdWorker;
+import com.cifpay.lc.domain.message.LcExpiryParamBean;
+import com.cifpay.lc.std.domain.kernel.InvalidateLcKernelInputBean;
+import com.cifpay.lc.std.domain.kernel.InvalidateLcKernelOutputBean;
+import com.cifpay.lc.std.domain.paychannel.ExpiryInputBean;
+import com.cifpay.lc.std.domain.paychannel.ExpiryOutputBean;
+import com.cifpay.lc.std.kernel.LcBaseKernel;
+import com.cifpay.lc.std.paychannel.ExpiryInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+ * 失效银信证（将已冻结的金额解冻）
+ * <p>
+ * 开证、收证、履约、展期、部份履約、暂停申请解付
+ */
+@Component
+public class InvalidateLcKernel extends LcBaseKernel<InvalidateLcKernelInputBean, InvalidateLcKernelOutputBean> {
+
+    private Map<PayChannel, ExpiryInterface<? super InvalidateLcKernelInputBean, ? super InvalidateLcKernelOutputBean>> expiryMappings;
+
+    @SuppressWarnings("unchecked")
+    @Autowired
+    public void setExpiryMappings(List<ExpiryInterface<? super InvalidateLcKernelInputBean, ? super InvalidateLcKernelOutputBean>> arrays) {
+
+        this.expiryMappings = new HashMap<PayChannel, ExpiryInterface<? super InvalidateLcKernelInputBean, ? super InvalidateLcKernelOutputBean>>();
+
+        for (ExpiryInterface<? super InvalidateLcKernelInputBean, ? super InvalidateLcKernelOutputBean> st : arrays) {
+
+            this.expiryMappings.put(st.getOpenLcChannel(), (ExpiryInterface<? super InvalidateLcKernelInputBean, ? super InvalidateLcKernelOutputBean>) st);
+        }
+    }
+
+    @Autowired
+    private LcDao lcDao;
+    @Autowired
+    private LcOpenDao lcOpenDao;
+    @Autowired
+    private LcSendDao lcSendDao; // 履约DAO
+    @Autowired
+    private LcConfirmPayDao lcConfirmPayDao; // 申请解付DAO
+    @Autowired
+    private LcInvalidDao lcInvalidDao;
+    @Autowired
+    private LcLogDao lcLogDao;
+
+    @Autowired
+    private LcInvalidIdWorker lcInvalidIdWorker;
+    @Autowired
+    private LcLogIdWorker lcLogIdWorker;
+    @Autowired
+    private DbTransactionHelper dbTransactionHelper;
+
+    @Autowired
+    private MqMessageService messageService;
+
+
+    @Override
+    protected void validateLcStatus(InvalidateLcKernelInputBean inputBean, CoreBusinessContext context) throws CoreValidationRejectException {
+
+        Lc lc = lcDao.selectByPrimaryKey(inputBean.getLcId());
+        if (lc == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_NOT_EXISTS, "银信证记录不存在");
+        }
+        context.setAttribute("Lc", lc);
+
+        String lcStatus = lc.getLcStatus();
+
+        if (LcStatusType.OPENED.getStatusCode().compareTo(lcStatus) == 0 ||
+                LcStatusType.RECIEVED.getStatusCode().compareTo(lcStatus) == 0 ||
+                LcStatusType.APPOINTMENT_DONE.getStatusCode().compareTo(lcStatus) == 0 ||
+                LcStatusType.APPOINTMENT_PART_DONE.getStatusCode().compareTo(lcStatus) == 0 ||
+                LcStatusType.DEFER.getStatusCode().compareTo(lcStatus) == 0 ||
+                LcStatusType.SUSPEND.getStatusCode().compareTo(lcStatus) == 0 ||
+                LcStatusType.APPLIED.getStatusCode().compareTo(lcStatus) == 0) {
+
+            return;
+        }
+
+        throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED, "当前状态不允许失效");
+    }
+
+    @Override
+    protected void validateLcValidity(InvalidateLcKernelInputBean inputBean, CoreBusinessContext context) throws CoreValidationRejectException {
+
+    }
+
+    @Override
+    public BusinessOutput<InvalidateLcKernelOutputBean> processLcKernelLogic(InvalidateLcKernelInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+
+        logger.info("=== 进入失效银信证交易:" + inputBean.getLcId());
+        Date now = new Date();
+
+        // 查询银信证
+        Lc lc = (Lc) context.getAttribute("Lc");
+
+        // 查找对应的开证记录
+        LcOpen lcOpen = lcOpenDao.selectByLcIdSuccess(inputBean.getLcId());
+        if (lcOpen == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_OPEN_NOT_EXISTS, "未找到开证记录");
+        }
+        PayChannel payChannel = PayChannel.parse(lcOpen.getLcOpenChannel());
+        // 查找解付处理器
+        ExpiryInterface<? super InvalidateLcKernelInputBean, ? super InvalidateLcKernelOutputBean> expiryHandler = expiryMappings.get(payChannel);
+        if (expiryHandler == null) {
+            throw new CoreBusinessException(ReturnCode.CORE_STD_INVALIDATE_UNSUPPORT_TYPE, "不支持的失效方式");
+        }
+
+        LcInvalid lcInvalid = null;
+        DbTransaction dbTransaction = dbTransactionHelper.beginTransaction();
+        try {
+            // 1.冻结银信证余额
+            if (lc.getLcBalance().compareTo(BigDecimal.ZERO) > 0) {
+                lcDao.freezeAmount(lc.getLcId(), lc.getLcBalance());
+            }
+
+            // 2.更新银信证状态
+            Lc updateLc = new Lc();
+            updateLc.setLcId(lc.getLcId());
+            updateLc.setUpdateTime(now);
+            updateLc.setLcStatus(LcStatusType.PRE_INVALID.getStatusCode());
+            lcDao.updateByPrimaryKeySelective(updateLc);
+
+            // 记录日志
+            LcLog lcLog = new LcLog();
+            lcLog.setLogId(lcLogIdWorker.nextId());
+            lcLog.setCreateTime(now);
+            lcLog.setUpdateTime(now);
+            lcLog.setLcId(inputBean.getLcId());
+            lcLog.setTradeCode(BizConstants.LcTranCode.INVALIDATE.getTranCodeStr());
+            lcLog.setLcStatus(updateLc.getLcStatus());
+            lcLog.setRemark("预失效");
+            lcLogDao.insert(lcLog);
+
+            // 3.失效金额 = 银信证余额 + 未处理的履约金额 + 暂停解付金额
+//            BigDecimal invalidAmount = lc.getLcBalance().add(appointmentAmount).add(suspendAmount);
+
+            BigDecimal invalidAmount = BigDecimal.ZERO;
+            if (LcPayType.SINGLE_PAY.getCode().compareTo(lc.getPayType()) == 0) {
+                invalidAmount = lc.getLcAmount();
+
+            } else if (LcPayType.MULTIPAY_PAY_WITH_SAME_PAYEE.getCode().compareTo(lc.getPayType()) == 0) {
+
+                BigDecimal appointmentAmount = BigDecimal.ZERO;
+                BigDecimal suspendAmount = BigDecimal.ZERO;
+
+                // 查询履约记录
+                List<LcSend> lcSendList = lcSendDao.selectBylcIds(lc.getLcId());
+                if (lcSendList != null && !lcSendList.isEmpty()) {
+
+                    // 查询“(未处理、已展期)的履约”，更新状态
+                    List<LcSend> inprocessSendList = lcSendList.stream().filter(x -> x != null && x.getProcessStatus() != null && (ProcessStatus.INPROCESS.getCode() == x.getProcessStatus().intValue() || ProcessStatus.DEFER.getCode() == x.getProcessStatus().intValue())).collect(Collectors.toList());
+                    if (!inprocessSendList.isEmpty()) {
+                        // 计算履约金额之和
+                        appointmentAmount = inprocessSendList.stream().map(LcSend::getLcConfirmAmount).reduce(BigDecimal::add).get();
+
+                        // 更新履约步骤
+                        Long[] sendIds = inprocessSendList.stream().map(LcSend::getLcSendId).toArray(Long[]::new);
+                        lcSendDao.updateProcessStatus(ProcessStatus.INVALIDATE.getCode(), now, sendIds);
+                    }
+
+                    // 查询“暂停申请解付”，更新状态
+                    List<LcConfirmPay> lcConfirmPayList = lcConfirmPayDao.selectByLcId(lc.getLcId());
+                    if (lcConfirmPayList != null && !lcConfirmPayList.isEmpty()) {
+                        List<LcConfirmPay> suspendList = lcConfirmPayList.stream().filter(x -> ProcessStatus.SUSPEND.getCode() == x.getProcessStatus().intValue()).collect(Collectors.toList());
+                        if (!suspendList.isEmpty()) {
+                            // 计算失效金额
+                            suspendAmount = suspendList.stream().map(LcConfirmPay::getLcPayAmount).reduce(BigDecimal::add).get();
+
+                            // 更新暂停解付步骤
+                            Long[] lcConfirmIds = suspendList.stream().map(LcConfirmPay::getLcConfirmId).toArray(Long[]::new);
+                            lcConfirmPayDao.updateProcessStatus(ProcessStatus.INVALIDATE.getCode(), now, lcConfirmIds);
+                        }
+                    }
+                }
+                invalidAmount = lc.getLcBalance().add(appointmentAmount).add(suspendAmount);
+            }
+
+            if (invalidAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new CoreBusinessException(ReturnCode.CORE_STD_INVALIDATE_ERROR, "失效金额为" + invalidAmount);
+            }
+
+            // 4.插入失效记录
+            lcInvalid = new LcInvalid();
+            lcInvalid.setLcInvalidId(lcInvalidIdWorker.nextId());
+            lcInvalid.setCreateTime(now);
+            lcInvalid.setUpdateTime(now);
+            lcInvalid.setLcId(lc.getLcId());
+            lcInvalid.setInvalidType(inputBean.getInvalidateType().getCode());
+
+            lcInvalid.setLcAmount(lc.getLcAmount());
+            lcInvalid.setLcBalance(lc.getLcBalance());
+            lcInvalid.setInvalidAmount(invalidAmount);
+            lcInvalid.setRemark(inputBean.getRemark());
+
+            lcInvalid.setLcInvalidStatus(LcTranStatus.INPROCESS.getTranStatusStr());
+            lcInvalidDao.insert(lcInvalid);
+
+            // 5.提交事务
+            dbTransactionHelper.commitTransaction(dbTransaction);
+        } catch (Throwable e) {
+            logger.error("失效处理发生错误", e);
+            dbTransactionHelper.rollbackTransaction(dbTransaction);
+            CoreBusinessExceptionHelper.throwAsCoreBusinessException(e);
+        }
+
+        // 6.调用银行交易
+        ExpiryInputBean expiryInputBean = new ExpiryInputBean();
+        expiryInputBean.setLc(lc);
+        expiryInputBean.setLcOpen(lcOpen);
+        expiryInputBean.setLcInvalid(lcInvalid);
+        ExpiryOutputBean expiryOutputBean = expiryHandler.expiry(inputBean, expiryInputBean);
+
+        // 把失效信息放入消息队列
+        LcExpiryParamBean lcExpiryParamBean = new LcExpiryParamBean();
+        lcExpiryParamBean.setLcId(lc.getLcId());
+        lcExpiryParamBean.setLcInvalidId(lcInvalid.getLcInvalidId());
+        lcExpiryParamBean.setInvalidAmount(lcInvalid.getInvalidAmount());
+        lcExpiryParamBean.setLcTranStatus(expiryOutputBean.getLcTranStatus());
+        lcExpiryParamBean.setSerialNo(expiryOutputBean.getSerialNo());
+        lcExpiryParamBean.setExpiryTime(new Date());
+        lcExpiryParamBean.setLcExpiryResponse(expiryOutputBean.getMessage() + "," + expiryOutputBean.getLcTranStatus());
+        messageService.sendMessage(MessageEnum.MsgType.LC, MessageEnum.Scene.INVALIDATE_NOTIFY, lcExpiryParamBean);
+
+        if (expiryOutputBean.isSuccess()) {
+            InvalidateLcKernelOutputBean outputBean = new InvalidateLcKernelOutputBean();
+            outputBean.setLcId(lc.getLcId());
+            outputBean.setLcStatus(LcStatusType.RETREAT.getStatusCode());
+            outputBean.setLcStatusDesc(LcStatusType.RETREAT.getStatusDesc());
+            outputBean.setLcInvalidateId(lcInvalid.getLcInvalidId());
+            outputBean.setInvalidateAmount(lcInvalid.getInvalidAmount());
+
+            return BusinessOutput.success(outputBean);
+        }
+
+        throw new CoreBusinessException(ReturnCode.CORE_STD_INVALIDATE_ERROR, expiryOutputBean.getMessage());
+    }
+
+}

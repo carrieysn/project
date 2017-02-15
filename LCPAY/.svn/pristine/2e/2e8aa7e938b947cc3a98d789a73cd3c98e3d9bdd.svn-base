@@ -1,0 +1,175 @@
+package com.cifpay.lc.versionb.recharge.online.alipay;
+
+import java.io.Serializable;
+
+/**
+ * 红包支付宝充值参数对象
+ * Created by yx on 2016/3/17.
+ */
+public class AliPayPara implements Serializable {
+
+    //订单号
+    private String orderId;
+    //支付者手机号
+    private String payerMobile;
+    //订单描述
+    private String orderDesc;
+    //金额 分
+    private String amount;
+    //币种
+    private String currency;
+    //返回地址
+    private String returnUrl;
+    //通知地址
+    private String noticeUrl;
+    //请求ID
+    private String requestId;
+    //请求时间
+    private String requestTime;
+    //商户ID
+    private String merId;
+    //签名方式
+    private String sign;
+    //系统外用户编码
+    private String userCode;
+    //商品展示地址
+    private String showUrl;
+    //1个人 2企业
+    private String type;
+
+    public AliPayPara() {
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getPayerMobile() {
+        return payerMobile;
+    }
+
+    public void setPayerMobile(String payerMobile) {
+        this.payerMobile = payerMobile;
+    }
+
+    public String getOrderDesc() {
+        return orderDesc;
+    }
+
+    public void setOrderDesc(String orderDesc) {
+        this.orderDesc = orderDesc;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
+    }
+
+    public String getNoticeUrl() {
+        return noticeUrl;
+    }
+
+    public void setNoticeUrl(String noticeUrl) {
+        this.noticeUrl = noticeUrl;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public String getRequestTime() {
+        return requestTime;
+    }
+
+    public void setRequestTime(String requestTime) {
+        this.requestTime = requestTime;
+    }
+
+    public String getMerId() {
+        return merId;
+    }
+
+    public void setMerId(String merId) {
+        this.merId = merId;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
+    }
+
+    public String getShowUrl() {
+        return showUrl;
+    }
+
+    public void setShowUrl(String showUrl) {
+        this.showUrl = showUrl;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "AliPayPara{" +
+                "orderId='" + orderId + '\'' +
+                ", payerMobile='" + payerMobile + '\'' +
+                ", orderDesc='" + orderDesc + '\'' +
+                ", amount=" + amount +
+                ", currency='" + currency + '\'' +
+                ", returnUrl='" + returnUrl + '\'' +
+                ", noticeUrl='" + noticeUrl + '\'' +
+                ", requestId='" + requestId + '\'' +
+                ", requestTime='" + requestTime + '\'' +
+                ", merId='" + merId + '\'' +
+                ", sign='" + sign + '\'' +
+                ", userCode='" + userCode + '\'' +
+                ", showUrl='" + showUrl + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
+
+}

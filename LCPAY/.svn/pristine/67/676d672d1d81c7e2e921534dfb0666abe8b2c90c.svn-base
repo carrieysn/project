@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cifpay.lc.core.db.dao.BSwWithdrawQueueMsgDao">
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.BSwWithdrawQueueMsg">
+    <id column="LC_ID" jdbcType="BIGINT" property="lcId" />
+    <result column="MID" jdbcType="VARCHAR" property="mid" />
+    <result column="WITHDRAW_ORDER_ID" jdbcType="VARCHAR" property="withdrawOrderId" />
+    <result column="HANDLE_STATUS" jdbcType="VARCHAR" property="handleStatus" />
+    <result column="HANDLE_FAIL_DESC" jdbcType="VARCHAR" property="handleFailDesc" />
+    <result column="WAIT_OPEN_RETRY_CNT" jdbcType="INTEGER" property="waitOpenRetryCnt" />
+    <result column="SW_OUTPUT_EXCHANGE_NAME" jdbcType="VARCHAR" property="swOutputExchangeName" />
+    <result column="SW_OUTPUT_QUEUE_NAME" jdbcType="VARCHAR" property="swOutputQueueName" />
+    <result column="SW_SEND_STATUS" jdbcType="VARCHAR" property="swSendStatus" />
+    <result column="SW_SEND_FAIL_DESC" jdbcType="VARCHAR" property="swSendFailDesc" />
+    <result column="ACC_OUTPUT_EXCHANGE_NAME" jdbcType="VARCHAR" property="accOutputExchangeName" />
+    <result column="ACC_OUTPUT_QUEUE_NAME" jdbcType="VARCHAR" property="accOutputQueueName" />
+    <result column="ACC_SEND_STATUS" jdbcType="VARCHAR" property="accSendStatus" />
+    <result column="ACC_SEND_FAIL_DESC" jdbcType="VARCHAR" property="accSendFailDesc" />
+    <result column="SW_LAST_SEND_TIME" jdbcType="TIMESTAMP" property="swLastSendTime" />
+    <result column="ACC_LAST_SEND_TIME" jdbcType="TIMESTAMP" property="accLastSendTime" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="LOCKED_STATUS" jdbcType="VARCHAR" property="lockedStatus" />
+    <result column="LOCKED_BY_NODE" jdbcType="VARCHAR" property="lockedByNode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    LC_ID, MID, WITHDRAW_ORDER_ID, HANDLE_STATUS, HANDLE_FAIL_DESC, WAIT_OPEN_RETRY_CNT, 
+    SW_OUTPUT_EXCHANGE_NAME, SW_OUTPUT_QUEUE_NAME, SW_SEND_STATUS, SW_SEND_FAIL_DESC, 
+    ACC_OUTPUT_EXCHANGE_NAME, ACC_OUTPUT_QUEUE_NAME, ACC_SEND_STATUS, ACC_SEND_FAIL_DESC, 
+    SW_LAST_SEND_TIME, ACC_LAST_SEND_TIME, CREATE_TIME, UPDATE_TIME, LOCKED_STATUS, LOCKED_BY_NODE
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_B_SW_WITHDRAW_QUEUE_MSG
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from CIFPAY_B_SW_WITHDRAW_QUEUE_MSG
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.BSwWithdrawQueueMsg">
+    insert into CIFPAY_B_SW_WITHDRAW_QUEUE_MSG (LC_ID, MID, WITHDRAW_ORDER_ID, 
+      HANDLE_STATUS, HANDLE_FAIL_DESC, WAIT_OPEN_RETRY_CNT, 
+      SW_OUTPUT_EXCHANGE_NAME, SW_OUTPUT_QUEUE_NAME, 
+      SW_SEND_STATUS, SW_SEND_FAIL_DESC, ACC_OUTPUT_EXCHANGE_NAME, 
+      ACC_OUTPUT_QUEUE_NAME, ACC_SEND_STATUS, ACC_SEND_FAIL_DESC, 
+      SW_LAST_SEND_TIME, ACC_LAST_SEND_TIME, CREATE_TIME, 
+      UPDATE_TIME, LOCKED_STATUS, LOCKED_BY_NODE
+      )
+    values (#{lcId,jdbcType=BIGINT}, #{mid,jdbcType=VARCHAR}, #{withdrawOrderId,jdbcType=VARCHAR}, 
+      #{handleStatus,jdbcType=VARCHAR}, #{handleFailDesc,jdbcType=VARCHAR}, #{waitOpenRetryCnt,jdbcType=INTEGER}, 
+      #{swOutputExchangeName,jdbcType=VARCHAR}, #{swOutputQueueName,jdbcType=VARCHAR}, 
+      #{swSendStatus,jdbcType=VARCHAR}, #{swSendFailDesc,jdbcType=VARCHAR}, #{accOutputExchangeName,jdbcType=VARCHAR}, 
+      #{accOutputQueueName,jdbcType=VARCHAR}, #{accSendStatus,jdbcType=VARCHAR}, #{accSendFailDesc,jdbcType=VARCHAR}, 
+      #{swLastSendTime,jdbcType=TIMESTAMP}, #{accLastSendTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{lockedStatus,jdbcType=VARCHAR}, #{lockedByNode,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.BSwWithdrawQueueMsg">
+    insert into CIFPAY_B_SW_WITHDRAW_QUEUE_MSG
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lcId != null">
+        LC_ID,
+      </if>
+      <if test="mid != null">
+        MID,
+      </if>
+      <if test="withdrawOrderId != null">
+        WITHDRAW_ORDER_ID,
+      </if>
+      <if test="handleStatus != null">
+        HANDLE_STATUS,
+      </if>
+      <if test="handleFailDesc != null">
+        HANDLE_FAIL_DESC,
+      </if>
+      <if test="waitOpenRetryCnt != null">
+        WAIT_OPEN_RETRY_CNT,
+      </if>
+      <if test="swOutputExchangeName != null">
+        SW_OUTPUT_EXCHANGE_NAME,
+      </if>
+      <if test="swOutputQueueName != null">
+        SW_OUTPUT_QUEUE_NAME,
+      </if>
+      <if test="swSendStatus != null">
+        SW_SEND_STATUS,
+      </if>
+      <if test="swSendFailDesc != null">
+        SW_SEND_FAIL_DESC,
+      </if>
+      <if test="accOutputExchangeName != null">
+        ACC_OUTPUT_EXCHANGE_NAME,
+      </if>
+      <if test="accOutputQueueName != null">
+        ACC_OUTPUT_QUEUE_NAME,
+      </if>
+      <if test="accSendStatus != null">
+        ACC_SEND_STATUS,
+      </if>
+      <if test="accSendFailDesc != null">
+        ACC_SEND_FAIL_DESC,
+      </if>
+      <if test="swLastSendTime != null">
+        SW_LAST_SEND_TIME,
+      </if>
+      <if test="accLastSendTime != null">
+        ACC_LAST_SEND_TIME,
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+      <if test="lockedStatus != null">
+        LOCKED_STATUS,
+      </if>
+      <if test="lockedByNode != null">
+        LOCKED_BY_NODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lcId != null">
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="mid != null">
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="withdrawOrderId != null">
+        #{withdrawOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="handleStatus != null">
+        #{handleStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="handleFailDesc != null">
+        #{handleFailDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="waitOpenRetryCnt != null">
+        #{waitOpenRetryCnt,jdbcType=INTEGER},
+      </if>
+      <if test="swOutputExchangeName != null">
+        #{swOutputExchangeName,jdbcType=VARCHAR},
+      </if>
+      <if test="swOutputQueueName != null">
+        #{swOutputQueueName,jdbcType=VARCHAR},
+      </if>
+      <if test="swSendStatus != null">
+        #{swSendStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="swSendFailDesc != null">
+        #{swSendFailDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="accOutputExchangeName != null">
+        #{accOutputExchangeName,jdbcType=VARCHAR},
+      </if>
+      <if test="accOutputQueueName != null">
+        #{accOutputQueueName,jdbcType=VARCHAR},
+      </if>
+      <if test="accSendStatus != null">
+        #{accSendStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="accSendFailDesc != null">
+        #{accSendFailDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="swLastSendTime != null">
+        #{swLastSendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="accLastSendTime != null">
+        #{accLastSendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lockedStatus != null">
+        #{lockedStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lockedByNode != null">
+        #{lockedByNode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.BSwWithdrawQueueMsg">
+    update CIFPAY_B_SW_WITHDRAW_QUEUE_MSG
+    <set>
+      <if test="mid != null">
+        MID = #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="withdrawOrderId != null">
+        WITHDRAW_ORDER_ID = #{withdrawOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="handleStatus != null">
+        HANDLE_STATUS = #{handleStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="handleFailDesc != null">
+        HANDLE_FAIL_DESC = #{handleFailDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="waitOpenRetryCnt != null">
+        WAIT_OPEN_RETRY_CNT = #{waitOpenRetryCnt,jdbcType=INTEGER},
+      </if>
+      <if test="swOutputExchangeName != null">
+        SW_OUTPUT_EXCHANGE_NAME = #{swOutputExchangeName,jdbcType=VARCHAR},
+      </if>
+      <if test="swOutputQueueName != null">
+        SW_OUTPUT_QUEUE_NAME = #{swOutputQueueName,jdbcType=VARCHAR},
+      </if>
+      <if test="swSendStatus != null">
+        SW_SEND_STATUS = #{swSendStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="swSendFailDesc != null">
+        SW_SEND_FAIL_DESC = #{swSendFailDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="accOutputExchangeName != null">
+        ACC_OUTPUT_EXCHANGE_NAME = #{accOutputExchangeName,jdbcType=VARCHAR},
+      </if>
+      <if test="accOutputQueueName != null">
+        ACC_OUTPUT_QUEUE_NAME = #{accOutputQueueName,jdbcType=VARCHAR},
+      </if>
+      <if test="accSendStatus != null">
+        ACC_SEND_STATUS = #{accSendStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="accSendFailDesc != null">
+        ACC_SEND_FAIL_DESC = #{accSendFailDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="swLastSendTime != null">
+        SW_LAST_SEND_TIME = #{swLastSendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="accLastSendTime != null">
+        ACC_LAST_SEND_TIME = #{accLastSendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lockedStatus != null">
+        LOCKED_STATUS = #{lockedStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lockedByNode != null">
+        LOCKED_BY_NODE = #{lockedByNode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.BSwWithdrawQueueMsg">
+    update CIFPAY_B_SW_WITHDRAW_QUEUE_MSG
+    set MID = #{mid,jdbcType=VARCHAR},
+      WITHDRAW_ORDER_ID = #{withdrawOrderId,jdbcType=VARCHAR},
+      HANDLE_STATUS = #{handleStatus,jdbcType=VARCHAR},
+      HANDLE_FAIL_DESC = #{handleFailDesc,jdbcType=VARCHAR},
+      WAIT_OPEN_RETRY_CNT = #{waitOpenRetryCnt,jdbcType=INTEGER},
+      SW_OUTPUT_EXCHANGE_NAME = #{swOutputExchangeName,jdbcType=VARCHAR},
+      SW_OUTPUT_QUEUE_NAME = #{swOutputQueueName,jdbcType=VARCHAR},
+      SW_SEND_STATUS = #{swSendStatus,jdbcType=VARCHAR},
+      SW_SEND_FAIL_DESC = #{swSendFailDesc,jdbcType=VARCHAR},
+      ACC_OUTPUT_EXCHANGE_NAME = #{accOutputExchangeName,jdbcType=VARCHAR},
+      ACC_OUTPUT_QUEUE_NAME = #{accOutputQueueName,jdbcType=VARCHAR},
+      ACC_SEND_STATUS = #{accSendStatus,jdbcType=VARCHAR},
+      ACC_SEND_FAIL_DESC = #{accSendFailDesc,jdbcType=VARCHAR},
+      SW_LAST_SEND_TIME = #{swLastSendTime,jdbcType=TIMESTAMP},
+      ACC_LAST_SEND_TIME = #{accLastSendTime,jdbcType=TIMESTAMP},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      LOCKED_STATUS = #{lockedStatus,jdbcType=VARCHAR},
+      LOCKED_BY_NODE = #{lockedByNode,jdbcType=VARCHAR}
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

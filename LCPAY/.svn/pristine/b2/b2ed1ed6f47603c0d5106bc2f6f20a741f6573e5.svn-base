@@ -1,0 +1,31 @@
+package com.cifpay.lc.gateway.controller.quickpay;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+import com.cifpay.lc.domain.security.MerchantRequest;
+import com.cifpay.lc.gateway.input.quickpay.QuickPayTradeRequest;
+import com.cifpay.lc.gateway.output.quickpay.QuickPayTradeResult;
+
+/**
+ * 交易确认（交易提交）
+ * 
+ * 
+ *
+ */
+@RestController
+@RequestMapping("/quickpay")
+public class QuickPayTradeController extends GatewayBaseController {
+
+	@RequestMapping(path = "/mobile/transfer", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public QuickPayTradeResult submitTrade(@RequestBody MerchantRequest<QuickPayTradeRequest> req) {
+		QuickPayTradeResult res = new QuickPayTradeResult();
+
+		return res;
+	}
+
+}

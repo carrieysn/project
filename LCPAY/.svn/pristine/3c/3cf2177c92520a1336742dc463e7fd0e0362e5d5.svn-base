@@ -1,0 +1,189 @@
+package com.cifpay.lc.versionb.recharge.online.alipay.util;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 转换器，javaBean转map,map转javaBean
+ * 
+ * @author dehuang
+ * 
+ */
+public class ConvertTool {
+
+	private static Logger logger = LoggerFactory.getLogger(ConvertTool.class);
+	
+	/**
+	 * 将javaBean转换成Map
+	 * 
+	 * @param javaBean
+	 * @return Map对象
+	 */
+	public static Map<String, String> beanToMap(Object javaBean) {
+		Map<String, String> result = new HashMap<String, String>();
+		Method[] methods = javaBean.getClass().getMethods();
+		Set<String> fieldsSet=new HashSet<String>();
+		Class<?> c = javaBean.getClass();
+		while (null != c && !c.equals(Object.class)) {
+			for (Field f : c.getDeclaredFields()) {
+				fieldsSet.add(f.getName());
+			}
+			c = c.getSuperclass();
+		}
+		for (Method method : methods) {
+			if (method.getName().equalsIgnoreCase("getClass")) {
+				continue;
+			}
+			try {
+				if (method.getName().startsWith("get")) {
+					String field = method.getName();
+					field = field.substring(field.indexOf("get") + 3);
+					field = field.toLowerCase().charAt(0) + field.substring(1);
+					if(!fieldsSet.contains(field)) //方法名与字段名对照，如非小写即将首字母大写
+						field = field.toUpperCase().charAt(0) + field.substring(1);;
+					Object value = method.invoke(javaBean, (Object[]) null);
+					
+					result.put(field, null == value ? "" : value.toString());
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 将map转换成Javabean
+	 * 
+	 * @param clazz
+	 * @param map
+	 * @return bean
+	 */
+	public static <T> T toJavaBean(Class<T> clazz,Map map) {
+		T bean = null;
+		try {
+			bean = clazz.newInstance();
+		} catch (Exception e) {
+			return null;
+		}
+		Method[] methods = bean.getClass().getMethods();
+		Set<String> fieldsSet = makeFieldsSet(clazz, new HashSet<String>());
+				
+		for (Method method : methods) {
+			System.out.println(method.getName());
+			String field = "";
+			try {		
+				if (method.getName().startsWith("set")) {
+					field = method.getName();
+					field = field.substring(field.indexOf("set") + 3);
+					field = field.toLowerCase().charAt(0) + field.substring(1);
+					if(!fieldsSet.contains(field))
+						field = field.toUpperCase().charAt(0) + field.substring(1);
+					
+//					method.invoke(bean, new Object[] { map.get(field) });
+					BeanUtils.setProperty(bean,field,map.get(field));
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+		return bean;
+	}
+	
+	public static <T> T bean2bean(Class<T> destClass, Object srcBean)
+	{
+		T destBean = ConvertTool.toJavaBean(destClass, ConvertTool.beanToMap(srcBean));
+		
+		return destBean;
+	}
+	
+	private static Set<String> makeFieldsSet(Class<?> clazz,Set<String> fieldsSet){
+			
+		Field[] fields = clazz.getDeclaredFields();
+		
+		for (int i = 0; i < fields.length; i++) {
+			fieldsSet.add(fields[i].getName());
+		}
+		
+		if(clazz.getGenericSuperclass() != null){
+			Class superclass = clazz.getSuperclass();			
+			makeFieldsSet(superclass, fieldsSet);
+		}else{
+
+		}
+			
+		return fieldsSet;
+	}
+	
+	
+	
+	
+	/**
+	 * 将URL参数包装成map
+	 * @param url
+	 * @return
+	 */
+	public static Map<String,String> urlToParamsMap(String url){
+		Map<String,String> paramsMap=new HashMap<String, String>();
+		String[] kv=null;
+		if(url.indexOf("?")!=-1)
+			kv=url.substring(url.indexOf("?")+1).split("&");
+		else
+			kv=url.split("&");
+		for (int i = 0; i < kv.length; i++) {
+			String[] tmp=kv[i].split("=");
+			if(tmp.length>1)
+				paramsMap.put(tmp[0], tmp[1]);
+			else
+				paramsMap.put(tmp[0], "");
+		}
+		return paramsMap;
+	}
+	
+	public static String paramsMapToString(Map<String,Object> map){
+		StringBuffer str=new StringBuffer();
+		if(null!=map){
+			boolean flag = true;
+			for(Map.Entry entry : map.entrySet()){			
+				String key = (String)entry.getKey();
+				String value = (String)entry.getValue();			
+				if(flag){
+					str.append(key).append("=").append(value);
+					flag = false;
+				}else{
+					str.append("&").append(key).append("=").append(value);
+				}				
+			}
+		}
+		
+		return str.toString();
+	}
+	
+	/** 将String转成MAP */
+	public static Map stringToMap(String source){
+		
+		Map<String,String> params = new HashMap<String,String>();
+		
+		String[] arr = source.split("&");
+		
+		for(String tmp : arr){
+			
+			String key = tmp.substring(0,tmp.indexOf("="));
+			String value = tmp.substring(tmp.indexOf("=")+1);
+			
+			params.put(key, value);
+		}
+		
+		return params;
+	}
+	
+		
+}

@@ -1,0 +1,29 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_GUID_WORKER_ID
+DROP TABLE IF EXISTS `CIFPAY_GUID_WORKER_ID`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_GUID_WORKER_ID` (
+  `MACHINE_ID` varchar(32) NOT NULL COMMENT '用于表示该机器节点的唯一ID，例如对机器名的MD5值',
+  `APP_INSTANCE_ID` varchar(32) NOT NULL COMMENT '用于表示该应用实例在该机器节点的唯一ID，例如对某个文件路径的MD5值',
+  `WORKER_ID` int(10) unsigned NOT NULL COMMENT '该应用被分配到的Snowflake worker id，支持0到1023的整数值',
+  `MACHINE_NAME` varchar(256) NOT NULL COMMENT '机器名称',
+  `APP_BINARY_PATH` varchar(2048) DEFAULT NULL COMMENT '可选，用于记录该应用实现的二进制文件所在磁盘路径',
+  `INITIALIZED_DATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '该应用节点的首次初始化日期',
+  `APP_LAST_STARTED_DATE` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '该应用节点最近一次启动的日期',
+  PRIMARY KEY (`MACHINE_ID`,`APP_INSTANCE_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用于分配和登记所有应用节点的Snowflake Worker Id，该Worker Id提供给Snowflake算法用于生成各数据表的主键ID值';
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

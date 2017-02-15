@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTrdFlowDao" > 
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.TrdFlow" >
+    <id column="FLOW_ID" property="flowId" jdbcType="BIGINT" />
+    <result column="BUSINESS_ID" property="businessId" jdbcType="BIGINT" />
+    <result column="LC_ID" property="lcId" jdbcType="BIGINT" />
+    <result column="TRADE_TYPE" property="tradeType" jdbcType="VARCHAR" />
+    <result column="TRADE_FLOW_ID" property="tradeFlowId" jdbcType="VARCHAR" />
+    <result column="CREATE_FREEZE_DATE" property="createFreezeDate" jdbcType="VARCHAR" />
+    <result column="RTN_SERIAL_NO" property="rtnSerialNo" jdbcType="VARCHAR" />
+    <result column="RTN_TRADE_DATE" property="rtnTradeDate" jdbcType="VARCHAR" />
+    <result column="RTN_CODE" property="rtnCode" jdbcType="VARCHAR" />
+    <result column="RTN_MSG" property="rtnMsg" jdbcType="VARCHAR" />
+    <result column="RTN_CREATE_FREEZE_DATE" property="rtnCreateFreezeDate" jdbcType="VARCHAR" />
+    <result column="TRADE_RESULT" property="tradeResult" jdbcType="VARCHAR" />
+    <result column="INSERT_TIME" property="insertTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    FLOW_ID, BUSINESS_ID, LC_ID, TRADE_TYPE, TRADE_FLOW_ID, CREATE_FREEZE_DATE, RTN_SERIAL_NO, 
+    RTN_TRADE_DATE, RTN_CODE, RTN_MSG, RTN_CREATE_FREEZE_DATE, TRADE_RESULT, INSERT_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_TRD_FLOW
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC_TRD_FLOW
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.TrdFlow" >
+    insert into CIFPAY_LC_TRD_FLOW (FLOW_ID, BUSINESS_ID, LC_ID, 
+      TRADE_TYPE, TRADE_FLOW_ID, CREATE_FREEZE_DATE, 
+      RTN_SERIAL_NO, RTN_TRADE_DATE, RTN_CODE, 
+      RTN_MSG, RTN_CREATE_FREEZE_DATE, TRADE_RESULT, 
+      INSERT_TIME)
+    values (#{flowId,jdbcType=BIGINT}, #{businessId,jdbcType=BIGINT}, #{lcId,jdbcType=BIGINT}, 
+      #{tradeType,jdbcType=VARCHAR}, #{tradeFlowId,jdbcType=VARCHAR}, #{createFreezeDate,jdbcType=VARCHAR}, 
+      #{rtnSerialNo,jdbcType=VARCHAR}, #{rtnTradeDate,jdbcType=VARCHAR}, #{rtnCode,jdbcType=VARCHAR}, 
+      #{rtnMsg,jdbcType=VARCHAR}, #{rtnCreateFreezeDate,jdbcType=VARCHAR}, #{tradeResult,jdbcType=VARCHAR}, 
+      #{insertTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.TrdFlow" >
+    insert into CIFPAY_LC_TRD_FLOW
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="flowId != null" >
+        FLOW_ID,
+      </if>
+      <if test="businessId != null" >
+        BUSINESS_ID,
+      </if>
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+      <if test="tradeType != null" >
+        TRADE_TYPE,
+      </if>
+      <if test="tradeFlowId != null" >
+        TRADE_FLOW_ID,
+      </if>
+      <if test="createFreezeDate != null" >
+        CREATE_FREEZE_DATE,
+      </if>
+      <if test="rtnSerialNo != null" >
+        RTN_SERIAL_NO,
+      </if>
+      <if test="rtnTradeDate != null" >
+        RTN_TRADE_DATE,
+      </if>
+      <if test="rtnCode != null" >
+        RTN_CODE,
+      </if>
+      <if test="rtnMsg != null" >
+        RTN_MSG,
+      </if>
+      <if test="rtnCreateFreezeDate != null" >
+        RTN_CREATE_FREEZE_DATE,
+      </if>
+      <if test="tradeResult != null" >
+        TRADE_RESULT,
+      </if>
+      <if test="insertTime != null" >
+        INSERT_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="flowId != null" >
+        #{flowId,jdbcType=BIGINT},
+      </if>
+      <if test="businessId != null" >
+        #{businessId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="tradeType != null" >
+        #{tradeType,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeFlowId != null" >
+        #{tradeFlowId,jdbcType=VARCHAR},
+      </if>
+      <if test="createFreezeDate != null" >
+        #{createFreezeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnSerialNo != null" >
+        #{rtnSerialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnTradeDate != null" >
+        #{rtnTradeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnCode != null" >
+        #{rtnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnMsg != null" >
+        #{rtnMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnCreateFreezeDate != null" >
+        #{rtnCreateFreezeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeResult != null" >
+        #{tradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null" >
+        NOW(),
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.TrdFlow" >
+    update CIFPAY_LC_TRD_FLOW
+    <set >
+      <if test="businessId != null" >
+        BUSINESS_ID = #{businessId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null" >
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="tradeType != null" >
+        TRADE_TYPE = #{tradeType,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeFlowId != null" >
+        TRADE_FLOW_ID = #{tradeFlowId,jdbcType=VARCHAR},
+      </if>
+      <if test="createFreezeDate != null" >
+        CREATE_FREEZE_DATE = #{createFreezeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnSerialNo != null" >
+        RTN_SERIAL_NO = #{rtnSerialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnTradeDate != null" >
+        RTN_TRADE_DATE = #{rtnTradeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnCode != null" >
+        RTN_CODE = #{rtnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnMsg != null" >
+        RTN_MSG = #{rtnMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="rtnCreateFreezeDate != null" >
+        RTN_CREATE_FREEZE_DATE = #{rtnCreateFreezeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeResult != null" >
+        TRADE_RESULT = #{tradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null" >
+        INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.TrdFlow" >
+    update CIFPAY_LC_TRD_FLOW
+    set BUSINESS_ID = #{businessId,jdbcType=BIGINT},
+      LC_ID = #{lcId,jdbcType=BIGINT},
+      TRADE_TYPE = #{tradeType,jdbcType=VARCHAR},
+      TRADE_FLOW_ID = #{tradeFlowId,jdbcType=VARCHAR},
+      CREATE_FREEZE_DATE = #{createFreezeDate,jdbcType=VARCHAR},
+      RTN_SERIAL_NO = #{rtnSerialNo,jdbcType=VARCHAR},
+      RTN_TRADE_DATE = #{rtnTradeDate,jdbcType=VARCHAR},
+      RTN_CODE = #{rtnCode,jdbcType=VARCHAR},
+      RTN_MSG = #{rtnMsg,jdbcType=VARCHAR},
+      RTN_CREATE_FREEZE_DATE = #{rtnCreateFreezeDate,jdbcType=VARCHAR},
+      TRADE_RESULT = #{tradeResult,jdbcType=VARCHAR},
+      INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP}
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </update>
+</mapper>

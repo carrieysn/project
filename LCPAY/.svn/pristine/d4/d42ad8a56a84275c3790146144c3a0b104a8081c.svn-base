@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcPayDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcPay" >
+    <id column="LC_PAY_ID" property="lcPayId" jdbcType="BIGINT" />
+    <result column="LC_CONFIRM_ID" property="lcConfirmId" jdbcType="BIGINT" />
+    <result column="LC_ID" property="lcId" jdbcType="BIGINT" />
+    <result column="MID" property="mid" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="TOTAL_AMOUNT" property="totalAmount" jdbcType="DECIMAL" />
+    <result column="TRADE_TIME" property="tradeTime" jdbcType="TIMESTAMP" />
+    <result column="VALID_TIME" property="validTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="LC_PAY_STATUS" property="lcPayStatus" jdbcType="VARCHAR" />
+    <result column="LC_PAY_RESPONSE" property="lcPayResponse" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LC_PAY_ID, LC_CONFIRM_ID, LC_ID, MID, ORDER_ID, TOTAL_AMOUNT, TRADE_TIME, VALID_TIME, 
+    REMARK, LC_PAY_STATUS, LC_PAY_RESPONSE, CREATE_TIME, UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_PAY
+    where LC_PAY_ID = #{lcPayId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC_PAY
+    where LC_PAY_ID = #{lcPayId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcPay" >
+    insert into CIFPAY_LC_PAY (LC_PAY_ID, LC_CONFIRM_ID, LC_ID, 
+      MID, ORDER_ID, TOTAL_AMOUNT, 
+      TRADE_TIME, VALID_TIME, REMARK, 
+      LC_PAY_STATUS, LC_PAY_RESPONSE, CREATE_TIME, 
+      UPDATE_TIME)
+    values (#{lcPayId,jdbcType=BIGINT}, #{lcConfirmId,jdbcType=BIGINT}, #{lcId,jdbcType=BIGINT}, 
+      #{mid,jdbcType=VARCHAR}, #{orderId,jdbcType=VARCHAR}, #{totalAmount,jdbcType=DECIMAL}, 
+      #{tradeTime,jdbcType=TIMESTAMP}, #{validTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, 
+      #{lcPayStatus,jdbcType=VARCHAR}, #{lcPayResponse,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcPay" >
+    insert into CIFPAY_LC_PAY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="lcPayId != null" >
+        LC_PAY_ID,
+      </if>
+      <if test="lcConfirmId != null" >
+        LC_CONFIRM_ID,
+      </if>
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+      <if test="mid != null" >
+        MID,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+      <if test="totalAmount != null" >
+        TOTAL_AMOUNT,
+      </if>
+      <if test="tradeTime != null" >
+        TRADE_TIME,
+      </if>
+      <if test="validTime != null" >
+        VALID_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="lcPayStatus != null" >
+        LC_PAY_STATUS,
+      </if>
+      <if test="lcPayResponse != null" >
+        LC_PAY_RESPONSE,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="lcPayId != null" >
+        #{lcPayId,jdbcType=BIGINT},
+      </if>
+      <if test="lcConfirmId != null" >
+        #{lcConfirmId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="mid != null" >
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="totalAmount != null" >
+        #{totalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="tradeTime != null" >
+        #{tradeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="validTime != null" >
+        #{validTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="lcPayStatus != null" >
+        #{lcPayStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lcPayResponse != null" >
+        #{lcPayResponse,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcPay" >
+    update CIFPAY_LC_PAY
+    <set >
+      <if test="lcConfirmId != null" >
+        LC_CONFIRM_ID = #{lcConfirmId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null" >
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="mid != null" >
+        MID = #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="totalAmount != null" >
+        TOTAL_AMOUNT = #{totalAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="tradeTime != null" >
+        TRADE_TIME = #{tradeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="validTime != null" >
+        VALID_TIME = #{validTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="lcPayStatus != null" >
+        LC_PAY_STATUS = #{lcPayStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lcPayResponse != null" >
+        LC_PAY_RESPONSE = #{lcPayResponse,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where LC_PAY_ID = #{lcPayId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcPay" >
+    update CIFPAY_LC_PAY
+    set LC_CONFIRM_ID = #{lcConfirmId,jdbcType=BIGINT},
+      LC_ID = #{lcId,jdbcType=BIGINT},
+      MID = #{mid,jdbcType=VARCHAR},
+      ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      TOTAL_AMOUNT = #{totalAmount,jdbcType=DECIMAL},
+      TRADE_TIME = #{tradeTime,jdbcType=TIMESTAMP},
+      VALID_TIME = #{validTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      LC_PAY_STATUS = #{lcPayStatus,jdbcType=VARCHAR},
+      LC_PAY_RESPONSE = #{lcPayResponse,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where LC_PAY_ID = #{lcPayId,jdbcType=BIGINT}
+  </update>
+</mapper>

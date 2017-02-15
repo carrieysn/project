@@ -1,0 +1,88 @@
+package com.cifpay.lc.domain.message;
+
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.constant.enums.PayChannel;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class LcFreezeParamBean<T extends Serializable> extends MessageParamBean {
+
+    private static final long serialVersionUID = 1310774905848940099L;
+
+    private PayChannel payChannel;  //支付渠道
+    private T data;                 //开证参数
+
+    private long lcId;                  //银信证Id
+    private long lcOpenId;              //开证Id
+
+    private String serialNo;            //交易流水号
+    private LcTranStatus lcTranStatus;  //交易处理状态
+    private Date freezeTime;            //交易时间
+
+    private String lcOpenResponse;
+
+    public PayChannel getPayChannel() {
+        return payChannel;
+    }
+
+    public void setPayChannel(PayChannel payChannel) {
+        this.payChannel = payChannel;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(long lcId) {
+        this.lcId = lcId;
+    }
+
+    public long getLcOpenId() {
+        return lcOpenId;
+    }
+
+    public void setLcOpenId(long lcOpenId) {
+        this.lcOpenId = lcOpenId;
+    }
+
+    public LcTranStatus getLcTranStatus() {
+        return lcTranStatus;
+    }
+
+    public void setLcTranStatus(LcTranStatus lcTranStatus) {
+        this.lcTranStatus = lcTranStatus;
+    }
+
+    public String getLcOpenResponse() {
+        return lcOpenResponse;
+    }
+
+    public void setLcOpenResponse(String lcOpenResponse) {
+        this.lcOpenResponse = lcOpenResponse;
+    }
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public Date getFreezeTime() {
+        return freezeTime;
+    }
+
+    public void setFreezeTime(Date freezeTime) {
+        this.freezeTime = freezeTime;
+    }
+}

@@ -1,0 +1,87 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.BSwRecvDateQueueMsg;
+
+@Repository
+public interface BSwRecvDateQueueMsgDao {
+
+	BSwRecvDateQueueMsg selectByPrimaryKey(Long msgId);
+
+	void deleteByPrimaryKey(Long msgId);
+
+	void insert(BSwRecvDateQueueMsg queueMsg);
+
+	void insertSelective(BSwRecvDateQueueMsg queueMsg);
+
+	void updateByPrimaryKeySelective(BSwRecvDateQueueMsg queueMsg);
+
+	void updateByPrimaryKey(BSwRecvDateQueueMsg queueMsg);
+
+	/**
+	 * 将那些由于未开证而被搁置的修改有效期MQ消息，锁定为处理中状态。
+	 * 
+	 * @param serverNode
+	 *            节点ID
+	 * @param lockDate
+	 * @param timeoutLockedDate
+	 * @param lockRowsCnt
+	 *            最多需要锁定多少行的记录
+	 * @param statusProcessing
+	 * @param statusWaitLcOpen
+	 * @return
+	 */
+	int updateAsPendingBeforeProcessing(@Param("serverNode") String serverNode, @Param("lockDate") Date lockDate,
+			@Param("timeoutLockedDate") Date timeoutLockedDate, @Param("lockRowsCnt") int lockRowsCnt,
+			@Param("statusProcessing") String statusProcessing, @Param("statusWaitLcOpen") String statusWaitLcOpen);
+
+	/**
+	 * 根据节点ID，获得由该节点锁定的待处理的修改有效期MQ消息请求列表
+	 * 
+	 * @param serverNode
+	 * @param strLockDate
+	 * @param statusProcessing
+	 * @return
+	 */
+	List<BSwRecvDateQueueMsg> selectPendingList(@Param("serverNode") String serverNode,
+			@Param("strLockDate") String strLockDate, @Param("statusProcessing") String statusProcessing);
+
+	/**
+	 * 锁定那些修改有效期MQ消息处理结果尚未发送的记录。
+	 * 
+	 * @param serverNode
+	 *            节点ID
+	 * @param lockDate
+	 * @param timeoutLockedDate
+	 * @param lockRowsCnt
+	 *            最多需要锁定多少行的记录
+	 * @param resultSendStatusPending
+	 * @param resultSendStatusSending
+	 * @param resultSendStatusFailed
+	 * @return
+	 */
+	int updateAsLockedBeforeSendResult(@Param("serverNode") String serverNode, @Param("lockDate") Date lockDate,
+			@Param("timeoutLockedDate") Date timeoutLockedDate, @Param("lockRowsCnt") int lockRowsCnt,
+			@Param("handleStatusSuccess") String handleStatusSuccess,
+			@Param("handleStatusFailed") String handleStatusFailed,
+			@Param("resultSendStatusPending") String resultSendStatusPending,
+			@Param("resultSendStatusSending") String resultSendStatusSending,
+			@Param("resultSendStatusFailed") String resultSendStatusFailed);
+
+	/**
+	 * 根据节点ID，获得由该节点锁定的待发送修改有效期MQ消息处理结果的记录列表
+	 * 
+	 * @param serverNode
+	 * @param strLockDate
+	 * @param resultSendStatusSending
+	 * @return
+	 */
+	List<BSwRecvDateQueueMsg> selectSendingList(@Param("serverNode") String serverNode,
+			@Param("strLockDate") String strLockDate, @Param("resultSendStatusSending") String resultSendStatusSending);
+
+}

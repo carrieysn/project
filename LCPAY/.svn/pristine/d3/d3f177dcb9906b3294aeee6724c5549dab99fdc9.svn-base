@@ -1,0 +1,30 @@
+package com.cifpay.lc.core.db.dao;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.ThirdICBCBankentPayent;
+
+@Repository
+public interface ThirdICBCBankentPayentDao {
+
+	ThirdICBCBankentPayent selectByPrimaryKey(@Param("batchSeqno") String batchSeqno,
+			@Param("detailSeqno") String detailSeqno);
+
+	void deleteByPrimaryKey(@Param("batchSeqno") Long batchSeqno, @Param("detailSeqno") Integer detailSeqno);
+
+	void insert(ThirdICBCBankentPayent payent);
+
+	void insertSelective(ThirdICBCBankentPayent payent);
+
+	int updateByPrimaryKeySelective(ThirdICBCBankentPayent payent);
+
+	int updateByPrimaryKey(ThirdICBCBankentPayent payent);
+
+	int updateAllDetailRecordsByBatchSeqNoSelective(ThirdICBCBankentPayent payent);
+
+	ThirdICBCBankentPayent selectDetailByInstructionDetailNo(@Param("callerCode") String callerCode,
+			@Param("callerInstructionNo") String callerInstructionNo,
+			@Param("callerInstructionDetailNo") String callerInstructionDetailNo);
+
+}

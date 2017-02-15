@@ -1,0 +1,60 @@
+package com.cifpay.lc.std.interceptor;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.autoconfigure.lock.DistributeLockManager;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.component.CoreBusinessInterceptor;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.domain.lc.BaseLcInputBean;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.Serializable;
+
+
+@Component
+public class BusinessLockInterceptor implements CoreBusinessInterceptor {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private static final String LOCK_BY_LC_ID_PREFIX = "/LOCK/LCID";
+
+    @Autowired
+    private DistributeLockManager distributeLockManager;
+
+    @Override
+    public void beforeProcessBusiness(Object serviceInstance, Serializable inputData, CoreBusinessContext context) throws CoreBusinessException {
+        BaseLcInputBean lcInputData = (BaseLcInputBean) inputData;
+        InterProcessMutex lock;
+        try {
+            String lockPath = getLockPath(String.valueOf(lcInputData.getLcId()));
+            lock = distributeLockManager.getlock(lockPath, true);
+            lock.acquire();
+        } catch (Exception e) {
+            distributeLockManager.unlock(getLockPath(String.valueOf(lcInputData.getLcId())));
+            throw new CoreBusinessException(ReturnCode.UNKNOWN_ERROR, "该业务类不支持 业务加锁，processBusiness()的参数类型必须是BaseLcInputBean");
+        }
+    }
+
+    @Override
+    public void afterProcessBusiness(Object serviceInstance, Serializable inputData, BusinessOutput<Serializable> businessOutput, CoreBusinessContext context) throws CoreBusinessException {
+        BaseLcInputBean lcInputData = (BaseLcInputBean) inputData;
+        distributeLockManager.unlock(getLockPath(String.valueOf(lcInputData.getLcId())));
+    }
+
+    @Override
+    public void onException(Object serviceInstance, Serializable inputData, BusinessOutput<Serializable> businessOutput, Throwable exception, CoreBusinessContext context) throws CoreBusinessException {
+        //BaseLcInputBean lcInputData = (BaseLcInputBean) inputData;
+        //distributeLockManager.unlock(getLockPath(String.valueOf(lcInputData.getLcId())));
+    }
+
+
+    public String getLockPath(String key) {
+        return LOCK_BY_LC_ID_PREFIX + key;
+    }
+
+}

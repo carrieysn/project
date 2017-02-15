@@ -1,0 +1,31 @@
+package com.cifpay.lc.gateway.controller.quickpay;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+import com.cifpay.lc.domain.security.MerchantRequest;
+import com.cifpay.lc.gateway.input.quickpay.QuickPaySmsTokenRequest;
+import com.cifpay.lc.gateway.output.quickpay.QuickPaySmsTokenResult;
+
+/**
+ * 交易短信验证码
+ * 
+ * 
+ *
+ */
+@RestController
+@RequestMapping("/quickpay")
+public class QuickPaySmsTokenController extends GatewayBaseController {
+
+	@RequestMapping(path = "/mobile/smsCode", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public QuickPaySmsTokenResult generateSmsToken(@RequestBody MerchantRequest<QuickPaySmsTokenRequest> req) {
+		QuickPaySmsTokenResult res = new QuickPaySmsTokenResult();
+
+		return res;
+	}
+
+}

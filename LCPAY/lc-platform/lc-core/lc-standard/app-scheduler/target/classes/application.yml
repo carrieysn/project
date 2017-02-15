@@ -1,0 +1,21 @@
+server:
+  port: 9202
+spring:
+  jmx:
+    default-domain: lc-standard-scheduler
+
+    
+cifpay:
+  dubbo:
+    enable: true 
+  jmx:
+    enable: true
+  redis:
+    enable: true
+  lock:
+    enable: true
+  amqp:
+    enable: true
+  sms:
+    enable: true
+    

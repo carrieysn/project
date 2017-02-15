@@ -1,0 +1,31 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_LOG
+DROP TABLE IF EXISTS `CIFPAY_LC_LOG`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_LOG` (
+  `LOG_ID` bigint(20) NOT NULL COMMENT '记录ID',
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `STEP_LOG_ID` bigint(20) DEFAULT NULL COMMENT '银信证过程表的id，例如openid，sendid',
+  `TRADE_CODE` varchar(32) DEFAULT NULL COMMENT '交易代码，初始化证INIT，开证 OPEN，收证RECV，履约 APPOINTMENT，申请解付 APPLY，解付 TRANSFER，展期 DEFER，刹车 SUSPEND，定时任务 TIMERTASK',
+  `LC_STATUS` varchar(32) DEFAULT NULL COMMENT '银信证状态，10开证、20已收证、30已履约、31已展期、40已申请解付、41已刹车、50已执行解付、88已解付完成、99已失效',
+  `LC_RESPONSE` varchar(256) DEFAULT NULL COMMENT '银信证交易结果',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`LOG_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证交易流水表，每次银信证状态改变时，记录日志';
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

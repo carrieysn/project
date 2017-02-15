@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTradeDao">
+	<resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcTrade">
+		<id column="TRADE_CODE" property="tradeCode" jdbcType="VARCHAR" />
+		<result column="TRADE_NAME" property="tradeName" jdbcType="VARCHAR" />
+		<result column="TRADE_DESC" property="tradeDesc" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		TRADE_CODE, TRADE_NAME, TRADE_DESC
+	</sql>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from CIFPAY_LC_TRADE
+		where TRADE_CODE = #{tradeCode,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		CIFPAY_LC_TRADE
+		where TRADE_CODE = #{tradeCode,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcTrade">
+		insert into CIFPAY_LC_TRADE
+		(TRADE_CODE, TRADE_NAME, TRADE_DESC
+		)
+		values
+		(#{tradeCode,jdbcType=VARCHAR}, #{tradeName,jdbcType=VARCHAR},
+		#{tradeDesc,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcTrade">
+		insert into CIFPAY_LC_TRADE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="tradeCode != null">
+				TRADE_CODE,
+			</if>
+			<if test="tradeName != null">
+				TRADE_NAME,
+			</if>
+			<if test="tradeDesc != null">
+				TRADE_DESC,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="tradeCode != null">
+				#{tradeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="tradeName != null">
+				#{tradeName,jdbcType=VARCHAR},
+			</if>
+			<if test="tradeDesc != null">
+				#{tradeDesc,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcTrade">
+		update CIFPAY_LC_TRADE
+		<set>
+			<if test="tradeName != null">
+				TRADE_NAME = #{tradeName,jdbcType=VARCHAR},
+			</if>
+			<if test="tradeDesc != null">
+				TRADE_DESC = #{tradeDesc,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where TRADE_CODE = #{tradeCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcTrade">
+		update
+		CIFPAY_LC_TRADE
+		set TRADE_NAME = #{tradeName,jdbcType=VARCHAR},
+		TRADE_DESC = #{tradeDesc,jdbcType=VARCHAR}
+		where TRADE_CODE =
+		#{tradeCode,jdbcType=VARCHAR}
+	</update>
+</mapper>

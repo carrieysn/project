@@ -1,0 +1,56 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.BTradeSync;
+
+/**
+ * 银信证重复支付[解保留-划款]信息表数据访问接口
+ */
+@Repository("tradeSyncDao")
+public interface BTradeSyncDao {
+
+	/**
+	 * 主键查询银信证重复支付[解保留-划款]信息表
+	 * 
+	 * @param id
+	 * @return 银信证重复支付[解保留-划款]信息表信息
+	 */
+	BTradeSync get(@Param("lcId") String lcId, @Param("orderId") String orderId, @Param("journalNo") String journalNo);
+
+	/**
+	 * 查询银信证重复支付[解保留-划款]信息表 列表
+	 * 
+	 * @param lcSync
+	 * @return 银信证重复支付[解保留-划款]信息表信息列表
+	 */
+	List<BTradeSync> selectList(BTradeSync tradeSync);
+
+	/**
+	 * 根据同步时间倒序，查询银信证与银行所有交易流水表(不含同步/查询交易流水) 列表
+	 * 
+	 * @param lcSync
+	 * @return 银信证与银行所有交易流水表(不含同步/查询交易流水)信息列表
+	 */
+	List<BTradeSync> sortBySyncTime(BTradeSync tradeSync);
+
+	/**
+	 * 保存银信证重复支付[解保留-划款]信息表
+	 * 
+	 * @param lcSync
+	 *            银信证重复支付[解保留-划款]信息表信息
+	 */
+	int save(BTradeSync tradeSync);
+	
+	/**
+	 * 更新银信证与银行所有交易流水表(不含同步/查询交易流水)
+	 * 
+	 * @param lcSync
+	 *            银信证与银行所有交易流水表(不含同步/查询交易流水)信息
+	 */
+	int updateByTradeSyncAndOldIsSuccess(@Param("oldIsSuccess") String oldIsSuccess, @Param("trdSync") BTradeSync tradeSync);
+
+}

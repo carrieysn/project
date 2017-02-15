@@ -1,0 +1,39 @@
+package com.cifpay.lc.gateway.output.quickpay;
+
+import com.cifpay.lc.domain.security.MerchantResponseData;
+
+/**
+ * 
+ *
+ */
+public class QuickPayTradeResult extends MerchantResponseData {
+
+	private String orderNo;
+	private String lcId;
+	private String status;
+
+	public String getOrderNo() {
+		return orderNo;
+	}
+
+	public void setOrderNo(String orderNo) {
+		this.orderNo = orderNo;
+	}
+
+	public String getLcId() {
+		return lcId;
+	}
+
+	public void setLcId(String lcId) {
+		this.lcId = lcId;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+}

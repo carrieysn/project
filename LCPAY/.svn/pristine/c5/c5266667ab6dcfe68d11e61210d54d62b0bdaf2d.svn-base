@@ -1,0 +1,199 @@
+$blue: #0da3e2;
+.header{
+	position: relative;
+	z-index: 9;
+	height: 75px;
+	box-shadow: 0 1px 3px #ddd;
+}
+@media screen and(max-width: 992px){
+	.header{
+		height: 50px;
+		.container > img{
+			max-height: 40px;
+		}
+	}
+}
+.v-middle{
+	height: 100%;
+ 	&:before{
+ 		display: inline-block;
+ 		content: '';
+ 		height: 100%;
+ 		vertical-align: middle;
+ 	} 
+ 	> img{
+ 		vertical-align: middle;
+ 		display: inline-block;
+ 	}
+}
+.page-container{
+	.forminfoWrap{
+		margin-bottom: 20px;
+		background: #fcfcfc;
+		border-top: 1px solid #f5f5f5;
+		border-bottom: 1px solid #f5f5f5;
+		padding-bottom: 10px;
+		.f-info{
+			padding: 10px;
+			line-height: 1.8;
+			font-size: 12px;
+			color: #555;
+		}
+		.container{
+			padding-left: 0;
+		}
+		.f-other{
+			padding-right: 100px;
+			text-align: right;
+			.color-blue{
+				color: $blue;
+				font-weight: bold;
+			}
+			.p-block{
+				font-size: 12px;
+				margin-top: 0px;
+				margin-bottom: 5px;
+				color: #737373;
+			}
+		}
+		.min-show{
+			display: none;
+			> a{
+				padding: 0;
+			}
+		}
+		@media screen and(max-width: 992px) {
+			.f-info{
+				padding-bottom: 0;
+				> ul{
+					margin-bottom: 0;
+				}
+			}
+			.f-other{
+				padding-right: 0px;
+				text-align: left;
+				padding-left: 25px;
+				margin-top: -10px;
+			}
+			.color-blue {
+				line-height: 1;
+			}
+			.orderinfo{
+				display: none;
+			}
+			.min-show{
+				display: block;
+			}
+			.min-hide{
+				display: none;
+			}
+		}
+	}
+	.paymentWrap{
+		.nav-tabs{
+			margin-bottom: 15px;
+		}
+		.banklogo{
+			max-width: 130px;
+		}
+		.bankstyle{
+			display: inline-block;
+			color: #666;
+			padding-left: 10px;
+		}
+		.credit-help{
+			position: relative;
+			padding-left: 60px;
+			&:before{
+				position: absolute;
+				left: 10px;
+				display: block;
+				content: '';
+				width: 50px;
+				height: 100%;
+				background-repeat: no-repeat;
+				background-size: 30px;
+				background-position: center center;
+				background-image: url('../images/unionpay.png');
+			}
+		}
+		.payimg{
+			max-width: 100px;
+		}
+		.form-inline{
+			margin-bottom: 10px;
+		}
+		@media screen and(min-width: 992px) {
+			input[type=text].form-control,input[type=tel].form-control,input[type=number].form-control{
+				max-width: 340px;
+			}
+		}
+		input[type=text].form-control,select.form-control{
+			min-width: 240px;
+		}
+		.form-inline .form-group > label{
+			margin-right: 20px;
+		}
+	}
+}
+.page-error{
+	padding: 100px 0;
+	text-align: center;
+	.err-cont{
+		&:before{
+			position: absolute;
+			background-image: url(../images/faild.png);
+			left: 0;
+			top: 0;
+			content: '';
+			display: inline-block;
+			width: 128px;
+			height: 128px;
+		}
+		position: relative;
+		display: block;
+		width: 400px;
+		min-height: 128px;
+		margin: 0 auto;
+		padding-left: 168px;
+		> h3{
+			display: inline-block;
+			width: 400px;
+			text-align: left;
+			vertical-align: middle;
+		}
+		> p{
+			font-size: 12px;
+			text-align: left;
+			vertical-align: middle;
+		}
+	}
+}
+@media screen and(max-width: 992px){
+	.page-error{
+		padding: 50px 0;
+	}
+	.page-error .err-cont{
+		padding-left: 0;
+		max-width: 100%;
+		> h3{
+			max-width: 100%;
+			text-align: center;
+		}
+		> p{
+			text-align: center;
+		}
+		&:before{
+			position: relative;
+			width: 100%;
+			background-repeat: no-repeat;
+			background-position: center center;
+
+		}
+	}
+
+}
+.title-width{
+	min-width: 5em;
+}
+

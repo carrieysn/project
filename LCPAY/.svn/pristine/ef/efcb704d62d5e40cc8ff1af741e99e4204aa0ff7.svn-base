@@ -1,0 +1,15 @@
+package com.cifpay.lc.gateway.output.lc;
+
+public class DeferResp extends LcBaseResp {
+
+	private String applyValidDate;
+
+	public String getApplyValidDate() {
+		return applyValidDate;
+	}
+
+	public void setApplyValidDate(String applyValidDate) {
+		this.applyValidDate = applyValidDate;
+	}
+
+}

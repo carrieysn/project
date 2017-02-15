@@ -1,0 +1,45 @@
+package com.cifpay.lc.std.business.message.lc;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.AppointmentService;
+import com.cifpay.lc.api.message.lc.AutoAppointmentLcMessageService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.domain.lc.AppointmentInputBean;
+import com.cifpay.lc.domain.lc.AppointmentOutputBean;
+import com.cifpay.lc.domain.message.LcAppointmentParamBean;
+import com.cifpay.lc.domain.message.MessageOutputBean;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.interceptor.MessageLockInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service("autoAppointmentLcMessageService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class, MessageLockInterceptor.class})
+public class AutoAppointmentLcMessageServiceImpl extends LcMessageServiceBase<LcAppointmentParamBean> implements AutoAppointmentLcMessageService {
+
+    @Autowired
+    AppointmentService appointmentService;
+
+    @Override
+    protected BusinessOutput<MessageOutputBean> handleMessage(LcAppointmentParamBean messageParams, CoreBusinessContext context) throws CoreBusinessException {
+
+        AppointmentInputBean appointmentInputBean = new AppointmentInputBean();
+        appointmentInputBean.setLcId(messageParams.getLcId());
+        appointmentInputBean.setMerId(messageParams.getMerId());
+        appointmentInputBean.setOrderId(messageParams.getOrderId());
+        appointmentInputBean.setOrderAmount(messageParams.getOrderAmount());
+        appointmentInputBean.setRemark("收证阶段自动履约");
+
+        BusinessOutput<AppointmentOutputBean> output = appointmentService.execute(new BusinessInput<AppointmentInputBean>(appointmentInputBean));
+
+        if (output.isSuccess()) {
+            return BusinessOutput.success(new MessageOutputBean(true));
+        }
+
+        return BusinessOutput.fail(ReturnCode.CORE_MSG_UNKNOWN_ERROR, "消息处理失败");
+    }
+}

@@ -1,0 +1,48 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_OPEN
+DROP TABLE IF EXISTS `CIFPAY_LC_OPEN`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_OPEN` (
+  `LC_OPEN_ID` bigint(20) NOT NULL COMMENT '开证记录ID',
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `LC_BATCH_ID` bigint(20) DEFAULT NULL COMMENT '银信证批次ID',
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `ORDER_ID` varchar(128) DEFAULT NULL COMMENT '订单号',
+  `LC_CURRENCY` varchar(8) DEFAULT NULL COMMENT '银信证币种',
+  `LC_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '银信证开证总额(单位分)',
+  `PAYER_ID` varchar(32) DEFAULT NULL COMMENT '开证人标识信息',
+  `PAYER_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `PAYER_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：1:个人 2:企业',
+  `PAYER_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '开证人银行代码：ICBC、ALIPAY',
+  `PAYER_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `PAYER_MOBILE` varchar(32) DEFAULT NULL,
+  `RECV_ID` varchar(32) DEFAULT NULL COMMENT '收证人信息',
+  `RECV_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `RECV_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：1:个人 2:企业',
+  `RECV_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '工商银行、平安银行、支付宝',
+  `RECV_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `RECV_MOBILE` varchar(32) DEFAULT NULL,
+  `VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '开证有效期',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `TRADE_TIME` timestamp NULL DEFAULT NULL COMMENT '开证处理日期',
+  `LC_OPEN_STATUS` varchar(32) DEFAULT NULL COMMENT '开证状态：0处理中、1成功、2失败、3不确定、4未支付',
+  `LC_OPEN_RESPONSE` varchar(2560) DEFAULT NULL COMMENT '开证结果：银行接口返回的错误/成功信息',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改日期',
+  PRIMARY KEY (`LC_OPEN_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证开证记录表';
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

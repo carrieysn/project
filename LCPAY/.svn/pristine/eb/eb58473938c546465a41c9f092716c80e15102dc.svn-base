@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcRecvDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcRecv" >
+    <id column="LC_RECV_ID" property="lcRecvId" jdbcType="BIGINT" />
+    <result column="LC_ID" property="lcId" jdbcType="BIGINT" />
+    <result column="MID" property="mid" jdbcType="VARCHAR" />
+    <result column="RECV_ID" property="recvId" jdbcType="VARCHAR" />
+    <result column="RECV_ACCNO" property="recvAccno" jdbcType="VARCHAR" />
+    <result column="RECV_TYPE" property="recvType" jdbcType="VARCHAR" />
+    <result column="RECV_BANK_CODE" property="recvBankCode" jdbcType="VARCHAR" />
+    <result column="RECV_BANK_NAME" property="recvBankName" jdbcType="VARCHAR" />
+    <result column="RECV_MOBILE" property="recvMobile" jdbcType="VARCHAR" />
+    <result column="VALID_TIME" property="validTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LC_RECV_ID, LC_ID, MID, RECV_ID, RECV_ACCNO, RECV_TYPE, RECV_BANK_CODE, RECV_BANK_NAME, 
+    RECV_MOBILE, VALID_TIME, REMARK, CREATE_TIME, UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_RECV
+    where LC_RECV_ID = #{lcRecvId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC_RECV
+    where LC_RECV_ID = #{lcRecvId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcRecv" >
+    insert into CIFPAY_LC_RECV (LC_RECV_ID, LC_ID, MID, 
+      RECV_ID, RECV_ACCNO, RECV_TYPE, 
+      RECV_BANK_CODE, RECV_BANK_NAME, RECV_MOBILE, 
+      VALID_TIME, REMARK, CREATE_TIME, 
+      UPDATE_TIME)
+    values (#{lcRecvId,jdbcType=BIGINT}, #{lcId,jdbcType=BIGINT}, #{mid,jdbcType=VARCHAR}, 
+      #{recvId,jdbcType=VARCHAR}, #{recvAccno,jdbcType=VARCHAR}, #{recvType,jdbcType=VARCHAR}, 
+      #{recvBankCode,jdbcType=VARCHAR}, #{recvBankName,jdbcType=VARCHAR}, #{recvMobile,jdbcType=VARCHAR}, 
+      #{validTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcRecv" >
+    insert into CIFPAY_LC_RECV
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="lcRecvId != null" >
+        LC_RECV_ID,
+      </if>
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+      <if test="mid != null" >
+        MID,
+      </if>
+      <if test="recvId != null" >
+        RECV_ID,
+      </if>
+      <if test="recvAccno != null" >
+        RECV_ACCNO,
+      </if>
+      <if test="recvType != null" >
+        RECV_TYPE,
+      </if>
+      <if test="recvBankCode != null" >
+        RECV_BANK_CODE,
+      </if>
+      <if test="recvBankName != null" >
+        RECV_BANK_NAME,
+      </if>
+      <if test="recvMobile != null" >
+        RECV_MOBILE,
+      </if>
+      <if test="validTime != null" >
+        VALID_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="lcRecvId != null" >
+        #{lcRecvId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="mid != null" >
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="recvId != null" >
+        #{recvId,jdbcType=VARCHAR},
+      </if>
+      <if test="recvAccno != null" >
+        #{recvAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="recvType != null" >
+        #{recvType,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankCode != null" >
+        #{recvBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankName != null" >
+        #{recvBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="recvMobile != null" >
+        #{recvMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="validTime != null" >
+        #{validTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcRecv" >
+    update CIFPAY_LC_RECV
+    <set >
+      <if test="lcId != null" >
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="mid != null" >
+        MID = #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="recvId != null" >
+        RECV_ID = #{recvId,jdbcType=VARCHAR},
+      </if>
+      <if test="recvAccno != null" >
+        RECV_ACCNO = #{recvAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="recvType != null" >
+        RECV_TYPE = #{recvType,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankCode != null" >
+        RECV_BANK_CODE = #{recvBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankName != null" >
+        RECV_BANK_NAME = #{recvBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="recvMobile != null" >
+        RECV_MOBILE = #{recvMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="validTime != null" >
+        VALID_TIME = #{validTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where LC_RECV_ID = #{lcRecvId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcRecv" >
+    update CIFPAY_LC_RECV
+    set LC_ID = #{lcId,jdbcType=BIGINT},
+      MID = #{mid,jdbcType=VARCHAR},
+      RECV_ID = #{recvId,jdbcType=VARCHAR},
+      RECV_ACCNO = #{recvAccno,jdbcType=VARCHAR},
+      RECV_TYPE = #{recvType,jdbcType=VARCHAR},
+      RECV_BANK_CODE = #{recvBankCode,jdbcType=VARCHAR},
+      RECV_BANK_NAME = #{recvBankName,jdbcType=VARCHAR},
+      RECV_MOBILE = #{recvMobile,jdbcType=VARCHAR},
+      VALID_TIME = #{validTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where LC_RECV_ID = #{lcRecvId,jdbcType=BIGINT}
+  </update>
+</mapper>

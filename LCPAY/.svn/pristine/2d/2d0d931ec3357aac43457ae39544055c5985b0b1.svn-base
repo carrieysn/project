@@ -1,0 +1,18 @@
+package com.cifpay.lc.gateway.output.batch;
+
+import java.util.List;
+
+import com.cifpay.lc.domain.security.MerchantResponseData;
+
+public class BatchInitResp extends MerchantResponseData {
+
+	private List<InitLcOutputDto> lcList;
+
+	public List<InitLcOutputDto> getLcList() {
+		return lcList;
+	}
+
+	public void setLcList(List<InitLcOutputDto> lcList) {
+		this.lcList = lcList;
+	}
+}

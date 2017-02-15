@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.AdminCredentialsDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.AdminCredentials" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="CRE_NAME" property="creName" jdbcType="VARCHAR" />
+    <result column="CRE_PATH" property="crePath" jdbcType="VARCHAR" />
+    <result column="CRE_TYPE" property="creType" jdbcType="BIGINT" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="USER_ID" property="userId" jdbcType="INTEGER" />
+    <result column="CRE_SUM" property="creSum" jdbcType="INTEGER" />
+    <result column="CRE_REMARK" property="creRemark" jdbcType="VARCHAR" />
+    <result column="CRE_STATE" property="creState" jdbcType="INTEGER" />
+    <result column="CRE_FILE_NAME" property="creFileName" jdbcType="VARCHAR" />
+    <result column="CRE_PASSWORD" property="crePassword" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.cifpay.lc.core.db.pojo.AdminCredentials" extends="BaseResultMap" >
+    <result column="CRE_CONENT" property="creConent" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, CRE_NAME, CRE_PATH, CRE_TYPE, CREATE_TIME, USER_ID, CRE_SUM, CRE_REMARK, CRE_STATE, 
+    CRE_FILE_NAME, CRE_PASSWORD
+  </sql>
+  <sql id="Blob_Column_List" >
+    CRE_CONENT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ADMIN_CREDENTIALS
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ADMIN_CREDENTIALS
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.AdminCredentials" >
+    insert into ADMIN_CREDENTIALS (ID, CRE_NAME, CRE_PATH, 
+      CRE_TYPE, CREATE_TIME, USER_ID, 
+      CRE_SUM, CRE_REMARK, CRE_STATE, 
+      CRE_FILE_NAME, CRE_PASSWORD, CRE_CONENT
+      )
+    values (#{id,jdbcType=INTEGER}, #{creName,jdbcType=VARCHAR}, #{crePath,jdbcType=VARCHAR}, 
+      #{creType,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=INTEGER}, 
+      #{creSum,jdbcType=INTEGER}, #{creRemark,jdbcType=VARCHAR}, #{creState,jdbcType=INTEGER}, 
+      #{creFileName,jdbcType=VARCHAR}, #{crePassword,jdbcType=VARCHAR}, #{creConent,jdbcType=LONGVARBINARY}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.AdminCredentials" >
+    insert into ADMIN_CREDENTIALS
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="creName != null" >
+        CRE_NAME,
+      </if>
+      <if test="crePath != null" >
+        CRE_PATH,
+      </if>
+      <if test="creType != null" >
+        CRE_TYPE,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="userId != null" >
+        USER_ID,
+      </if>
+      <if test="creSum != null" >
+        CRE_SUM,
+      </if>
+      <if test="creRemark != null" >
+        CRE_REMARK,
+      </if>
+      <if test="creState != null" >
+        CRE_STATE,
+      </if>
+      <if test="creFileName != null" >
+        CRE_FILE_NAME,
+      </if>
+      <if test="crePassword != null" >
+        CRE_PASSWORD,
+      </if>
+      <if test="creConent != null" >
+        CRE_CONENT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="creName != null" >
+        #{creName,jdbcType=VARCHAR},
+      </if>
+      <if test="crePath != null" >
+        #{crePath,jdbcType=VARCHAR},
+      </if>
+      <if test="creType != null" >
+        #{creType,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="creSum != null" >
+        #{creSum,jdbcType=INTEGER},
+      </if>
+      <if test="creRemark != null" >
+        #{creRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="creState != null" >
+        #{creState,jdbcType=INTEGER},
+      </if>
+      <if test="creFileName != null" >
+        #{creFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="crePassword != null" >
+        #{crePassword,jdbcType=VARCHAR},
+      </if>
+      <if test="creConent != null" >
+        #{creConent,jdbcType=LONGVARBINARY},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.AdminCredentials" >
+    update ADMIN_CREDENTIALS
+    <set >
+      <if test="creName != null" >
+        CRE_NAME = #{creName,jdbcType=VARCHAR},
+      </if>
+      <if test="crePath != null" >
+        CRE_PATH = #{crePath,jdbcType=VARCHAR},
+      </if>
+      <if test="creType != null" >
+        CRE_TYPE = #{creType,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userId != null" >
+        USER_ID = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="creSum != null" >
+        CRE_SUM = #{creSum,jdbcType=INTEGER},
+      </if>
+      <if test="creRemark != null" >
+        CRE_REMARK = #{creRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="creState != null" >
+        CRE_STATE = #{creState,jdbcType=INTEGER},
+      </if>
+      <if test="creFileName != null" >
+        CRE_FILE_NAME = #{creFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="crePassword != null" >
+        CRE_PASSWORD = #{crePassword,jdbcType=VARCHAR},
+      </if>
+      <if test="creConent != null" >
+        CRE_CONENT = #{creConent,jdbcType=LONGVARBINARY},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cifpay.lc.core.db.pojo.AdminCredentials" >
+    update ADMIN_CREDENTIALS
+    set CRE_NAME = #{creName,jdbcType=VARCHAR},
+      CRE_PATH = #{crePath,jdbcType=VARCHAR},
+      CRE_TYPE = #{creType,jdbcType=BIGINT},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      USER_ID = #{userId,jdbcType=INTEGER},
+      CRE_SUM = #{creSum,jdbcType=INTEGER},
+      CRE_REMARK = #{creRemark,jdbcType=VARCHAR},
+      CRE_STATE = #{creState,jdbcType=INTEGER},
+      CRE_FILE_NAME = #{creFileName,jdbcType=VARCHAR},
+      CRE_PASSWORD = #{crePassword,jdbcType=VARCHAR},
+      CRE_CONENT = #{creConent,jdbcType=LONGVARBINARY}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.AdminCredentials" >
+    update ADMIN_CREDENTIALS
+    set CRE_NAME = #{creName,jdbcType=VARCHAR},
+      CRE_PATH = #{crePath,jdbcType=VARCHAR},
+      CRE_TYPE = #{creType,jdbcType=BIGINT},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      USER_ID = #{userId,jdbcType=INTEGER},
+      CRE_SUM = #{creSum,jdbcType=INTEGER},
+      CRE_REMARK = #{creRemark,jdbcType=VARCHAR},
+      CRE_STATE = #{creState,jdbcType=INTEGER},
+      CRE_FILE_NAME = #{creFileName,jdbcType=VARCHAR},
+      CRE_PASSWORD = #{crePassword,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

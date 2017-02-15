@@ -1,0 +1,130 @@
+package com.cifpay.lc.std.business.lc;
+
+import java.math.BigDecimal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.InitLcService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.AccountPropertyType;
+import com.cifpay.lc.constant.enums.LcPayType;
+import com.cifpay.lc.core.cache.pojo.LcProductCache;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.domain.lc.InitLcInputBean;
+import com.cifpay.lc.domain.lc.InitLcOutputBean;
+import com.cifpay.lc.std.domain.enums.ProductPayerType;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.domain.kernel.InitLcKernelInputBean;
+import com.cifpay.lc.std.domain.kernel.InitLcKernelOutputBean;
+import com.cifpay.lc.std.kernel.lc.InitLcKernel;
+import com.cifpay.lc.std.mapper.lc.input.InitLcInputBeanMapper;
+import com.cifpay.lc.std.mapper.lc.output.InitLcKernelOutputBeanMapper;
+
+/**
+ * 初始化证（预开证）
+ * 
+ * @author sweet
+ *
+ */
+@Service("initLcService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class})
+public class InitLcServiceImpl extends LcServiceImplBase<InitLcInputBean, InitLcOutputBean> implements InitLcService {
+
+	@Autowired
+	private InitLcKernel initLc;
+	
+	//ExecutorService es = Executors.newFixedThreadPool(100);
+
+	@Override
+	public void validateInputParameters(InitLcInputBean inputBean) throws CoreValidationRejectException {
+
+		String mid = inputBean.getMerId();
+		String productCode = inputBean.getProductCode();
+		BigDecimal amount = inputBean.getAmount();
+		String currency = inputBean.getCurrency();
+
+		if (!StringUtils.hasText(mid)) {
+			throw new CoreValidationRejectException(103100, "商户号不允许为空");
+		}
+		if (!StringUtils.hasText(productCode)) {
+			throw new CoreValidationRejectException(103100, "产品代码不允许为空");
+		}
+		if (amount.compareTo(BigDecimal.valueOf(0)) <= 0) {
+			throw new CoreValidationRejectException(103100, "金额不正确");
+		}
+		if (!StringUtils.hasText(currency)) {
+			throw new CoreValidationRejectException(103100, "币种不正确");
+		}
+	}
+
+	@Override
+	public void validateLcProductRule(InitLcInputBean inputBean, CoreBusinessContext context) throws CoreValidationRejectException {
+
+		// 查询产品信息
+		LcProductCache lcProductCache = getProductByCode(inputBean.getProductCode());
+		context.setAttribute("LC_PRODUCT_POJO", lcProductCache);
+
+		if (lcProductCache.getLcCurrency().compareToIgnoreCase(inputBean.getCurrency()) != 0) {
+			throw new CoreBusinessException(ReturnCode.PRODUCT_CURRENCY_NOT_SUPPORTED, "产品不支持当前币种");
+		}
+		if (lcProductCache.getLcAmountMin() != null && inputBean.getAmount().compareTo(lcProductCache.getLcAmountMin()) < 0) {
+			throw new CoreBusinessException(ReturnCode.PRODUCT_AMOUNT_MIN_NOT_SUPPORTED, "支付金额过小");
+		}
+		if (lcProductCache.getLcAmountMax() != null && inputBean.getAmount().compareTo(lcProductCache.getLcAmountMax()) > 0) {
+			throw new CoreBusinessException(ReturnCode.PRODUCT_AMOUNT_MAX_NOT_SUPPORTED, "支付金额过大");
+		}
+		if (inputBean.getRecvValidSecond() != 0 || inputBean.getSendValidSecond() != 0 || inputBean.getConfirmValidSecond() != 0 || inputBean.getPayValidSecond() != 0) {
+			if (lcProductCache.getLcStandard() != null && lcProductCache.getLcStandard().booleanValue() == true) {
+				throw new CoreBusinessException(ReturnCode.PRODUCT_STANDARD_CAN_NOT_MODIFY, "标准银信证不可以修改到期时间");
+			}
+		}
+		if (lcProductCache.getAutoOpen() != null && lcProductCache.getAutoOpen()) {
+			if ((StringUtils.isEmpty(inputBean.getPayerBankAccountNo()) || StringUtils.isEmpty(inputBean.getPayerBankCode()) || inputBean.getPayerAccountType() == null) 
+					&& StringUtils.isEmpty(inputBean.getPayerMobile())) {
+				throw new CoreBusinessException(ReturnCode.PRODUCT_PAY_ACCOUNT_CAN_NOT_EMPTY, "自动开证时，付款人信息不可以为空");
+			}
+		}
+		if (inputBean.getPayerAccountType() != null && inputBean.getPayerAccountType().compareTo(AccountPropertyType.PERSONAL) == 0) {
+			if (lcProductCache.getPayerType() != null && lcProductCache.getPayerType().compareTo(ProductPayerType.PERSONAL.getCode()) != 0 
+					&& lcProductCache.getPayerType().compareTo(ProductPayerType.ALL.getCode()) != 0) {
+				throw new CoreBusinessException(ReturnCode.PRODUCT_PAYER_TYPE_NOT_EMPTY, "产品不支持当前付款人类型");
+			}
+		}
+		if (inputBean.getPayerAccountType() != null && inputBean.getPayerAccountType().compareTo(AccountPropertyType.CORPORATE) == 0) {
+			if (lcProductCache.getPayerType() != null && lcProductCache.getPayerType().compareTo(ProductPayerType.CORPORATE.getCode()) != 0 
+					&& lcProductCache.getPayerType().compareTo(ProductPayerType.ALL.getCode()) != 0) {
+				throw new CoreBusinessException(ReturnCode.PRODUCT_PAYER_TYPE_NOT_EMPTY, "产品不支持当前付款人类型");
+			}
+		}
+	}
+
+	@Override
+	public BusinessOutput<InitLcOutputBean> processLcBusiness(InitLcInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+		logger.info("~~~进入预开证业务处理");
+
+		LcProductCache lcProductCache = (LcProductCache) context.getAttribute("LC_PRODUCT_POJO");
+
+		InitLcKernelInputBean initLcKernelInputBean = InitLcInputBeanMapper.toInitLcKernelInputBean(inputBean);
+		// 根据产品表，设置解付类型
+		initLcKernelInputBean.setPayType((lcProductCache.getAllowPartialPay() != null 
+				&& lcProductCache.getAllowPartialPay()) ? LcPayType.MULTIPAY_PAY_WITH_SAME_PAYEE : LcPayType.SINGLE_PAY);
+
+		BusinessOutput<InitLcKernelOutputBean> businessOutput = initLc.invokeKernel(initLcKernelInputBean, context);
+
+		if (businessOutput.isSuccess()) {
+
+			InitLcOutputBean result = InitLcKernelOutputBeanMapper.ToInitLcOutputBean(businessOutput.getData());
+			
+			return BusinessOutput.success(result);
+		}
+
+		return BusinessOutput.fail(businessOutput.getReturnCode(), businessOutput.getReturnMsg());
+	}
+
+}

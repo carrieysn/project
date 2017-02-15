@@ -1,0 +1,35 @@
+package com.cifpay.lc.std.business.quickpay;
+
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.quickpay.QuickPayEnquiryService;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessServiceImplBase;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.domain.quickpay.QuickPayEnquiryInputBean;
+import com.cifpay.lc.domain.quickpay.QuickPayEnquiryOutputBean;
+
+/**
+ * 
+ *
+ */
+@Service("quickPayEnquiryService")
+public class QuickPayEnquiryServiceImpl
+		extends CoreBusinessServiceImplBase<QuickPayEnquiryInputBean, QuickPayEnquiryOutputBean>
+		implements QuickPayEnquiryService {
+
+	@Override
+	protected void validate(QuickPayEnquiryInputBean inputBean, CoreBusinessContext context)
+			throws CoreValidationRejectException {
+
+	}
+
+	@Override
+	protected BusinessOutput<QuickPayEnquiryOutputBean> processBusiness(QuickPayEnquiryInputBean inputBean,
+			CoreBusinessContext context) throws CoreBusinessException {
+		return null;
+	}
+
+}

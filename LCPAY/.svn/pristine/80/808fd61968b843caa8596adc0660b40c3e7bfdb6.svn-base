@@ -1,0 +1,15 @@
+package com.cifpay.lc.bankadapter.universal.service;
+
+import com.cifpay.lc.bankadapter.api.input.AbsTradeParam;
+import com.cifpay.lc.core.db.pojo.UnionPayTrdMain;
+import com.cifpay.lc.core.db.pojo.UnionPayTrdToken;
+
+public interface UnionPayTrdBusinessService {
+	public UnionPayTrdMain selectBySelective(AbsTradeParam param);
+	public void updateMainResult(UnionPayTrdMain tm);
+	public void updateMainByPrimaryKeySelective(UnionPayTrdMain tm);
+	public int insertMainSelective(UnionPayTrdMain tm);
+	public UnionPayTrdToken selectTokenBySelective(String merId, String userId) ;
+	public UnionPayTrdMain selectByTxnKey(String orderId,String txnTime);
+	void updateMainAsynResult(UnionPayTrdMain unionPayTrdMain);
+}

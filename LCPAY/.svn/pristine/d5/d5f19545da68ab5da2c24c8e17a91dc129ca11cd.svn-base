@@ -1,0 +1,151 @@
+package com.cifpay.lc.gateway.integration;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import com.cifpay.lc.gateway.interceptor.AccessInterceptor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcProperties;
+import org.springframework.boot.autoconfigure.web.WebMvcRegistrations;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.cifpay.lc.gateway.integration.advice.MerchantRequestBodyAdvice;
+import com.cifpay.lc.gateway.integration.advice.MerchantResponseBodyAdvice;
+import com.cifpay.lc.gateway.integration.advice.RequestParamMerchantRequestResolver;
+import com.cifpay.lc.gateway.integration.normal.NormalRequestFormResolver;
+
+/**
+ * 扩展出适合Gateway应用的MVC自动化配置。
+ */
+@Configuration
+@AutoConfigureAfter(WebMvcAutoConfiguration.class)
+public class MvcConfiguration extends WebMvcAutoConfiguration.EnableWebMvcConfiguration {
+
+    // @Override
+    // protected void
+    // configureHandlerExceptionResolvers(List<HandlerExceptionResolver>
+    // exceptionResolvers) {
+    // // TODO
+    // // exceptionResolvers.add(e)
+    // exceptionResolvers.add(new GlobalNonControllerExceptionResolver());
+    // super.configureHandlerExceptionResolvers(exceptionResolvers);
+    // }
+	
+	@Bean
+    public HttpMessageConverters fastJsonHttpMessageConverters() {
+       FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
+       FastJsonConfig fastJsonConfig = new FastJsonConfig();
+       fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
+       /*fastJsonConfig.setSerializerFeatures(
+               SerializerFeature.PrettyFormat,
+               SerializerFeature.WriteClassName,
+               SerializerFeature.WriteMapNullValue
+       );*/
+       fastConverter.setFastJsonConfig(fastJsonConfig);
+       HttpMessageConverter<?> converter = fastConverter;
+       return new HttpMessageConverters(converter);
+    }
+	
+	public MvcConfiguration(
+			ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
+			ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
+			ListableBeanFactory beanFactory) {
+		super(mvcPropertiesProvider,mvcRegistrationsProvider,beanFactory);
+	}
+	
+
+    @Override
+    protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
+        return new GatewayHandlerMapping();
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+    }
+
+    @Bean
+    public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
+        RequestMappingHandlerAdapter adapter = super.requestMappingHandlerAdapter();
+
+        // Controller Argument resolver
+        List<HandlerMethodArgumentResolver> customArgResolvers = adapter.getCustomArgumentResolvers();
+        if (null == customArgResolvers) {
+            customArgResolvers = new ArrayList<HandlerMethodArgumentResolver>();
+            adapter.setCustomArgumentResolvers(customArgResolvers);
+        }
+        customArgResolvers.add(requestParamMerchantRequestResolver());
+        customArgResolvers.add(normalRequestFormResolver());
+
+        // RequestBody advice
+        List<RequestBodyAdvice> reqAdvList = new ArrayList<RequestBodyAdvice>();
+        reqAdvList.add(merchantRequestValidationAdvice());
+        adapter.setRequestBodyAdvice(reqAdvList);
+
+        // ResponseBody advice
+        List<ResponseBodyAdvice<?>> resAdvList = new ArrayList<ResponseBodyAdvice<?>>();
+        resAdvList.add(merchantResponseBodyAdvice());
+        adapter.setResponseBodyAdvice(resAdvList);
+
+        return adapter;
+    }
+
+    @Bean
+    public RequestParamMerchantRequestResolver requestParamMerchantRequestResolver() {
+        return new RequestParamMerchantRequestResolver();
+    }
+
+    @Bean
+    public NormalRequestFormResolver normalRequestFormResolver() {
+        return new NormalRequestFormResolver();
+    }
+
+    @Bean
+    public MerchantRequestBodyAdvice merchantRequestValidationAdvice() {
+        return new MerchantRequestBodyAdvice();
+    }
+
+    @Bean
+    public MerchantResponseBodyAdvice merchantResponseBodyAdvice() {
+        return new MerchantResponseBodyAdvice();
+    }
+
+    @Bean
+    public InternalResourceViewResolver internalResourceViewResolver(@Value("${spring.mvc.view.prefix}") String prefix, @Value("${spring.mvc.view.suffix}") String suffix) {
+        InternalResourceViewResolver vr = new InternalResourceViewResolver();
+        vr.setContentType("text/html;charset=UTF-8");
+        vr.setPrefix(prefix);
+        vr.setSuffix(suffix);
+        return vr;
+    }
+
+    @Override
+    protected void addInterceptors(InterceptorRegistry registry) {
+        super.addInterceptors(registry);
+        registry.addInterceptor(new AccessInterceptor());
+    }
+    
+    // @Bean
+    // public GlobalNonControllerExceptionResolver
+    // globalNonControllerExceptionResolver() {
+    // return new GlobalNonControllerExceptionResolver();
+    // }
+
+}

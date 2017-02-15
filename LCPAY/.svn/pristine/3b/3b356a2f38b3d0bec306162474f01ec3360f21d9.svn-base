@@ -1,0 +1,26 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.LcBank;
+
+@Repository
+public interface LcBankDao {
+
+    LcBank selectByPrimaryKey(String bankCode);
+
+    void deleteByPrimaryKey(String bankCode);
+
+    void insert(LcBank lcBank);
+
+    void insertSelective(LcBank lcBank);
+
+    void updateByPrimaryKeySelective(LcBank lcBank);
+
+    void updateByPrimaryKey(LcBank lcBank);
+    
+    List<LcBank> selectAllValidRecords();
+
+}

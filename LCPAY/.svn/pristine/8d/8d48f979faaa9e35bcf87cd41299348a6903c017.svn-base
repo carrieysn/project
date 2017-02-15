@@ -1,0 +1,102 @@
+package com.cifpay.lc.gateway.integration.advice;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.security.SecurityService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.domain.security.MerchantSignedResponse;
+import com.cifpay.lc.domain.security.MerchantRequest;
+import com.cifpay.lc.domain.security.AbstractMerchantResponse;
+import com.cifpay.lc.gateway.common.exception.AbstractGatewayException;
+import com.cifpay.lc.gateway.common.exception.GatewayAuthenticationFailure;
+import com.cifpay.lc.gateway.common.exception.GatewayProcessException;
+import com.cifpay.lc.gateway.output.FinalUnsignedFailureResponse;
+import com.cifpay.lc.util.MethodParameterUtils;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 加工响应给商户的结果报文对象
+ */
+public class MerchantResponseBodyAdvice implements ResponseBodyAdvice<Object> {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private SecurityService securityService;
+
+    @Override
+    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+        Type rtnType = MethodParameterUtils.getGenericType(returnType);
+        if (null != rtnType && rtnType instanceof Class) {
+            Class<?> rtnClz = (Class<?>) rtnType;
+            if (AbstractMerchantResponse.class.isAssignableFrom(rtnClz)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+        try {
+            AbstractMerchantResponse resData = (AbstractMerchantResponse) body;
+            MerchantSignedResponse finalResponse = signMerchantResponseData(resData);
+            return finalResponse;
+        } catch (AbstractGatewayException e) {
+            FinalUnsignedFailureResponse finalUnsignedFailureResponse = new FinalUnsignedFailureResponse();
+            finalUnsignedFailureResponse.setReturnCode(e.getFormatedReturnCode());
+            finalUnsignedFailureResponse.setReturnMsg(e.getMessage());
+
+            return finalUnsignedFailureResponse;
+        } catch (Throwable e) {
+            logger.error("验证签名失败:{}", e.getMessage());
+
+            FinalUnsignedFailureResponse finalUnsignedFailureResponse = new FinalUnsignedFailureResponse();
+            finalUnsignedFailureResponse.setReturnCode(AbstractGatewayException.getFormatedReturnCode(GatewayAuthenticationFailure.FORMATED_RETURN_CODE_PREFIX, ReturnCode.GW_MER_REQUEST_SIGN_INVALID));
+            finalUnsignedFailureResponse.setReturnMsg("验证签名失败");
+            return finalUnsignedFailureResponse;
+        }
+    }
+
+    private MerchantSignedResponse signMerchantResponseData(AbstractMerchantResponse resData) throws GatewayProcessException, JsonProcessingException {
+        // 取出RequestBodyAdvice阶段暂存的MerchantRequest对象
+        @SuppressWarnings("unchecked")
+        MerchantRequest<Object> merReq = (MerchantRequest<Object>) RequestContextHolder.getRequestAttributes().getAttribute(MerchantRequest.MER_REQUEST_ATTR_KEY, RequestAttributes.SCOPE_REQUEST);
+        if (null == merReq) {
+            logger.error("在对Controller输出处理时未能找到期望的MerchantRequest对象");
+            throw new GatewayProcessException(ReturnCode.GW_MER_REQUEST_SIGN_INVALID, "签名处理失败");
+        }
+
+        String merId = merReq.getMerId();
+        if (null == merId || 0 == merId.length()) {
+            // should never happen
+            logger.error("MerchantRequest对象中merId的值为空");
+            throw new GatewayProcessException(ReturnCode.GW_GENERIC_VALIDATION_REJECTED, "请求参数中缺少商户ID");
+        }
+
+        // 加密并返回
+        ObjectMapper mapper = new ObjectMapper();
+        Map map = mapper.convertValue(resData, Map.class);
+        BusinessOutput<MerchantSignedResponse> encryptOutput = securityService.encryptData(merId, map);
+
+        MerchantSignedResponse finalResponse = encryptOutput.getData();
+
+        return finalResponse;
+    }
+
+}

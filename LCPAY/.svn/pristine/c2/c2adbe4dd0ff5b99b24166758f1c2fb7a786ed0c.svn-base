@@ -1,0 +1,140 @@
+package com.cifpay.lc.std.business.message.sms;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.alibaba.fastjson.JSON;
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.message.sms.SmsSendService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.SmsType;
+import com.cifpay.lc.core.autoconfigure.sms.SmsProperties;
+import com.cifpay.lc.core.cache.service.SmsCacheServant;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.db.dao.AdminSmsTemplateDao;
+import com.cifpay.lc.core.db.dao.MessageDao;
+import com.cifpay.lc.core.db.pojo.AdminSmsTemplate;
+import com.cifpay.lc.core.db.pojo.Message;
+import com.cifpay.lc.domain.message.MessageInputBean;
+import com.cifpay.lc.domain.message.MessageOutputBean;
+import com.cifpay.lc.domain.message.SmsParamBean;
+import com.cifpay.lc.exception.MessageBusinessException;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.util.AmountUtil;
+import com.cifpay.lc.std.util.SmsSendUtil;
+import com.cifpay.lc.util.DateUtil;
+
+@Service("smsSendService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class})
+public class SmsSendServiceImpl implements SmsSendService{
+	
+	protected Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Autowired
+    private MessageDao messageDao;
+	
+	@Autowired
+	private AdminSmsTemplateDao adminSmsTemplateDao;
+	
+	@Autowired
+	private SmsCacheServant smsCacheServant;
+	
+	@Autowired(required=false)
+	private SmsProperties smsProperties;
+	
+	@Override
+	public BusinessOutput<MessageOutputBean> execute(BusinessInput<MessageInputBean> input) {
+		Message message = messageDao.selectByPrimaryKey(input.getData().getMsgId());
+		if (message == null) {
+            throw new MessageBusinessException(ReturnCode.CORE_MSG_NOT_FOUND_EXCEPTION_N108001, "message不存在");
+        }
+        if (StringUtils.isEmpty(message.getParams())) {
+            throw new MessageBusinessException(ReturnCode.SERVER_PARAM_ERROR, "消息参数不正确，不能为空");
+        }
+        SmsParamBean smsParamBean = JSON.parseObject(message.getParams(), SmsParamBean.class);
+        int smsType = smsParamBean.getSmstype();
+        if(StringUtils.isEmpty(smsType)){
+        	throw new MessageBusinessException(ReturnCode.SERVER_PARAM_ERROR, "对应的短信模版不存在");
+        }
+        /*
+         * 填充短信模版内容
+         */
+        AdminSmsTemplate adminSmsTemplate = adminSmsTemplateDao.selectBysmsType(smsType);
+        String msgTemp = adminSmsTemplate.getSmsTemContent();
+        String msgcontent = "";
+        String amount = "";
+        String createTime = "";
+        try {
+        	if(!StringUtils.isEmpty(smsParamBean.getAmount())){
+        		amount = AmountUtil.changeF2Y(smsParamBean.getAmount());
+        	}
+		} catch (Exception e) {
+			throw new MessageBusinessException(ReturnCode.UNKNOWN_ERROR, e.getMessage());
+		}
+        if(!StringUtils.isEmpty(smsParamBean.getCreateTime())){
+        	createTime = DateUtil.format(smsParamBean.getCreateTime(), "MM月dd日HH:mm");
+        }
+        String validate = validate(smsParamBean, smsType);
+        if(!StringUtils.isEmpty(validate)){
+        	return BusinessOutput.fail(ReturnCode.SERVER_PARAM_ERROR, validate);
+        }
+        if(smsType==SmsType.SMS_CP200.getCode() || smsType==SmsType.SMS_CP300.getCode()){
+        	msgcontent = String.format(msgTemp, smsParamBean.getCardNo(), createTime, amount);
+        }else if(smsType==SmsType.SMS_CP500.getCode()){
+        	msgcontent = String.format(msgTemp, smsParamBean.getCardNo(), createTime, amount, smsParamBean.getSmsCode());
+        }else if(smsType==SmsType.SMS_OPEN.getCode()){
+        	msgcontent = String.format(msgTemp, smsParamBean.getSmsCode(), amount, smsParamBean.getOrderContent());
+        }else if(smsType==SmsType.SMS_REFUND.getCode()){
+        	msgcontent = String.format(msgTemp, createTime, smsParamBean.getMerName(), amount);
+        }
+        if(StringUtils.isEmpty(smsParamBean.getPhone()) || StringUtils.isEmpty(msgcontent)){
+        	throw new MessageBusinessException(ReturnCode.SERVER_PARAM_ERROR, "手机号或者短信内容为空");
+        }
+        /*
+         * 发送短信
+         */
+        boolean flag = SmsSendUtil.sendSms(smsParamBean.getPhone(), msgcontent, smsProperties);
+        /*
+         * 短信发送成功后写入redis缓存
+         */
+        if(flag){
+        	String key = smsParamBean.getMerId()+"_"+smsParamBean.getPhone()+"_"+smsParamBean.getSmstype();
+        	smsCacheServant.setSmsCache(key, smsParamBean);
+        }
+		return BusinessOutput.success(new MessageOutputBean(flag));
+	}
+	
+	private String validate(SmsParamBean smsParam,int smsType){
+		if (StringUtils.isEmpty(smsParam.getMerId())) {
+            return "商户号不能为空";
+        }
+		if(StringUtils.isEmpty(smsParam.getAmount())){
+        	return "参数金额不能为空";
+        }
+		if(smsType==SmsType.SMS_CP200.getCode() || smsType==SmsType.SMS_CP300.getCode() || smsType==SmsType.SMS_CP500.getCode()){
+			if(StringUtils.isEmpty(smsParam.getCardNo())){
+            	return "参数银行卡尾号不能为空";
+            }
+        	if(StringUtils.isEmpty(smsParam.getCreateTime())){
+            	return "参数交易时间不能为空";
+            }
+		}else if(smsType==SmsType.SMS_OPEN.getCode()){
+			if(StringUtils.isEmpty(smsParam.getOrderContent())){
+				return "参数订单详情不能为空";
+			}
+		}else if(smsType==SmsType.SMS_REFUND.getCode()){
+			if(StringUtils.isEmpty(smsParam.getMerName())){
+            	return "参数商户名称不能为空";
+            }
+        	if(StringUtils.isEmpty(smsParam.getCreateTime())){
+            	return "参数交易时间不能为空";
+            }
+		}
+		return null;
+	}
+	
+}

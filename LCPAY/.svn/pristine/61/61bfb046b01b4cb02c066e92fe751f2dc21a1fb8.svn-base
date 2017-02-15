@@ -1,0 +1,58 @@
+package com.cifpay.lc.core.cache.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import com.cifpay.lc.core.cache.pojo.LcSendCache;
+import com.cifpay.lc.core.db.dao.LcSendDao;
+import com.cifpay.lc.core.db.pojo.LcSend;
+
+/**
+ * Created by sweet on 16-9-14.
+ */
+@Component
+public class LcSendCacheServant {
+
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    private static final String KEY_PREFIX = "LC_SEND_";
+
+    @Autowired
+    private LcSendDao lcSendDao;
+
+    @Cacheable(value = KEY_PREFIX, key = "'LcSend_selectBylcId' + #lcId", unless = "#result.size() == 0")
+    public List<LcSendCache> selectBylcId(Long lcId) {
+        List<LcSend> lcSendList = lcSendDao.selectBylcId(lcId);
+        if (!CollectionUtils.isEmpty(lcSendList)) {
+            List<LcSendCache> lcSendCacheList = lcSendList.stream().map(x -> {
+                LcSendCache lcSendCache = new LcSendCache();
+                BeanUtils.copyProperties(x, lcSendCache);
+                return lcSendCache;
+            }).collect(Collectors.toList());
+
+            return lcSendCacheList;
+        }
+        return new ArrayList<LcSendCache>();
+    }
+
+    @CacheEvict(value = KEY_PREFIX, key = "'LcSend_selectBylcId' + #lcSend.getLcId()", condition = "#result == true")
+    public boolean insert(LcSend lcSend) {
+        return lcSendDao.insert(lcSend);
+    }
+
+    @CacheEvict(value = KEY_PREFIX, key = "'LcSend_selectBylcId' + #lcSend.getLcId()", condition = "#result > 0")
+    public int updateByPrimaryKeySelective(LcSend lcSend) {
+        return lcSendDao.updateByPrimaryKeySelective(lcSend);
+    }
+
+}

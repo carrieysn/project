@@ -1,0 +1,247 @@
+package com.cifpay.lc.std.business.message.lc;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.message.lc.OpenLcNotifyMessageService;
+import com.cifpay.lc.constant.BizConstants;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.constant.enums.PayChannel;
+import com.cifpay.lc.constant.merchant.MerchantTranStatus;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.dao.LcLogDao;
+import com.cifpay.lc.core.db.dao.LcOpenDao;
+import com.cifpay.lc.core.db.dao.PreLcDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcLog;
+import com.cifpay.lc.core.db.pojo.LcOpen;
+import com.cifpay.lc.core.db.pojo.PreLc;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.uid.LcLogIdWorker;
+import com.cifpay.lc.domain.lc.OpenLcInputBean;
+import com.cifpay.lc.domain.message.LcFreezeParamBean;
+import com.cifpay.lc.domain.message.MessageOutputBean;
+import com.cifpay.lc.domain.message.union.CreditParam;
+import com.cifpay.lc.exception.MessageBusinessException;
+import com.cifpay.lc.std.component.NotifyService;
+import com.cifpay.lc.std.domain.component.notify.OpenAsyncNotifyBean;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.interceptor.LcAutoFlowProcessingInterceptor;
+import com.cifpay.lc.std.interceptor.MessageLockInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * 开证成功异步通知商家支付结果
+ *
+ * @author Administrator
+ */
+@Service("openLcNotifyMessageService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class, MessageLockInterceptor.class})
+public class OpenLcNotifyMessageServiceImpl extends LcMessageServiceBase<LcFreezeParamBean>
+        implements OpenLcNotifyMessageService {
+
+    @Autowired
+    private LcDao lcDao;
+
+    @Autowired
+    private LcLogDao lcLogDao;
+
+    @Autowired
+    private PreLcDao preLcDao;
+
+    @Autowired
+    private LcOpenDao lcOpenDao;
+
+    @Autowired
+    private NotifyService notifyService;
+
+    @Autowired
+    private LcLogIdWorker lcLogIdWorker;
+
+    @Autowired
+    private LcAutoFlowProcessingInterceptor lcAutoFlowProcessingInterceptor;
+
+    @Override
+    protected BusinessOutput<MessageOutputBean> handleMessage(LcFreezeParamBean lcFreezeParamBean, CoreBusinessContext context) throws CoreBusinessException {
+        PreLc preLc = preLcDao.selectByLcId(lcFreezeParamBean.getLcId());
+
+        if (preLc == null) {
+            throw new MessageBusinessException(ReturnCode.CORE_PRE_LC_NOT_FOUND_N106404, "预开证记录不存在");
+        }
+
+        // 更新数据库
+        updateLcOpen(lcFreezeParamBean);
+        Lc lc = null;
+        if (LcTranStatus.SUCCESS.compareTo(lcFreezeParamBean.getLcTranStatus()) == 0) {
+            logger.info("开证回调，(lcId={},LcTranStatus={})", lcFreezeParamBean.getLcId(), lcFreezeParamBean.getLcTranStatus());
+
+            lc = insertLc(preLc, lcFreezeParamBean.getPayChannel());
+            //
+            insertLcLog(preLc.getLcId(), lcFreezeParamBean);
+
+            BusinessOutput notifyOutput = notify(lcFreezeParamBean, lc, preLc);
+
+            //TODO: 触发自动流程
+            OpenLcInputBean inputBean = new OpenLcInputBean();
+            inputBean.setLcId(preLc.getLcId());
+            inputBean.setMerId(preLc.getMid());
+            lcAutoFlowProcessingInterceptor.afterProcessBusiness(this, inputBean, BusinessOutput.success(null), context);
+        }
+
+        // 失败时，亦通知
+        if (LcTranStatus.FAIL.compareTo(lcFreezeParamBean.getLcTranStatus()) == 0) {
+            logger.info("开证回调，(lcId={},LcTranStatus={})", lcFreezeParamBean.getLcId(), lcFreezeParamBean.getLcTranStatus());
+            BusinessOutput notifyOutput = notify(lcFreezeParamBean, lc, preLc);
+        }
+
+        // 默认总是认为消息处理成功
+        return BusinessOutput.success(new MessageOutputBean(true));
+    }
+
+    private void updateLcOpen(LcFreezeParamBean<JSONObject> lcFreezeParamBean) {
+
+        Date now = new Date();
+
+        LcOpen updateLcOpen = new LcOpen();
+        updateLcOpen.setLcOpenId(lcFreezeParamBean.getLcOpenId());
+        updateLcOpen.setUpdateTime(now);
+
+        updateLcOpen.setLcOpenResponse(lcFreezeParamBean.getLcOpenResponse());
+        updateLcOpen.setUnionSerialNo(lcFreezeParamBean.getSerialNo());
+        updateLcOpen.setTradeTime(lcFreezeParamBean.getFreezeTime());
+        updateLcOpen.setLcOpenStatus(lcFreezeParamBean.getLcTranStatus().getTranStatusStr());
+        // 如果已经交易成功，不可更新状态，防止回调先执行的情况
+        if (LcTranStatus.SUCCESS.compareTo(lcFreezeParamBean.getLcTranStatus()) != 0) {
+//            lcOpen.setLcOpenStatus(null);
+        }
+
+        if (PayChannel.UNION_CREDIT.compareTo(lcFreezeParamBean.getPayChannel()) == 0
+                || PayChannel.UNION_DEPOSIT.compareTo(lcFreezeParamBean.getPayChannel()) == 0) {
+            CreditParam creditParam = JSONObject.toJavaObject(lcFreezeParamBean.getData(), CreditParam.class);
+            if (creditParam != null) {
+                updateLcOpen.setUnionTxntime(creditParam.getTxnTime());
+                updateLcOpen.setRemark(creditParam.getResultDesc());
+                updateLcOpen.setPayerAccno(creditParam.getAccNo());
+
+                Lc updateLc = new Lc();
+                updateLc.setLcId(lcFreezeParamBean.getLcId());
+                updateLc.setUpdateTime(new Date());
+                updateLc.setPayerAccno(creditParam.getAccNo());
+
+                lcDao.updateByPrimaryKeySelective(updateLc);
+
+            }
+        }
+
+        lcOpenDao.updateByPrimaryKeySelective(updateLcOpen);
+    }
+
+    private Lc insertLc(PreLc preLc, PayChannel payChannel) {
+
+        Date now = new Date();
+
+        Lc lc = new Lc();
+        lc.setLcId(preLc.getLcId());
+        lc.setIsValid(true);
+        lc.setCreateTime(now);
+        lc.setUpdateTime(now);
+
+        lc.setMid(preLc.getMid());
+        lc.setProductId(preLc.getProductId());
+        lc.setProductCode(preLc.getProductCode());
+        lc.setLcNo(preLc.getLcNo());
+        lc.setLcType(preLc.getLcType());
+        lc.setLcCurrency(preLc.getLcCurrency());
+        lc.setLcAmount(preLc.getLcAmount());
+        lc.setLcBalance(preLc.getLcAmount());
+        lc.setLcPayChannel(payChannel.getCode());
+
+        lc.setPayerId(preLc.getPayerId());
+        lc.setPayerAccno(preLc.getPayerAccno());
+        lc.setPayerType(preLc.getPayerType());
+        lc.setPayerBankCode(preLc.getPayerBankCode());
+        lc.setPayerBankName(preLc.getPayerBankName());
+        lc.setPayerMobile(preLc.getPayerMobile());
+
+        lc.setRecvId(preLc.getRecvId());
+        lc.setRecvAccno(preLc.getRecvAccno());
+        lc.setRecvType(preLc.getRecvType());
+        lc.setRecvBankCode(preLc.getRecvBankCode());
+        lc.setRecvBankName(preLc.getRecvBankName());
+        lc.setRecvMobile(preLc.getRecvMobile());
+
+        lc.setLcStatus(LcStatusType.OPENED.getStatusCode());
+        lc.setRecvValidTime(preLc.getRecvValidTime());
+        lc.setSendValidTime(preLc.getSendValidTime());
+        lc.setConfirmValidTime(preLc.getConfirmValidTime());
+        lc.setPayValidTime(preLc.getPayValidTime());
+
+        lc.setOrderId(preLc.getOrderId());
+        lc.setOrderContent(preLc.getOrderContent());
+        lc.setLcStateReturnUrl(preLc.getLcStateReturnUrl());
+        lc.setLcStateNotifyUrl(preLc.getLcStateNotifyUrl());
+        lc.setLcOrderDetailUrl(preLc.getLcOrderDetailUrl());
+
+        lc.setThirdPartyCode(preLc.getThirdPartyCode());
+        lc.setPayType(preLc.getPayType());
+        lc.setRemark(preLc.getRemark());
+
+        int insertRows = lcDao.insert(lc);
+
+        if (insertRows <= 0) {
+            throw new CoreBusinessException(ReturnCode.CORE_STD_LC_INSERT_ERROR, "插入银信证数据失败");
+        }
+
+        return lc;
+    }
+
+    private void insertLcLog(long lcId, LcFreezeParamBean lcFreezeParamBean) {
+
+        Date now = new Date();
+
+        LcLog lcLog = new LcLog();
+        lcLog.setLogId(lcLogIdWorker.nextId());
+        lcLog.setCreateTime(now);
+        lcLog.setLcId(lcId);
+        lcLog.setStepLogId(lcFreezeParamBean.getLcOpenId());
+        lcLog.setTradeCode(lcFreezeParamBean.getLcTranStatus().getTranStatusStr());
+        lcLog.setLcStatus(LcStatusType.OPENED.getStatusCode());
+        lcLog.setLcResponse(JSON.toJSONString(lcFreezeParamBean));
+
+        if (LcTranStatus.SUCCESS.compareTo(lcFreezeParamBean.getLcTranStatus()) == 0) {
+            lcLog.setRemark("冻结账户金额成功");
+        } else {
+            lcLog.setRemark("冻结账户金额失败");
+        }
+
+        lcLogDao.insert(lcLog);
+    }
+
+    private BusinessOutput notify(LcFreezeParamBean messageParams, Lc lc, PreLc preLc) {
+        // 通知商户
+
+        OpenAsyncNotifyBean notifyBean = new OpenAsyncNotifyBean();
+        if (lc != null) {
+            notifyBean.setLcStatus(lc.getLcStatus());
+            notifyBean.setLcAmount(BizConstants.decimalFormat.format(lc.getLcAmount()));
+        }
+        notifyBean.setLcId(preLc.getLcId().toString());
+        notifyBean.setOrderId(preLc.getOrderId());
+        notifyBean.setPayTime(new SimpleDateFormat(BizConstants.DateFormat_std).format(messageParams.getFreezeTime()));
+        notifyBean.setTranStatus(MerchantTranStatus.parse(messageParams.getLcTranStatus()).getMerchantTranStatus());
+        notifyBean.setChannel(messageParams.getPayChannel().getCode());
+        notifyBean.setSerialNo(messageParams.getSerialNo());
+
+        BusinessOutput notifyOutput = notifyService.notify(preLc.getMid(), preLc.getLcStateNotifyUrl(), notifyBean);
+
+        return notifyOutput;
+    }
+}

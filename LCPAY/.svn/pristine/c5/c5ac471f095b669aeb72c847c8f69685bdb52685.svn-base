@@ -1,0 +1,112 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.io.Serializable;
+
+public class BTradeSync  implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2056283304786212359L;
+
+	/**银行交易流水*/
+	private String journalNo;
+
+	/**交易渠道类型*/
+    private String tradeChnType;
+    
+    /**交易渠道ID*/
+    private String tradeChnId;
+    
+    /**银信交易ID*/
+    private String lcId;
+    
+    /**订单号*/
+    private String orderId;
+    
+    /**交易同步时间*/
+    private String syncTime;
+    
+    /**交易是否成功*/
+    private String isSuccess;
+    
+    /**银行交易状态
+    银行冻结:CREDIT_BANK_FOREEZE
+    银行解冻:CREDIT_BANK_UNFOREEZE
+    银行划款:CREDIT_BANK_PAYED
+    银行交易状态（冻结、解冻、划款）*/
+    private String bankState;
+
+    public String getJournalNo() {
+        return journalNo;
+    }
+
+    public void setJournalNo(String journalNo) {
+        this.journalNo = journalNo == null ? null : journalNo.trim();
+    }
+
+    public String getTradeChnType() {
+        return tradeChnType;
+    }
+
+    public void setTradeChnType(String tradeChnType) {
+        this.tradeChnType = tradeChnType == null ? null : tradeChnType.trim();
+    }
+
+    public String getTradeChnId() {
+        return tradeChnId;
+    }
+
+    public void setTradeChnId(String tradeChnId) {
+        this.tradeChnId = tradeChnId == null ? null : tradeChnId.trim();
+    }
+
+    public String getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(String lcId) {
+        this.lcId = lcId == null ? null : lcId.trim();
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId == null ? null : orderId.trim();
+    }
+
+    public String getSyncTime() {
+        return syncTime;
+    }
+
+    public void setSyncTime(String syncTime) {
+        this.syncTime = syncTime;
+    }
+
+    public String getIsSuccess() {
+        return isSuccess;
+    }
+
+    public void setIsSuccess(String isSuccess) {
+        this.isSuccess = isSuccess == null ? null : isSuccess.trim();
+    }
+
+    
+    public void setBankState(String bankState) {
+		this.bankState = bankState;
+	}
+
+	public String getBankState() {
+        return bankState= bankState == null ? null : bankState.trim();
+    }
+
+	@Override
+	public String toString() {
+		return "BTradeSync [journalNo=" + journalNo + ", tradeChnType="
+				+ tradeChnType + ", tradeChnId=" + tradeChnId + ", lcId="
+				+ lcId + ", orderId=" + orderId + ", syncTime=" + syncTime
+				+ ", isSuccess=" + isSuccess + ", bankState=" + bankState + "]";
+	}
+    
+}

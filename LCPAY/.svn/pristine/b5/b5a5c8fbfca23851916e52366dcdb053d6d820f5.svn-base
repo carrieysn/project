@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <comment>Gateway应用所需的配置信息</comment>
+
+    <entry key="dubbo.registry.zookeeper.address">127.0.0.1:2181</entry>
+    <entry key="dubbo.registry.cacheFilePathPrefix">c:/app/cifpaylc/gateway/data/dubbo.registry.cache</entry>
+
+    <!-- Redis服务器信息  (非集群环境使用下面的配置)
+    <entry key="cifpay.redis.host">localhost</entry>
+    <entry key="cifpay.redis.port"></entry>
+    -->
+    <entry key="cifpay.redis.cluster.nodes"></entry>
+    <entry key="cifpay.redis.timeout">5000</entry>
+    <entry key="cifpay.redis.pool.maxActive">100</entry>
+    <entry key="cifpay.redis.pool.maxWait">3000</entry>
+    <entry key="cifpay.redis.pool.maxIdle">20</entry>
+    <entry key="cifpay.redis.pool.minIdle">5</entry>
+
+    <!--MongoDb服务器信息-->
+    <entry key="cifpay.mongodb.uri">mongodb://192.168.59.188:27017/log</entry>
+
+</properties>

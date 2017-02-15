@@ -1,0 +1,369 @@
+@charset "UTF-8";
+.red {
+  color: #ec5d57; }
+
+.blue {
+  color: #4990e2; }
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+.zcx-cardwrapper {
+  position: relative;
+  width: 7.2rem;
+  height: 12.8rem;
+  background: url("../../../img/webpay/mobile/bg.jpg") no-repeat;
+  background-size: 100% 100%; }
+  .zcx-cardwrapper.disabled {
+    background-image: url("../../../img/webpay/mobile/bg2.jpg"); }
+    .zcx-cardwrapper.disabled:before {
+      position: absolute;
+      content: ' ';
+      display: inline-block;
+      width: 2.12rem;
+      height: 1.97rem;
+      background-image: url("../../../img/webpay/mobile/dis.png");
+      background-size: 100%;
+      right: 0;
+      top: .05rem; }
+    .zcx-cardwrapper.disabled .moneywrap > dl > dd.num, .zcx-cardwrapper.disabled .moneywrap > dl > dd.uppercase {
+      color: #666; }
+    .zcx-cardwrapper.disabled .bankwrap .cont .statu {
+      background-color: #dfbcba; }
+      .zcx-cardwrapper.disabled .bankwrap .cont .statu:before {
+        color: #dfbcba; }
+    .zcx-cardwrapper.disabled .bankwrap .cont .other {
+      color: #c0c0c0; }
+    .zcx-cardwrapper.disabled .stepwrap > li:before, .zcx-cardwrapper.disabled .stepwrap > li:after, .zcx-cardwrapper.disabled .stepwrap > li, .zcx-cardwrapper.disabled .stepintro {
+      border-color: #a8a8a8;
+      color: #a8a8a8; }
+    .zcx-cardwrapper.disabled .stepwrap > li.on:before {
+      background: #a8a8a8; }
+  .zcx-cardwrapper .logowrap {
+    height: 2.08rem;
+    background: url("../../../img/webpay/mobile/logo.png") no-repeat center 0.63rem;
+    background-size: 1.41rem; }
+  .zcx-cardwrapper .introWrap {
+    text-align: center;
+    padding: .2rem;
+    line-height: 1.3; }
+    .zcx-cardwrapper .introWrap > h3 {
+      font-size: .32rem;
+      color: #545454; }
+    .zcx-cardwrapper .introWrap > p {
+      font-size: .24rem;
+      color: #9c9c9c; }
+  .zcx-cardwrapper .moneywrap {
+    padding: .375rem .98rem;
+    line-height: 1.9; }
+    .zcx-cardwrapper .moneywrap > dl > dt {
+      display: inline-block;
+      width: 1.2rem;
+      font-size: .3rem;
+      color: #333333;
+      text-align: left; }
+    .zcx-cardwrapper .moneywrap > dl > dd {
+      display: inline-block;
+      font-weight: bold; }
+      .zcx-cardwrapper .moneywrap > dl > dd.num {
+        font-family: Impact;
+        color: #cc0000;
+        font-size: .5rem; }
+        .zcx-cardwrapper .moneywrap > dl > dd.num .big {
+          font-size: .63rem; }
+      .zcx-cardwrapper .moneywrap > dl > dd.uppercase {
+        width: 3.8rem;
+        font-size: .36rem;
+        color: #1e2226; }
+  .zcx-cardwrapper .bankwrap {
+    height: 4rem;
+    padding: 0 .75rem; }
+    .zcx-cardwrapper .bankwrap .cont {
+      width: 2.35rem; }
+      .zcx-cardwrapper .bankwrap .cont .identity {
+        font-size: .2rem;
+        color: #666666;
+        text-align: center; }
+      .zcx-cardwrapper .bankwrap .cont .banklogo {
+        margin: .38rem auto; }
+        .zcx-cardwrapper .bankwrap .cont .banklogo.empty {
+          position: relative;
+          width: 2.27rem;
+          height: .53rem;
+          background-color: #dfbcba; }
+          .zcx-cardwrapper .bankwrap .cont .banklogo.empty:before {
+            position: absolute;
+            left: .04rem;
+            top: .04rem;
+            width: 2.15rem;
+            height: .43rem;
+            line-height: .43rem;
+            text-align: center;
+            content: '未指定';
+            color: white;
+            border: 1px dashed white; }
+        .zcx-cardwrapper .bankwrap .cont .banklogo > img {
+          width: 100%; }
+      .zcx-cardwrapper .bankwrap .cont .statu {
+        position: relative;
+        display: block;
+        height: .7rem;
+        line-height: .7rem;
+        border-radius: 3px;
+        padding-left: .7rem;
+        font-size: .24rem; }
+        .zcx-cardwrapper .bankwrap .cont .statu:before {
+          position: absolute;
+          left: .1rem;
+          top: .1rem;
+          display: inline-block;
+          height: .5rem;
+          width: .5rem;
+          line-height: .5rem;
+          text-align: center;
+          background: white;
+          border-radius: 50%;
+          font-size: .3rem; }
+      .zcx-cardwrapper .bankwrap .cont .fu {
+        background: #ec5d57;
+        color: white; }
+        .zcx-cardwrapper .bankwrap .cont .fu:before {
+          content: '付';
+          display: inline-block;
+          color: #ec5d57; }
+        .zcx-cardwrapper .bankwrap .cont .fu:after {
+          position: absolute;
+          right: -.8rem;
+          top: .05rem;
+          content: '';
+          display: inline-block;
+          width: .6rem;
+          height: .6rem;
+          background-image: url("../../../img/webpay/mobile/arrow.png");
+          background-size: 100%; }
+      .zcx-cardwrapper .bankwrap .cont .shou {
+        background: #4990e2;
+        color: white; }
+        .zcx-cardwrapper .bankwrap .cont .shou:before {
+          content: '收';
+          display: inline-block;
+          color: #4990e2; }
+      .zcx-cardwrapper .bankwrap .cont .other {
+        padding: .18rem 0;
+        font-size: .18rem;
+        word-break: break-all; }
+  .zcx-cardwrapper .stepwrap {
+    position: relative;
+    height: .95rem; }
+    .zcx-cardwrapper .stepwrap .intro {
+      position: absolute;
+      width: 6rem;
+      height: 4rem;
+      left: 50%;
+      padding: .3rem;
+      transform: translateX(-50%);
+      background: white;
+      color: #545454;
+      bottom: 1.2rem;
+      border-radius: 1px;
+      box-shadow: 1px 4px 10px rgba(0, 0, 0, 0.3); }
+      .zcx-cardwrapper .stepwrap .intro > h3 {
+        font-size: .34rem;
+        font-weight: normal;
+        text-align: center;
+        padding-bottom: .1rem; }
+      .zcx-cardwrapper .stepwrap .intro > dl {
+        line-height: 2;
+        font-size: .24rem; }
+    .zcx-cardwrapper .stepwrap .intro1:before {
+      content: ' ';
+      display: inline-block;
+      position: absolute;
+      bottom: -.3rem;
+      left: .6rem;
+      width: 0;
+      height: 0;
+      border: .2rem solid red;
+      border-color: white transparent transparent transparent; }
+    .zcx-cardwrapper .stepwrap .intro3:before {
+      content: ' ';
+      display: inline-block;
+      position: absolute;
+      bottom: -.3rem;
+      right: .4rem;
+      width: 0;
+      height: 0;
+      border: .2rem solid red;
+      border-color: white transparent transparent transparent; }
+    .zcx-cardwrapper .stepwrap .intro2:before {
+      content: ' ';
+      display: inline-block;
+      position: absolute;
+      bottom: -.3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border: .2rem solid red;
+      border-color: white transparent transparent transparent; }
+    .zcx-cardwrapper .stepwrap .step {
+      position: absolute;
+      color: #dfbcba;
+      font-size: .23rem;
+      top: 0; }
+      .zcx-cardwrapper .stepwrap .step:after {
+        position: absolute;
+        top: .575rem;
+        display: inline-block;
+        content: '';
+        border: 1px solid #dfbcba; }
+      .zcx-cardwrapper .stepwrap .step:before {
+        content: '1';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: .35rem;
+        display: inline-block;
+        width: .45rem;
+        height: .45rem;
+        line-height: .45rem;
+        text-align: center;
+        border: 2px solid #dfbcba;
+        color: #dfbcba;
+        border-radius: 50%;
+        font-size: .44rem; }
+      .zcx-cardwrapper .stepwrap .step.on:before {
+        background: #dfbcba;
+        color: white; }
+    .zcx-cardwrapper .stepwrap .step1 {
+      left: .75rem; }
+      .zcx-cardwrapper .stepwrap .step1:before {
+        content: '1'; }
+      .zcx-cardwrapper .stepwrap .step1:after {
+        width: 1.6rem;
+        left: .95rem; }
+    .zcx-cardwrapper .stepwrap .step2 {
+      left: 50%;
+      transform: translate(-50%); }
+      .zcx-cardwrapper .stepwrap .step2:before {
+        content: '2'; }
+      .zcx-cardwrapper .stepwrap .step2:after {
+        width: 1.9rem;
+        left: .45rem; }
+    .zcx-cardwrapper .stepwrap .step3 {
+      right: .75rem; }
+      .zcx-cardwrapper .stepwrap .step3:before {
+        content: '3'; }
+      .zcx-cardwrapper .stepwrap .step3:after {
+        display: none; }
+  .zcx-cardwrapper .stepintro {
+    padding: 0 0 0 1.16rem;
+    font-size: .22rem;
+    color: #dfbcba; }
+  .zcx-cardwrapper .footerwrap {
+    position: absolute;
+    width: 100%;
+    padding: 0 .55rem;
+    bottom: .46rem;
+    font-size: .18rem;
+    color: #333; }
+    .zcx-cardwrapper .footerwrap .bank {
+      line-height: 2;
+      font-size: .16rem; }
+      .zcx-cardwrapper .footerwrap .bank > img {
+        display: block;
+        max-width: 2rem; }
+    .zcx-cardwrapper .footerwrap .cardcode {
+      position: absolute;
+      right: .55rem;
+      bottom: 0; }
+
+.paymentwrap {
+  display: none;
+  position: absolute;
+  left: .36rem;
+  right: .36rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  padding: .5rem;
+  color: #545454;
+  box-shadow: 2px 1px 10px 2px rgba(0, 0, 0, 0.3);
+  border-radius: 3px; }
+  .paymentwrap > h3 {
+    font-size: .34rem;
+    text-align: center;
+    font-weight: normal;
+    margin-bottom: .3rem; }
+  .paymentwrap .formgroup {
+    position: relative;
+    font-size: .28rem;
+    line-height: 3; }
+    .paymentwrap .formgroup > span {
+      display: inline-block;
+      width: 1.4rem; }
+    .paymentwrap .formgroup > input[type='text'], .paymentwrap .formgroup > input[type=number], .paymentwrap .formgroup > input[type=tel] {
+      width: 3.9rem;
+      height: .6rem;
+      background-color: transparent;
+      padding-left: .1rem;
+      border: 1px solid #ddbab8;
+      border-radius: 2px; }
+    .paymentwrap .formgroup .code {
+      position: absolute;
+      top: .16rem;
+      left: 3.68rem;
+      display: inline-block;
+      width: 1.75rem;
+      height: .6rem;
+      line-height: .6rem;
+      text-align: center;
+      color: #545454;
+      background-color: #f7dadb;
+      border-radius: 2px; }
+    .paymentwrap .formgroup .button {
+      margin: .7rem .1rem .2rem;
+      display: inline-block;
+      width: 2.25rem;
+      height: .8rem;
+      text-align: center;
+      color: #bf9592;
+      background: #ddbab8;
+      border-radius: 3px; }
+      .paymentwrap .formgroup .button.confirm {
+        color: white; }
+      .paymentwrap .formgroup .button.cancel {
+        background-color: white;
+        border: 1px solid #ddbab8; }
+    .paymentwrap .formgroup .showtips {
+      display: none;
+      position: absolute;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      color: #cc3333;
+      line-height: 2; }
+
+      
+.zcx-bar {
+  position: relative;
+  height: 44px;
+  text-align: center;
+  color: #333;
+  margin-bottom: .1rem;
+  border-bottom: 1px solid #ddd; }
+  .zcx-bar .button {
+    position: absolute;
+    top: 50%;
+    left: .1rem;
+    transform: translateY(-50%);
+    color: #333; }
+    .zcx-bar .button > img {
+      width: 18px; }
+  .zcx-bar .title {
+    display: inline-block;
+    line-height: 44px;
+    font-size: .18rem;
+    font-weight: normal; }

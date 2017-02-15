@@ -1,0 +1,57 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay.util;
+
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * 转换器，javaBean转map,map转javaBean
+ * 
+ * @author dehuang
+ * 
+ */
+public class ConvertTool {
+
+	/**
+	 * 将javaBean转换成Map
+	 * 
+	 * @param javaBean
+	 * @return Map对象
+	 */
+	public static Map<String, String> beanToMap(Object javaBean) {
+		Map<String, String> result = new HashMap<String, String>();
+		Method[] methods = javaBean.getClass().getMethods();
+		Set<String> fieldsSet=new HashSet<String>();
+		Class<?> c = javaBean.getClass();
+		while (null != c && !c.equals(Object.class)) {
+			for (Field f : c.getDeclaredFields()) {
+				fieldsSet.add(f.getName());
+			}
+			c = c.getSuperclass();
+		}
+		for (Method method : methods) {
+			if (method.getName().equalsIgnoreCase("getClass")) {
+				continue;
+			}
+			try {
+				if (method.getName().startsWith("get")) {
+					String field = method.getName();
+					field = field.substring(field.indexOf("get") + 3);
+					field = field.toLowerCase().charAt(0) + field.substring(1);
+					if(!fieldsSet.contains(field)) //方法名与字段名对照，如非小写即将首字母大写
+						field = field.toUpperCase().charAt(0) + field.substring(1);;
+					Object value = method.invoke(javaBean, (Object[]) null);
+					
+					result.put(field, null == value ? "" : value.toString());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
+}

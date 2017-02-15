@@ -1,0 +1,37 @@
+package com.cifpay.lc.gateway.output.lc;
+
+/**
+ * 开证返回参数
+ *
+ */
+public class OpenResp extends LcBaseResp {
+
+	private String orderId; // 商户订单号
+	private String lcAmount; // 银信证开证金额（单位分）
+
+	private String returnUrl; // 返回地址
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getLcAmount() {
+		return lcAmount;
+	}
+
+	public void setLcAmount(String lcAmount) {
+		this.lcAmount = lcAmount;
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
+}

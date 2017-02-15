@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.UnionUserAccountDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.UnionUserAccount" >
+    <id column="MER_USERID" property="merUserid" jdbcType="VARCHAR" />
+    <result column="MID" property="mid" jdbcType="VARCHAR" />
+    <result column="USER_MOBILE" property="userMobile" jdbcType="VARCHAR" />
+    <result column="PAYER_ACCNO" property="payerAccno" jdbcType="VARCHAR" />
+    <result column="ACCNO_TYPE" property="accnoType" jdbcType="INTEGER" />
+    <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MER_USERID, MID, USER_MOBILE, PAYER_ACCNO, ACCNO_TYPE, CREATE_DATE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_USER_ACCOUNT
+    where MER_USERID = #{merUserid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from CIFPAY_USER_ACCOUNT
+    where MER_USERID = #{merUserid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.UnionUserAccount" >
+    insert into CIFPAY_USER_ACCOUNT (MER_USERID, MID, USER_MOBILE, 
+      PAYER_ACCNO, ACCNO_TYPE, CREATE_DATE
+      )
+    values (#{merUserid,jdbcType=VARCHAR}, #{mid,jdbcType=VARCHAR}, #{userMobile,jdbcType=VARCHAR}, 
+      #{payerAccno,jdbcType=VARCHAR}, #{accnoType,jdbcType=INTEGER}, #{createDate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.UnionUserAccount" >
+    insert into CIFPAY_USER_ACCOUNT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="merUserid != null" >
+        MER_USERID,
+      </if>
+      <if test="mid != null" >
+        MID,
+      </if>
+      <if test="userMobile != null" >
+        USER_MOBILE,
+      </if>
+      <if test="payerAccno != null" >
+        PAYER_ACCNO,
+      </if>
+      <if test="accnoType != null" >
+        ACCNO_TYPE,
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="merUserid != null" >
+        #{merUserid,jdbcType=VARCHAR},
+      </if>
+      <if test="mid != null" >
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="userMobile != null" >
+        #{userMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="payerAccno != null" >
+        #{payerAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="accnoType != null" >
+        #{accnoType,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null" >
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.UnionUserAccount" >
+    update CIFPAY_USER_ACCOUNT
+    <set >
+      <if test="mid != null" >
+        MID = #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="userMobile != null" >
+        USER_MOBILE = #{userMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="payerAccno != null" >
+        PAYER_ACCNO = #{payerAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="accnoType != null" >
+        ACCNO_TYPE = #{accnoType,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null" >
+        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where MER_USERID = #{merUserid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.UnionUserAccount" >
+    update CIFPAY_USER_ACCOUNT
+    set MID = #{mid,jdbcType=VARCHAR},
+      USER_MOBILE = #{userMobile,jdbcType=VARCHAR},
+      PAYER_ACCNO = #{payerAccno,jdbcType=VARCHAR},
+      ACCNO_TYPE = #{accnoType,jdbcType=INTEGER},
+      CREATE_DATE = #{createDate,jdbcType=TIMESTAMP}
+    where MER_USERID = #{merUserid,jdbcType=VARCHAR}
+  </update>
+</mapper>

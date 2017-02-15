@@ -1,0 +1,25 @@
+package com.cifpay.lc.std.paychannel.impl;
+
+import com.cifpay.lc.constant.enums.PayChannel;
+import com.cifpay.lc.domain.lc.OpenLcOutputBean;
+import com.cifpay.lc.domain.lc.OpenLcUnionDepositInputBean;
+import com.cifpay.lc.std.domain.paychannel.FreezeInputBean;
+import com.cifpay.lc.std.domain.paychannel.FreezeOutputBean;
+import com.cifpay.lc.std.paychannel.FreezeInterface;
+import org.springframework.stereotype.Component;
+
+@Component
+public class UnionDepositImpl implements FreezeInterface<OpenLcUnionDepositInputBean, OpenLcOutputBean> {
+
+    private static final String DEBIT = "10"; // 储蓄卡
+
+    @Override
+    public PayChannel getOpenLcChannel() {
+        return PayChannel.UNION_DEPOSIT;
+    }
+
+    @Override
+    public FreezeOutputBean freeze(OpenLcUnionDepositInputBean inputBean, FreezeInputBean freezeInputBean) {
+        return FreezeOutputBean.fail("未实现");
+    }
+}

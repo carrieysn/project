@@ -1,0 +1,135 @@
+package com.cifpay.lc.std.sched.task;
+
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.std.domain.kernel.InvalidateLcKernelInputBean;
+import com.cifpay.lc.std.kernel.lc.InvalidateLcKernel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 银信证到期失效Job
+ *
+ * @author sweet
+ */
+@Component
+public class LcInvalidateTask {
+
+    private static Logger logger = LoggerFactory.getLogger(LcInvalidateTask.class);
+
+    @Autowired
+    private LcDao lcDao;
+
+    @Autowired
+    private InvalidateLcKernel invalidateLcKernel;
+
+
+    /**
+     * [收证有效期]到期（每分钟执行）
+     */
+    @Scheduled(cron = "0 * * * * *")
+    public void recvInvalidateJob() {
+        int startIndex = 0;
+        int PAGE_SIZE = 200;
+        List<String> count = new ArrayList<String>();
+
+        logger.debug(" ======== 开始失效操作：[开证到期，未收证] ======== ");
+
+        List<Lc> lcList = lcDao.selectRecvExpired(startIndex, PAGE_SIZE);
+        while (lcList != null && !lcList.isEmpty()) {
+
+            lcList.stream().parallel().forEach(x -> {
+                try {
+                    InvalidateLcKernelInputBean inputBean = new InvalidateLcKernelInputBean();
+                    inputBean.setLcId(x.getLcId());
+                    inputBean.setMerId(x.getMid());
+                    inputBean.setRemark("[开证到期，未收证]自动失效");
+
+                    invalidateLcKernel.invokeKernel(inputBean, new CoreBusinessContext());
+                    count.add("1");
+                } catch (Exception e) {
+                    logger.error("自动失效发生错误：", e);
+                }
+            });
+
+            startIndex += PAGE_SIZE;
+            lcList = lcDao.selectRecvExpired(startIndex, PAGE_SIZE);
+        }
+        logger.debug(" ======== 失效操作：[开证到期，未收证]处理完成......共处理{}条 ======== ", count.size());
+    }
+
+    /**
+     * [履约有效期]到期
+     */
+    @Scheduled(cron = "10 * * * * *")
+    public void appointmentInvalidateJob() {
+        int startIndex = 0;
+        int PAGE_SIZE = 200;
+        List<String> count = new ArrayList<String>();
+
+        logger.debug(" ======== 开始失效操作：[收证到期，未履约] ======== ");
+
+        List<Lc> lcList = lcDao.selectAppointmentExpired(startIndex, PAGE_SIZE);
+        while (lcList != null && !lcList.isEmpty()) {
+
+            lcList.stream().parallel().forEach(x -> {
+                try {
+                    InvalidateLcKernelInputBean inputBean = new InvalidateLcKernelInputBean();
+                    inputBean.setLcId(x.getLcId());
+                    inputBean.setMerId(x.getMid());
+                    inputBean.setRemark("[收证到期，未履约]自动失效");
+
+                    invalidateLcKernel.invokeKernel(inputBean, new CoreBusinessContext());
+                    count.add("1");
+                } catch (Exception e) {
+                    logger.error("收证失效处理发生错误：", e);
+                }
+            });
+
+            startIndex += PAGE_SIZE;
+            lcList = lcDao.selectRecvExpired(startIndex, PAGE_SIZE);
+        }
+        logger.debug(" ======== 失效操作：[收证到期，未履约]处理完成......共处理{}条 ======== ", count.size());
+    }
+
+    /**
+     * [申请解付有效期]到期
+     */
+    @Scheduled(cron = "20 * * * * *")
+    public void applyInvalidateJob() {
+        int startIndex = 0;
+        int PAGE_SIZE = 200;
+        List<String> count = new ArrayList<String>();
+
+        logger.debug(" ======== 开始失效操作：[履约到期，未申请解付] ======== ");
+
+        List<Lc> lcList = lcDao.selectApplyExpired(startIndex, PAGE_SIZE);
+        while (lcList != null && !lcList.isEmpty()) {
+
+            lcList.stream().parallel().forEach(x -> {
+                try {
+                    InvalidateLcKernelInputBean inputBean = new InvalidateLcKernelInputBean();
+                    inputBean.setLcId(x.getLcId());
+                    inputBean.setMerId(x.getMid());
+                    inputBean.setRemark("[履约到期，未申请解付]自动失效");
+
+                    invalidateLcKernel.invokeKernel(inputBean, new CoreBusinessContext());
+                    count.add("1");
+                } catch (Exception e) {
+                    logger.error("履约失效处理发生错误：", e);
+                }
+            });
+
+            startIndex += PAGE_SIZE;
+            lcList = lcDao.selectRecvExpired(startIndex, PAGE_SIZE);
+        }
+        logger.debug(" ======== 失效操作：[履约到期，未申请解付]处理完成......共处理{}条 ======== ", count.size());
+    }
+}

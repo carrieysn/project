@@ -1,0 +1,30 @@
+<#ftl encoding="GBK">
+<?xml version="1.0" encoding="GBK"?>
+<CMS>
+	<eb>
+		<pub>
+			<TransCode>${transCode}</TransCode>
+			<CIS>${cis}</CIS>
+			<BankCode>${bankCode}</BankCode>
+			<ID>${id}</ID>
+			<TranDate>${tranDate}</TranDate>
+			<TranTime>${tranTime}</TranTime>
+			<fSeqno>${fSeqno}</fSeqno>
+		</pub>
+		<in>
+			<QryfSeqno>${qryfSeqno}</QryfSeqno>
+			<QrySerialNo>${qrySerialNo}</QrySerialNo>
+			<ReqReserved1>${reqReserved1}</ReqReserved1>
+			<ReqReserved2>${reqReserved2}</ReqReserved2>
+			<#list rds as rd>
+			<rd>
+				<iSeqno>${rd.iSeqno}</iSeqno>
+				<QryiSeqno>${rd.qryiSeqno}</QryiSeqno>
+				<QryOrderNo>${rd.qryOrderNo}</QryOrderNo>
+				<ReqReserved3>${rd.reqReserved3}</ReqReserved3>
+				<ReqReserved4>${rd.reqReserved4}</ReqReserved4>
+			</rd>
+			</#list>
+		</in>
+	</eb>
+</CMS>

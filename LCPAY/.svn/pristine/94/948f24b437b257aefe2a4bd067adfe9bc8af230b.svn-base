@@ -1,0 +1,204 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay.util;
+
+import java.io.Serializable;
+
+
+public class UnionpayParam implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2305453795234599192L;
+	private String Version     ;
+	private String AccessType  ;
+	private String AcqCode     ;
+	private String MerId       ;
+	private String MerOrderNo  ;
+	private String TranDate    ;
+	private String TranTime    ;
+	private String OrderAmt    ;
+	private String TranType    ;
+	private String BusiType    ;
+	private String CurryNo     ;
+	private String SplitType   ;
+	private String SplitMethod ;
+	private String MerSplitMsg ;
+	private String BankInstNo  ;
+	private String MerPageUrl  ;
+	private String MerBgUrl    ;
+	private String CommodityMsg;
+	private String MerResv     ;
+	private String TranReserved;
+	private String CardTranData;
+	private String PayTimeOut  ;
+	private String TimeStamp   ;
+	private String RemoteAddr  ;
+	private String RiskData    ;
+	private String Signature   ;
+	public String getVersion() {
+		return Version;
+	}
+	public void setVersion(String version) {
+		Version = version;
+	}
+	public String getAccessType() {
+		return AccessType;
+	}
+	public void setAccessType(String accessType) {
+		AccessType = accessType;
+	}
+	public String getAcqCode() {
+		return AcqCode;
+	}
+	public void setAcqCode(String acqCode) {
+		AcqCode = acqCode;
+	}
+	public String getMerId() {
+		return MerId;
+	}
+	public void setMerId(String merId) {
+		MerId = merId;
+	}
+	public String getMerOrderNo() {
+		return MerOrderNo;
+	}
+	public void setMerOrderNo(String merOrderNo) {
+		MerOrderNo = merOrderNo;
+	}
+	public String getTranDate() {
+		return TranDate;
+	}
+	public void setTranDate(String tranDate) {
+		TranDate = tranDate;
+	}
+	public String getTranTime() {
+		return TranTime;
+	}
+	public void setTranTime(String tranTime) {
+		TranTime = tranTime;
+	}
+	public String getOrderAmt() {
+		return OrderAmt;
+	}
+	public void setOrderAmt(String orderAmt) {
+		OrderAmt = orderAmt;
+	}
+	public String getTranType() {
+		return TranType;
+	}
+	public void setTranType(String tranType) {
+		TranType = tranType;
+	}
+	public String getBusiType() {
+		return BusiType;
+	}
+	public void setBusiType(String busiType) {
+		BusiType = busiType;
+	}
+	public String getCurryNo() {
+		return CurryNo;
+	}
+	public void setCurryNo(String curryNo) {
+		CurryNo = curryNo;
+	}
+	public String getSplitType() {
+		return SplitType;
+	}
+	public void setSplitType(String splitType) {
+		SplitType = splitType;
+	}
+	public String getSplitMethod() {
+		return SplitMethod;
+	}
+	public void setSplitMethod(String splitMethod) {
+		SplitMethod = splitMethod;
+	}
+	public String getMerSplitMsg() {
+		return MerSplitMsg;
+	}
+	public void setMerSplitMsg(String merSplitMsg) {
+		MerSplitMsg = merSplitMsg;
+	}
+	public String getBankInstNo() {
+		return BankInstNo;
+	}
+	public void setBankInstNo(String bankInstNo) {
+		BankInstNo = bankInstNo;
+	}
+	public String getMerPageUrl() {
+		return MerPageUrl;
+	}
+	public void setMerPageUrl(String merPageUrl) {
+		MerPageUrl = merPageUrl;
+	}
+	public String getMerBgUrl() {
+		return MerBgUrl;
+	}
+	public void setMerBgUrl(String merBgUrl) {
+		MerBgUrl = merBgUrl;
+	}
+	public String getCommodityMsg() {
+		return CommodityMsg;
+	}
+	public void setCommodityMsg(String commodityMsg) {
+		CommodityMsg = commodityMsg;
+	}
+	public String getMerResv() {
+		return MerResv;
+	}
+	public void setMerResv(String merResv) {
+		MerResv = merResv;
+	}
+	public String getTranReserved() {
+		return TranReserved;
+	}
+	public void setTranReserved(String tranReserved) {
+		TranReserved = tranReserved;
+	}
+	public String getCardTranData() {
+		return CardTranData;
+	}
+	public void setCardTranData(String cardTranData) {
+		CardTranData = cardTranData;
+	}
+	public String getPayTimeOut() {
+		return PayTimeOut;
+	}
+	public void setPayTimeOut(String payTimeOut) {
+		PayTimeOut = payTimeOut;
+	}
+	public String getTimeStamp() {
+		return TimeStamp;
+	}
+	public void setTimeStamp(String timeStamp) {
+		TimeStamp = timeStamp;
+	}
+	public String getRemoteAddr() {
+		return RemoteAddr;
+	}
+	public void setRemoteAddr(String remoteAddr) {
+		RemoteAddr = remoteAddr;
+	}
+	public String getRiskData() {
+		return RiskData;
+	}
+	public void setRiskData(String riskData) {
+		RiskData = riskData;
+	}
+	public String getSignature() {
+		return Signature;
+	}
+	public void setSignature(String signature) {
+		Signature = signature;
+	}
+	@Override
+	public String toString() {
+		return "UnionpayParam [Version=" + Version + ", AccessType=" + AccessType + ", AcqCode=" + AcqCode + ", MerId="
+				+ MerId + ", MerOrderNo=" + MerOrderNo + ", TranDate=" + TranDate + ", TranTime=" + TranTime
+				+ ", OrderAmt=" + OrderAmt + ", TranType=" + TranType + ", BusiType=" + BusiType + ", CurryNo="
+				+ CurryNo + ", SplitType=" + SplitType + ", SplitMethod=" + SplitMethod + ", MerSplitMsg=" + MerSplitMsg
+				+ ", BankInstNo=" + BankInstNo + ", MerPageUrl=" + MerPageUrl + ", MerBgUrl=" + MerBgUrl
+				+ ", CommodityMsg=" + CommodityMsg + ", MerResv=" + MerResv + ", TranReserved=" + TranReserved
+				+ ", CardTranData=" + CardTranData + ", PayTimeOut=" + PayTimeOut + ", TimeStamp=" + TimeStamp
+				+ ", RemoteAddr=" + RemoteAddr + ", RiskData=" + RiskData + ", Signature=" + Signature + "]";
+	}
+}

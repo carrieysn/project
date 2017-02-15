@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-core-cache/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-core-common/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-core-common/src/test/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-core-dao/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-partnerbank-adapter/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-partnerbank-adapter/src/test/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-partnerbank-adapter-api/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-standard/app-business/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-standard/app-business/src/test/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-standard/app-scheduler/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-standard/app-scheduler/src/test/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/lc-standard/module-business-core/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/third-tradeplatform-adapter/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/third-tradeplatform-adapter/src/test/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core/third-tradeplatform-adapter-api/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core-api/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core-api/src/test/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core-autoconfigure/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core-message/lc-core-message-biz/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-core-message/lc-core-message-server/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-gateway/src/main/java"/>
+	<classpathentry kind="src" path="lc-platform/lc-gateway/src/test/java"/>
+	<classpathentry kind="src" path="lc-utils/src/main/java"/>
+	<classpathentry kind="src" path="mock/mock-merchant-site/src/main/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_31">
+		<attributes>
+			<attribute name="owner.project.facets" value="java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

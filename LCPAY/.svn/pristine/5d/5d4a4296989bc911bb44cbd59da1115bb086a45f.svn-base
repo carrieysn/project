@@ -1,0 +1,62 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_PRODUCT
+DROP TABLE IF EXISTS `CIFPAY_LC_PRODUCT`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_PRODUCT` (
+  `PRODUCT_ID` bigint(20) NOT NULL COMMENT '银信证产品ID',
+  `PRODUCT_CODE` varchar(32) NOT NULL COMMENT '银信证产品代码',
+  `PRODUCT_NAME` varchar(32) DEFAULT NULL COMMENT '银信证产品名称',
+  `PRODUCT_DESCRIPTION` varchar(256) DEFAULT NULL COMMENT '银信证产品描述',
+  `LC_TYPE` varchar(16) DEFAULT NULL COMMENT '银信证类型',
+  `LC_CURRENCY` varchar(8) DEFAULT NULL COMMENT '银信证币种',
+  `LC_AMOUNT_MIN` decimal(19,2) DEFAULT NULL COMMENT '银信证最小开证总额(单位分)',
+  `LC_AMOUNT_MAX` decimal(19,2) DEFAULT NULL COMMENT '银信证最大开证总额(单位分)',
+  `LC_STANDARD` bit(1) DEFAULT NULL COMMENT '银信证标准证：标准证不可以修改177的有效日期',
+  `PAYER_TYPE` varchar(16) DEFAULT NULL COMMENT '开证人类别：10个人、20企业、30全部',
+  `PAYER_ACCNO_TYPE` varchar(16) DEFAULT NULL COMMENT '支付账号类别：借记卡、信用卡、全部',
+  `RECV_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类别：10个人、20企业、30全部',
+  `THIRD_PARTY_TYPE` varchar(16) DEFAULT NULL COMMENT '第三方认证机构类别：企业、个人、指定机构',
+  `THIRD_PARTY_CODE` varchar(32) DEFAULT NULL COMMENT '第三方认证机构代码',
+  `LC_INVALID_HANDLE_CHANNEL` varchar(1) DEFAULT '9' COMMENT '银信证失效处理渠道，1=银行标准；9=其他，（暂时保留，用于区分星意和标准版）',
+  `ALLOW_MULTIPLE_OPEN` bit(1) DEFAULT NULL COMMENT '是否支持批量开证',
+  `ALLOW_PARTIAL_PAY` bit(1) DEFAULT NULL COMMENT '是否支持部分解付',
+  `AUTO_OPEN` bit(1) DEFAULT NULL COMMENT '自动开证',
+  `AUTO_RECV` bit(1) DEFAULT NULL COMMENT '自动收证',
+  `AUTO_SEND` bit(1) DEFAULT NULL COMMENT '自动履约',
+  `AUTO_CONFIRM` bit(1) DEFAULT NULL COMMENT '自动申请解付',
+  `AUTO_PAY` bit(1) DEFAULT NULL COMMENT '自动执行解付',
+  `SHOW_RECV` bit(1) DEFAULT NULL COMMENT '显示收证节点（UI）',
+  `SHOW_SEND` bit(1) DEFAULT NULL COMMENT '显示履约节点（UI）',
+  `SHOW_CONFIRM` bit(1) DEFAULT NULL COMMENT '显示申请解付节点（UI）',
+  `SHOW_SUCCESS` bit(1) DEFAULT NULL COMMENT '显示资金到账节点（UI）',
+  `DISPLAY_NAME_OPEN` varchar(64) DEFAULT NULL COMMENT '开证名称（UI）',
+  `DISPLAY_NAME_RECV` varchar(64) DEFAULT NULL COMMENT '收证名称（UI）',
+  `DISPLAY_NAME_SEND` varchar(64) DEFAULT NULL COMMENT '履约名称（UI）',
+  `DISPLAY_NAME_CONFIRM` varchar(64) DEFAULT NULL COMMENT '申请解付名称（UI）',
+  `DISPLAY_NAME_PAY` varchar(64) DEFAULT NULL COMMENT '执行解付名称（UI）',
+  `DISPLAY_NAME_SUCCESS` varchar(64) DEFAULT NULL COMMENT '资金到账名称（UI）',
+  `VALID_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '生效日期',
+  `PRODUCT_STATUS` varchar(16) NOT NULL DEFAULT '0' COMMENT '0未生效、1已生效、2已停用、3审批中',
+  `DEL_FLAG` bit(1) NOT NULL DEFAULT b'0' COMMENT '删除标识',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改日期',
+  `IS_TEMPLATE` bit(1) DEFAULT NULL COMMENT '是否模板',
+  `TEMPLATE_NAME` varchar(32) DEFAULT NULL COMMENT '模板名称',
+  `TEMPLATE_DESCRIPTION` varchar(256) DEFAULT NULL COMMENT '模板描述',
+  PRIMARY KEY (`PRODUCT_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证产品';
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

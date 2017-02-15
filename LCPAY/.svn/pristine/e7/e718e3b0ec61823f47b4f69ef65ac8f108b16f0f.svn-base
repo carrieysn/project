@@ -1,0 +1,65 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.BSwWithdrawQueueMsg;
+
+@Repository
+public interface BSwWithdrawQueueMsgDao {
+
+	BSwWithdrawQueueMsg selectByPrimaryKey(Long lcId);
+
+	void deleteByPrimaryKey(Long lcId);
+
+	void insert(BSwWithdrawQueueMsg queueMsg);
+
+	void insertSelective(BSwWithdrawQueueMsg queueMsg);
+
+	void updateByPrimaryKeySelective(BSwWithdrawQueueMsg queueMsg);
+
+	void updateByPrimaryKey(BSwWithdrawQueueMsg queueMsg);
+
+	/**
+	 * 锁定那些MQ提现消息处理结果尚未发送的记录。
+	 * 
+	 * @param serverNode
+	 *            节点ID
+	 * @param lockDate
+	 * @param timeoutLockedDate
+	 * @param lockRowsCnt
+	 *            最多需要锁定多少行的记录
+	 * @param swSendStatusPending
+	 * @param swSendStatusFailed
+	 * @param accSendStatusPending
+	 * @param accSendStatusFailed
+	 */
+	int updateAsLockedBeforeSendResult(@Param("serverNode") String serverNode, @Param("lockDate") Date lockDate,
+			@Param("timeoutLockedDate") Date timeoutLockedDate, @Param("lockRowsCnt") int lockRowsCnt,
+			@Param("handleStatusSuccess") String handleStatusSuccess,
+			@Param("handleStatusFailed") String handleStatusFailed,
+			@Param("swSendStatusPending") String swSendStatusPending,
+			@Param("swSendStatusFailed") String swSendStatusFailed,
+			@Param("accSendStatusPending") String accSendStatusPending,
+			@Param("accSendStatusFailed") String accSendStatusFailed);
+
+	/**
+	 * 根据节点ID，获得由该节点锁定的待发送提现消息处理结果的记录列表
+	 * 
+	 * @param serverNode
+	 * @param swSendStatusPending
+	 * @param swSendStatusFailed
+	 * @param accSendStatusPending
+	 * @param accSendStatusFailed
+	 * @return
+	 */
+	List<BSwWithdrawQueueMsg> selectSendingList(@Param("serverNode") String serverNode,
+			@Param("swSendStatusPending") String swSendStatusPending,
+			@Param("swSendStatusFailed") String swSendStatusFailed,
+			@Param("accSendStatusPending") String accSendStatusPending,
+			@Param("accSendStatusFailed") String accSendStatusFailed);
+
+}

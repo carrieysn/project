@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.Lc" >
+    <id column="LC_ID" property="lcId" jdbcType="BIGINT" />
+    <result column="BATCH_NO" property="batchNo" jdbcType="VARCHAR" />
+    <result column="PRODUCT_ID" property="productId" jdbcType="BIGINT" />
+    <result column="PRODUCT_CODE" property="productCode" jdbcType="VARCHAR" />
+    <result column="LC_NO" property="lcNo" jdbcType="VARCHAR" />
+    <result column="LC_TYPE" property="lcType" jdbcType="VARCHAR" />
+    <result column="LC_CURRENCY" property="lcCurrency" jdbcType="VARCHAR" />
+    <result column="LC_AMOUNT" property="lcAmount" jdbcType="DECIMAL" />
+    <result column="LC_FREEZING_AMOUNT" property="lcFreezingAmount" jdbcType="DECIMAL" />
+    <result column="LC_BALANCE" property="lcBalance" jdbcType="DECIMAL" />
+    <result column="LC_PAY_CHANNEL" property="lcPayChannel" jdbcType="VARCHAR" />
+    <result column="MID" property="mid" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="ORDER_CONTENT" property="orderContent" jdbcType="VARCHAR" />
+    <result column="PAYER_ID" property="payerId" jdbcType="VARCHAR" />
+    <result column="PAYER_ACCNO" property="payerAccno" jdbcType="VARCHAR" />
+    <result column="PAYER_TYPE" property="payerType" jdbcType="VARCHAR" />
+    <result column="PAYER_BANK_CODE" property="payerBankCode" jdbcType="VARCHAR" />
+    <result column="PAYER_BANK_NAME" property="payerBankName" jdbcType="VARCHAR" />
+    <result column="PAYER_MOBILE" property="payerMobile" jdbcType="VARCHAR" />
+    <result column="RECV_ID" property="recvId" jdbcType="VARCHAR" />
+    <result column="RECV_ACCNO" property="recvAccno" jdbcType="VARCHAR" />
+    <result column="RECV_TYPE" property="recvType" jdbcType="VARCHAR" />
+    <result column="RECV_BANK_CODE" property="recvBankCode" jdbcType="VARCHAR" />
+    <result column="RECV_BANK_NAME" property="recvBankName" jdbcType="VARCHAR" />
+    <result column="RECV_MOBILE" property="recvMobile" jdbcType="VARCHAR" />
+    <result column="LC_STATUS" property="lcStatus" jdbcType="VARCHAR" />
+    <result column="RECV_VALID_TIME" property="recvValidTime" jdbcType="TIMESTAMP" />
+    <result column="SEND_VALID_TIME" property="sendValidTime" jdbcType="TIMESTAMP" />
+    <result column="CONFIRM_VALID_TIME" property="confirmValidTime" jdbcType="TIMESTAMP" />
+    <result column="PAY_VALID_TIME" property="payValidTime" jdbcType="TIMESTAMP" />
+    <result column="LC_STATE_RETURN_URL" property="lcStateReturnUrl" jdbcType="VARCHAR" />
+    <result column="LC_STATE_NOTIFY_URL" property="lcStateNotifyUrl" jdbcType="VARCHAR" />
+    <result column="LC_ORDER_DETAIL_URL" property="lcOrderDetailUrl" jdbcType="VARCHAR" />
+    <result column="THIRD_PARTY_CODE" property="thirdPartyCode" jdbcType="VARCHAR" />
+    <result column="PAY_TYPE" property="payType" jdbcType="VARCHAR" />
+    <result column="SMS_CODE" property="smsCode" jdbcType="VARCHAR" />
+    <result column="IS_VALID" property="isValid" jdbcType="BIT" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LC_ID, BATCH_NO, PRODUCT_ID, PRODUCT_CODE, LC_NO, LC_TYPE, LC_CURRENCY, LC_AMOUNT, 
+    LC_FREEZING_AMOUNT, LC_BALANCE, LC_PAY_CHANNEL, MID, ORDER_ID, ORDER_CONTENT, PAYER_ID, 
+    PAYER_ACCNO, PAYER_TYPE, PAYER_BANK_CODE, PAYER_BANK_NAME, PAYER_MOBILE, RECV_ID, 
+    RECV_ACCNO, RECV_TYPE, RECV_BANK_CODE, RECV_BANK_NAME, RECV_MOBILE, LC_STATUS, RECV_VALID_TIME, 
+    SEND_VALID_TIME, CONFIRM_VALID_TIME, PAY_VALID_TIME, LC_STATE_RETURN_URL, LC_STATE_NOTIFY_URL, 
+    LC_ORDER_DETAIL_URL, THIRD_PARTY_CODE, PAY_TYPE, SMS_CODE, IS_VALID, CREATE_TIME, 
+    UPDATE_TIME, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.Lc" >
+    insert into CIFPAY_LC (LC_ID, BATCH_NO, PRODUCT_ID, 
+      PRODUCT_CODE, LC_NO, LC_TYPE, 
+      LC_CURRENCY, LC_AMOUNT, LC_FREEZING_AMOUNT, 
+      LC_BALANCE, LC_PAY_CHANNEL, MID, 
+      ORDER_ID, ORDER_CONTENT, PAYER_ID, 
+      PAYER_ACCNO, PAYER_TYPE, PAYER_BANK_CODE, 
+      PAYER_BANK_NAME, PAYER_MOBILE, RECV_ID, 
+      RECV_ACCNO, RECV_TYPE, RECV_BANK_CODE, 
+      RECV_BANK_NAME, RECV_MOBILE, LC_STATUS, 
+      RECV_VALID_TIME, SEND_VALID_TIME, CONFIRM_VALID_TIME, 
+      PAY_VALID_TIME, LC_STATE_RETURN_URL, LC_STATE_NOTIFY_URL, 
+      LC_ORDER_DETAIL_URL, THIRD_PARTY_CODE, PAY_TYPE, 
+      SMS_CODE, IS_VALID, CREATE_TIME, 
+      UPDATE_TIME, REMARK)
+    values (#{lcId,jdbcType=BIGINT}, #{batchNo,jdbcType=VARCHAR}, #{productId,jdbcType=BIGINT}, 
+      #{productCode,jdbcType=VARCHAR}, #{lcNo,jdbcType=VARCHAR}, #{lcType,jdbcType=VARCHAR}, 
+      #{lcCurrency,jdbcType=VARCHAR}, #{lcAmount,jdbcType=DECIMAL}, #{lcFreezingAmount,jdbcType=DECIMAL}, 
+      #{lcBalance,jdbcType=DECIMAL}, #{lcPayChannel,jdbcType=VARCHAR}, #{mid,jdbcType=VARCHAR}, 
+      #{orderId,jdbcType=VARCHAR}, #{orderContent,jdbcType=VARCHAR}, #{payerId,jdbcType=VARCHAR}, 
+      #{payerAccno,jdbcType=VARCHAR}, #{payerType,jdbcType=VARCHAR}, #{payerBankCode,jdbcType=VARCHAR}, 
+      #{payerBankName,jdbcType=VARCHAR}, #{payerMobile,jdbcType=VARCHAR}, #{recvId,jdbcType=VARCHAR}, 
+      #{recvAccno,jdbcType=VARCHAR}, #{recvType,jdbcType=VARCHAR}, #{recvBankCode,jdbcType=VARCHAR}, 
+      #{recvBankName,jdbcType=VARCHAR}, #{recvMobile,jdbcType=VARCHAR}, #{lcStatus,jdbcType=VARCHAR}, 
+      #{recvValidTime,jdbcType=TIMESTAMP}, #{sendValidTime,jdbcType=TIMESTAMP}, #{confirmValidTime,jdbcType=TIMESTAMP}, 
+      #{payValidTime,jdbcType=TIMESTAMP}, #{lcStateReturnUrl,jdbcType=VARCHAR}, #{lcStateNotifyUrl,jdbcType=VARCHAR}, 
+      #{lcOrderDetailUrl,jdbcType=VARCHAR}, #{thirdPartyCode,jdbcType=VARCHAR}, #{payType,jdbcType=VARCHAR}, 
+      #{smsCode,jdbcType=VARCHAR}, #{isValid,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.Lc" >
+    insert into CIFPAY_LC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+      <if test="batchNo != null" >
+        BATCH_NO,
+      </if>
+      <if test="productId != null" >
+        PRODUCT_ID,
+      </if>
+      <if test="productCode != null" >
+        PRODUCT_CODE,
+      </if>
+      <if test="lcNo != null" >
+        LC_NO,
+      </if>
+      <if test="lcType != null" >
+        LC_TYPE,
+      </if>
+      <if test="lcCurrency != null" >
+        LC_CURRENCY,
+      </if>
+      <if test="lcAmount != null" >
+        LC_AMOUNT,
+      </if>
+      <if test="lcFreezingAmount != null" >
+        LC_FREEZING_AMOUNT,
+      </if>
+      <if test="lcBalance != null" >
+        LC_BALANCE,
+      </if>
+      <if test="lcPayChannel != null" >
+        LC_PAY_CHANNEL,
+      </if>
+      <if test="mid != null" >
+        MID,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+      <if test="orderContent != null" >
+        ORDER_CONTENT,
+      </if>
+      <if test="payerId != null" >
+        PAYER_ID,
+      </if>
+      <if test="payerAccno != null" >
+        PAYER_ACCNO,
+      </if>
+      <if test="payerType != null" >
+        PAYER_TYPE,
+      </if>
+      <if test="payerBankCode != null" >
+        PAYER_BANK_CODE,
+      </if>
+      <if test="payerBankName != null" >
+        PAYER_BANK_NAME,
+      </if>
+      <if test="payerMobile != null" >
+        PAYER_MOBILE,
+      </if>
+      <if test="recvId != null" >
+        RECV_ID,
+      </if>
+      <if test="recvAccno != null" >
+        RECV_ACCNO,
+      </if>
+      <if test="recvType != null" >
+        RECV_TYPE,
+      </if>
+      <if test="recvBankCode != null" >
+        RECV_BANK_CODE,
+      </if>
+      <if test="recvBankName != null" >
+        RECV_BANK_NAME,
+      </if>
+      <if test="recvMobile != null" >
+        RECV_MOBILE,
+      </if>
+      <if test="lcStatus != null" >
+        LC_STATUS,
+      </if>
+      <if test="recvValidTime != null" >
+        RECV_VALID_TIME,
+      </if>
+      <if test="sendValidTime != null" >
+        SEND_VALID_TIME,
+      </if>
+      <if test="confirmValidTime != null" >
+        CONFIRM_VALID_TIME,
+      </if>
+      <if test="payValidTime != null" >
+        PAY_VALID_TIME,
+      </if>
+      <if test="lcStateReturnUrl != null" >
+        LC_STATE_RETURN_URL,
+      </if>
+      <if test="lcStateNotifyUrl != null" >
+        LC_STATE_NOTIFY_URL,
+      </if>
+      <if test="lcOrderDetailUrl != null" >
+        LC_ORDER_DETAIL_URL,
+      </if>
+      <if test="thirdPartyCode != null" >
+        THIRD_PARTY_CODE,
+      </if>
+      <if test="payType != null" >
+        PAY_TYPE,
+      </if>
+      <if test="smsCode != null" >
+        SMS_CODE,
+      </if>
+      <if test="isValid != null" >
+        IS_VALID,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="batchNo != null" >
+        #{batchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=BIGINT},
+      </if>
+      <if test="productCode != null" >
+        #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="lcNo != null" >
+        #{lcNo,jdbcType=VARCHAR},
+      </if>
+      <if test="lcType != null" >
+        #{lcType,jdbcType=VARCHAR},
+      </if>
+      <if test="lcCurrency != null" >
+        #{lcCurrency,jdbcType=VARCHAR},
+      </if>
+      <if test="lcAmount != null" >
+        #{lcAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="lcFreezingAmount != null" >
+        #{lcFreezingAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="lcBalance != null" >
+        #{lcBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="lcPayChannel != null" >
+        #{lcPayChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="mid != null" >
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderContent != null" >
+        #{orderContent,jdbcType=VARCHAR},
+      </if>
+      <if test="payerId != null" >
+        #{payerId,jdbcType=VARCHAR},
+      </if>
+      <if test="payerAccno != null" >
+        #{payerAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="payerType != null" >
+        #{payerType,jdbcType=VARCHAR},
+      </if>
+      <if test="payerBankCode != null" >
+        #{payerBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="payerBankName != null" >
+        #{payerBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="payerMobile != null" >
+        #{payerMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="recvId != null" >
+        #{recvId,jdbcType=VARCHAR},
+      </if>
+      <if test="recvAccno != null" >
+        #{recvAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="recvType != null" >
+        #{recvType,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankCode != null" >
+        #{recvBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankName != null" >
+        #{recvBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="recvMobile != null" >
+        #{recvMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="lcStatus != null" >
+        #{lcStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="recvValidTime != null" >
+        #{recvValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendValidTime != null" >
+        #{sendValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmValidTime != null" >
+        #{confirmValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payValidTime != null" >
+        #{payValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lcStateReturnUrl != null" >
+        #{lcStateReturnUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="lcStateNotifyUrl != null" >
+        #{lcStateNotifyUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="lcOrderDetailUrl != null" >
+        #{lcOrderDetailUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartyCode != null" >
+        #{thirdPartyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="payType != null" >
+        #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="smsCode != null" >
+        #{smsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="isValid != null" >
+        #{isValid,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.Lc" >
+    update CIFPAY_LC
+    <set >
+      <if test="batchNo != null" >
+        BATCH_NO = #{batchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="productId != null" >
+        PRODUCT_ID = #{productId,jdbcType=BIGINT},
+      </if>
+      <if test="productCode != null" >
+        PRODUCT_CODE = #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="lcNo != null" >
+        LC_NO = #{lcNo,jdbcType=VARCHAR},
+      </if>
+      <if test="lcType != null" >
+        LC_TYPE = #{lcType,jdbcType=VARCHAR},
+      </if>
+      <if test="lcCurrency != null" >
+        LC_CURRENCY = #{lcCurrency,jdbcType=VARCHAR},
+      </if>
+      <if test="lcAmount != null" >
+        LC_AMOUNT = #{lcAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="lcFreezingAmount != null" >
+        LC_FREEZING_AMOUNT = #{lcFreezingAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="lcBalance != null" >
+        LC_BALANCE = #{lcBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="lcPayChannel != null" >
+        LC_PAY_CHANNEL = #{lcPayChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="mid != null" >
+        MID = #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderContent != null" >
+        ORDER_CONTENT = #{orderContent,jdbcType=VARCHAR},
+      </if>
+      <if test="payerId != null" >
+        PAYER_ID = #{payerId,jdbcType=VARCHAR},
+      </if>
+      <if test="payerAccno != null" >
+        PAYER_ACCNO = #{payerAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="payerType != null" >
+        PAYER_TYPE = #{payerType,jdbcType=VARCHAR},
+      </if>
+      <if test="payerBankCode != null" >
+        PAYER_BANK_CODE = #{payerBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="payerBankName != null" >
+        PAYER_BANK_NAME = #{payerBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="payerMobile != null" >
+        PAYER_MOBILE = #{payerMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="recvId != null" >
+        RECV_ID = #{recvId,jdbcType=VARCHAR},
+      </if>
+      <if test="recvAccno != null" >
+        RECV_ACCNO = #{recvAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="recvType != null" >
+        RECV_TYPE = #{recvType,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankCode != null" >
+        RECV_BANK_CODE = #{recvBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankName != null" >
+        RECV_BANK_NAME = #{recvBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="recvMobile != null" >
+        RECV_MOBILE = #{recvMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="lcStatus != null" >
+        LC_STATUS = #{lcStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="recvValidTime != null" >
+        RECV_VALID_TIME = #{recvValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="sendValidTime != null" >
+        SEND_VALID_TIME = #{sendValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="confirmValidTime != null" >
+        CONFIRM_VALID_TIME = #{confirmValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="payValidTime != null" >
+        PAY_VALID_TIME = #{payValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lcStateReturnUrl != null" >
+        LC_STATE_RETURN_URL = #{lcStateReturnUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="lcStateNotifyUrl != null" >
+        LC_STATE_NOTIFY_URL = #{lcStateNotifyUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="lcOrderDetailUrl != null" >
+        LC_ORDER_DETAIL_URL = #{lcOrderDetailUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartyCode != null" >
+        THIRD_PARTY_CODE = #{thirdPartyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="payType != null" >
+        PAY_TYPE = #{payType,jdbcType=VARCHAR},
+      </if>
+      <if test="smsCode != null" >
+        SMS_CODE = #{smsCode,jdbcType=VARCHAR},
+      </if>
+      <if test="isValid != null" >
+        IS_VALID = #{isValid,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.Lc" >
+    update CIFPAY_LC
+    set BATCH_NO = #{batchNo,jdbcType=VARCHAR},
+      PRODUCT_ID = #{productId,jdbcType=BIGINT},
+      PRODUCT_CODE = #{productCode,jdbcType=VARCHAR},
+      LC_NO = #{lcNo,jdbcType=VARCHAR},
+      LC_TYPE = #{lcType,jdbcType=VARCHAR},
+      LC_CURRENCY = #{lcCurrency,jdbcType=VARCHAR},
+      LC_AMOUNT = #{lcAmount,jdbcType=DECIMAL},
+      LC_FREEZING_AMOUNT = #{lcFreezingAmount,jdbcType=DECIMAL},
+      LC_BALANCE = #{lcBalance,jdbcType=DECIMAL},
+      LC_PAY_CHANNEL = #{lcPayChannel,jdbcType=VARCHAR},
+      MID = #{mid,jdbcType=VARCHAR},
+      ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      ORDER_CONTENT = #{orderContent,jdbcType=VARCHAR},
+      PAYER_ID = #{payerId,jdbcType=VARCHAR},
+      PAYER_ACCNO = #{payerAccno,jdbcType=VARCHAR},
+      PAYER_TYPE = #{payerType,jdbcType=VARCHAR},
+      PAYER_BANK_CODE = #{payerBankCode,jdbcType=VARCHAR},
+      PAYER_BANK_NAME = #{payerBankName,jdbcType=VARCHAR},
+      PAYER_MOBILE = #{payerMobile,jdbcType=VARCHAR},
+      RECV_ID = #{recvId,jdbcType=VARCHAR},
+      RECV_ACCNO = #{recvAccno,jdbcType=VARCHAR},
+      RECV_TYPE = #{recvType,jdbcType=VARCHAR},
+      RECV_BANK_CODE = #{recvBankCode,jdbcType=VARCHAR},
+      RECV_BANK_NAME = #{recvBankName,jdbcType=VARCHAR},
+      RECV_MOBILE = #{recvMobile,jdbcType=VARCHAR},
+      LC_STATUS = #{lcStatus,jdbcType=VARCHAR},
+      RECV_VALID_TIME = #{recvValidTime,jdbcType=TIMESTAMP},
+      SEND_VALID_TIME = #{sendValidTime,jdbcType=TIMESTAMP},
+      CONFIRM_VALID_TIME = #{confirmValidTime,jdbcType=TIMESTAMP},
+      PAY_VALID_TIME = #{payValidTime,jdbcType=TIMESTAMP},
+      LC_STATE_RETURN_URL = #{lcStateReturnUrl,jdbcType=VARCHAR},
+      LC_STATE_NOTIFY_URL = #{lcStateNotifyUrl,jdbcType=VARCHAR},
+      LC_ORDER_DETAIL_URL = #{lcOrderDetailUrl,jdbcType=VARCHAR},
+      THIRD_PARTY_CODE = #{thirdPartyCode,jdbcType=VARCHAR},
+      PAY_TYPE = #{payType,jdbcType=VARCHAR},
+      SMS_CODE = #{smsCode,jdbcType=VARCHAR},
+      IS_VALID = #{isValid,jdbcType=BIT},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,43 @@
+package com.cifpay.lc.std.util;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class SmsSendUtil {
+	private static final Logger logger = LoggerFactory.getLogger(SmsSendUtil.class);
+	
+	private static String url = "http://222.73.117.158/msg/HttpBatchSendSM";
+	private static String account = "yanqiuping_sw";
+	private static String pswd = "Shuaiwen27";
+	
+	public static boolean sendSms(String phone, String msg){
+		Map<String, String> map = new HashMap<String,String>();
+		map.put("account", account);
+		map.put("pswd", pswd);
+		map.put("mobile", phone);
+		map.put("msg", msg);
+		map.put("needstatus", String.valueOf(true));
+		int returncode = -1;
+		try {
+			String rs = HTTPTool.postMap(url, map);
+			String[] repstrlist = rs.split("\n");
+			if (repstrlist.length > 0) {
+				repstrlist = repstrlist[0].split(",");
+				if (repstrlist.length > 1) {
+					returncode = Integer.parseInt(repstrlist[1]);
+					if(returncode==0){
+						return true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.error("#####发送短信失败#####");
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+}

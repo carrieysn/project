@@ -1,0 +1,27 @@
+package com.cifpay.lc.domain.message;
+
+/**
+ * Created by sweet on 16-10-26.
+ */
+public class LcRecvParamBean extends MessageParamBean {
+    private static final long serialVersionUID = 153702891714286878L;
+
+    private long lcId;
+    private String merId;
+
+    public long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(long lcId) {
+        this.lcId = lcId;
+    }
+
+    public String getMerId() {
+        return merId;
+    }
+
+    public void setMerId(String merId) {
+        this.merId = merId;
+    }
+}

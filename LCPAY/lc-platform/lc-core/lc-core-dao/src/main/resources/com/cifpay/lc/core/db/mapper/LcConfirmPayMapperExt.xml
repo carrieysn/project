@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcConfirmPayDao" >
+
+  <select id="select4ExpiredAutoTransfer" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from	CIFPAY_LC_CONFIRM_PAY
+    where	VALID_TIME <![CDATA[<]]> now() 
+    and		CONFIRM_STATUS = 1
+    and		PROCESS_STATUS = 0
+    limit 0,200
+  </select>
+  
+  <select id="selectBylcSendIds" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_CONFIRM_PAY
+    where LC_SEND_ID in
+    <foreach collection="lcSendIds" index="index" item="item" open="(" separator="," close=")" >  
+             #{item}
+    </foreach> 
+  </select>
+  
+  <select id="selectByLcId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_CONFIRM_PAY
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </select>
+    
+  <update id="updateProcessStatus" parameterType="map" >
+	UPDATE CIFPAY_LC_CONFIRM_PAY SET PROCESS_STATUS = #{processStatus,jdbcType=INTEGER}, 
+		   UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+	WHERE LC_CONFIRM_ID IN 
+    <foreach collection="lcConfirmIds" index="index" item="item" open="(" separator="," close=")" >  
+             #{item}
+    </foreach> 
+  </update>
+  
+</mapper>

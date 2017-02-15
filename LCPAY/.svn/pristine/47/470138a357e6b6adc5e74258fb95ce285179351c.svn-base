@@ -1,0 +1,21 @@
+server:
+  port: 9201
+spring:
+  jmx:
+    default-domain: lc-standard-business
+
+cifpay:
+  fastdfs:
+    enable: false
+  curator:
+    enable: true
+  dubbo:
+    enable: true 
+  jmx:
+    enable: true
+  redis:
+    enable: true
+  lock:
+    enable: true
+  amqp:
+    enable: true

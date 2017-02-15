@@ -1,0 +1,62 @@
+package com.cifpay.lc.gateway.controller.cache;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.cache.CacheBusinessService;
+import com.cifpay.lc.constant.enums.CacheEnum;
+import com.cifpay.lc.domain.cache.BankCacheInputBean;
+import com.cifpay.lc.domain.cache.CacheInput;
+import com.cifpay.lc.domain.cache.CacheOutput;
+import com.cifpay.lc.domain.cache.MerchantInputBean;
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Map;
+
+@Controller
+@RequestMapping("/cache")
+public class CacheBusinessController extends GatewayBaseController {
+
+    @Autowired
+    private CacheBusinessService cacheBusinessService;
+
+    @RequestMapping(path = "/removeCache", method = RequestMethod.POST)
+    @ResponseBody
+    public CacheOutput removeCache(@RequestBody Map<String, String> param) {
+
+        String cacheKey = param.get("cacheKey");
+        if (StringUtils.isEmpty(cacheKey)) {
+            return null;
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        CacheInput cacheInput;
+
+        switch (cacheKey) {
+            case CacheEnum.CACHE_TYPE_BANK: {
+                cacheInput = mapper.convertValue(param, BankCacheInputBean.class);
+                break;
+
+            }
+            case CacheEnum.CACHE_TYPE_MERCHANT: {
+                cacheInput = mapper.convertValue(param, MerchantInputBean.class);
+                break;
+            }
+            default: {
+                return null;
+            }
+        }
+
+        BusinessOutput<CacheOutput> updateCache = cacheBusinessService.removeCache(cacheInput);
+        CacheOutput output = updateCache.getData();
+        output.setReturnCode(updateCache.getReturnCode());
+        output.setReturnMsg(updateCache.getReturnMsg());
+        return output;
+    }
+}

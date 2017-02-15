@@ -1,0 +1,79 @@
+package com.cifpay.lc.domain.message;
+
+import com.cifpay.lc.constant.enums.LcTranStatus;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+/**
+ * Created by sweet on 16-11-15.
+ */
+public class LcInvalidateParamBean extends MessageParamBean {
+    private static final long serialVersionUID = -5977381581217437385L;
+
+    private long lcId;                  //银信证Id
+    private Long lcInvalidId;           //失效Id
+    private BigDecimal invalidAmount;   //失效金额（分）
+
+    private String serialNo;            //交易流水号
+    private LcTranStatus lcTranStatus;  //交易处理状态
+    private Date transferTime;          //交易时间
+
+    private String lcExpiryResponse;
+
+    public long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(long lcId) {
+        this.lcId = lcId;
+    }
+
+    public Long getLcInvalidId() {
+        return lcInvalidId;
+    }
+
+    public void setLcInvalidId(Long lcInvalidId) {
+        this.lcInvalidId = lcInvalidId;
+    }
+
+    public BigDecimal getInvalidAmount() {
+        return invalidAmount;
+    }
+
+    public void setInvalidAmount(BigDecimal invalidAmount) {
+        this.invalidAmount = invalidAmount;
+    }
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public LcTranStatus getLcTranStatus() {
+        return lcTranStatus;
+    }
+
+    public void setLcTranStatus(LcTranStatus lcTranStatus) {
+        this.lcTranStatus = lcTranStatus;
+    }
+
+    public Date getTransferTime() {
+        return transferTime;
+    }
+
+    public void setTransferTime(Date transferTime) {
+        this.transferTime = transferTime;
+    }
+
+    public String getLcExpiryResponse() {
+        return lcExpiryResponse;
+    }
+
+    public void setLcExpiryResponse(String lcExpiryResponse) {
+        this.lcExpiryResponse = lcExpiryResponse;
+    }
+}

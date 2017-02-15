@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="characterEncoding" value="UTF-8"/>
+    <property name="logFolder" value="c:/app/cifpaylc/standard-business/logs"/>
+    <property name="pattern" value="%date [%X{requestId}] [%X{scene}] [%thread] [%level] [%logger{30}] %msg%n"/>
+
+    <appender name="FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logFolder}/cifpaylc-standard-business.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 原则上每天分隔一个log文件，并通过zip压缩 -->
+            <fileNamePattern>${logFolder}/cifpaylc-standard-business.%d{yyyyMMdd}.%i.log.zip</fileNamePattern>
+            <!-- 最多保留90个log归档文件 -->
+            <maxHistory>90</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- 若同一天的log文件超过100MB，则每100MB拆分新文件 -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${pattern}</pattern>
+            <charset>${characterEncoding}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="FILE_ERROR"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <file>${logFolder}/cifpaylc-standard-business-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 原则上每天分隔一个log文件，并通过zip压缩 -->
+            <fileNamePattern>${logFolder}/cifpaylc-standard-business-error.%d{yyyyMMdd}.%i.log.zip</fileNamePattern>
+            <!-- 最多保留90个log归档文件 -->
+            <maxHistory>90</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- 若同一天的log文件超过100MB，则每100MB拆分新文件 -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${pattern}</pattern>
+            <charset>${characterEncoding}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${pattern}</pattern>
+            <charset>${characterEncoding}</charset>
+        </encoder>
+    </appender>
+
+    <logger name="com.cifpay.lc" additivity="false"
+            level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="FILE_ERROR"/>
+    </logger>
+
+    <logger name="org.apache.http.headers" additivity="false"
+            level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="org.apache.http.wire" additivity="false"
+            level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="org.apache.zookeeper.ClientCnxn" additivity="false"
+            level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="com.alibaba.dubbo" additivity="false"
+            level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="org.springframework.core.type.classreading.AnnotationAttributesReadingVisitor" additivity="false"
+            level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="org.springframework" additivity="false"
+            level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- ALL<DEBUG<INFO<WARN<ERROR<FATAL<OFF -->
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

@@ -1,0 +1,74 @@
+package com.cifpay.lc.versionb.recharge.offline;
+
+import java.util.Date;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.xds.offlinepayment.OfflinePayBusinessService;
+import com.cifpay.lc.api.xds.offlinepayment.OfflinePayInputBean;
+import com.cifpay.lc.api.xds.offlinepayment.OfflinePayOutputBean;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.util.DateUtil;
+import com.cifpay.lc.versionb.VersionBMerchantSignValidator;
+
+/**
+ * 线下充值
+ * Created by yx on 2016/5/10.
+ */
+@Controller
+@RequestMapping("/outLine")
+public class OfflinePayController {
+
+    @Autowired
+    private OfflinePayBusinessService offlinePayBusinessService;
+
+    @Autowired
+    private VersionBMerchantSignValidator versionBMerchantSignValidator;
+
+    @RequestMapping(value = "/transferOut",method = RequestMethod.POST)
+    @ResponseBody
+    public OfflinePayResData outLine(@ModelAttribute OfflinePayReqData inputBean){
+        OfflinePayResData outputBean = new OfflinePayResData();
+        //参数验证
+        Map<String,String> map = OfflinePayValidation.validation(inputBean,versionBMerchantSignValidator);
+        if (!"SUCCESS".equals(map.get("returnCode"))){
+            outputBean.setOrderId(inputBean.getOrderId());
+            outputBean.setRequestId(inputBean.getRequestId());
+            outputBean.setReturnCode("ERROR");
+            outputBean.setReturnMessage(map.get("returnMessage"));
+            return outputBean;
+        }
+        BusinessInput<OfflinePayInputBean> businessInput = new BusinessInput<OfflinePayInputBean>();
+        OfflinePayInputBean offlinePayInputBean = new OfflinePayInputBean();
+        offlinePayInputBean.setMerId(inputBean.getMerId());
+        offlinePayInputBean.setOrderId(inputBean.getOrderId());
+        offlinePayInputBean.setOrderDesc(inputBean.getOrderDesc());
+        offlinePayInputBean.setCurrency(inputBean.getCurrency());
+        offlinePayInputBean.setAmount(inputBean.getAmount());
+        offlinePayInputBean.setUserCode(inputBean.getUserCode());
+        businessInput.setData(offlinePayInputBean);
+        BusinessOutput<OfflinePayOutputBean> businessOutput = offlinePayBusinessService.execute(businessInput);
+        if (ReturnCode.GENERAL_SUCCESS == businessOutput.getReturnCode()){
+            outputBean.setRequestId(inputBean.getRequestId());
+            outputBean.setOrderId(inputBean.getOrderId());
+            outputBean.setTradeAmt(inputBean.getAmount());
+            outputBean.setTradeTime(DateUtil.format(new Date()));
+            outputBean.setReturnCode("SUCCESS");
+            outputBean.setReturnMessage("录入成功");
+        }else{
+            outputBean.setOrderId(inputBean.getOrderId());
+            outputBean.setRequestId(inputBean.getRequestId());
+            outputBean.setReturnCode("ERROR");
+            outputBean.setReturnMessage(businessOutput.getReturnMsg());
+        }
+        return outputBean;
+    }
+}

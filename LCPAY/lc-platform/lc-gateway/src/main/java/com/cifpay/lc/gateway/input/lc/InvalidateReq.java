@@ -1,0 +1,65 @@
+package com.cifpay.lc.gateway.input.lc;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+public class InvalidateReq implements Serializable {
+
+    private static final long serialVersionUID = 3899041904537924702L;
+
+    private long lcId;              // 银信证号(*)
+    private String invalidateType;  // 1=撤回失效（买家）；2=退回失效（卖家）；3=退款（执行解付后）(*)
+
+    private long lcAppointmentId;   // 履约Id(可选)
+    private String refundOrderId;   // 退款订单号(可选)
+    private BigDecimal amount;      // 退款金额(可选)
+    private String remark;
+
+    public long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(long lcId) {
+        this.lcId = lcId;
+    }
+
+    public String getInvalidateType() {
+        return invalidateType;
+    }
+
+    public void setInvalidateType(String invalidateType) {
+        this.invalidateType = invalidateType;
+    }
+
+    public long getLcAppointmentId() {
+        return lcAppointmentId;
+    }
+
+    public void setLcAppointmentId(long lcAppointmentId) {
+        this.lcAppointmentId = lcAppointmentId;
+    }
+
+    public String getRefundOrderId() {
+        return refundOrderId;
+    }
+
+    public void setRefundOrderId(String refundOrderId) {
+        this.refundOrderId = refundOrderId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+}

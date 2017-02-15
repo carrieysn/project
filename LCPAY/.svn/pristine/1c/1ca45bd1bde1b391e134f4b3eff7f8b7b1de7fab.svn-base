@@ -1,0 +1,63 @@
+package com.cifpay.lc.constant.enums;
+
+/**
+ * Created by sweet on 16-12-23.
+ */
+public final class LoggerEnum {
+
+    /**
+     * dubbo context 传输requestId
+     */
+    public static final String DUBBO_CONTEXT_REQUEST_ID_KEY = "requestId";
+
+
+    public static enum Scene {
+
+        PREOPENLC("preOpenLc", "预开证"),
+
+        OPENLC("openLc", "开证"),
+
+        OPENLC_FREEZE("openLcFreeze", "开证-冻结用户账户金额"),
+
+        OPENLC_NOTIFY("openLcNotify", "开证-异步通知商户支付结果"),
+
+        NOTIFY_MERCH("notifyMerch", "异步通知商户"),
+
+        TRANSFERLC_NOTIFY("transferLcNotify", "执行解付-异步通知商户支付结果"),
+
+        REFUND_NOTIFY("refundLcNotify", "退款-异步通知商户支付结果"),
+
+        INVALIDATE_NOTIFY("invalidateLcNotify", "失效-异步通知商户支付结果"),
+
+        RECVLC("recvLc", "收证"),
+
+        APPOINTMENTLC("appointmentLc", "履约"),
+
+        DEFERLC("deferLc", "展期"),
+
+        APPLYLC("applyLc", "申请解付"),
+
+        SUSPENDLC("suspendLc", "暂停"),
+
+        TRANSFERLC("transferLc", "解付转账"),
+
+        INVALIDATELC("invalidateLc", "失效"),
+
+        BATCHOPENLC("batchOpenLc", "批量开证"),
+
+        BATCHAPPLYLC("batchOpenLc", "批量提现"),
+
+        REFUNDLC("refundLc", "退款"),
+
+        SENDSMS("sendSms", "发短信"),;
+
+        public String val;
+
+        public String desc;
+
+        private Scene(String val, String desc) {
+            this.val = val;
+            this.desc = desc;
+        }
+    }
+}
