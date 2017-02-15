@@ -1,0 +1,38 @@
+package com.cifpay.lc.api.security;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.domain.security.FinalSignedMerchantResponse;
+import com.cifpay.lc.domain.security.Securable;
+
+import java.io.Serializable;
+
+/**
+ * 安全通信服务
+ */
+public interface SecurityService {
+
+    /**
+     * 数据签名
+     *
+     * @param securable
+     * @return
+     */
+    String signData(Securable securable) throws SecurityException;
+
+    /**
+     * 数据验签
+     *
+     * @param securable
+     * @return
+     */
+    boolean verifyData(Securable securable) throws SecurityException;
+
+    /**
+     * 将数据加密并签名
+     *
+     * @param merId    商户号
+     * @param response 加密数据明文
+     * @return 数据密文
+     */
+    BusinessOutput<FinalSignedMerchantResponse> encryptData(String merId, Serializable response) throws SecurityException;
+}

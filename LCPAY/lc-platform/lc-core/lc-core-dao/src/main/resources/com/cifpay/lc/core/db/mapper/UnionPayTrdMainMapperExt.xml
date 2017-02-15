@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTrdUnionPayMainDao" > 
+
+  <select id="selectBySelective" resultMap="BaseResultMap" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_TRD_UNIONPAY_MAIN
+    where LC_ID = #{lcId,jdbcType=BIGINT} and TXN_ID = #{txnId,jdbcType=VARCHAR}
+  </select>
+    <update id="updateResult" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+    update CIFPAY_LC_TRD_UNIONPAY_MAIN
+    set
+      SYNC_RESP_CODE = #{syncRespCode,jdbcType=VARCHAR},
+      SYNC_RESP_MSG = #{syncRespMsg,jdbcType=VARCHAR},
+      RTN_QUERY_ID = #{rtnQueryId,jdbcType=VARCHAR},
+      SYNC_TRADE_RESULT = #{syncTradeResult,jdbcType=VARCHAR},
+      FLOW_ID = #{flowId,jdbcType=BIGINT}
+      where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+    </update>
+    <update id="updateMainAsynResult" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+    update CIFPAY_LC_TRD_UNIONPAY_MAIN
+    set
+      ASYN_RESP_CODE = #{asynRespCode,jdbcType=VARCHAR},
+      ASYN_RESP_MSG = #{asynRespMsg,jdbcType=VARCHAR},
+      ASYN_TRADE_RESULT = #{asynTradeResult,jdbcType=VARCHAR},
+      SYNC_TRADE_RESULT = #{syncTradeResult,jdbcType=VARCHAR},
+      RTN_SETTLE_DATE =  #{rtnSettleDate,jdbcType=VARCHAR},
+      LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP},
+      QUERY_TIMES = QUERY_TIMES + 1
+      where  TXN_TIME = #{txnTime,jdbcType=VARCHAR} and  ORDER_ID = #{orderId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateMainQueryTimes" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+    update CIFPAY_LC_TRD_UNIONPAY_MAIN
+    set
+      QUERY_TIMES = QUERY_TIMES + 1
+      where  TXN_TIME = #{txnTime,jdbcType=VARCHAR} and  ORDER_ID = #{orderId,jdbcType=VARCHAR}
+    </update>
+ 
+  <select id="selectByTxnKey" resultMap="BaseResultMap" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_TRD_UNIONPAY_MAIN
+    where  TXN_TIME = #{txnTime,jdbcType=VARCHAR} and  ORDER_ID = #{orderId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByQueryId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_TRD_UNIONPAY_MAIN
+    where RTN_QUERY_ID = #{queryId,jdbcType=VARCHAR}
+  </select>
+	  
+   <select id="selectToQueryTrade" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_TRD_UNIONPAY_MAIN
+    where  (ASYN_TRADE_RESULT = '2' or SYNC_TRADE_RESULT = '2') and QUERY_TIMES &lt;= 5
+    union  
+	select * from CIFPAY_LC_TRD_UNIONPAY_MAIN where ASYN_TRADE_RESULT = '9' and INSERT_TIME &lt;= date_sub(now(), interval 10 MINUTE) and QUERY_TIMES &lt;= 5
+  </select>
+  
+   <select id="selectToRefund" resultType="java.lang.Long" parameterType="java.lang.Long" >
+     select SUM(TXN_AMT) as total_txn_amt
+    from CIFPAY_LC_TRD_UNIONPAY_MAIN
+    where ((TXN_TYPE = '04' and TXN_SUB_TYPE = '00') or 
+    								 (TXN_TYPE = '31' and TXN_SUB_TYPE = '00') or
+    								 (TXN_TYPE = '33' and TXN_SUB_TYPE = '00')) and (SYNC_TRADE_RESULT in('0','2')) and LC_ID =  #{lcId,jdbcType=BIGINT}  
+  </select>
+  
+   <select id="selectUndo" resultMap="BaseResultMap" parameterType="com.cifpay.lc.core.db.pojo.UnionPayTrdMain" >
+   select 
+	<include refid="Base_Column_List" />
+   from CIFPAY_LC_TRD_UNIONPAY_MAIN where ASYN_TRADE_RESULT = #{asynTradeResult,jdbcType=VARCHAR} 
+                                          and TXN_TYPE = #{txnType,jdbcType=VARCHAR} and TXN_SUB_TYPE = #{txnSubType,jdbcType=VARCHAR} and LC_ID = #{lcId,jdbcType=BIGINT}
+  </select>
+</mapper>

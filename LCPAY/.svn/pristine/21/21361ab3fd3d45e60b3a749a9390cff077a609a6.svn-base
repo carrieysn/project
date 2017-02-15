@@ -1,0 +1,236 @@
+package com.cifpay.lc.std.kernel.lc;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.constant.BizConstants;
+import com.cifpay.lc.constant.ResultHandler;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.LcPayType;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.constant.enums.ProcessStatus;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessExceptionHelper;
+import com.cifpay.lc.core.common.DbTransaction;
+import com.cifpay.lc.core.common.DbTransactionHelper;
+import com.cifpay.lc.core.db.dao.LcConfirmPayDao;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.dao.LcLogDao;
+import com.cifpay.lc.core.db.dao.LcSendDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcConfirmPay;
+import com.cifpay.lc.core.db.pojo.LcLog;
+import com.cifpay.lc.core.db.pojo.LcSend;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.core.uid.LcConfirmPayIdWorker;
+import com.cifpay.lc.core.uid.LcLogIdWorker;
+import com.cifpay.lc.std.kernel.LcBaseKernel;
+import com.cifpay.lc.std.domain.kernel.ApplyKernelInputBean;
+import com.cifpay.lc.std.domain.kernel.ApplyKernelOutputBean;
+import com.cifpay.lc.std.kernel.lc.appointment.AppointmentStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+
+/**
+ * 申请解付
+ *
+ * @author sweet
+ */
+@Component
+public class ApplyKernel extends LcBaseKernel<ApplyKernelInputBean, ApplyKernelOutputBean> {
+
+    @Autowired
+    private LcDao lcDao; // 银信证DAO
+
+    @Autowired
+    private LcSendDao lcSendDao; // 履约DAO
+
+    @Autowired
+    private LcConfirmPayDao lcConfirmPayDao; // 申请解付DAO
+
+    @Autowired
+    private LcLogDao lcLogDao; // 流水DAO
+
+    @Autowired
+    private LcLogIdWorker lcLogIdWorker;
+
+    @Autowired
+    protected LcConfirmPayIdWorker lcConfirmPayIdWorker;
+
+    @Autowired
+    private DbTransactionHelper dbTransactionHelper;
+
+    private Map<String, AppointmentStrategy> appointmentStrategyMappings;
+
+    @Autowired
+    public void setAppointmentStrategys(List<AppointmentStrategy> appointmentStrategys) {
+        this.appointmentStrategyMappings = new HashMap<String, AppointmentStrategy>();
+        for (AppointmentStrategy st : appointmentStrategys) {
+            this.appointmentStrategyMappings.put(st.getLcType(), st);
+        }
+    }
+
+    @Override
+    protected void validateLcStatus(ApplyKernelInputBean inputBean, CoreBusinessContext context) throws CoreValidationRejectException {
+
+        // 获取银信证记录
+        Lc lc = lcDao.selectByPrimaryKey(inputBean.getLcId());
+        if (lc == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_NOT_EXISTS, "银信证记录不存在");
+        }
+        // 如果银信证状态不是“已履约”（已展期），则抛出异常
+        String lcStatus = lc.getLcStatus();
+        boolean isAppointmentDone = lcStatus.compareTo(LcStatusType.APPOINTMENT_DONE.getStatusCode()) == 0 || lcStatus.compareTo(LcStatusType.APPOINTMENT_PART_DONE.getStatusCode()) == 0 || lcStatus.equals(LcStatusType.DEFER.getStatusCode());
+        if (!isAppointmentDone) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED, "银信证状态不正确");
+        }
+        context.setAttribute("Lc", lc);
+
+        // 获取履约记录
+        LcSend pojoLcAppointment = lcSendDao.selectByPrimaryKey(inputBean.getLcAppointmentId());
+        context.setAttribute("Lc_Appointment", pojoLcAppointment);
+
+        if (pojoLcAppointment == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPOINTMENT_NOT_EXISTS, "履约记录不存在");
+        }
+        // 履约记录不为当前银信证
+        if (pojoLcAppointment.getLcId().longValue() != lc.getLcId().longValue()) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPOINTMENT_NOT_EQUAL_LCID, "履约记录不正确");
+        }
+        // 履约记录状态不为“处理成功”，抛出异常
+        if (!LcTranStatus.SUCCESS.getTranStatusStr().equals(pojoLcAppointment.getSendStatus())) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPLY_IS_INPROCESS_EXISTS, "履约未完成");
+        }
+        // 履约记录不为“待处理”，抛出异常
+        if (ProcessStatus.INPROCESS.getCode() != pojoLcAppointment.getProcessStatus().intValue() && ProcessStatus.DEFER.getCode() != pojoLcAppointment.getProcessStatus().intValue() && ProcessStatus.APPLY.getCode() != pojoLcAppointment.getProcessStatus().intValue()) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPLY_IS_INPROCESS_EXISTS, "履约已处理");
+        }
+
+        // 获取申请解付记录
+        List<LcConfirmPay> lcConfirmPayList = lcConfirmPayDao.selectBylcSendIds(new Long[]{inputBean.getLcAppointmentId()});
+        if (lcConfirmPayList != null && !lcConfirmPayList.isEmpty()) {
+            // 申请解付记录应均为“失败”状态
+            boolean isAllFailed = lcConfirmPayList.stream().allMatch(x -> LcTranStatus.FAIL.getTranStatusStr().equals(x.getConfirmStatus()));
+            if (!isAllFailed) {
+                // 存在状态为“成功”或“处理中”的，抛出异常
+                throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPLY_IS_INPROCESS_EXISTS, "申请解付正在处理中");
+            }
+        }
+    }
+
+    @Override
+    protected void validateLcValidity(ApplyKernelInputBean input, CoreBusinessContext context) throws CoreValidationRejectException {
+
+        Lc lc = (Lc) context.getAttribute("Lc");
+
+        Date confirmValidate = lc.getSendValidTime();
+        Date now = new Date();
+        if (confirmValidate.getTime() < now.getTime()) { // 如果申请解付有效期小于当前时间，则过期
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_VALIDITY_FAIL_APPLY, "已过申请解付有效期");
+        }
+    }
+
+    @Override
+    protected BusinessOutput<ApplyKernelOutputBean> processLcKernelLogic(ApplyKernelInputBean applyInputBean, CoreBusinessContext context) throws CoreBusinessException {
+
+        logger.info("=== 进入申请解付交易:" + applyInputBean.getLcId());
+
+        DbTransaction dbTransaction = dbTransactionHelper.beginTransaction();
+        try {
+            BusinessOutput<ApplyKernelOutputBean> output = _processBusiness(applyInputBean, context);
+
+            dbTransactionHelper.commitTransaction(dbTransaction);
+            return output;
+
+        } catch (Exception e) {
+            dbTransactionHelper.rollbackTransaction(dbTransaction);
+            CoreBusinessExceptionHelper.throwAsCoreBusinessException(e);
+        }
+
+        throw new CoreBusinessException(ReturnCode.CORE_STD_APPLY_ERROR, "申请解付失败");
+    }
+
+    private BusinessOutput<ApplyKernelOutputBean> _processBusiness(ApplyKernelInputBean applyInputBean, CoreBusinessContext context) throws CoreBusinessException {
+
+        Lc lc = (Lc) context.getAttribute("Lc"); // 银信证表数据
+        LcSend lcAppointment = (LcSend) context.getAttribute("Lc_Appointment"); // 履约记录
+        if (lcAppointment == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPOINTMENT_NOT_EXISTS, "履约记录不正确");
+        }
+
+        AppointmentStrategy strategy = appointmentStrategyMappings.get(lc.getLcType());
+        if (strategy == null) {
+            throw new CoreBusinessException(ReturnCode.CORE_STD_UNSUPPORT_APPLY, "暂不支持当前类型的申请解付操作");
+        }
+
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+        LcConfirmPay rawLcConfirmPay = new LcConfirmPay();
+        rawLcConfirmPay.setLcConfirmId(lcConfirmPayIdWorker.nextId());
+        rawLcConfirmPay.setLcSendId(lcAppointment.getLcSendId());
+        rawLcConfirmPay.setLcId(lc.getLcId());
+        rawLcConfirmPay.setMid(lc.getMid());
+        rawLcConfirmPay.setLcPayAmount(lcAppointment.getLcConfirmAmount());
+        rawLcConfirmPay.setOrderId(lcAppointment.getOrderId());
+        rawLcConfirmPay.setValidTime(calendar.getTime());   //执行解付时间为“申请解付时间” + 24小时
+
+        // 申请解付操作
+        ResultHandler<LcConfirmPay> response = strategy.processApply(rawLcConfirmPay, applyInputBean);
+
+        // 插入申请解付表
+        rawLcConfirmPay.setLcId(lc.getLcId());
+        rawLcConfirmPay.setConfirmStatus(LcTranStatus.SUCCESS.getTranStatusStr());
+        rawLcConfirmPay.setProcessStatus(ProcessStatus.INPROCESS.getCode());
+        rawLcConfirmPay.setCreateTime(now);
+        rawLcConfirmPay.setUpdateTime(now);
+        lcConfirmPayDao.insertSelective(rawLcConfirmPay);
+        logger.info("=== 1、插入申请解付表完成");
+
+        if (!response.isSuccess()) {
+            throw new CoreBusinessException(ReturnCode.CORE_STD_APPLY_ERROR, response.getMessage());
+        }
+
+        // 更新履约步骤
+        lcSendDao.updateProcessStatus(ProcessStatus.APPLY.getCode(), now, lcAppointment.getLcSendId());
+
+        LcStatusType lcStatus = lc.getPayType().compareTo(LcPayType.MULTIPAY_PAY_WITH_SAME_PAYEE.getCode()) == 0 ? LcStatusType.APPOINTMENT_PART_DONE : LcStatusType.APPLIED;
+
+        // 2、插入流水表
+        LcLog lcLog = new LcLog();
+        long logId = lcLogIdWorker.nextId();
+        lcLog.setLogId(logId);
+        lcLog.setLcId(lc.getLcId());
+        lcLog.setStepLogId(rawLcConfirmPay.getLcConfirmId());
+        lcLog.setTradeCode(BizConstants.LcTranCode.APPLY.getTranCodeStr());
+        lcLog.setFromStatus(lc.getLcStatus());
+        lcLog.setToStatus(lcStatus.getStatusCode());
+        lcLog.setLcResponse(rawLcConfirmPay.getConfirmStatus());
+        lcLog.setRemark("申请解付");
+        lcLog.setCreateTime(now);
+        lcLogDao.insertSelective(lcLog);
+        logger.info("=== 2、插入流水表完成");
+
+        // 3、更新银信证记录表的状态
+        Lc updateLc = new Lc();
+        updateLc.setLcId(lc.getLcId());
+        updateLc.setLcStatus(lcStatus.getStatusCode());
+        updateLc.setUpdateTime(now);
+        lcDao.updateByPrimaryKeySelective(updateLc);
+        logger.info("=== 3、更新银信证记录表完成");
+
+        ApplyKernelOutputBean applyOutputBean = new ApplyKernelOutputBean();
+        applyOutputBean.setLcConfirmId(rawLcConfirmPay.getLcConfirmId());
+        applyOutputBean.setLcAppointmentId(lcAppointment.getLcSendId());
+        applyOutputBean.setLcId(lc.getLcId());
+        applyOutputBean.setLcPayAmount(rawLcConfirmPay.getLcPayAmount());
+        applyOutputBean.setLcStatus(lcStatus.getStatusCode());
+        applyOutputBean.setLcStatusDesc(LcStatusType.getDesc(lcStatus.getStatusCode()));
+
+        return BusinessOutput.success(applyOutputBean);
+    }
+
+}

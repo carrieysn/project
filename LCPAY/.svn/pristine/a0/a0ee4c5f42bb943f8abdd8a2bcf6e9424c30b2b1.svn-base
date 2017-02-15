@@ -1,0 +1,62 @@
+package com.cifpay.lc.std.business.merchant;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.basic.signkey.MerFrontValidationMaterial;
+import com.cifpay.lc.api.gateway.basic.signkey.MerPrivateInfoProviderService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.cache.pojo.MerchantCache;
+import com.cifpay.lc.core.cache.service.MerchantCacheServant;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessServiceImplBase;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+
+/**
+ * 商户私有信息提供服务，通过该服务接口，Gateway可以获取到指定商户的商户状态、签名Key等敏感信息。
+ */
+@Service("merPrivateInfoProviderService")
+public class MerPrivateInfoProviderServiceImpl extends CoreBusinessServiceImplBase<String, MerFrontValidationMaterial>
+        implements MerPrivateInfoProviderService {
+
+    @Autowired
+    MerchantCacheServant merchantCacheServant;
+
+    @Override
+    protected void validate(String inputBean, CoreBusinessContext context)
+            throws CoreValidationRejectException {
+    }
+
+    @Override
+    protected BusinessOutput<MerFrontValidationMaterial> processBusiness(String inputBean, CoreBusinessContext context) throws CoreBusinessException {
+        String merId = inputBean;
+
+        MerchantCache merchantCache = merchantCacheServant.getMerchantCache(merId);
+
+        BusinessOutput<MerFrontValidationMaterial> output = new BusinessOutput<MerFrontValidationMaterial>();
+        output.setReturnCode(ReturnCode.GENERAL_SUCCESS);
+        if (merchantCache == null) {
+            output.setReturnMsg("没有查询到商户信息");
+            return output;
+        } else {
+            output.setReturnMsg("成功");
+        }
+
+        MerFrontValidationMaterial data = new MerFrontValidationMaterial();
+        data.setMerId(merId);
+        data.setMerSiteDomain(merchantCache.getMerSiteDomain());
+        data.setDecryptKey(merchantCache.getDecryptKey());
+        data.setEncryptKey(merchantCache.getEncryptKey());
+        data.setEncryptType(merchantCache.getEncryptType());
+        data.setMerchantStatus(merchantCache.getMerchantStatus());
+        data.setBankAccountNo(merchantCache.getDefPayeeBankAcct());
+        data.setBankCode(merchantCache.getDefPayeeBankCode());
+        data.setMerchantName(merchantCache.getMerchantName());
+        output.setData(data);
+
+        return output;
+    }
+
+}

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cifpay.lc.core.db.dao.BSwRecvDateQueueMsgDao">
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.BSwRecvDateQueueMsg">
+    <id column="MSG_ID" jdbcType="BIGINT" property="msgId" />
+    <result column="MID" jdbcType="VARCHAR" property="mid" />
+    <result column="RECHARGE_ORDER_ID" jdbcType="VARCHAR" property="rechargeOrderId" />
+    <result column="TYPE" jdbcType="VARCHAR" property="type" />
+    <result column="SNO" jdbcType="VARCHAR" property="sno" />
+    <result column="NEW_LC_RECV_VALID_TIME" jdbcType="TIMESTAMP" property="newLcRecvValidTime" />
+    <result column="HANDLE_STATUS" jdbcType="VARCHAR" property="handleStatus" />
+    <result column="WAIT_OPEN_RETRY_CNT" jdbcType="INTEGER" property="waitOpenRetryCnt" />
+    <result column="HANDLE_FAIL_DESC" jdbcType="VARCHAR" property="handleFailDesc" />
+    <result column="RESULT_SEND_STATUS" jdbcType="VARCHAR" property="resultSendStatus" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="LOCKED_BY" jdbcType="VARCHAR" property="lockedBy" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    MSG_ID, MID, RECHARGE_ORDER_ID, TYPE, SNO, NEW_LC_RECV_VALID_TIME, HANDLE_STATUS, WAIT_OPEN_RETRY_CNT,  
+    HANDLE_FAIL_DESC, RESULT_SEND_STATUS, CREATE_TIME, UPDATE_TIME, LOCKED_BY
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_B_SW_RECV_DATE_QUEUE_MSG
+    where MSG_ID = #{msgId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from CIFPAY_B_SW_RECV_DATE_QUEUE_MSG
+    where MSG_ID = #{msgId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.BSwRecvDateQueueMsg">
+    insert into CIFPAY_B_SW_RECV_DATE_QUEUE_MSG (MSG_ID, MID, RECHARGE_ORDER_ID, 
+      TYPE, SNO, NEW_LC_RECV_VALID_TIME, 
+      HANDLE_STATUS, WAIT_OPEN_RETRY_CNT, HANDLE_FAIL_DESC, RESULT_SEND_STATUS, 
+      CREATE_TIME, UPDATE_TIME, LOCKED_BY
+      )
+    values (#{msgId,jdbcType=BIGINT}, #{mid,jdbcType=VARCHAR}, #{rechargeOrderId,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{sno,jdbcType=VARCHAR}, #{newLcRecvValidTime,jdbcType=TIMESTAMP}, 
+      #{handleStatus,jdbcType=VARCHAR}, #{waitOpenRetryCnt,jdbcType=INTEGER}, #{handleFailDesc,jdbcType=VARCHAR}, #{resultSendStatus,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{lockedBy,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.BSwRecvDateQueueMsg">
+    insert into CIFPAY_B_SW_RECV_DATE_QUEUE_MSG
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="msgId != null">
+        MSG_ID,
+      </if>
+      <if test="mid != null">
+        MID,
+      </if>
+      <if test="rechargeOrderId != null">
+        RECHARGE_ORDER_ID,
+      </if>
+      <if test="type != null">
+        TYPE,
+      </if>
+      <if test="sno != null">
+        SNO,
+      </if>
+      <if test="newLcRecvValidTime != null">
+        NEW_LC_RECV_VALID_TIME,
+      </if>
+      <if test="handleStatus != null">
+        HANDLE_STATUS,
+      </if>
+      <if test="waitOpenRetryCnt != null">
+        WAIT_OPEN_RETRY_CNT,
+      </if>
+      <if test="handleFailDesc != null">
+        HANDLE_FAIL_DESC,
+      </if>
+      <if test="resultSendStatus != null">
+        RESULT_SEND_STATUS,
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+      <if test="lockedBy != null">
+        LOCKED_BY,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="msgId != null">
+        #{msgId,jdbcType=BIGINT},
+      </if>
+      <if test="mid != null">
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeOrderId != null">
+        #{rechargeOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="sno != null">
+        #{sno,jdbcType=VARCHAR},
+      </if>
+      <if test="newLcRecvValidTime != null">
+        #{newLcRecvValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleStatus != null">
+        #{handleStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="waitOpenRetryCnt != null">
+        #{waitOpenRetryCnt,jdbcType=INTEGER},
+      </if>
+      <if test="handleFailDesc != null">
+        #{handleFailDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="resultSendStatus != null">
+        #{resultSendStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lockedBy != null">
+        #{lockedBy,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.BSwRecvDateQueueMsg">
+    update CIFPAY_B_SW_RECV_DATE_QUEUE_MSG
+    <set>
+      <if test="mid != null">
+        MID = #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeOrderId != null">
+        RECHARGE_ORDER_ID = #{rechargeOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        TYPE = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="sno != null">
+        SNO = #{sno,jdbcType=VARCHAR},
+      </if>
+      <if test="newLcRecvValidTime != null">
+        NEW_LC_RECV_VALID_TIME = #{newLcRecvValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleStatus != null">
+        HANDLE_STATUS = #{handleStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="waitOpenRetryCnt != null">
+        WAIT_OPEN_RETRY_CNT = #{waitOpenRetryCnt,jdbcType=INTEGER},
+      </if>
+      <if test="handleFailDesc != null">
+        HANDLE_FAIL_DESC = #{handleFailDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="resultSendStatus != null">
+        RESULT_SEND_STATUS = #{resultSendStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lockedBy != null">
+        LOCKED_BY = #{lockedBy,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where MSG_ID = #{msgId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.BSwRecvDateQueueMsg">
+    update CIFPAY_B_SW_RECV_DATE_QUEUE_MSG
+    set MID = #{mid,jdbcType=VARCHAR},
+      RECHARGE_ORDER_ID = #{rechargeOrderId,jdbcType=VARCHAR},
+      TYPE = #{type,jdbcType=VARCHAR},
+      SNO = #{sno,jdbcType=VARCHAR},
+      NEW_LC_RECV_VALID_TIME = #{newLcRecvValidTime,jdbcType=TIMESTAMP},
+      HANDLE_STATUS = #{handleStatus,jdbcType=VARCHAR},
+      WAIT_OPEN_RETRY_CNT = #{waitOpenRetryCnt,jdbcType=INTEGER},
+      HANDLE_FAIL_DESC = #{handleFailDesc,jdbcType=VARCHAR},
+      RESULT_SEND_STATUS = #{resultSendStatus,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      LOCKED_BY = #{lockedBy,jdbcType=VARCHAR}
+    where MSG_ID = #{msgId,jdbcType=BIGINT}
+  </update>
+  
+  
+  
+</mapper>

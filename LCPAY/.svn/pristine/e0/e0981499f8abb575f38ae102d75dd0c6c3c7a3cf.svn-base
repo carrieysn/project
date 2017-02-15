@@ -1,0 +1,104 @@
+package com.cifpay.lc.core.integration;
+
+import com.alibaba.dubbo.common.Constants;
+import com.alibaba.dubbo.common.extension.Activate;
+import com.alibaba.dubbo.rpc.*;
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.constant.enums.LoggerEnum;
+import com.cifpay.lc.domain.AbstractInputBean;
+import com.cifpay.lc.util.RequestIdGen;
+import com.cifpay.lc.util.logging.LogUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+
+/**
+ * dubbo 拦截器
+ * 接收从 customer 传递来的 requestId
+ * 设置 slf4j context
+ * 使用方法：
+ * logback-config.xml 中配置格式化文本 %X{requestId}
+ * 例子：
+ * <pattern>%date %level [%X{requestId}] [%thread] %logger{30} %msg%n</pattern>
+ */
+@Activate(group = {Constants.PROVIDER, Constants.CONSUMER})
+public class DubboRequestFilter implements Filter {
+
+    static final Logger logger = LoggerFactory.getLogger(DubboRequestFilter.class);
+
+    @Override
+    public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+
+        if (RpcContext.getContext().isProviderSide()) {
+            return providerHandler(invoker, invocation);
+        }
+
+        if (RpcContext.getContext().isConsumerSide()) {
+            return consumerHandler(invoker, invocation);
+        }
+
+
+        return invoker.invoke(invocation);
+    }
+
+
+    private Result providerHandler(Invoker<?> invoker, Invocation invocation) {
+        // 读取requestId
+        String requestId = invocation.getAttachment(LoggerEnum.DUBBO_CONTEXT_REQUEST_ID_KEY);
+
+        if (StringUtils.isEmpty(requestId)) {
+            requestId = RequestIdGen.resolveReqId();
+
+            logger.warn("未设置RequestId: {}", invoker.getInterface().toString());
+        }
+
+        // 读取通过dubbo传递的参数
+        AbstractInputBean abstractInputBean = null;
+        Object[] args = invocation.getArguments();
+        if (args != null) {
+            for (Object a : args) {
+                if (a instanceof BusinessInput) {
+                    BusinessInput businessInput = (BusinessInput) a;
+                    Serializable data = businessInput.getData();
+                    if (data instanceof AbstractInputBean) {
+                        abstractInputBean = (AbstractInputBean) data;
+                        break;
+                    }
+                }
+            }
+        }
+
+        String sence = "UNKNOWN";
+        if (abstractInputBean != null) {
+            abstractInputBean.setRequestId(requestId);
+            sence = abstractInputBean.getScene().val;
+        }
+
+        // 设置slf4j
+        LogUtil.initMDC(requestId, sence);
+
+        return invoker.invoke(invocation);
+    }
+
+
+    private Result consumerHandler(Invoker<?> invoker, Invocation invocation) {
+
+        // 读取requestId
+        String requestId = MDC.get(LogUtil.REQUEST_ID_KEY);
+
+        if (StringUtils.isEmpty(requestId)) {
+            requestId = RequestIdGen.resolveReqId();
+
+            logger.warn("未设置RequestId: {}", invoker.getInterface().toString());
+        }
+
+        // 远程调用前，传递requestId
+        RpcContext.getContext().setAttachment(LoggerEnum.DUBBO_CONTEXT_REQUEST_ID_KEY, requestId);
+
+        return invoker.invoke(invocation);
+    }
+
+}

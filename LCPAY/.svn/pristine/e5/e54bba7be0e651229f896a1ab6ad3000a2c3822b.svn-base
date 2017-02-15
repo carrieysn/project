@@ -1,0 +1,5 @@
+package com.cifpay.lc.domain.message;
+
+public class UpdateCacheParamBean extends MessageParamBean {
+    private static final long serialVersionUID = -7719228270425714543L;
+}

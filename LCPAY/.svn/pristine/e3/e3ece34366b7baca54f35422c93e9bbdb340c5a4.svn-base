@@ -1,0 +1,144 @@
+package com.cifpay.lc.std.business.lc;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.SuspendLcService;
+import com.cifpay.lc.constant.BizConstants.LcTranCode;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.LcPayType;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.constant.enums.ProcessStatus;
+import com.cifpay.lc.core.cache.pojo.LcProductCache;
+import com.cifpay.lc.core.common.*;
+import com.cifpay.lc.core.db.dao.LcConfirmPayDao;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.dao.LcLogDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcConfirmPay;
+import com.cifpay.lc.core.db.pojo.LcLog;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.core.uid.LcLogIdWorker;
+import com.cifpay.lc.domain.lc.SuspendLcInputBean;
+import com.cifpay.lc.domain.lc.SuspendLcOutputBean;
+import com.cifpay.lc.std.interceptor.BusinessLockInterceptor;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+
+/**
+ * 刹车（暂停解付）
+ *
+ * @author sweet
+ */
+@Service("suspendLcService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class, BusinessLockInterceptor.class})
+@CoreBusinessTranCode(LcTranCode.SUSPEND)
+public class SuspendLcServiceImpl extends LcProductServiceImplBase<SuspendLcInputBean, SuspendLcOutputBean> implements SuspendLcService {
+
+
+    @Autowired
+    private LcDao lcDao;
+
+    @Autowired
+    private LcConfirmPayDao lcConfirmPayDao;
+
+    @Autowired
+    private LcLogDao lcLogDao;
+
+    @Autowired
+    private DbTransactionHelper dbTransactionHelper;
+
+    @Autowired
+    private LcLogIdWorker lcLogIdWorker;
+
+    @Override
+    protected void validateInputParameters(SuspendLcInputBean inputBean) throws CoreValidationRejectException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected void validateLc(SuspendLcInputBean inputBean, Lc lc) throws CoreValidationRejectException {
+        if (lc == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_NOT_EXISTS, "银信证记录不存在");
+        }
+    }
+
+    @Override
+    protected void validateLcProductRule(SuspendLcInputBean inputBean, LcProductCache lcProduct, CoreBusinessContext context) throws CoreValidationRejectException {
+        // TODO Auto-generated method stub
+
+        LcConfirmPay lcConfirmPay = lcConfirmPayDao.selectByPrimaryKey(inputBean.getLcConfirmId());
+        if (lcConfirmPay == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPLY_NOT_EXISTS, "申请解付记录不存在");
+        }
+        context.setAttribute("LcConfirmPay", lcConfirmPay);
+
+        if (lcConfirmPay.getProcessStatus() != null && ProcessStatus.INPROCESS.getCode() != lcConfirmPay.getProcessStatus().intValue()) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPLY_NOT_EXISTS, "申请解付已被处理");
+        }
+
+        Lc lc = (Lc) context.getAttribute("LC");
+        Date confirmValidDate = DateUtil.min(lc.getConfirmValidTime(), lcConfirmPay.getValidTime());
+        Date now = new Date();
+        if (confirmValidDate.getTime() < now.getTime()) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_VALIDITY_FAIL_TRANSFER, "已过解付有效期");
+        }
+    }
+
+    @Override
+    public BusinessOutput<SuspendLcOutputBean> processBusiness(SuspendLcInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+        logger.info("~~~进入刹车业务处理");
+
+        Lc lc = (Lc) context.getAttribute("LC");
+        LcConfirmPay lcConfirmPay = (LcConfirmPay) context.getAttribute("LcConfirmPay");
+        Date now = new Date();
+
+        DbTransaction dbTransaction = dbTransactionHelper.beginTransaction();
+
+        try {
+            // 更新申请解付记录
+            lcConfirmPayDao.updateProcessStatus(ProcessStatus.SUSPEND.getCode(), now, lcConfirmPay.getLcConfirmId());
+
+            LcStatusType updateLcStatus = LcStatusType.SUSPEND;
+            if (lc.getPayType().compareTo(LcPayType.MULTIPAY_PAY_WITH_SAME_PAYEE.getCode()) == 0) {
+                updateLcStatus = LcStatusType.APPOINTMENT_PART_DONE;
+            } else {
+                // 修改银信证状态
+                Lc updateLc = new Lc();
+                updateLc.setLcId(lc.getLcId());
+                updateLc.setLcStatus(LcStatusType.SUSPEND.getStatusCode());
+                updateLc.setUpdateTime(now);
+                lcDao.updateByPrimaryKeySelective(updateLc);
+            }
+
+            // 添加日志表记录
+            LcLog lcLog = new LcLog();
+            lcLog.setLogId(lcLogIdWorker.nextId());
+            lcLog.setLcId(lc.getLcId());
+            lcLog.setTradeCode(LcTranCode.SUSPEND.getTranCodeStr());
+            lcLog.setLcStatus(updateLcStatus.getStatusCode());
+            lcLog.setRemark("刹车，" + inputBean.getRemark());
+            lcLogDao.insert(lcLog);
+
+            dbTransactionHelper.commitTransaction(dbTransaction);
+
+            SuspendLcOutputBean outputBean = new SuspendLcOutputBean();
+            outputBean.setLcId(inputBean.getLcId());
+            outputBean.setLcStatus(updateLcStatus.getStatusCode());
+            outputBean.setLcStatusDesc(updateLcStatus.getStatusDesc());
+
+            return BusinessOutput.success(outputBean);
+
+        } catch (Throwable e) {
+            dbTransactionHelper.rollbackTransaction(dbTransaction);
+            CoreBusinessExceptionHelper.throwAsCoreBusinessException(e);
+        }
+
+        return BusinessOutput.fail(ReturnCode.CORE_STD_LC_SUSPEND_ERROR, "刹车失败");
+    }
+
+}

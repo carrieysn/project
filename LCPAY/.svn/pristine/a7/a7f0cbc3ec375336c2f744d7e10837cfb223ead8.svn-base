@@ -1,0 +1,52 @@
+package com.cifpay.lc.gateway.input.freeze;
+
+import java.math.BigDecimal;
+
+public class RefundReq {
+
+	private Long lcId;
+	private String orderId; // 商户订单号
+	private String refundOrderId;
+	private BigDecimal amount; // 银信证开证金额（单位分）
+	private String remark; // 备注
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public BigDecimal getAmount() {
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public Long getLcId() {
+		return lcId;
+	}
+
+	public void setLcId(Long lcId) {
+		this.lcId = lcId;
+	}
+
+	public String getRefundOrderId() {
+		return refundOrderId;
+	}
+
+	public void setRefundOrderId(String refundOrderId) {
+		this.refundOrderId = refundOrderId;
+	}
+}

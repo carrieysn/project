@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cifpay.lc.core.db.dao.BSwWithdrawQueueMsgDao">
+  
+  <update id="updateAsLockedBeforeSendResult" parameterType="map">
+  	update CIFPAY_B_SW_WITHDRAW_QUEUE_MSG set  
+  	UPDATE_TIME = #{lockDate,jdbcType=TIMESTAMP}, 
+  	LOCKED_STATUS = '1',
+  	LOCKED_BY_NODE = #{serverNode,jdbcType=VARCHAR} 
+  	where (HANDLE_STATUS = #{handleStatusSuccess,jdbcType=VARCHAR} or HANDLE_STATUS = #{handleStatusFailed,jdbcType=VARCHAR}) 
+  	and (SW_SEND_STATUS = #{swSendStatusPending,jdbcType=VARCHAR} or SW_SEND_STATUS = #{swSendStatusFailed,jdbcType=VARCHAR}
+  	     or ACC_SEND_STATUS = #{accSendStatusPending,jdbcType=VARCHAR} or ACC_SEND_STATUS = #{accSendStatusFailed,jdbcType=VARCHAR}  
+  	    ) 
+  	and ( 
+  	     (LOCKED_STATUS = '1' and  <![CDATA[UPDATE_TIME < ]]> #{timeoutLockedDate,jdbcType=TIMESTAMP}) 
+  	     or LOCKED_STATUS = '0'
+  	)
+  	order by CREATE_TIME limit #{lockRowsCnt,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectSendingList" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_B_SW_WITHDRAW_QUEUE_MSG
+    where (
+     SW_SEND_STATUS = #{swSendStatusPending,jdbcType=VARCHAR} or SW_SEND_STATUS = #{swSendStatusFailed,jdbcType=VARCHAR} 
+     or ACC_SEND_STATUS = #{accSendStatusPending,jdbcType=VARCHAR} or ACC_SEND_STATUS = #{accSendStatusFailed,jdbcType=VARCHAR} 
+    ) 
+    and LOCKED_STATUS = '1' and LOCKED_BY_NODE = #{serverNode,jdbcType=VARCHAR}
+  </select>
+  
+  
+</mapper>

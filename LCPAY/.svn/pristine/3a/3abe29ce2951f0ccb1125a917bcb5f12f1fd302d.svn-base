@@ -1,0 +1,46 @@
+package com.cifpay.lc.core.message.server.listener.lc;
+
+import com.cifpay.lc.api.message.MessageService;
+import com.cifpay.lc.api.message.lc.TransferLcNotifyMessageService;
+import com.cifpay.lc.constant.enums.MessageEnum;
+import com.cifpay.lc.core.message.server.listener.BaseMessageListener;
+import com.cifpay.lc.domain.message.LcUnFreezeParamBean;
+import com.cifpay.lc.domain.message.MessageInputBean;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+/**
+ * 执行解付后，异步处理返回结果
+ */
+@Component
+public class TransferLcNotifyMessageListener extends BaseMessageListener<LcUnFreezeParamBean> {
+
+    @Autowired
+    private TransferLcNotifyMessageService transferLcNotifyMessageService;
+
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(value = MessageEnum.QUE_TRANSFERLC_NOTIFY, durable = "true", autoDelete = "false"),
+            exchange = @Exchange(value = MessageEnum.EXC_LC, durable = "true", autoDelete = "false"),
+            key = MessageEnum.QUE_TRANSFERLC_NOTIFY))
+    public void onOpenLcMessage(MessageInputBean messageInputBean) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("======== 处理执行解付异步通知消息开始 ==============");
+            logger.debug("messageInputBean:{}",messageInputBean);
+        }
+
+        handleMessage(messageInputBean);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("======== 处理执行解付异步通知消息结束 ==============");
+        }
+    }
+
+    @Override
+    public MessageService<LcUnFreezeParamBean> getMessageService() {
+        return transferLcNotifyMessageService;
+    }
+}

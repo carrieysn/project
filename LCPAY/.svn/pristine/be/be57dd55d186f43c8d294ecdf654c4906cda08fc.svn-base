@@ -1,0 +1,195 @@
+package com.cifpay.lc.constant.enums;
+
+public class MessageEnum {
+
+    public static enum MsgType {
+        LC(1, "银信证"),
+
+        SMS(2, "短信");
+
+        public Integer val;
+
+        public String desc;
+
+        private MsgType(Integer val, String desc) {
+            this.val = val;
+            this.desc = desc;
+        }
+    }
+
+    public static enum Status {
+
+        WAIT(0, "待处理"),
+
+        HANLDING(1, "处理中"),
+
+        FAIL(2, "失败"),
+
+        FIN(3, "完成");
+
+        public Integer val;
+
+        public String desc;
+
+        private Status(Integer val, String desc) {
+            this.val = val;
+            this.desc = desc;
+        }
+    }
+
+
+    public static enum Sence {
+
+        PREOPENLC("preOpenLc", "预开证"),
+
+        OPENLC("openLc", "开证"),
+
+        OPENLC_FREEZE("openLcFreeze", "开证-冻结用户账户金额"),
+
+        OPENLC_NOTIFY("openLcNotify", "开证-异步通知商户支付结果"),
+
+        TANSFERLC_NOTIFY("tansferLcNotify", "执行解付-异步通知商户支付结果"),
+        
+        REFUND_NOTIFY("refundLcNotify", "退款-异步通知商户支付结果"),
+
+        INVALIDATE_NOTIFY("invalidateLcNotify", "失效-异步通知商户支付结果"),
+
+        RECVLC("recvLc", "收证"),
+
+        APPOINTMENTLC("appointmentLc", "履约"),
+
+        DEFERLC("deferLc", "展期"),
+
+        APPLYLC("applyLc", "申请解付"),
+
+        SUSPENDLC("suspendLc", "暂停"),
+
+        TANSFERLC("tansferLc", "解付转账"),
+
+        INVALIDATELC("invalidateLc", "失效"),
+
+        BATCHOPENLC("batchOpenLc", "批量开证"),
+
+        BATCHAPPLYLC("batchOpenLc", "批量提现"),
+
+        REFUNDLC("refundLc", "退款"),
+
+        SENDSMS("sendSms", "发短信");
+
+        public String val;
+
+        public String desc;
+
+        private Sence(String val, String desc) {
+            this.val = val;
+            this.desc = desc;
+        }
+    }
+
+    public static final int FAIL_COUNT = 5;
+
+    /**
+     * 银信证队列交换机
+     */
+    public static final String EXC_LC = "lc.exch";
+
+    /**
+     * 银信证队列交换机
+     */
+    public static final String SMS_LC = "sms.exch";
+
+    /**
+     * 预开证队列
+     */
+    public static final String QUE_PREOPENLC = "preOpenLcQueue";
+
+    /**
+     * 开证队列
+     */
+    public static final String QUE_OPENLC = "openLcQueue";
+
+    /**
+     * 开证通知银行冻结队列
+     */
+    public static final String QUE_OPENLC_FREEZE = "openLcFreezeQueue";
+
+    /**
+     * 开证结果通知队列
+     */
+    public static final String QUE_OPENLC_NOTIFY = "openLcNotifyQueue";
+
+    /**
+     * 执行解付结果通知队列
+     */
+    public static final String QUE_TANSFERLC_NOTIFY = "tansferLcNotifyQueue";
+
+    /**
+     * 执行解付结果通知队列
+     */
+    public static final String QUE_INVALIDATE_NOTIFY = "invalidateLcNotifyQueue";
+    
+    /**
+     * 退款结果通知队列
+     */
+    public static final String QUE_REFUND_NOTIFY = "refundLcNotifyQueue";
+
+    /**
+     * 收证队列
+     */
+    public static final String QUE_RECVLC = "recvLcQueue";
+
+    /**
+     * 履约队列
+     */
+    public static final String QUE_APPOINTMENTLC = "appointmentLcQueue";
+
+    /**
+     * 展期队列
+     */
+    public static final String QUE_DEFERLC = "deferLcQueue";
+
+    /**
+     * 申请解付队列
+     */
+    public static final String QUE_APPLYLC = "applyLcQueue";
+
+    /**
+     * 暂停队列
+     */
+    public static final String QUE_SUSPENDLC = "suspendLcQueue";
+
+    /**
+     * 解付转账队列
+     */
+    public static final String QUE_TANSFERLC = "tansferLcQueue";
+
+    /**
+     * 失效队列
+     */
+    public static final String QUE_INVALIDATELC = "invalidateLcQueue";
+
+    /**
+     * 批量开证队列
+     */
+    public static final String QUE_BATCHOPENLC = "batchOpenLcQueue";
+
+    /**
+     * 批量提现队列
+     */
+    public static final String QUE_BATCHAPPLYLC = "batchApplyLcQueue";
+
+    /**
+     * 退款队列
+     */
+    public static final String QUE_REFUNDLC = "refundLcQueue";
+
+    /**
+     * 短消息队列
+     */
+    public static final String QUE_SENDSMS = "sendSmsQueue";
+
+    /**
+     * 消息最大处理次数
+     */
+    public static final int MAX_COUNT = 5;
+}

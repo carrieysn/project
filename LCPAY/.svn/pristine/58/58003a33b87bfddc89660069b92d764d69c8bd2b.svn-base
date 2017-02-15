@@ -1,0 +1,49 @@
+package com.cifpay.lc.core.autoconfigure.lock;
+
+import java.util.concurrent.TimeUnit;
+
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+
+public class DisLock {
+
+	private InterProcessMutex lock;
+	
+	private String lockPath;
+	
+	public DisLock(InterProcessMutex lock,String lockPath){
+		this.lock = lock;
+		this.lockPath = lockPath;
+	}
+
+	public InterProcessMutex getLock() {
+		return lock;
+	}
+
+	public void setLock(InterProcessMutex lock) {
+		this.lock = lock;
+	}
+
+	public String getLockPath() {
+		return lockPath;
+	}
+
+	public void setLockPath(String lockPath) {
+		this.lockPath = lockPath;
+	}
+	
+	public void acquire(){
+		try {
+			lock.acquire();
+		} catch (Exception e) {
+			throw new RuntimeException("获取分布式锁异常，lockPath:" + lockPath);
+		}
+	}
+	
+	public boolean acquire(long time, TimeUnit unit){
+		try {
+			return lock.acquire(time,unit);
+		} catch (Exception e) {
+			throw new RuntimeException("获取分布式锁异常，lockPath:" + lockPath);
+		}
+	}
+}

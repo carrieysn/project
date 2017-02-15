@@ -1,0 +1,58 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_THIRD_ICBCBANKENT_PAYENT
+DROP TABLE IF EXISTS `CIFPAY_THIRD_ICBCBANKENT_PAYENT`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_THIRD_ICBCBANKENT_PAYENT` (
+  `BATCH_SEQNO` varchar(35) NOT NULL,
+  `DETAIL_SEQNO` varchar(35) NOT NULL,
+  `CALLER_CODE` varchar(15) NOT NULL COMMENT '调用者（应用系统）的唯一代码，CIFPAYLC代表调用者为银信证核心业务应用',
+  `CALLER_INSTRUCTION_NO` varchar(32) NOT NULL COMMENT '调用者应用系统的为该交易定义的唯一批次号，该批次号在调用者应用系统内部必须保证唯一',
+  `CALLER_INSTRUCTION_DETAIL_NO` varchar(32) NOT NULL COMMENT '调用者应用系统的为每笔交易指令明细定义的序号，必须保证在批次号内唯一',
+  `PAY_ENTERPRISE_CODE` varchar(15) NOT NULL COMMENT '付款方企业代码，例如XDS表示使用星电商公司的账号作为付款方',
+  `TRAN_DATE` varchar(8) NOT NULL COMMENT '交易日期yyyyMMdd',
+  `TRAN_TIME` varchar(12) NOT NULL COMMENT '交易时间hhmmssaaabbb精确到微秒',
+  `CURRENCY_CODE` varchar(8) NOT NULL COMMENT '银信证定义币种代码，CNY人民币',
+  `ICBC_CURRENCY_TYPE` varchar(3) NOT NULL COMMENT '工行定义的币种代码，001人民币',
+  `PAY_AMT` decimal(17,0) unsigned NOT NULL COMMENT '金额，无正负号，不带小数点，以分作单位',
+  `ICBC_CIS` varchar(60) NOT NULL COMMENT '集团CIS号，银企客户注册时的归属编码',
+  `ICBC_BANK_CODE` varchar(3) NOT NULL COMMENT '归属银行编号，银企客户注册时的归属单位',
+  `ICBC_CERT_ID` varchar(40) NOT NULL COMMENT '证书ID',
+  `ICBC_PAY_TYPE` varchar(1) NOT NULL COMMENT '记账处理方式，1加急，2普通',
+  `PAY_ACCOUNT_NO` varchar(19) NOT NULL COMMENT '本方账号，即付方账号',
+  `RECV_BANK_CODE` varchar(255) NOT NULL COMMENT '收款银行代码，对应LC_BANK表',
+  `RECV_BANK_NAME` varchar(60) NOT NULL COMMENT '交易对方银行名称，长度不能超出银行限制',
+  `RECV_BANK_CITY_NAME` varchar(40) NOT NULL COMMENT '收款方所在城市名称',
+  `RECV_ACCOUNT_NO` varchar(34) NOT NULL COMMENT '对方账号',
+  `RECV_ACCOUNT_NAME` varchar(100) NOT NULL COMMENT '对方账户名称',
+  `FUND_USE_DESC` varchar(20) NOT NULL COMMENT '用途中文描述',
+  `SUMMARY` varchar(20) DEFAULT NULL COMMENT '摘要',
+  `CORPORATE_PERSONAL_FLAG` varchar(1) NOT NULL COMMENT '对公对私标志，0对公账户，1个人账户',
+  `CROSS_BANK_FLAG` varchar(1) NOT NULL COMMENT '系统内外标志，1系统内，2系统外',
+  `SAME_CITY_FLAG` varchar(1) DEFAULT NULL COMMENT '同城异地标志，1同城，2异地',
+  `TXN_RESULT_STATUS` varchar(1) NOT NULL COMMENT '交易结果状态，N新交易待处理，S银行交易成功，F银行交易失败，P银行处理中，U交易结果暂不明确',
+  `BANK_RET_BATCH_SERIAL_NO` varchar(15) DEFAULT NULL COMMENT '平台交易流水号，银行产生的银行批次号',
+  `BANK_RET_DETAIL_ORDER_NO` varchar(6) DEFAULT NULL COMMENT '银行产生的批次内的小序号，和银行产生的批次组合后在银行端对应唯一一笔交易明细',
+  `BANK_ORI_DETAIL_RESULT_CODE` varchar(2) DEFAULT NULL,
+  `BANK_ADDI_BATCH_RETURN_CODE` varchar(5) DEFAULT NULL,
+  `BANK_ADDI_BATCH_RETURN_MSG` varchar(100) DEFAULT NULL,
+  `BANK_ADDI_DETAIL_RETURN_CODE` varchar(5) DEFAULT NULL,
+  `BANK_ADDI_DETAIL_RETURN_MSG` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`BATCH_SEQNO`,`DETAIL_SEQNO`),
+  UNIQUE KEY `UDX_PAYENT_01` (`BATCH_SEQNO`,`DETAIL_SEQNO`),
+  UNIQUE KEY `UDX_PAYENT_02` (`CALLER_CODE`,`CALLER_INSTRUCTION_NO`,`CALLER_INSTRUCTION_DETAIL_NO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

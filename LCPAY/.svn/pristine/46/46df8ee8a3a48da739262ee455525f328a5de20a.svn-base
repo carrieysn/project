@@ -1,0 +1,20 @@
+package com.cifpay.lc.std.mapper.lc.output;
+
+import org.springframework.beans.BeanUtils;
+
+import com.cifpay.lc.domain.lc.AppointmentOutputBean;
+import com.cifpay.lc.std.domain.kernel.AppointmentKernelOutputBean;
+
+public class AppointmentKernelOutputBeanMapper {
+
+	public static AppointmentOutputBean toAppointmentOutputBean(AppointmentKernelOutputBean outputBean) {
+		AppointmentOutputBean result = new AppointmentOutputBean();
+
+		if (outputBean != null) {
+			BeanUtils.copyProperties(outputBean, result);
+		}
+
+		return result;
+	}
+
+}

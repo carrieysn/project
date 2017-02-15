@@ -1,0 +1,43 @@
+package com.cifpay.lc.core.component;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.api.gateway.basic.signkey.MerFrontValidationMaterial;
+import com.cifpay.lc.core.cache.pojo.MerchantCache;
+import com.cifpay.lc.core.cache.service.MerchantCacheServant;
+import com.cifpay.lc.core.util.LcMd5SignTool;
+
+@Component
+public class BackendMerchantSignHelper {
+
+	@Autowired
+	private MerchantCacheServant merchantCacheServant;
+
+	/**
+	 * 对准备响应或发送给商户的数据进行签名，并将签名结果作为key为"sign"的参数添加进responseParams中。
+	 * 
+	 * @param merId
+	 * @param responseParams
+	 * @return
+	 */
+	public void addSign(String merId, Map<String, String> responseParams) {
+		if (StringUtils.hasText(responseParams.get("sign"))) {
+			// 避免重复签名
+			return;
+		}
+		String sign = "";
+		if (null != merId && merId.length() > 0) {
+			MerchantCache merchantCache = merchantCacheServant.getMerchantCache(merId);
+			String signKey = merchantCache.unpackEncryptKey();
+			if (null != signKey) {
+				sign = LcMd5SignTool.signMap(responseParams, signKey);
+			}
+		}
+		responseParams.put("sign", sign);
+	}
+
+}

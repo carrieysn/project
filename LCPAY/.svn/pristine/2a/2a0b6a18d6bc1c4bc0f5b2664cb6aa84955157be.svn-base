@@ -1,0 +1,63 @@
+package com.cifpay.lc.core.db.pojo;
+
+public class AdminLcMerCre {
+    private Integer id;
+
+    private Integer merId;
+
+    private String merCode;
+
+    private String xnMerId;
+
+    private Integer creId;
+
+    private Integer xnType;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getMerId() {
+        return merId;
+    }
+
+    public void setMerId(Integer merId) {
+        this.merId = merId;
+    }
+
+    public String getMerCode() {
+        return merCode;
+    }
+
+    public void setMerCode(String merCode) {
+        this.merCode = merCode == null ? null : merCode.trim();
+    }
+
+    public String getXnMerId() {
+        return xnMerId;
+    }
+
+    public void setXnMerId(String xnMerId) {
+        this.xnMerId = xnMerId == null ? null : xnMerId.trim();
+    }
+
+    public Integer getCreId() {
+        return creId;
+    }
+
+    public void setCreId(Integer creId) {
+        this.creId = creId;
+    }
+
+    public Integer getXnType() {
+        return xnType;
+    }
+
+    public void setXnType(Integer xnType) {
+        this.xnType = xnType;
+    }
+}

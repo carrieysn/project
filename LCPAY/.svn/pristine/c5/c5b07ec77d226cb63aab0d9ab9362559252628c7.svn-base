@@ -1,0 +1,413 @@
+package com.cifpay.lc.std.kernel.batchLc;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.bankadapter.api.constant.TradeConfig;
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.input.bank.FreezeTradeParam;
+import com.cifpay.lc.bankadapter.api.output.bank.GeneralTradeResult;
+import com.cifpay.lc.bankadapter.api.output.bank.IBankTradeService;
+import com.cifpay.lc.constant.BizConstants.LcTranCode;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.AccountPropertyType;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.core.autoconfigure.lock.DisLock;
+import com.cifpay.lc.core.autoconfigure.lock.DistributeLockManager;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessExceptionHelper;
+import com.cifpay.lc.core.db.dao.*;
+import com.cifpay.lc.core.db.pojo.*;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.core.uid.LcLogIdWorker;
+import com.cifpay.lc.core.uid.LcOpenIdWorker;
+import com.cifpay.lc.domain.batch.BatchOpenLcInputBean;
+import com.cifpay.lc.domain.batch.BatchOpenLcOutputBean;
+import com.cifpay.lc.std.kernel.LcBaseKernel;
+import com.cifpay.lc.std.mapper.LcMapper;
+import org.apache.curator.framework.recipes.locks.InterProcessMutex;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 批量开证
+ *
+ * @author sweet
+ */
+@Component
+public class BatchOpenLcKernel extends LcBaseKernel<BatchOpenLcInputBean, BatchOpenLcOutputBean> {
+
+    @Autowired
+    private LcOpenBatchDao lcOpenBatchDao;
+    @Autowired
+    private PreLcDao preLcDao;
+    @Autowired
+    private LcOpenDao lcOpenDao;
+    @Autowired
+    private LcLogDao lcLogDao;
+    @Autowired
+    private LcDao lcDao;
+    @Autowired
+    private DistributeLockManager distributeLockManager; // 锁表控重DAO
+
+    @Autowired
+    private LcOpenIdWorker lcOpenIdWorker;
+    @Autowired
+    private LcLogIdWorker lcLogIdWorker;
+
+    @Autowired
+    private IBankTradeService tradeService;
+
+    @Override
+    protected void validateLcStatus(BatchOpenLcInputBean inputBean, CoreBusinessContext context) throws CoreValidationRejectException {
+
+        Long batchOpenId = inputBean.getBatchOpenId(); // 批次号
+        LcOpenBatch lcOpenBatch = lcOpenBatchDao.selectByPrimaryKey(batchOpenId);
+        if (lcOpenBatch == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_BATCH_NOT_EXISTS, "银信证批次不存在");
+        }
+        context.setAttribute("LC_OPEN_BATCH", lcOpenBatch);
+
+        List<PreLc> preLcList = preLcDao.selectByOpenBatchId(batchOpenId);
+        if (preLcList == null || preLcList.isEmpty()) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_PRE_LC_NOT_EXISTS, "银信证预开证记录不存在");
+        }
+        context.setAttribute("LC_PRE_LIST", preLcList);
+
+        // TODO 验证批量号查出的预开证记录总金额是否与参数一致
+
+    }
+
+    @Override
+    protected void validateLcValidity(BatchOpenLcInputBean inputBean, CoreBusinessContext context) throws CoreValidationRejectException {
+
+        // 查询预开证记录
+        List<PreLc> preLcList = (List<PreLc>) context.getAttribute("LC_PRE_LIST");
+
+        Set<Long> lcIds = new HashSet<Long>();
+        for (PreLc preLc : preLcList) {
+            lcIds.add(preLc.getLcId());
+        }
+
+        context.setAttribute("SUCCESS", false);
+
+        // 查询是否存在开证记录
+        List<LcOpen> lcOpenList = lcOpenDao.selectByLcIds(lcIds.toArray(new Long[lcIds.size()]));
+        if (lcOpenList != null && !lcOpenList.isEmpty()) {
+            // === 存在开证记录[可能已付款] ===
+            boolean isSuccess = false; // 至少一笔[开证成功]
+            boolean isProcess = false; // 至少一笔[处理中]或[不确定]
+            boolean isAllFailed = true;// 所有付款均失败
+
+            for (LcOpen item : lcOpenList) {
+                String itemLcStatus = item.getLcOpenStatus();
+
+                isSuccess = isSuccess || itemLcStatus.equals(LcTranStatus.SUCCESS.getTranStatusStr());
+                isProcess = isProcess || (itemLcStatus.equals(LcTranStatus.INPROCESS.getTranStatusStr()) || itemLcStatus.equals(LcTranStatus.UNCERTAIN.getTranStatusStr()));
+                isAllFailed = isAllFailed && itemLcStatus.equals(LcTranStatus.FAIL.getTranStatusStr());
+            }
+
+            // 银信证已付款
+            if (isSuccess) {
+
+                Set<Long> successLcIds = new HashSet<Long>();
+                for (LcOpen item : lcOpenList) {
+                    if (item.getLcOpenStatus().equals(LcTranStatus.SUCCESS.getTranStatusStr())) {
+                        successLcIds.add(item.getLcId());
+                    }
+                }
+
+                // 全部成功
+                if (successLcIds.size() == lcIds.size()) {
+                    // 开证已成功
+                    context.setAttribute("SUCCESS", true);
+                }
+
+                // 部分银信证付款成功
+                throw new CoreBusinessException(ReturnCode.CORE_STD_LC_BATCH_PARTIAL_SUCCESS, "银信证批次已部分支付成功:" + successLcIds);
+            }
+            // 银信证付款处理中
+            if (isProcess) {
+
+                // 所有付款均在处理中
+
+                // 部分付款在处理中
+                throw new CoreBusinessException(ReturnCode.CORE_STD_BANK_ITF_RESULT_UNKNOWN, "付款正在处理中");
+            }
+            // 是否还有非失败状态的付款记录
+            if (false == isAllFailed) {
+                throw new CoreBusinessException(103200, "开证错误");
+            }
+            // 未付款 or 所有付款均失败
+        }
+    }
+
+    @Override
+    protected BusinessOutput<BatchOpenLcOutputBean> processLcKernelLogic(BatchOpenLcInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+
+        long batchId = inputBean.getBatchOpenId();
+        String tradeCode = LcTranCode.BATCH_OPEN.getTranCodeStr();
+
+        // 是否已处理成功
+        boolean isSuccess = (boolean) context.getAttribute("SUCCESS");
+        if (isSuccess) {
+            // 查询批次记录
+            LcOpenBatch lcOpenBatch = (LcOpenBatch) context.getAttribute("LC_OPEN_BATCH");
+
+            // 查询预开证记录
+            List<PreLc> preLcList = (List<PreLc>) context.getAttribute("LC_PRE_LIST");
+
+            Set<Long> lcIds = new HashSet<Long>();
+            for (PreLc preLc : preLcList) {
+                lcIds.add(preLc.getLcId());
+            }
+
+            List<Lc> lcList = lcDao.selectByLcIds((Long[]) lcIds.toArray());
+
+            BatchOpenLcOutputBean result = new BatchOpenLcOutputBean();
+            result.setBatchOpenId(inputBean.getBatchOpenId());
+            result.setLcTotalAmount(lcOpenBatch.getLcBatchAmount());
+            result.setLcList(LcMapper.ToOpenLcOutputBean(lcList));
+
+            return BusinessOutput.success(result); // 开证已成功
+        }
+
+        // === 银信证[未付款]（没有开证记录或开证均失败），执行冻结资金操作 ===
+
+        // 插入锁表防止高并发时重复交易
+        String lockPath = "/LOCK/BATCHID" + batchId;
+        DisLock lock = null;
+        try {
+            lock = distributeLockManager.getDisLock(lockPath);
+            if (lock.acquire(10, TimeUnit.SECONDS)) {
+                BusinessOutput<BatchOpenLcOutputBean> result = _processBusiness(inputBean, context);
+                return result;
+            }
+        } catch (Throwable e) {
+            CoreBusinessExceptionHelper.throwAsCoreBusinessException(e);
+        } finally {
+            distributeLockManager.unlock(lock);
+        }
+
+        throw new CoreBusinessException(ReturnCode.CORE_STD_LC_OPEN_ERROR, "开证失败");
+    }
+
+    private BusinessOutput<BatchOpenLcOutputBean> _processBusiness(BatchOpenLcInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+
+        // 查询批次记录
+        LcOpenBatch lcOpenBatch = (LcOpenBatch) context.getAttribute("LC_OPEN_BATCH");
+        // 查询预开证记录
+        List<PreLc> preLcList = (List<PreLc>) context.getAttribute("LC_PRE_LIST");
+
+        // === 银信证[未付款]（没有开证记录或开证均失败），执行冻结资金操作 ===
+
+        // 批量插入开证记录，流水记录
+        List<LcOpen> insertLcOpenList = insertLcOpen(preLcList, inputBean);
+        insertLcLog(preLcList);
+
+        // 调用银行接口，冻结资金
+        GeneralTradeResult freezeResponse = freeze(lcOpenBatch);
+        // 修改开证记录状态
+        updateLcOpen(insertLcOpenList, freezeResponse);
+
+        // TODO:测试使用
+        if (loggerDebugEnabled) {
+            freezeResponse.setRtnCode(TradeConfig.TRADE_RESULT_SUCCEED_0);
+        }
+
+        // == 冻结成功
+        if (TradeConfig.TRADE_RESULT_SUCCEED_0.equalsIgnoreCase(freezeResponse.getTradeResult())) {
+            // 插入银信证主表
+            List<Lc> lcList = insertLc(preLcList);
+
+            // 成功返回
+            BatchOpenLcOutputBean result = new BatchOpenLcOutputBean();
+            result.setBatchOpenId(inputBean.getBatchOpenId());
+            result.setLcTotalAmount(lcOpenBatch.getLcBatchAmount());
+            result.setLcList(LcMapper.ToOpenLcOutputBean(lcList));
+
+            return BusinessOutput.success(result); // 开证已成功
+        }
+
+        // 错误返回
+        if (TradeConfig.TRADE_RESULT_FAIL_1.equalsIgnoreCase(freezeResponse.getTradeResult())) {
+            throw new CoreBusinessException(ReturnCode.CORE_STD_BANK_ITF_RESULT_FAIL, freezeResponse.getResultDesc());
+        } else if (TradeConfig.TRADE_RESULT_UNKNOWN_2.equalsIgnoreCase(freezeResponse.getTradeResult())) {
+            throw new CoreBusinessException(ReturnCode.CORE_STD_BANK_ITF_RESULT_UNKNOWN, freezeResponse.getResultDesc());
+        }
+
+        throw new CoreBusinessException(ReturnCode.CORE_STD_LC_OPEN_ERROR, "开证失败");
+    }
+
+    private List<LcOpen> insertLcOpen(List<PreLc> preLcList, BatchOpenLcInputBean inputBean) {
+        Date now = new Date();
+
+        List<LcOpen> lcOpenList = new ArrayList<LcOpen>();
+        for (PreLc preLc : preLcList) {
+
+            LcOpen lcOpen = new LcOpen();
+            lcOpenList.add(lcOpen);
+            lcOpen.setLcOpenId(lcOpenIdWorker.nextId());
+            lcOpen.setCreateTime(now);
+            lcOpen.setUpdateTime(now);
+
+            lcOpen.setLcId(preLc.getLcId());
+            lcOpen.setMid(preLc.getMid());
+            // lcOpen.setLcType(preLc.getLcType());
+            lcOpen.setLcCurrency(preLc.getLcCurrency());
+            lcOpen.setLcAmount(preLc.getLcAmount());
+
+            lcOpen.setPayerId(preLc.getPayerId());
+            lcOpen.setPayerAccno(preLc.getPayerAccno());
+            lcOpen.setPayerType(preLc.getPayerType());
+            lcOpen.setPayerBankCode(preLc.getPayerBankCode());
+            lcOpen.setPayerBankName(preLc.getPayerBankName());
+
+            lcOpen.setRecvId(preLc.getRecvId());
+            lcOpen.setRecvAccno(preLc.getRecvAccno());
+            lcOpen.setRecvType(preLc.getRecvType());
+            lcOpen.setRecvBankCode(preLc.getRecvBankCode());
+            lcOpen.setRecvBankName(preLc.getRecvBankName());
+
+            lcOpen.setValidTime(preLc.getRecvValidTime());
+
+            lcOpen.setOrderId(preLc.getOrderId());
+            lcOpen.setRemark(inputBean.getRemark());
+
+            lcOpen.setTradeTime(now);
+            lcOpen.setLcOpenStatus(LcTranStatus.INPROCESS.getTranStatusStr());
+
+            lcOpenDao.insert(lcOpen);
+        }
+
+        return lcOpenList;
+    }
+
+    private GeneralTradeResult freeze(LcOpenBatch lcOpenBatch) {
+
+        FreezeTradeParam param = new FreezeTradeParam();
+        param.setTradeType(TradeConstant.TRADE_CONFIG.TRADE_TYPE_FREEZE);
+        param.setTradeBankCode(lcOpenBatch.getPayerBankCode()); // TradeConstant.TRADE_CONFIG.TRADE_BANK_ICBC
+
+        if (AccountPropertyType.PERSONAL.getCode().equalsIgnoreCase(lcOpenBatch.getPayerType())) {
+            param.setCustomerType(TradeConstant.TRADE_CONFIG.TRADE_CUSTOMER_TYPE_PERSONAL);
+        }
+
+        if (AccountPropertyType.CORPORATE.getCode().equalsIgnoreCase(lcOpenBatch.getPayerType())) {
+            param.setCustomerType(TradeConstant.TRADE_CONFIG.TRADE_CUSTOMER_TYPE_ENTERPRISE);
+        }
+
+        param.setLcId(lcOpenBatch.getBatchOpenId());
+        param.setFreezeAmount(lcOpenBatch.getLcBatchAmount().toString());
+        param.setPayerBankCardNo(lcOpenBatch.getPayerAccno());
+        param.setCurrency(lcOpenBatch.getLcCurrency());
+
+        GeneralTradeResult response = (GeneralTradeResult) tradeService.doTrade(param);
+
+        return response;
+    }
+
+    private void updateLcOpen(List<LcOpen> lcOpenList, GeneralTradeResult freezeResponse) {
+
+        Map<String, String> map = new HashMap<String, String>();
+
+        if (TradeConfig.TRADE_RESULT_SUCCEED_0.equalsIgnoreCase(freezeResponse.getTradeResult())) {
+            map.put("lcOpenStatus", LcTranStatus.SUCCESS.getTranStatusStr());
+        } else if (TradeConfig.TRADE_RESULT_FAIL_1.equalsIgnoreCase(freezeResponse.getTradeResult())) {
+            map.put("lcOpenStatus", LcTranStatus.FAIL.getTranStatusStr());
+        } else {
+            map.put("lcOpenStatus", LcTranStatus.UNCERTAIN.getTranStatusStr());
+        }
+
+        map.put("lcOpenResponse", freezeResponse.getRtnSerialNo() + "," + freezeResponse.getTradeResult() + "," + freezeResponse.getRtnMsg());
+
+        Date now = new Date();
+
+        List<Long> lcOpenIds = new ArrayList<Long>();
+        for (LcOpen lcOpen : lcOpenList) {
+            Long lcOpenId = lcOpen.getLcOpenId();
+            lcOpenIds.add(lcOpenId);
+        }
+
+        lcOpenDao.updateBankResponse(lcOpenIds, now, now, map);
+    }
+
+    private void insertLcLog(List<PreLc> preLcList) {
+        Date now = new Date();
+
+        for (PreLc preLc : preLcList) {
+
+            LcLog lcLog = new LcLog();
+            lcLog.setLogId(lcLogIdWorker.nextId());
+            lcLog.setCreateTime(now);
+
+            lcLog.setLcId(preLc.getLcId());
+            lcLog.setTradeCode(LcTranStatus.INPROCESS.getTranStatusStr());
+            lcLog.setFromStatus(LcStatusType.NEW.getStatusCode());
+            lcLog.setToStatus(LcStatusType.OPENED.getStatusCode());
+            lcLog.setRemark("开证");
+
+            lcLogDao.insert(lcLog);
+        }
+
+    }
+
+    private List<Lc> insertLc(List<PreLc> preLcList) {
+
+        Date now = new Date();
+
+        List<Lc> lcList = new ArrayList<Lc>();
+
+        for (PreLc preLc : preLcList) {
+            Lc lc = new Lc();
+            lcList.add(lc);
+            lc.setLcId(preLc.getLcId());
+            lc.setIsValid(true);
+            lc.setCreateTime(now);
+            lc.setUpdateTime(now);
+
+            lc.setProductId(preLc.getProductId());
+            lc.setProductCode(preLc.getProductCode());
+            lc.setLcNo(preLc.getLcNo());
+            lc.setLcType(preLc.getLcType());
+            lc.setLcCurrency(preLc.getLcCurrency());
+            lc.setLcAmount(preLc.getLcAmount());
+            lc.setLcBalance(preLc.getLcAmount());
+
+            lc.setMid(preLc.getMid());
+            lc.setPayerId(preLc.getPayerId());
+            lc.setPayerAccno(preLc.getPayerAccno());
+            lc.setPayerType(preLc.getPayerType());
+            lc.setPayerBankCode(preLc.getPayerBankCode());
+            lc.setPayerBankName(preLc.getPayerBankName());
+
+            lc.setRecvId(preLc.getRecvId());
+            lc.setRecvAccno(preLc.getRecvAccno());
+            lc.setRecvType(preLc.getRecvType());
+            lc.setRecvBankCode(preLc.getRecvBankCode());
+            lc.setRecvBankName(preLc.getRecvBankName());
+
+            lc.setLcStatus(LcStatusType.OPENED.getStatusCode());
+            lc.setRecvValidTime(preLc.getRecvValidTime());
+            lc.setSendValidTime(preLc.getSendValidTime());
+            lc.setConfirmValidTime(preLc.getConfirmValidTime());
+            lc.setPayValidTime(preLc.getPayValidTime());
+
+            lc.setOrderId(preLc.getOrderId());
+            lc.setLcStateReturnUrl(preLc.getLcStateReturnUrl());
+            lc.setLcStateNotifyUrl(preLc.getLcStateNotifyUrl());
+            lc.setLcOrderDetailUrl(preLc.getLcOrderDetailUrl());
+
+            lc.setThirdPartyCode(preLc.getThirdPartyCode());
+            lc.setPayType(preLc.getPayType());
+            lc.setRemark(preLc.getRemark());
+
+            lcDao.insert(lc);
+        }
+
+        return lcList;
+    }
+}

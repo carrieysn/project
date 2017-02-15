@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.BSwOpenQueueMsgDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.BSwOpenQueueMsg" >
+    <id column="MSG_ID" property="msgId" jdbcType="BIGINT" />
+    <result column="MID" property="mid" jdbcType="VARCHAR" />
+    <result column="RECHARGE_ORDER_ID" property="rechargeOrderId" jdbcType="VARCHAR" />
+    <result column="TYPE" property="type" jdbcType="VARCHAR" />
+    <result column="SNO" property="sno" jdbcType="VARCHAR" />
+    <result column="SW_STATUS" property="swStatus" jdbcType="VARCHAR" />
+    <result column="ACC_STATUS" property="accStatus" jdbcType="VARCHAR" />
+    <result column="RECIEVE_TIME" property="recieveTime" jdbcType="TIMESTAMP" />
+    <result column="HANDLE_TIME" property="handleTime" jdbcType="TIMESTAMP" />
+    <result column="HANDLE_BY" property="handleBy" jdbcType="VARCHAR" />
+    <result column="EXCHANGE_NAME" property="exchangeName" jdbcType="VARCHAR" />
+    <result column="QUEUE_NAME" property="queueName" jdbcType="VARCHAR" />
+    <result column="LC_ID" property="lcId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MSG_ID, MID, RECHARGE_ORDER_ID, TYPE, SNO, SW_STATUS, ACC_STATUS, RECIEVE_TIME, HANDLE_TIME,
+    HANDLE_BY,EXCHANGE_NAME,QUEUE_NAME,LC_ID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_B_SW_OPEN_QUEUE_MSG
+    where MSG_ID = #{msgId,jdbcType=BIGINT}
+  </select>
+  <select id="selectByMerIdOrderIdTypeSno" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" />
+      from CIFPAY_B_SW_OPEN_QUEUE_MSG
+     where MID = #{mid,jdbcType=VARCHAR}
+       AND RECHARGE_ORDER_ID = #{rechargeOrderId,jdbcType=VARCHAR}
+       AND TYPE = #{type,jdbcType=VARCHAR}
+       AND SNO = #{sno,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_B_SW_OPEN_QUEUE_MSG
+    where MSG_ID = #{msgId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.BSwOpenQueueMsg" >
+    insert into CIFPAY_B_SW_OPEN_QUEUE_MSG (MSG_ID, MID, RECHARGE_ORDER_ID, 
+      TYPE, SNO, SW_STATUS,ACC_STATUS,
+      RECIEVE_TIME, HANDLE_TIME, HANDLE_BY,EXCHANGE_NAME,QUEUE_NAME,LC_ID
+      )
+    values (#{msgId,jdbcType=BIGINT}, #{mid,jdbcType=VARCHAR}, #{rechargeOrderId,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{sno,jdbcType=VARCHAR}, #{swStatus,jdbcType=VARCHAR},#{accStatus,jdbcType=VARCHAR},
+      #{recieveTime,jdbcType=TIMESTAMP}, #{handleTime,jdbcType=TIMESTAMP}, #{handleBy,jdbcType=VARCHAR},
+      #{exchangeName,jdbcType=VARCHAR},#{queueName,jdbcType=VARCHAR},#{lcId,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.BSwOpenQueueMsg" >
+    insert into CIFPAY_B_SW_OPEN_QUEUE_MSG
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="msgId != null" >
+        MSG_ID,
+      </if>
+      <if test="mid != null" >
+        MID,
+      </if>
+      <if test="rechargeOrderId != null" >
+        RECHARGE_ORDER_ID,
+      </if>
+      <if test="type != null" >
+        TYPE,
+      </if>
+      <if test="sno != null" >
+        SNO,
+      </if>
+      <if test="swStatus != null" >
+        SW_STATUS,
+      </if>
+      <if test="accStatus != null" >
+        ACC_STATUS,
+      </if>
+      <if test="recieveTime != null" >
+        RECIEVE_TIME,
+      </if>
+      <if test="handleTime != null" >
+        HANDLE_TIME,
+      </if>
+      <if test="handleBy != null" >
+        HANDLE_BY,
+      </if>
+      <if test="exchangeName != null" >
+        EXCHANGE_NAME,
+      </if>
+      <if test="queueName != null" >
+        QUEUE_NAME,
+      </if>
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="msgId != null" >
+        #{msgId,jdbcType=BIGINT},
+      </if>
+      <if test="mid != null" >
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeOrderId != null" >
+        #{rechargeOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="sno != null" >
+        #{sno,jdbcType=VARCHAR},
+      </if>
+      <if test="swStatus != null" >
+        #{swStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="accStatus != null" >
+        #{accStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="recieveTime != null" >
+        #{recieveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleTime != null" >
+        #{handleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleBy != null" >
+        #{handleBy,jdbcType=VARCHAR},
+      </if>
+      <if test="exchangeName != null" >
+        #{exchangeName,jdbcType=VARCHAR},
+      </if>
+      <if test="queueName != null" >
+        #{queueName,jdbcType=VARCHAR},
+      </if>
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.BSwOpenQueueMsg" >
+    update CIFPAY_B_SW_OPEN_QUEUE_MSG
+    <set >
+      <if test="mid != null" >
+        MID = #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeOrderId != null" >
+        RECHARGE_ORDER_ID = #{rechargeOrderId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        TYPE = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="sno != null" >
+        SNO = #{sno,jdbcType=VARCHAR},
+      </if>
+      <if test="swStatus != null" >
+        SW_STATUS = #{swStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="accStatus != null" >
+        ACC_STATUS = #{accStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="recieveTime != null" >
+        RECIEVE_TIME = #{recieveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleTime != null" >
+        HANDLE_TIME = #{handleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleBy != null" >
+        HANDLE_BY = #{handleBy,jdbcType=VARCHAR},
+      </if>
+      <if test="exchangeName != null" >
+        EXCHANGE_NAME = #{exchangeName,jdbcType=VARCHAR},
+      </if>
+      <if test="queueName != null" >
+        QUEUE_NAME = #{queueName,jdbcType=VARCHAR},
+      </if>
+      <if test="lcId != null" >
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where MSG_ID = #{msgId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.BSwOpenQueueMsg" >
+    update CIFPAY_B_SW_OPEN_QUEUE_MSG
+    set MID = #{mid,jdbcType=VARCHAR},
+      RECHARGE_ORDER_ID = #{rechargeOrderId,jdbcType=VARCHAR},
+      TYPE = #{type,jdbcType=VARCHAR},
+      SNO = #{sno,jdbcType=VARCHAR},
+      SW_STATUS = #{swStatus,jdbcType=VARCHAR},
+      ACC_STATUS = #{accStatus,jdbcType=VARCHAR},
+      RECIEVE_TIME = #{recieveTime,jdbcType=TIMESTAMP},
+      HANDLE_TIME = #{handleTime,jdbcType=TIMESTAMP},
+      HANDLE_BY = #{handleBy,jdbcType=VARCHAR},
+      EXCHANGE_NAME = #{exchangeName,jdbcType=VARCHAR},
+      QUEUE_NAME = #{queueName,jdbcType=VARCHAR},
+      LC_ID = #{lcId,jdbcType=BIGINT}
+    where MSG_ID = #{msgId,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

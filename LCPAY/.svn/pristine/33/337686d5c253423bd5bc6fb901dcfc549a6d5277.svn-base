@@ -1,0 +1,32 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.LcPay;
+
+@Repository
+public interface LcPayDao {
+
+	LcPay selectByPrimaryKey(Long lcPayId);
+
+	void deleteByPrimaryKey(Long lcPayId);
+
+	void insert(LcPay lcPay);
+
+	void insertSelective(LcPay lcPay);
+
+	void updateByPrimaryKeySelective(LcPay lcPay);
+
+	void updateByPrimaryKey(LcPay lcPay);
+
+	/**
+	 * 根据申请解付ID，查找执行解付记录
+	 * 
+	 * @param confirmPayIds
+	 * @return
+	 */
+	List<LcPay> selectByConfirmPayId(@Param("confirmPayIds") Long... confirmPayIds);
+}

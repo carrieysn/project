@@ -1,0 +1,33 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_ACC
+DROP TABLE IF EXISTS `CIFPAY_LC_ACC`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_ACC` (
+  `LC_ACC_ID` bigint(20) NOT NULL,
+  `LC_ID` bigint(20) DEFAULT NULL,
+  `LC_OPEN_AMT` decimal(19,2) DEFAULT '0.00' COMMENT '银信证开证金额',
+  `LC_FREEZE_AMT` decimal(19,2) DEFAULT '0.00' COMMENT '银信证冻结金额',
+  `LC_AVAILABLE_AMT` decimal(19,2) DEFAULT '0.00' COMMENT '银信证可用余额',
+  `LC_APPOINTMENT_AMT` decimal(19,2) DEFAULT '0.00' COMMENT '银信证履约金额',
+  `CHANGE_AMT` decimal(19,2) DEFAULT '0.00' COMMENT '变化金额',
+  `BIZ_TABLE` varchar(64) DEFAULT NULL COMMENT '业务操作的表名',
+  `BIZ_SEQNO` bigint(20) DEFAULT NULL COMMENT '业务操作ID',
+  `CREATE_TIME` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `REMARK` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`LC_ACC_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='多次解付银信证消费明细';
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

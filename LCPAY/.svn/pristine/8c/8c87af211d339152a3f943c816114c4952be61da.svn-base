@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 预开证异步消息处理
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.OpenLcFreezeMessageService"
+        stub="com.cifpay.lc.api.message.lc.OpenLcFreezeMessageServiceStub"
+        ref="openLcFreezeMessageService" protocol="dubbo"/>
+    -->
+
+    <!-- 开证异步消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.OpenLcNotifyMessageService"
+                   stub="com.cifpay.lc.api.message.lc.OpenLcNotifyMessageServiceStub"
+                   ref="openLcNotifyMessageService" protocol="dubbo" retries="0"/>
+                   
+    <!-- 异步通知商户处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.NotifyMerchMessageService"
+                   ref="notifyMerchMessageService" protocol="dubbo" retries="0"/>
+
+    <!-- 自动履约消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.AutoAppointmentLcMessageService"
+                   ref="autoAppointmentLcMessageService" protocol="dubbo" retries="0"/>
+
+    <!-- 自动收证消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.AutoRecvLcMessageService"
+                   ref="autoRecvLcMessageService" protocol="dubbo" retries="0"/>
+
+    <!-- 自动申请付款消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.AutoApplyLcMessageService"
+                   ref="autoApplyLcMessageService" protocol="dubbo" retries="0"/>
+
+    <!-- 自动转账消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.AutoTransferLcMessageService"
+                   ref="autoTransferLcMessageService" protocol="dubbo" retries="0"/>
+
+    <!-- 执行解付异步消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.TransferLcNotifyMessageService"
+                   ref="transferLcNotifyMessageService" protocol="dubbo" retries="0"/>
+
+    <!-- 失效异步消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.InvalidateLcNotifyMessageService"
+                   ref="invalidateLcNotifyMessageService" protocol="dubbo" retries="0"/>
+
+    <!-- 退款异步消息处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.lc.RefundLcNotifyMessageService"
+                   ref="refundLcNotifyMessageService" protocol="dubbo" retries="0"/>
+
+    <!-- 发送短信处理 -->
+    <dubbo:service interface="com.cifpay.lc.api.message.sms.SmsSendService"
+                   ref="smsSendService" protocol="dubbo" retries="0"/>
+
+</beans>

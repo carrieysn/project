@@ -1,0 +1,6 @@
+server:
+  port: 9302
+spring:
+  jmx:
+    default-domain: third-tradeplatform-adapter
+

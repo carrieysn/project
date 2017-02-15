@@ -1,0 +1,70 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay.util;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+/**
+ * 日期工具类
+ * 
+ * @author Administrator
+ * 
+ */
+public class DateTools {
+	
+	/**
+	 * format = yyyyMMdd
+	 */
+	public static String DATE_NUMBER = "yyyyMMdd";
+	
+	/**
+	 * format = HHmmss
+	 */
+	public static String DATE_NUMBER_TIMES = "HHmmss";
+	
+	/**
+	 * format = yyyyMMddHHmmss
+	 */
+	public static String DATE_NUMBER_SYSTIMES = "yyyyMMddHHmmss";
+	
+	/**
+	 * 获取当前日期(default, DATE_NOW_TIMES = "yyyyMMddHHmmss")
+	 * 
+	 * @return
+	 */
+	public static String getCurNumSysTime() {
+		return generByDateFormat(DATE_NUMBER_SYSTIMES);
+	}
+	
+	/**
+	 * 获取当前日期(default, DATE_NUMBER = "yyyyMMdd")
+	 * 
+	 * @return
+	 */
+	public static String getCurNumDate() {
+		return generByDateFormat(DATE_NUMBER);
+	}
+	
+	/**
+	 * 获取当前时间(default, DATE_NUMBER_TIMES=HHmmss)
+	 * @return
+	 */
+	public static String getCurNumTime() {
+		return generByDateFormat(DATE_NUMBER_TIMES);
+	}
+	
+	public static String generByDateFormat(String dateFormat) {
+		Calendar calendar = Calendar.getInstance();
+		return getSimpleDateFormat(dateFormat).format(calendar.getTime());
+	}
+	
+	/**
+	 * 格式化日期
+	 * 
+	 * @param format
+	 * @return
+	 */
+	public static SimpleDateFormat getSimpleDateFormat(String format) {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+		return simpleDateFormat;
+	}
+}

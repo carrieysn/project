@@ -1,0 +1,27 @@
+package com.cifpay.lc.domain;
+
+import com.cifpay.lc.constant.enums.LoggerEnum;
+
+import java.io.Serializable;
+
+public abstract class AbstractInputBean implements Serializable {
+    private static final long serialVersionUID = 1432775955968252034L;
+    private String requestId;
+    private LoggerEnum.Scene scene;
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
+    public LoggerEnum.Scene getScene() {
+        return scene;
+    }
+
+    public void setScene(LoggerEnum.Scene scene) {
+        this.scene = scene;
+    }
+}

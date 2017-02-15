@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcBankDao">
+	<resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcBank">
+		<id column="BANK_CODE" property="bankCode" jdbcType="VARCHAR" />
+		<result column="BANK_NAME" property="bankName" jdbcType="VARCHAR" />
+		<result column="BANK_TYPE" property="bankType" jdbcType="VARCHAR" />
+		<result column="IS_VALID" property="isValid" jdbcType="INTEGER" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		BANK_CODE, BANK_NAME, BANK_TYPE, IS_VALID, CREATE_TIME,
+		UPDATE_TIME
+	</sql>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from CIFPAY_LC_BANK
+		where BANK_CODE = #{bankCode,jdbcType=VARCHAR}
+		and IS_VALID = 1
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		CIFPAY_LC_BANK
+		where BANK_CODE = #{bankCode,jdbcType=VARCHAR}
+		and IS_VALID = 1
+	</delete>
+
+	<insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcBank">
+		insert into CIFPAY_LC_BANK
+		(BANK_CODE, BANK_NAME, BANK_TYPE,
+		IS_VALID, CREATE_TIME, UPDATE_TIME
+		)
+		values (#{bankCode,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR},
+		#{bankType,jdbcType=VARCHAR},
+		#{isValid,jdbcType=INTEGER},
+		#{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcBank">
+		insert into CIFPAY_LC_BANK
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bankCode != null">
+				BANK_CODE,
+			</if>
+			<if test="bankName != null">
+				BANK_NAME,
+			</if>
+			<if test="bankType != null">
+				BANK_TYPE,
+			</if>
+			<if test="isValid != null">
+				IS_VALID,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bankCode != null">
+				#{bankCode,jdbcType=VARCHAR},
+			</if>
+			<if test="bankName != null">
+				#{bankName,jdbcType=VARCHAR},
+			</if>
+			<if test="bankType != null">
+				#{bankType,jdbcType=VARCHAR},
+			</if>
+			<if test="isValid != null">
+				#{isValid,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcBank">
+		update CIFPAY_LC_BANK
+		<set>
+			<if test="bankName != null">
+				BANK_NAME = #{bankName,jdbcType=VARCHAR},
+			</if>
+			<if test="bankType != null">
+				BANK_TYPE = #{bankType,jdbcType=VARCHAR},
+			</if>
+			<if test="isValid != null">
+				IS_VALID = #{isValid,jdbcType=INTEGER},
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateTime != null">
+				UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where BANK_CODE = #{bankCode,jdbcType=VARCHAR}
+		and IS_VALID = 1
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcBank">
+		update
+		CIFPAY_LC_BANK
+		set BANK_NAME = #{bankName,jdbcType=VARCHAR},
+		BANK_TYPE =
+		#{bankType,jdbcType=VARCHAR},
+		IS_VALID = #{isValid,jdbcType=INTEGER},
+		CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+		UPDATE_TIME =
+		#{updateTime,jdbcType=TIMESTAMP}
+		where BANK_CODE =
+		#{bankCode,jdbcType=VARCHAR}
+		and IS_VALID = 1
+	</update>
+</mapper>

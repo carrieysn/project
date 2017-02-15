@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>Gateway应用所需的配置信息</comment>
+	
+	<entry key="dubbo.registry.zookeeper.address">192.168.163.25:2181,192.168.163.35:2181,192.168.4.221:2181</entry>
+	<entry key="dubbo.registry.cacheFilePathPrefix">c:/app/cifpaylc/message/data/dubbo.registry.cache</entry>
+
+	<!-- Redis服务器信息 -->
+	<entry key="cifpay.redis.host">192.168.0.99</entry>
+	<entry key="cifpay.redis.port">6379</entry>
+	<entry key="cifpay.redis.password"></entry>
+	
+	<!-- rabbitmq服务器信息 -->
+	<entry key="cifpay.rabbitmq.host">192.168.0.179</entry>
+	<entry key="cifpay.rabbitmq.port">5672</entry>
+	<entry key="cifpay.rabbitmq.username">admin</entry>
+	<entry key="cifpay.rabbitmq.password">admin</entry>
+	
+	<!-- 短信服务器信息 -->
+	<entry key="cifpay.sms.url">http://222.73.117.158/msg/HttpBatchSendSM</entry>
+	<entry key="cifpay.sms.username">yanqiuping_sw</entry>
+	<entry key="cifpay.sms.password">Shuaiwen27</entry>
+	<!-- 短信发送开关   true时真实发送短信 -->
+	<entry key="cifpay.sms.sendflag">false</entry>
+	
+	<!--  
+	<entry key="cifpay.rabbitmq.addresses">192.168.163.32:5672</entry>
+	<entry key="spring.rabbitmq.host">localhost</entry>
+	<entry key="spring.rabbitmq.port">5672</entry>
+	<entry key="spring.rabbitmq.listener.acknowledge-mode">0</entry>
+	<entry key="spring.rabbitmq.listener.prefetch">1</entry>
+	-->
+	
+</properties>

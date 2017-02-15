@@ -1,0 +1,90 @@
+@charset "utf-8";
+/* CSS Document */
+/* -------------------- Site: CifPay  Author: xxxx  Updated: xxxx.xx.xx  Updated by: CifPay -------------------- */ 
+/* -------------------- Website initialization -------------------- */
+* {padding:0; margin:0; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; -o-box-sizing:border-box; box-sizing:border-box;}
+html,body,div,span,p,h1,h2,h3,h4,h5,h6,ul,ol,li,dl,dt,dd,form,fieldset,legend,label,img,a { border:none;}
+html,body { height:100%;}
+body { font-size:12px; line-height:1.5; font-family:"microsoft yahei", "黑体", Arial; color:#000; background:#fff; height:100%;}
+*html { background-image:url(about:blank); background-attachment:fixed;}
+/**html .TopBg {position:absolute;top:expression(eval(document.documentElement.scrollTop));}*/
+
+div { margin:0 auto;}
+table { border-collapse:collapse;}
+input { border:0; outline:0;}
+
+a:link,a:visited {color:#000; text-decoration:none;}
+a:hover {color:#04b1bf; text-decoration:none;}
+a:active {color:#000; text-decoration:none;}
+a.underline:hover { text-decoration:underline;}
+
+img {border:none; float:none; vertical-align:top;}
+
+ul,ol {list-style:none;}
+h1 {font-size:22px; font-weight:500;}
+h2 {font-size:20px; font-weight:500;}
+h3 {font-size:18px; font-weight:500;}
+h4 {font-size:16px; font-weight:500;}
+h5 {font-size:14px; font-weight:500;}
+h6 {font-size:12px; font-weight:500;}
+
+p { line-height:1.5;}
+
+
+/* -------------------- width --------------------  */
+.MAXwidth { width:100%;}
+.widthMAX { width:1000px;}
+
+/* -------------------- Pop layer -------------------- */
+.maskBg { width:100%; height:100%; left:0; top:0; position:fixed; z-index:90; background-color:#000; filter:alpha(opacity=50); -moz-opacity:0.5; -khtml-opacity:0.5; opacity:0.5; display:none;}
+*html .maskBg { position:absolute; top:expression(eval(document.documentElement.scrollTop));/*ie6.0 fixed*/}
+.maskCont { position:fixed; left:0; top:0; width:100%; height:100%; overflow:auto; z-index:96; text-align:center; vertical-align:middle; display:none;}
+*html .maskCont { position:absolute; top:expression(eval(document.documentElement.scrollTop));}
+.maskCont span.maskSpan { height:100%; width:0; overflow:hidden; display:inline-block; vertical-align:middle;}
+.maskCont .maskContent { max-width:100%; max-height:100%; position:relative; display:inline-block; vertical-align:middle; text-align:left;}
+
+
+/* ---------------- 防止横屏 ---------------- */
+/* 样式放在结尾，防止 base64 图片造成拥塞 */
+@-webkit-keyframes rotation {
+	10% { transform:rotate(90deg); -webkit-transform:rotate(90deg) }
+	50%, 60% { transform:rotate(0deg); -webkit-transform:rotate(0deg) }
+	90% { transform:rotate(90deg); -webkit-transform:rotate(90deg) }
+	100% { transform:rotate(90deg); -webkit-transform:rotate(90deg) }
+}
+@keyframes rotation {
+	10% { transform:rotate(90deg); -webkit-transform:rotate(90deg) }
+	50%, 60% { transform:rotate(0deg); -webkit-transform:rotate(0deg) }
+	90% { transform:rotate(90deg); -webkit-transform:rotate(90deg) }
+	100% { transform:rotate(90deg); -webkit-transform:rotate(90deg) }
+}
+#frozenLayer { display:none; }
+@media screen and (min-aspect-ratio:13/9) {
+	#frozenBody { overflow:hidden; height:100%;}
+	#frozenBody * { display:none;}
+	#frozenLayer { display:block;}
+	}
+.mod-frozenLayer { display:none; position:fixed; height:100%; width:100%; left:0; top:0; right:0; bottom:0; background:#000; z-index:9997; }
+.mod-frozenLayer-content { position:absolute; width:100%; top:45%; margin-top:-75px; text-align:center }
+.mod-frozenLayer-icon-orient {background-image:url(../img/ratePhone.png);display:inline-block; width:67px; height:109px;
+	transform:rotate(90deg); -webkit-transform:rotate(90deg); -webkit-animation:rotation infinite 1.5s ease-in-out; animation:rotation infinite 1.5s ease-in-out; -webkit-background-size:67px; background-size:67px }
+.mod-frozenLayer-desc { margin-top:20px; font-size:15px; color:#fff }
+
+
+/* -------------------- color --------------------  */
+.Cred { color:red;}
+.Cgrey { color:grey;}
+.Cblue { color:blue;}
+.Cgreen { color:green;}
+
+/* -------------------- Basic Settings -------------------- */
+.FloatLeft {float:left; margin:0;}
+.FloatRight { float:right; margin:0;}
+.marginTop { margin-top:16px;}
+.paddingTop { padding-top:16px;}
+.txtCenter { text-align:center;}
+.txtLeft { text-align:left;}
+.txtRight { text-align:right;}
+.OverHid { overflow:hidden;}
+.Clearfix { display:block; width:100%; clear:both; overflow:hidden; height:0px; zoom:1;}
+.ellipsis { display:block; overflow:hidden; text-align:left; -o-text-overflow:ellipsis; text-overflow:ellipsis; white-space:nowrap;}

@@ -1,0 +1,37 @@
+package com.cifpay.lc.std.business.bank;
+
+import java.util.Map;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.gateway.bank.OpenCardService;
+import com.cifpay.lc.bankadapter.api.IBankTradeService;
+import com.cifpay.lc.bankadapter.api.input.unionpay.OpenCardParam;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+import com.cifpay.lc.domain.bank.OpenCardInputBean;
+
+
+@Service("openCardService")
+public class OpenCardServiceImpl implements OpenCardService{
+
+    @Autowired
+    private IBankTradeService tradeService;
+    
+    @Override
+    public String openCard(OpenCardInputBean input) {
+        
+        OpenCardParam param = new OpenCardParam();
+        
+        BeanUtils.copyProperties(input, param);
+        
+        GeneralTradeResult result = tradeService.doTrade(param);
+        
+        Map<String,String> map = result.getResultMap();
+        
+        String html = map.get("data");
+        
+        return html;
+    }
+}

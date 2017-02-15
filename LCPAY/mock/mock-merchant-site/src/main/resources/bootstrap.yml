@@ -1,0 +1,5 @@
+spring:
+  main:
+    showBanner: false
+  application:
+    name: lc-mock-merchant

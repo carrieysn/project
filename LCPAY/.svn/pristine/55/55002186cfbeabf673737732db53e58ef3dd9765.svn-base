@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.PreLcDao" >
+    
+  <select id="selectByLcId" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_PRE_LC
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+    and IS_VALID = 1
+  </select>
+  
+  <select id="selectByMidOrderId" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CIFPAY_PRE_LC
+    <where>
+      <if test="mid != null">
+        MID = #{mid,jdbcType=VARCHAR}
+      </if>
+      <if test="orderId != null">
+        and ORDER_ID = #{orderId,jdbcType=VARCHAR}
+      </if>
+        and IS_VALID = 1
+    </where>
+    ORDER BY CREATE_TIME DESC
+    LIMIT 0,1
+  </select>
+  <update id="softDeleteByLcId" parameterType="map">
+    update CIFPAY_PRE_LC
+    set IS_VALID = 0
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+    and IS_VALID = 1
+  </update>
+  <update id="softDeleteByLcIds" parameterType="map">  
+    update CIFPAY_PRE_LC
+    set IS_VALID = 0
+    where LC_ID in
+    <foreach item="item" index="index" collection="lcIds"
+             open="(" separator="," close=")">  
+             #{item}
+    </foreach> 
+    and IS_VALID = 1
+  </update>
+  <insert id="bulkInsert" parameterType="com.cifpay.lc.core.db.pojo.PreLc" >
+    insert into CIFPAY_PRE_LC (LC_ID, BATCH_NO, MID, 
+      ORDER_ID, PRODUCT_ID, PRODUCT_CODE, 
+      LC_NO, LC_TYPE, LC_CURRENCY, 
+      LC_AMOUNT, PAYER_ID, PAYER_ACCNO, 
+      PAYER_TYPE, PAYER_BANK_CODE, PAYER_BANK_NAME, 
+      RECV_ID, RECV_ACCNO, RECV_TYPE, 
+      RECV_BANK_CODE, RECV_BANK_NAME,
+      RECV_VALID_TIME, SEND_VALID_TIME, CONFIRM_VALID_TIME, 
+      PAY_VALID_TIME, LC_STATE_RETURN_URL, LC_STATE_NOTIFY_URL, 
+      LC_ORDER_DETAIL_URL, THIRD_PARTY_CODE, PAY_TYPE, MER_USERID,
+      IS_VALID, CREATE_TIME, UPDATE_TIME, 
+      REMARK
+      )
+    values 
+    <foreach collection="preLcList" item="item" index="index" open="" separator=","  close="">  
+      (#{item.lcId,jdbcType=BIGINT}, #{item.batchNo,jdbcType=VARCHAR}, #{item.mid,jdbcType=VARCHAR}, 
+      #{item.orderId,jdbcType=VARCHAR}, #{item.productId,jdbcType=BIGINT}, #{item.productCode,jdbcType=VARCHAR}, 
+      #{item.lcNo,jdbcType=VARCHAR}, #{item.lcType,jdbcType=VARCHAR}, #{item.lcCurrency,jdbcType=VARCHAR}, 
+      #{item.lcAmount,jdbcType=DECIMAL}, #{item.payerId,jdbcType=VARCHAR}, #{item.payerAccno,jdbcType=VARCHAR}, 
+      #{item.payerType,jdbcType=VARCHAR}, #{item.payerBankCode,jdbcType=VARCHAR}, #{item.payerBankName,jdbcType=VARCHAR}, 
+      #{item.recvId,jdbcType=VARCHAR}, #{item.recvAccno,jdbcType=VARCHAR}, #{item.recvType,jdbcType=VARCHAR}, 
+      #{item.recvBankCode,jdbcType=VARCHAR}, #{item.recvBankName,jdbcType=VARCHAR}, #{item.lcStatus,jdbcType=VARCHAR}, 
+      #{item.recvValidTime,jdbcType=TIMESTAMP}, #{item.sendValidTime,jdbcType=TIMESTAMP}, #{item.confirmValidTime,jdbcType=TIMESTAMP}, 
+      #{item.payValidTime,jdbcType=TIMESTAMP}, #{item.lcStateReturnUrl,jdbcType=VARCHAR}, #{item.lcStateNotifyUrl,jdbcType=VARCHAR}, 
+      #{item.lcOrderDetailUrl,jdbcType=VARCHAR}, #{item.thirdPartyCode,jdbcType=VARCHAR}, #{item.payType,jdbcType=VARCHAR}, 
+      #{item.merUserId,jdbcType=VARCHAR},{item.isValid,jdbcType=BIT}, #{item.createTime,jdbcType=TIMESTAMP},  
+      ##{item.updateTime,jdbcType=TIMESTAMP},{item.remark,jdbcType=VARCHAR})
+    </foreach> 
+  </insert>
+
+  <select id="selectByOpenBatchId" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CIFPAY_PRE_LC
+    where BATCH_NO = #{openBatchId}
+    and IS_VALID = 1
+  </select>
+
+  <select id="selectByMidOrderIdDesc" resultMap="BaseResultMap">
+    select
+      <include refid="Base_Column_List" />
+    from CIFPAY_PRE_LC
+    WHERE MID = #{mid,jdbcType=VARCHAR}
+      AND ORDER_ID = #{orderId,jdbcType=VARCHAR}
+      AND IS_VALID = 1
+     ORDER BY CREATE_TIME DESC
+  </select>
+
+</mapper>

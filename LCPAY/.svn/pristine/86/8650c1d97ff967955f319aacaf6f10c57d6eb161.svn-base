@@ -1,0 +1,7 @@
+/**
+ * 电脑PC版的网页交互支付接口，适用PC的浏览器，包括PC版软件内嵌的WEB浏览器组件。
+ * 
+ * 
+ *
+ */
+package com.cifpay.lc.gateway.controller.webpay.pc;

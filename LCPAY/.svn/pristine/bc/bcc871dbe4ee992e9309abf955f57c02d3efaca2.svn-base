@@ -1,0 +1,123 @@
+package com.cifpay.lc.constant;
+
+/**
+ * core层【非标准银信证业务】公共的返回码，范围是104xxx，其中使用负数表示失败（错误码），即 -104xxx 用于表示失败。
+ * 
+ * 在此文件中定义的返回码常量名必须全部以“CORE_NONSTD_”开头，例如：
+ * 
+ * @{@code int CORE_NONSTD_LC_NOT_EXISTS = -104001; }
+ * 
+ * 
+ *
+ */
+interface CoreNonStandardLcReturnCode {
+	// 在此文件中定义的常量名全部以“CORE_NONSTD_”开头
+	
+	/**
+	 * 请求交易的币种暂时不被支持
+	 */
+	int CORE_NONSTD_CURRENCY_NOT_SUPPORTED = -104000;
+	
+	/**
+	 * 商户交易订单号重复
+	 */
+	int CORE_NONSTD_MERCHANT_ORDER_ID_DUPLICATE = -104001;
+	
+	/**
+	 * 银信证银行代码不存在
+	 */
+	int CORE_NONSTD_LC_BANK_NOT_EXISTS = -104002;
+	
+	/**
+	 * 调用账务中心冻结失败
+	 */
+	int CORE_NONSTD_ACC_CENTER_FREEZE_FAILED = -104003;
+	
+	/**
+	 * 调用账务中心解冻失败
+	 */
+	int CORE_NONSTD_ACC_CENTER_UNFREEZE_FAILED = -104004;
+	
+	/**
+	 * 所指定的付款行代码暂不被支持
+	 */
+	int CORE_NONSTD_PAYER_BANK_CODE_NOT_SUPPORTED = -104005;
+	
+	/**
+	 * 银信证当前所处状态不允许进行此项操作
+	 */
+	int CORE_NONSTD_OPERATION_NOT_ALLOWED_AS_LC_STATUS = -104006;
+	
+	/**
+	 * 提现MQ队列消息处理失败
+	 */
+	int CORE_NONSTD_HANDLE_WITHDRAW_MQ_QUEUE_MSG_FAILED = -104007;
+	
+	/**
+	 * 所指定的付款账号暂不被支持
+	 */
+	int CORE_NONSTD_PAYER_BANK_ACCT_NO_NOT_SUPPORTED = -104008;
+	
+	/**
+	 * 查询账务中心的账户余额失败
+	 */
+	int CORE_NONSTD_ACC_CENTER_QUERY_BAL_FAILED = -104009;
+	
+	/**
+	 * 账务中心账户不存在
+	 */
+	int CORE_NONSTD_ACC_CENTER_USER_CODE_NOT_EXISTS = -104010;
+	
+	
+	/**
+	 * 调用银联代付失败
+	 */
+	int CORE_NONSTD_CHINAPAY_ADVANCE_FREEZE_FAILED = -104011;
+	
+	/**
+	 * 银联接收代付划款失败，商户提交的字段长度、格式错误
+	 */
+	int CORE_NONSTD_CHINAPAY_ADVANCE_REQ_FIELD_ERROR = -104012;
+	
+	/**
+	 * 银联接收代付划款失败，商户验签错误
+	 */
+	int CORE_NONSTD_CHINAPAY_ADVANCE_REQ_SIGN_ERROR = -104013;
+	
+	/**
+	 * 银联接收代付划款失败，手续费计算出错
+	 */
+	int CORE_NONSTD_CHINAPAY_ADVANCE_REQ_POUN_ERROR = -104014;
+	
+	/**
+	 * 银联接收代付划款失败，商户备付金帐户金额不足
+	 */
+	int CORE_NONSTD_CHINAPAY_ADVANCE_REQ_AMOUNT_ERROR = -104015;
+	
+	/**
+	 *银联接收代付划款失败，操作拒绝
+	 */
+	int CORE_NONSTD_CHINAPAY_ADVANCE_REQ_REFUSE_ERROR = -104016;
+	
+	/**
+	 *创建私钥信息失败
+	 */
+	int CORE_NONSTD_CHINAPAY_ADVANCE_KEY_BUILD_ERROR = -104017;
+	
+	/**
+	 *签名数据不匹配
+	 */
+	int CORE_NONSTD_CHINAPAY_ADVANCE_SIGN_VALID_ERROR = -104018;
+	
+	
+	/**
+	 *	需要缓存的数据没找到
+	 */
+	int CORE_CACHE_DATA_NOT_FOUND_ERROR = -104019;
+	
+	/**
+	 *	需要缓存的数据不合法
+	 */
+	int CORE_CACHE_DATA_INVALID_ERROR = -104019;
+
+}

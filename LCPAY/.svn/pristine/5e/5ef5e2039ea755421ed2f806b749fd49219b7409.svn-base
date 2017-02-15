@@ -1,0 +1,118 @@
+package com.cifpay.lc.std.business.security;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.basic.signkey.MerFrontValidationMaterial;
+import com.cifpay.lc.api.gateway.basic.signkey.MerPrivateInfoProviderService;
+import com.cifpay.lc.api.security.SecurityService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.exception.SecurityException;
+import com.cifpay.lc.core.util.LcMd5SignTool;
+import com.cifpay.lc.domain.security.MerchantSignedResponse;
+import com.cifpay.lc.domain.security.Securable;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
+import org.springframework.util.StringUtils;
+
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+@Service("securityService")
+public class SecurityServiceImpl implements SecurityService {
+
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+    private static Charset CHARSET = Charset.forName("UTF-8");
+
+    @Autowired
+    private MerPrivateInfoProviderService merPrivateInfoProviderService;
+
+    public String assembleData(Map<String, String> datas) {
+        List<String> keys = new ArrayList<String>(datas.keySet());
+        Collections.sort(keys);
+        StringBuilder content = new StringBuilder();
+        for (String key : keys) {
+            if (null == key || 0 == key.trim().length()) {
+                continue;
+            }
+            String value = datas.get(key);
+            if (null != value && !StringUtils.isEmpty(value.toString())) {
+                content.append(key);
+                content.append('=');
+                content.append(value);
+                content.append("&");
+            }
+        }
+        if (content.length() > 0) {
+            return content.substring(0, content.length() - 1);
+        }
+        return content.toString();
+    }
+
+    @Override
+    public String signData(Securable securable) throws SecurityException {
+        String needSignData = assembleData(securable.getSignData());
+        String signData = sign(needSignData, securable.getSignKey());
+        String encodeData = Base64Utils.encodeToString(signData.getBytes(CHARSET));
+        return encodeData;
+    }
+
+    @Override
+    public Boolean verifyData(Securable securable) throws SecurityException {
+        String needSignData = assembleData(securable.getSignData());
+        String signData = sign(needSignData, securable.getSignKey());
+        String encodeData = Base64Utils.encodeToString(signData.getBytes(CHARSET));
+        return encodeData.equals(securable.getSignKey());
+    }
+
+    @Override
+    public BusinessOutput<MerchantSignedResponse> encryptData(String merId, Map<String, Object> response) throws SecurityException {
+        // 将merResponse对象转JSON并Base64
+        String resDataInBase64Json = "";
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            byte[] jsonBytes = mapper.writeValueAsBytes(response);
+            resDataInBase64Json = Base64Utils.encodeToString(jsonBytes);
+        } catch (JsonProcessingException e) {
+            logger.error("对Controller返回结果对象进行JSON转换时发生异常，异常信息：{}", String.valueOf(e.getMessage()), e);
+
+            return BusinessOutput.fail(ReturnCode.CORE_COMMON_SECURITY_ERROR, "数据处理失败");
+        }
+
+        // 查询商户密钥
+        BusinessOutput<MerFrontValidationMaterial> businessOutput = merPrivateInfoProviderService.execute(new BusinessInput<String>(merId));
+        if (businessOutput.isFailed()) {
+            return BusinessOutput.fail(ReturnCode.CORE_COMMON_SECURITY_ERROR, businessOutput.getReturnMsg());
+        }
+
+        MerFrontValidationMaterial material = businessOutput.getData();
+        String signKey = material.getSignKey();
+
+        // 计算签名
+        String sign = LcMd5SignTool.signString(resDataInBase64Json, signKey);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("~~~为MerchantResponse对象中的resData签名完毕，merId: {}, 签名结果：{}", merId, sign);
+        }
+
+        MerchantSignedResponse finalResponse = new MerchantSignedResponse();
+        finalResponse.setReturnCode(String.valueOf(ReturnCode.GENERAL_SUCCESS));
+        finalResponse.setReturnMsg("操作成功");
+        finalResponse.setSign(sign);
+        finalResponse.setEncodedJsonData(resDataInBase64Json);
+
+        return BusinessOutput.success(finalResponse);
+    }
+
+    protected String sign(String data, String signKey) {
+        String sign = LcMd5SignTool.signString(data, signKey);
+        return sign;
+    }
+}

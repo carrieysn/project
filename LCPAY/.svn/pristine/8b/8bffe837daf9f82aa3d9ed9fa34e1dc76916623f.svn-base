@@ -1,0 +1,111 @@
+package mock.merchant.common;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+@Component
+public class LcGatewayConfig implements InitializingBean {
+
+    private static final Logger logger = LoggerFactory.getLogger(LcGatewayConfig.class);
+
+    private static LcGatewayConfig instance;
+
+    @Value("${lcGateway.baseURL}")
+    private String lcGatewayBaseURL;
+
+    @Value("${mock.lcStandardMerchant.merId}")
+    private String mockLcStandardMerchantId;
+
+    @Value("${mock.lcStandardMerchant.signKey}")
+    private String mockLcStandardMerchantSignKey;
+
+    @Value("${mock.starwishMerchant.merId}")
+    private String mockStarwishMerchantId;
+
+    @Value("${mock.starwishMerchant.signKey}")
+    private String mockStarwishMerchantSignKey;
+
+    private final Map<String, String> lcInterfaceUrls = new HashMap<String, String>();
+    private final Map<String, String> versionBInterfaceUrls = new HashMap<String, String>();
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        lcInterfaceUrls.put("preOpen.lc", lcGatewayBaseURL + "/lc/init");
+        lcInterfaceUrls.put("open.lc", lcGatewayBaseURL + "/lc/open");
+        lcInterfaceUrls.put("recv.lc", lcGatewayBaseURL + "/lc/recv");
+        lcInterfaceUrls.put("appointment.lc", lcGatewayBaseURL + "/lc/appointment");
+        lcInterfaceUrls.put("apply.lc", lcGatewayBaseURL + "/lc/apply");
+        lcInterfaceUrls.put("invalidate.lc", lcGatewayBaseURL + "/lc/invalidate");
+        lcInterfaceUrls.put("defer.lc", lcGatewayBaseURL + "/lc/defer");
+        lcInterfaceUrls.put("suspend.lc", lcGatewayBaseURL + "/lc/suspend");
+        lcInterfaceUrls.put("transfer.lc", lcGatewayBaseURL + "/lc/transfer");
+        lcInterfaceUrls.put("batchOpen.lc", lcGatewayBaseURL + "/lc/batchInitAndOpen");
+        lcInterfaceUrls.put("batchApply.lc", lcGatewayBaseURL + "/lc/batchApply");
+        lcInterfaceUrls.put("reFund.lc", lcGatewayBaseURL + "/lc/reFund");
+		lcInterfaceUrls.put("payment.lc", lcGatewayBaseURL + "/lc/payment");
+		
+		lcInterfaceUrls.put("smssend.lc", lcGatewayBaseURL + "/sms/sendSmsCode");
+		lcInterfaceUrls.put("smscheck.lc", lcGatewayBaseURL + "/sms/checkSmsCode");
+
+        versionBInterfaceUrls.put("rechargePay", lcGatewayBaseURL + "/alipay/transferOut");
+        versionBInterfaceUrls.put("offline", lcGatewayBaseURL + "/outLine/transferOut");
+        versionBInterfaceUrls.put("getFund", lcGatewayBaseURL + "/icbc/transferOut");
+
+        LcGatewayConfig.instance = this;
+    }
+
+    private static LcGatewayConfig getInstance() {
+        if (null == LcGatewayConfig.instance) {
+            do {
+                logger.info("Wait for LcGatewayConfig initialization to be completed...");
+                try {
+                    Thread.sleep(2000L);
+                } catch (InterruptedException e) {
+                }
+            } while (null == LcGatewayConfig.instance);
+        }
+        return LcGatewayConfig.instance;
+    }
+
+    public static String getLcGatewayBaseURL() {
+        return getInstance().lcGatewayBaseURL;
+    }
+
+    public static String getMockLcStandardMerchantId() {
+        return getInstance().mockLcStandardMerchantId;
+    }
+
+    public static String getMockLcStandardMerchantSignKey() {
+        return getInstance().mockLcStandardMerchantSignKey;
+    }
+
+    public static String getMockStarwishMerchantId() {
+        return getInstance().mockStarwishMerchantId;
+    }
+
+    public static String getMockStarwishMerchantSignKey() {
+        return getInstance().mockStarwishMerchantSignKey;
+    }
+
+    public static String getLcGatewayInterfaceURL(String interfaceId) {
+        String url = getInstance().lcInterfaceUrls.get(interfaceId);
+        if (null == url) {
+            throw new IllegalArgumentException("未定义该接口的URL，请检查代码是否有误");
+        }
+        return url;
+    }
+
+    public static String getVersionBInterfaceURL(String interfaceId) {
+        String url = getInstance().versionBInterfaceUrls.get(interfaceId);
+        if (null == url) {
+            throw new IllegalArgumentException("未定义该接口的URL，请检查代码是否有误");
+        }
+        return url;
+    }
+}

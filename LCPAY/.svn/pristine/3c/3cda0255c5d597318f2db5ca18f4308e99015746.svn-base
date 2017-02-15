@@ -1,0 +1,556 @@
+package com.cifpay.lc.std.sched.task;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.core.db.dao.DatabaseInfoDao;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.dao.LcLogDao;
+import com.cifpay.lc.core.db.dao.LcPageDao;
+import com.cifpay.lc.core.db.dao.LcPageTemplateDao;
+import com.cifpay.lc.core.db.dao.LcPageTemplateDetailDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcLog;
+import com.cifpay.lc.core.db.pojo.LcPage;
+import com.cifpay.lc.core.db.pojo.LcPageTemplate;
+import com.cifpay.lc.core.db.pojo.LcPageTemplateDetail;
+import com.cifpay.lc.std.sched.task.util.AmountUtil;
+import com.cifpay.lc.std.sched.task.util.CPayTimeUtil;
+import com.cifpay.lc.util.AppNodeInfoHelper;
+import com.github.tobato.fastdfs.domain.MateData;
+import com.github.tobato.fastdfs.domain.StorePath;
+import com.github.tobato.fastdfs.proto.storage.DownloadCallback;
+import com.github.tobato.fastdfs.service.FastFileStorageClient;
+
+@Component
+public class LcPageTask {
+	
+	@Autowired
+	private LcDao lcDao;
+	
+	@Autowired
+	private LcLogDao lcLogDao;
+	
+	@Autowired
+	private LcPageDao lcPageDao;
+	
+	@Autowired
+	private LcPageTemplateDao lcPageTemplateDao;
+	
+	@Autowired
+	private LcPageTemplateDetailDao lcPageTemplateDetailDao;
+	
+	@Autowired
+	private DatabaseInfoDao dbDao;
+	
+	@Value("${lcPage.templateCode}")
+	private String templateCode; //模板编号
+	
+	@Value("${lcPage.templateVersion}")
+	private String templateVersion; //模板版本号
+	
+	@Value("${lcPage.uri}")
+	private String uri; //访问的url根目录
+	
+	@Value("${lcPage.contextPath}") //网管配置的contextpath
+	private String contextPath;
+	
+	@Autowired
+	private FastFileStorageClient fdfsClient;
+
+	private static Logger logger = LoggerFactory.getLogger(LcPageTask.class);
+	
+	// 1、检查模板文件是否准备好
+	// 2、生成银信证证化页面
+	//@Scheduled(fixedRateString = "300000", initialDelay = 45000L)
+	//@Scheduled(fixedRateString = "3000000", initialDelay = 300000L)
+	public void genLcPage() {
+		
+		long threadId = Thread.currentThread().getId();
+		String appNode = AppNodeInfoHelper.getAppNodeId();
+		
+		logger.info("===1、进入genLcPage，{}", threadId);
+		
+		int count = lcPageTemplateDao.lockRecord(templateCode, templateVersion, appNode); //获取这条数据的所有权
+		if(count == 0) { //如果已有任务在处理，则直接返回
+			logger.info("===99、未抢占到任务，退出，{}", threadId);
+			return;
+		}
+		
+		logger.info("===2、抢占到任务，{}", threadId);
+		
+		LcPageTemplate lcPageTemplate = lcPageTemplateDao.selectByPrimaryKey(templateCode, templateVersion);
+		
+		try{
+			
+			List<LcPageTemplateDetail> listTemplateDetail = lcPageTemplateDetailDao.selectByCodeVersion(templateCode, templateVersion);
+			boolean isTemplateReady = _checkTemplateFiles(listTemplateDetail);
+			if(!isTemplateReady) {
+				boolean bUploadRet = _reUploadTemplateFiles(listTemplateDetail);
+				if(!bUploadRet) {
+					logger.info("上传模板文件失败");
+					return;
+				}
+				lcPageTemplate.setTranStatus(0);
+				lcPageTemplate.setLockedByNode("");
+				lcPageTemplateDao.updateByPrimaryKeySelective(lcPageTemplate); //将模板状态更新为“无进程占用处理”
+			}
+			
+			List<LcPage> listLcPage = lcPageDao.selectByTranStatus(0);
+			for(LcPage lcPage : listLcPage) {
+				
+				//生成证化页面
+				_genLcStaticRes(lcPage.getLcId(), listTemplateDetail, appNode);
+				
+			}
+		} catch (Exception e) {
+			logger.info("===定时任务执行genLcPage发生异常，{}", e.getMessage(), e);
+		} finally {
+			//解除对本记录的占用
+			lcPageTemplate.setLockedByNode("");
+			lcPageTemplate.setTranStatus(0);
+			lcPageTemplateDao.updateByPrimaryKeySelective(lcPageTemplate);
+		}
+		
+	}
+	
+	// 1、检查证化页面是否在被某个进程处理中，如果“处理中”时间超过10分钟则将状态重置为“待处理”
+	// 2、证化页面模板是否处于处理中，如果超过10分钟则重置状态
+	//@Scheduled(fixedRateString = "300000", initialDelay = 45000L)
+	//@Scheduled(fixedRateString = "3000000", initialDelay = 1000L)
+	public void checkLcPageTranStatus() {
+		
+		Date now = dbDao.getCurrentDbTime();
+		
+		//证化页面
+		List<LcPage> listLcPage = lcPageDao.selectByTranStatus(1);
+		for(LcPage lcPage : listLcPage) {
+			Date genTime = lcPage.getGenTime();
+			if((now.getTime()-genTime.getTime()) > 10 * 60 *1000) { // 如果“处理中”时间超过10分钟
+				logger.info("节点{}上的定时任务10分钟内没有生成银信证ID为{}的证化页面，重置状态", lcPage.getLockedByNode(), lcPage.getLcId());
+				lcPage.setLockedByNode("");
+				lcPage.setTranStatus(0);
+				lcPage.setVersion("");
+				lcPage.setPageUri("");
+				lcPage.setStoreType("");
+				lcPage.setStorePath("");
+				lcPage.setStoreGroup("");
+				lcPageDao.updateByPrimaryKeySelective(lcPage);
+			}
+		}
+		
+		//证化页面模板
+		List<LcPageTemplate> listLcPageTemplate = lcPageTemplateDao.selectByTranStatus(1);
+		for(LcPageTemplate lcPageTemplate : listLcPageTemplate) {
+			Date updateTime = lcPageTemplate.getUpdateTime();
+			if((now.getTime()-updateTime.getTime()) > 10 * 60 *1000) { // 如果“处理中”时间超过10分钟
+				logger.info("节点{}上的定时任务10分钟内处理完成模板生成任务，重置状态", lcPageTemplate.getLockedByNode());
+				lcPageTemplate.setLockedByNode("");
+				lcPageTemplate.setTranStatus(0);
+				lcPageTemplateDao.updateByPrimaryKeySelective(lcPageTemplate);
+			}
+		}
+	}
+	
+	
+	/**
+	 * 检查银信证模板文件在fdfs是否完整
+	 */
+	private boolean _checkTemplateFiles(List<LcPageTemplateDetail> listLcPageTemplate) {
+		
+		if(listLcPageTemplate.size() == 0) {
+			return false;
+		}
+		
+		boolean isTemplateUploadReady = true;
+		
+		for(LcPageTemplateDetail lpt : listLcPageTemplate) {
+			String strSysFilePath = lpt.getSysFilePath();
+			if(StringUtils.isEmpty(strSysFilePath)) {
+				isTemplateUploadReady = false;
+				break;
+			}
+			int iPos = strSysFilePath.indexOf("/");
+			String groupName = strSysFilePath.substring(0, iPos);
+			String path = strSysFilePath.substring(iPos+1, strSysFilePath.length());
+			
+			if(fdfsClient.queryFileInfo(groupName, path) == null) { //fdfs上不存在
+				logger.info("文件【"+lpt.getTemplateFileName()+"】不存在，模板文件将重新上传");
+				isTemplateUploadReady = false;
+				break;
+			}
+		}
+		
+		return isTemplateUploadReady;
+	}
+	
+	/**
+	 * 重新上传银信证模板文件
+	 */
+	private boolean _reUploadTemplateFiles(List<LcPageTemplateDetail> listTemplateDetail) {
+		
+		if(listTemplateDetail.size() == 0) {
+			return false;
+		}
+		
+		
+		String strLineSeperator = System.getProperty("line.separator", "\n");
+		
+		int count = listTemplateDetail.size();
+		for(int i=count-1; i>=0; i--) { //删除当前版本每个模板文件
+			LcPageTemplateDetail lcPageTemplate = listTemplateDetail.get(i);
+			if(StringUtils.isEmpty(lcPageTemplate.getSysFilePath())) {
+				continue;
+			}
+			try{
+				fdfsClient.deleteFile(lcPageTemplate.getSysFilePath());
+			} catch(Exception e) {
+				logger.info("删除模板文件失败，{}", e.getMessage());
+			}
+			
+			lcPageTemplate.setSysFilePath("");
+			lcPageTemplateDetailDao.updateByPrimaryKeySelective(lcPageTemplate);
+		}
+		
+		List<LcPageTemplateDetail> listUploadedFile = new ArrayList<LcPageTemplateDetail>();
+		for(int i=0; i<count; i++) { //重新整理模板文件，上传
+			LcPageTemplateDetail templateDetail = listTemplateDetail.get(i);
+			String strTemplateFileName = templateDetail.getTemplateFileName();
+			String strExtName = strTemplateFileName.substring(strTemplateFileName.lastIndexOf('.')+1, strTemplateFileName.length());
+			InputStream is = this.getClass().getResourceAsStream(templateDetail.getTemplateFilePath());
+			
+			String characterStream = "html,htm,js,css";
+			
+			if(!characterStream.contains(strExtName)) { //字节流文件
+				Set<MateData> metaDataSet = new HashSet<MateData>();
+				MateData md1 = new MateData("VERSION", templateDetail.getVersion());
+				MateData md2 = new MateData("TEMPLATE_FILE_NAME", templateDetail.getTemplateFileName());
+				metaDataSet.add(md1);
+				metaDataSet.add(md2);
+				
+				
+				int streamLen = 0;
+				try{
+					streamLen = is.available();
+				} catch(Exception e) {
+					logger.info("【错误】计算文件字节数");
+					return false;
+				}
+				
+				StorePath storePath = fdfsClient.uploadFile(is, streamLen, strExtName, metaDataSet);
+				
+				//更新数据库
+				templateDetail.setSysFilePath(storePath.getFullPath());
+				lcPageTemplateDetailDao.updateByPrimaryKeySelective(templateDetail);
+				
+				listUploadedFile.add(templateDetail);
+				continue;
+			}
+			
+			//字符流文件
+			InputStreamReader reader = new InputStreamReader(is); 
+			BufferedReader bufferedReader=null;
+			StringBuffer sb = new StringBuffer();
+			try{
+				bufferedReader = new BufferedReader(reader);
+				String strLine = "";
+				while((strLine = bufferedReader.readLine()) != null) { 
+					for(int j=0; j<listUploadedFile.size(); j++) {
+						String strItemName = listUploadedFile.get(j).getItemName();
+						if(StringUtils.isEmpty(strItemName)) {
+							continue;
+						}
+						String strReplace = "##"+strItemName+"##";
+						String strDest = StringUtils.isEmpty(contextPath)?"":contextPath+"/";
+						//strDest = uri+"/"+strDest+listUploadedFile.get(j).getSysFilePath();
+						strDest = "/"+strDest+listUploadedFile.get(j).getSysFilePath();
+						
+						if(strLine.contains(strReplace)) {
+							strLine = strLine.replace(strReplace, strDest);
+						}
+					}
+					sb.append(strLine).append(strLineSeperator);
+				}
+				
+				byte[] bytes = sb.toString().getBytes();
+				
+				Set<MateData> metaDataSet = new HashSet<MateData>();
+				MateData md1 = new MateData("VERSION", templateDetail.getVersion());
+				MateData md2 = new MateData("TEMPLATE_FILE_NAME", templateDetail.getTemplateFileName());
+				metaDataSet.add(md1);
+				metaDataSet.add(md2);
+				StorePath storePath = fdfsClient.uploadFile(new ByteArrayInputStream(bytes), bytes.length, strExtName, metaDataSet);
+				
+				//更新数据库
+				templateDetail.setSysFilePath(storePath.getFullPath());
+				lcPageTemplateDetailDao.updateByPrimaryKeySelective(templateDetail);
+				
+				listUploadedFile.add(templateDetail);
+				
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				return false;
+			} finally {
+				try {
+					if(bufferedReader!=null) {
+						bufferedReader.close();
+					}
+				} catch (IOException e) {
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * 生成银信证静态资源
+	 */
+	private void _genLcStaticRes(Long lcId, List<LcPageTemplateDetail> listLcPageTemplate, String appNode) {
+		
+		String strIndexContent = null; //有效模板银信证主页面内容
+		String strInvalidContent = null; //无效模板银信证主页面内容
+		
+		int count = lcPageDao.lockRecord(lcId, appNode);
+		if(count == 0) { //如果没有抢占到生成本银信证证化页面的工作，则直接返回
+			return;
+		}
+		
+		LcPage lcPage = lcPageDao.selectByPrimaryKey(lcId);
+		if(!StringUtils.isEmpty(lcPage.getStorePath())) { //删除原证化页面
+			try{
+				fdfsClient.deleteFile(lcPage.getStoreGroup(), lcPage.getStorePath());
+			} catch (Exception e) {
+				logger.info("删除原证化页面失败，银信证id：{}，原证化页面地址：{}，{}", lcId, lcPage.getStoreGroup()+"/"+lcPage.getStorePath(), e.getMessage());
+			}
+		}
+		
+		int tranStatus = 0;
+		
+		try{
+		
+			for(LcPageTemplateDetail lpt : listLcPageTemplate) {
+				
+				String strTemplateFileName = lpt.getTemplateFileName();
+				
+				
+				if(strTemplateFileName.equals("index.html") || strTemplateFileName.equals("invalid.html")) {
+					
+					String strSysFilePath = lpt.getSysFilePath();
+					int iPos = strSysFilePath.indexOf("/");
+					String groupName = strSysFilePath.substring(0, iPos);
+					String path = strSysFilePath.substring(iPos+1, strSysFilePath.length());
+					
+					byte[] bytes = fdfsClient.downloadFile(groupName, path, new DownloadCallback<byte[]>() {
+	
+						@Override
+						public byte[] recv(InputStream ins) throws IOException {
+							ByteArrayOutputStream swapStream = new ByteArrayOutputStream();  
+					        byte[] buff = new byte[100];  
+					        int rc = 0;  
+					        while ((rc = ins.read(buff, 0, 100)) > 0) {  
+					            swapStream.write(buff, 0, rc);  
+					        }  
+					        byte[] in2b = swapStream.toByteArray();  
+					        return in2b; 
+						}
+					});
+					
+					if(strTemplateFileName.equals("index.html")) {
+						strIndexContent = new String(bytes);
+					} else {
+						strInvalidContent = new String(bytes);
+					}
+				}
+			}
+			
+			Lc lc = lcDao.selectByPrimaryKey(lcId);
+			
+			if(lc == null) {
+				return;
+			}
+			
+			if(lc.getLcStatus().equals(LcStatusType.RETREAT.getStatusCode())) { //失效使用“invalid.html”模板
+				
+			} else { //没有失效使用“index.html”模板
+				
+				Set<MateData> metaDataSet = new HashSet<MateData>();
+				MateData md = new MateData("LcId", lc.getLcId().toString());
+				metaDataSet.add(md);
+				
+				String strPageContent = strIndexContent;
+				
+				String strComplete = _fillValidContent(strPageContent, lc, listLcPageTemplate);
+				
+				byte[] bytes = strComplete.getBytes();
+				
+				StorePath storePath = fdfsClient.uploadFile(new ByteArrayInputStream(bytes), bytes.length, "html", metaDataSet);
+				String fullPath = storePath.getFullPath();
+				String group = storePath.getGroup();
+				String path = storePath.getPath();
+				
+				//String url = uri + fullPath.substring(fullPath.indexOf('/'));
+				
+				tranStatus = StringUtils.isEmpty(fullPath) ? 2 : 3;
+				
+				// 更新数据库信息
+				lcPage.setVersion(templateVersion);
+				lcPage.setPageUri(uri);
+				lcPage.setStoreType("fastdfs");
+				lcPage.setStoreGroup(group);
+				lcPage.setStorePath(path);
+				lcPage.setTranStatus(tranStatus);
+				lcPageDao.updateByPrimaryKeySelective(lcPage);
+			}
+		} catch (Exception e) {
+			logger.info("生成银信证证化页面发生异常，lcId:{}，{}", lcId, e.getMessage());
+		} finally {
+			try {
+				lcPage.setTranStatus(tranStatus);
+				lcPage.setLockedByNode(appNode);
+				lcPageDao.updateByPrimaryKeySelective(lcPage);
+			} catch (Exception e) {
+				
+			}
+		}
+	}
+	
+	/**
+	 * 填充有效银信证页面数据 
+	 */
+	private String _fillValidContent(String strPageContent, Lc lc, List<LcPageTemplateDetail> listLcPageTemplateDetail) {
+		String strRet = "";
+		
+		String currency = lc.getLcCurrency();
+		String currencyName = "";
+		String currencySymbol = "";
+		if("CNY".equals(currency)) {
+			currencyName = "人民币";
+			currencySymbol = "￥";
+		} else {
+			currencyName = "其他";
+			currencySymbol = "￥";
+		}
+		
+		String amount = "0.00"; 
+		try {
+			amount = AmountUtil.changeF2Y(lc.getLcAmount());
+		} catch (Exception e) {
+			logger.error("为证化页面格式化金额时发生错误", e);
+		}
+		
+		String[] ssAmount = amount.split("\\.");
+		String amountChinese = AmountUtil.digitUppercase(amount);
+
+		Date date = new Date();
+		if(lc.getLcStatus().equals(LcStatusType.OPENED.getStatusCode())) {
+			date = lc.getRecvValidTime();
+		} else if(lc.getLcStatus().equals(LcStatusType.RECIEVED.getStatusCode())) {
+			date = lc.getSendValidTime();
+		} else if(lc.getLcStatus().equals(LcStatusType.APPOINTMENT_DONE.getStatusCode())) {
+			date = lc.getConfirmValidTime();
+		} else if(lc.getLcStatus().equals(LcStatusType.APPLIED.getStatusCode())) {
+			date = lc.getPayValidTime();
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		strRet = strPageContent.replace("##CurrencyName##", currencyName)
+					.replace("##CurrencySymbol##", currencySymbol)
+					.replace("##FeeInteger##", ssAmount[0])
+					.replace("##FeeFraction##", ssAmount[1])
+					.replace("##FeeChinese##", amountChinese)
+					.replace("##PayerName##", "")
+					.replace("##Validity##", sdf.format(date))
+					.replace("##AccName##", "")
+					.replace("##PayBankName##", lc.getPayerBankName())
+					.replace("##LcType##", lc.getLcType())
+					.replace("##LcNo##", lc.getLcNo());
+		
+		//收付款银行图片
+		String strPayBankCode = lc.getPayerBankCode();
+		String strRecvBankCode = lc.getRecvBankCode();
+		String strPayBankSysPath = "";
+		String strRecvBankSysPath = "";
+		for(LcPageTemplateDetail lpt : listLcPageTemplateDetail) {
+			if(!StringUtils.isEmpty(strPayBankCode) && strPayBankCode.equals(lpt.getItemName())) {
+				strPayBankSysPath = lpt.getSysFilePath();
+				continue;
+			}
+			if(!StringUtils.isEmpty(strRecvBankCode) && strRecvBankCode.equals(lpt.getItemName())) {
+				strRecvBankSysPath = lpt.getSysFilePath();
+			}
+		}
+		
+		Predicate<LcPageTemplateDetail> predicate_itemName = (n) -> n.getItemName().equals("NotSpecified");
+		Predicate<LcPageTemplateDetail> predicate_itemCategory = (n) -> n.getItemCategory().equals("BankCode");
+		String notSpecifiedPath = listLcPageTemplateDetail.stream().filter(predicate_itemName.and(predicate_itemCategory)).findFirst().get().getSysFilePath();
+		if(StringUtils.isEmpty(strPayBankSysPath)) { //没有找到对应的银行图片，则使用“未指定”的图片
+			strPayBankSysPath = notSpecifiedPath;
+		}
+		if(StringUtils.isEmpty(strRecvBankSysPath)) {
+			strRecvBankSysPath = notSpecifiedPath;
+		}
+		
+		String strDest = StringUtils.isEmpty(contextPath)?"":contextPath+"/";
+//		String payBankImgUri = uri+"/"+strDest+strPayBankSysPath;
+//		String recvBankImgUri = uri+"/"+strDest+strRecvBankSysPath;
+		String payBankImgUri = "/"+strDest+strPayBankSysPath;
+		String recvBankImgUri = "/"+strDest+strRecvBankSysPath;
+		
+		strRet = strRet.replace("##PayBank-BankCode##", payBankImgUri)
+					.replace("##CollectBank-BankCode##", recvBankImgUri);
+		
+		
+		//记账明细
+		StringBuffer sbAcc = new StringBuffer(); //开证收证
+		StringBuffer sbApply = new StringBuffer(); //申请解付
+		StringBuffer sbTransfer = new StringBuffer(); //解付转账
+		List<LcLog> listLog = lcLogDao.selectByLcId(lc.getLcId());
+		for(LcLog lcLog : listLog) {
+			if(lcLog.getLcStatus().equals(LcStatusType.OPENED.getStatusCode())) {
+				Date timeOpen = lc.getCreateTime();
+				Date timeRecvValid = lc.getRecvValidTime();
+				sbAcc.append("<dl><dt>"+lcLog.getCreateTime()+"</dt><dd>记账付款，记账人：</dd></dl>")
+					.append("<dl><dt>"+lcLog.getCreateTime()+"</dt><dd>设置收款期限，期限时长："+CPayTimeUtil.getTimeDiff(timeOpen, timeRecvValid)+"</dd></dl>")
+					.append("<dl><dt>"+lcLog.getCreateTime()+"</dt><dd>记账收款，记账人：</dd></dl>");
+				strRet = strRet.replace("##AccListInfo##", sbAcc.toString());
+			}else if(lcLog.getLcStatus().equals(LcStatusType.APPLIED.getStatusCode())) {
+				sbApply.append("<dl><dt>"+lcLog.getCreateTime()+"</dt><dd>申请付款</dd></dl>");
+				strRet = strRet.replace("##CollectInfo##", sbApply.toString());
+			}else if(lcLog.getLcStatus().equals(LcStatusType.TRANSFERED.getStatusCode())) {
+				sbTransfer.append("<dl><dt>"+lcLog.getCreateTime()+"</dt><dd>已划款</dd></dl>");
+				strRet = strRet.replace("##TransferInfo##", sbTransfer.toString());
+			}
+		}
+		if(strRet.contains("##AccListInfo##")) {
+			strRet = strRet.replace("##AccListInfo##", "");
+		}
+		if(strRet.contains("##CollectInfo##")) {
+			strRet = strRet.replace("##CollectInfo##", "");
+		}
+		if(strRet.contains("##TransferInfo##")) {
+			strRet = strRet.replace("##TransferInfo##", "");
+		}
+		
+		return strRet;
+	}
+}

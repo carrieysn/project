@@ -1,0 +1,121 @@
+package com.cifpay.lc.std.paychannel.impl;
+
+import com.alibaba.fastjson.JSON;
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.helper.GetTradeParamHelper;
+import com.cifpay.lc.bankadapter.api.input.unionpay.ExpiryCifParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.OpenCifParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.PayCifParam;
+import com.cifpay.lc.constant.enums.PayChannel;
+import com.cifpay.lc.constant.enums.PayHandler;
+import com.cifpay.lc.core.db.pojo.*;
+import com.cifpay.lc.domain.enums.AdminCardType;
+import com.cifpay.lc.domain.lc.OpenLcUnionDepositInputBean;
+import com.cifpay.lc.domain.lc.TransferInputBean;
+import com.cifpay.lc.std.domain.kernel.InvalidateLcKernelInputBean;
+import com.cifpay.lc.std.domain.paychannel.ExpiryInputBean;
+import com.cifpay.lc.std.domain.paychannel.FreezeInputBean;
+import com.cifpay.lc.std.domain.paychannel.ReqReservedBean;
+import com.cifpay.lc.std.domain.paychannel.UnfreezeInputBean;
+import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+@Component
+public class UnionDepositImpl extends UnionBase<OpenLcUnionDepositInputBean> {
+
+    private static final String DEBIT = "10"; // 储蓄卡
+
+    @Override
+    public PayChannel getOpenLcChannel() {
+        return PayChannel.UNION_DEPOSIT;
+    }
+    
+    @Override
+    protected String getType() {
+        return DEBIT;
+    }
+
+    @Override
+    protected OpenCifParam createOpenCifParam(OpenLcUnionDepositInputBean inputBean,
+                                              FreezeInputBean freezeInputBean,
+                                              String subMerId) throws Exception {
+
+        PreLc preLc = freezeInputBean.getPreLc();
+
+        LcOpen lcOpen = freezeInputBean.getLcOpen();
+
+        GetTradeParamHelper helper = GetTradeParamHelper.getInstance(GetTradeParamHelper.UNION_PAY);
+
+        OpenCifParam param = helper.getTradeParam(OpenCifParam.class, preLc.getLcType(), DEBIT);
+
+//        param.setMerId(inputBean.getMerId());
+        param.setLcId(preLc.getLcId());
+        param.setUserId(preLc.getMerUserId());
+//        param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_CONSUME);
+        param.setOrderId(lcOpen.getLcOpenId().toString()); // LC_OPEN_ID
+        param.setTxnTime(new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()));
+        param.setTxnAmt(preLc.getLcAmount().longValue());
+        param.setChannelType("07");
+        param.setSubMerId(subMerId); // DONE:
+        param.setAccNo(inputBean.getAccNo());
+        param.setPhoneNo(inputBean.getPhoneNo());
+        param.setSmsCode("111111");// 测试
+//        param.setOrderDesc(preLc.getOrderContent());
+//        param.setCertifTp(inputBean.getCertifTp());
+//        param.setCertifId(inputBean.getCertifId());
+//        param.setCustomerNm(inputBean.getCustomerNm());
+        param.setReqReserved(JSON.toJSONString(new ReqReservedBean(PayHandler.FREEZE)));
+
+        return param;
+    }
+
+    @Override
+    protected PayCifParam createTransferCifParam(TransferInputBean inputBean, UnfreezeInputBean unfreezeInputBean)
+            throws Exception {
+
+        Lc lc = unfreezeInputBean.getLc();
+
+        LcOpen lcOpen = unfreezeInputBean.getLcOpen();
+
+        LcPay lcPay = unfreezeInputBean.getLcPay();
+
+        GetTradeParamHelper helper = GetTradeParamHelper.getInstance(GetTradeParamHelper.UNION_PAY);
+
+        PayCifParam payCifParam = helper.getTradeParam(PayCifParam.class, lc.getLcType(), DEBIT);
+
+        payCifParam.setLcId(inputBean.getLcId());
+        payCifParam.setChannelType("07");
+        payCifParam.setOrigOryId(lcOpen.getUnionSerialNo());
+        payCifParam.setOrderId(lcPay.getLcPayId().toString()); // lcPayId
+        payCifParam.setTxnTime(lcOpen.getUnionTxntime());
+        payCifParam.setTxnAmt(lcOpen.getLcAmount().longValue());
+
+        return payCifParam;
+    }
+
+    @Override
+    protected ExpiryCifParam createExpiryCifParam(InvalidateLcKernelInputBean invalidateLcInputBean, ExpiryInputBean expiryInputBean) throws Exception {
+        Lc lc = expiryInputBean.getLc();
+        LcOpen lcOpen = expiryInputBean.getLcOpen();
+        LcInvalid lcInvalid = expiryInputBean.getLcInvalid();
+
+        GetTradeParamHelper helper = GetTradeParamHelper.getInstance(GetTradeParamHelper.UNION_PAY);
+        ExpiryCifParam expiryCifParam = helper.getTradeParam(ExpiryCifParam.class, lc.getLcType(), DEBIT);
+
+        expiryCifParam.setLcId(invalidateLcInputBean.getLcId());
+        expiryCifParam.setChannelType("07");
+        expiryCifParam.setOrderId(lcInvalid.getLcInvalidId().toString());
+        expiryCifParam.setOrigOryId(lcOpen.getUnionSerialNo());
+        expiryCifParam.setTxnTime(lcOpen.getUnionTxntime());
+        expiryCifParam.setTxnAmt(lcOpen.getLcAmount().longValue());
+
+        return expiryCifParam;
+    }
+
+    @Override
+    protected int getCardType() {
+        return AdminCardType.DEPOSIT.getCode();
+    }
+}

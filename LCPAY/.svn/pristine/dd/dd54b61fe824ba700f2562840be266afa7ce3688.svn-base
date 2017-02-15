@@ -1,0 +1,22 @@
+package com.cifpay.lc.gateway.output.webpay;
+
+import com.cifpay.lc.gateway.output.FinalUnsignedFailureResponse;
+
+/**
+ * 
+ *
+ */
+public class WebPaySmsTokenSendResult extends FinalUnsignedFailureResponse {
+	private static final long serialVersionUID = 1L;
+
+	private String tradeSign;
+
+	public String getTradeSign() {
+		return tradeSign;
+	}
+
+	public void setTradeSign(String tradeSign) {
+		this.tradeSign = tradeSign;
+	}
+
+}

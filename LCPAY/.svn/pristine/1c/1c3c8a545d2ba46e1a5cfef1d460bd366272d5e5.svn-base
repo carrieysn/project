@@ -1,0 +1,60 @@
+package com.cifpay.lc.constant;
+
+/**
+ * core层【非标准银信证业务】之下的第三方支付适配接口环节的返回码，范围是107xxx，其中使用负数表示失败（错误码），即 -107xxx 用于表示失败。
+ * 
+ * 在此文件中定义的返回码常量名必须全部以“CORE_3RD_”开头，例如：
+ * 
+ * @{@code int CORE_3RD_ALIPAY_REJECT = -107001; }
+ * 
+ * 
+ *
+ */
+interface CoreThirdTradePlatformReturnCode {
+	// 在此文件中定义的常量名全部以“CORE_3RD_”开头
+	/**
+	 * 银企转账处理结果 - 银行处理中或交易结果尚不明确
+	 */
+	int CORE_3RD_ICBC_BANKENT_PAYOUT_RESULT_BANK_PROCESSING = 107000;
+	/**
+	 * 银企转账处理结果 - 部分交易成功、其余交易失败或银行处理中
+	 */
+	int CORE_3RD_ICBC_BANKENT_PAYOUT_RESULT_PARTIAL_SUCCESS = 107001;
+	
+	/**
+	 * 银联转账处理结果 - 银联处理中或交易结果尚不明确
+	 */
+	int CORE_3RD_CHINAPAY_PAYOUT_RESULT_CHINAPAY_PROCESSING = 107002;
+	
+
+	// ///////////////////////////////////////////////////
+	// 以下是代表失败的返回码，即返回码为负数
+	// //////////////////////////////////////////////////
+	// 失败
+	int CORE_3RD_RETURN_ERROR = -107001;
+
+	// ICBC NC SIGN FAILUE
+	int CORE_3RD_ICBC_BANKENT_NC_SIGN_FAILED = -107002;
+	int CORE_3RD_ICBC_BANKENT_NC_TRADE_COMMUNICATION_FAILED = -107003;
+	int CORE_3RD_ICBC_BANKENT_NC_TRADE_RESPONSE_INVALID = -107004;
+	int CORE_3RD_ICBC_BANKENT_NC_TRADE_RESPONSE_PARSE_FAILED = -107005;
+	
+	/**
+	 * 工行银企转账交易结果 - 交易失败
+	 */
+	int CORE_3RD_ICBC_BANKENT_PAYOUT_RESULT_FAILED = -107006;
+	/**
+	 * 工行银企转账交易查询 - 查询失败
+	 */
+	int CORE_3RD_ICBC_BANKENT_PAYOUT_ENQUIRY_FAILED = -107007;
+	/**
+	 * 工行银企 - 查询账户余额失败
+	 */
+	int CORE_3RD_ICBC_BANKENT_BALANCE_ENQUIRY_FAILED = -107008;
+	
+	/**
+	 * 银联转账交易结果 - 交易失败
+	 */
+	int CORE_3RD_CHINAPAY_PAYOUT_RESULT_FAILED = -107009;
+
+}

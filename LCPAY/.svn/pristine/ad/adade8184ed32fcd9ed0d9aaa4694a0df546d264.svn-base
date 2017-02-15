@@ -1,0 +1,27 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_SEND_ORG
+DROP TABLE IF EXISTS `CIFPAY_LC_SEND_ORG`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_SEND_ORG` (
+  `ORG_ID` varchar(64) NOT NULL COMMENT '履约机构ID',
+  `ORG_NAME` varchar(128) DEFAULT NULL COMMENT '履约机构名称',
+  `ITF_URL` varchar(1024) DEFAULT NULL COMMENT '接口调用地址',
+  `FINISH_REGEX` varchar(256) DEFAULT NULL COMMENT '接口返回内容履约完成正则表达式',
+  `CREATE_TIME` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ORG_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='履约机构';
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

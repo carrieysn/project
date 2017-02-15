@@ -1,0 +1,9 @@
+package com.cifpay.lc.gateway.controller.quickpay;
+
+/**
+ * 
+ *
+ */
+public class QuickPayEnquiryControllerTest {
+
+}

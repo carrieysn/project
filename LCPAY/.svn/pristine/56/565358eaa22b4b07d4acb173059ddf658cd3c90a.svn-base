@@ -1,0 +1,61 @@
+package com.cifpay.lc.core.integration;
+
+import com.alibaba.dubbo.common.Constants;
+import com.alibaba.dubbo.common.extension.Activate;
+import com.alibaba.dubbo.rpc.*;
+import com.cifpay.lc.constant.enums.LoggerEnum;
+import com.cifpay.lc.domain.AbstractInputBean;
+import com.cifpay.lc.util.logging.LogUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
+import java.util.Random;
+
+/**
+ * dubbo 拦截器
+ * 接收从 customer 传递来的 requestId
+ * 设置 slf4j context
+ * 使用方法：
+ * logback-config.xml 中配置格式化文本 %X{requestId}
+ * 例子：
+ * <pattern>%date %level [%X{requestId}] [%thread] %logger{30} %msg%n</pattern>
+ */
+@Activate(group = Constants.PROVIDER)
+public class DubboRequestFilter implements Filter {
+
+    static final Logger logger = LoggerFactory.getLogger(DubboRequestFilter.class);
+
+    @Override
+    public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+
+        // 读取requestId
+        String requestId = invocation.getAttachment(LoggerEnum.DUBBO_CONTEXT_REQUEST_ID_KEY);
+
+        if (StringUtils.isEmpty(requestId)) {
+            requestId = String.valueOf(new Random().nextLong());
+
+            logger.warn("未设置RequestId: {}", invoker.getInterface().toString());
+        }
+
+        // 读取通过dubbo传递的参数
+        AbstractInputBean abstractInputBean = null;
+        Object[] args = invocation.getArguments();
+        for (Object a : args) {
+            if (a instanceof AbstractInputBean) {
+                abstractInputBean = (AbstractInputBean) a;
+                break;
+            }
+        }
+        String sence = "UNKNOWN";
+        if (abstractInputBean != null) {
+            abstractInputBean.setRequestId(requestId);
+            sence = abstractInputBean.getScene().val;
+        }
+
+        // 设置slf4j
+        LogUtil.initMDC(requestId, sence);
+
+        return invoker.invoke(invocation);
+    }
+}

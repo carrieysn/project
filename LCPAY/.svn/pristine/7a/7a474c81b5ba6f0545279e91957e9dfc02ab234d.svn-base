@@ -1,0 +1,11 @@
+server.port=9100
+spring.jmx.default-domain=lc-gateway
+spring.mvc.view.prefix=/WEB-INF/jsp/
+spring.mvc.view.suffix=.jsp
+
+cifpay.fastdfs.enable=false
+cifpay.curator.enable=true
+cifpay.dubbo.enable=true
+cifpay.jmx.enable=true
+cifpay.redis.enable=true
+cifpay.lock.enable=true

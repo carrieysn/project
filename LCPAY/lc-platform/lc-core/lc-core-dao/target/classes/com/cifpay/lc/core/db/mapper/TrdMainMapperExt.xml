@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcTrdMainDao" >
+  
+  <update id="updateResult" parameterType="com.cifpay.lc.core.db.pojo.TrdMain" >
+    update CIFPAY_LC_TRD_MAIN
+    set
+        RTN_SERIAL_NO = #{rtnSerialNo,jdbcType=VARCHAR},
+        RTN_TRADE_DATE = #{rtnTradeDate,jdbcType=VARCHAR},
+        RTN_CODE = #{rtnCode,jdbcType=VARCHAR},
+        RTN_MSG = #{rtnMsg,jdbcType=VARCHAR},
+        RTN_CREATE_FREEZE_DATE = #{rtnCreateFreezeDate,jdbcType=VARCHAR},
+        TRADE_RESULT = #{tradeResult,jdbcType=VARCHAR},
+         FLOW_ID = #{flowId,jdbcType=BIGINT},
+        LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP}
+        where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+    </update>
+    <update id="updateSysCode" parameterType="com.cifpay.lc.core.db.pojo.TrdMain" >
+	    update CIFPAY_LC_TRD_MAIN
+	    set
+	        SYS_RETURN_CODE = #{sysReturnCode,jdbcType=INTEGER},
+	        where BUSINESS_ID = #{businessId,jdbcType=BIGINT}
+    </update>
+    <select id="selectBySelective" resultMap="BaseResultMap" parameterType="com.cifpay.lc.core.db.pojo.TrdMain" >
+	    select 
+	    <include refid="Base_Column_List" />
+	    from CIFPAY_LC_TRD_MAIN
+	    where 1=1
+		    <if test="lcId != null" >
+		      AND LC_ID=#{lcId,jdbcType=BIGINT}
+		    </if>
+		    <if test="tradeType != null" >
+		      AND TRADE_TYPE=#{tradeType,jdbcType=VARCHAR}
+		    </if>
+		    <if test="unfreezeSerialNo != null" >
+		      AND UNFREEZE_SERIAL_NO=#{unfreezeSerialNo,jdbcType=BIGINT}
+		    </if>
+    </select>
+</mapper>

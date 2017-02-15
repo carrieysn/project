@@ -1,0 +1,151 @@
+package com.cifpay.lc.std.business.lc;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.InvalidateLcService;
+import com.cifpay.lc.constant.BizConstants.LcTranCode;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.LcInvalidateType;
+import com.cifpay.lc.constant.enums.LcPayType;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.core.cache.pojo.LcProductCache;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.common.CoreBusinessTranCode;
+import com.cifpay.lc.core.db.dao.LcConfirmPayDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcConfirmPay;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.domain.lc.InvalidateLcInputBean;
+import com.cifpay.lc.domain.lc.InvalidateLcOutputBean;
+import com.cifpay.lc.std.interceptor.BusinessLockInterceptor;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.domain.kernel.InvalidateAppointmentKernelInputBean;
+import com.cifpay.lc.std.domain.kernel.InvalidateAppointmentKernelOutputBean;
+import com.cifpay.lc.std.domain.kernel.InvalidateLcKernelInputBean;
+import com.cifpay.lc.std.domain.kernel.InvalidateLcKernelOutputBean;
+import com.cifpay.lc.std.kernel.lc.InvalidateAppointmentKernel;
+import com.cifpay.lc.std.kernel.lc.InvalidateLcKernel;
+import com.cifpay.lc.std.mapper.lc.input.InvalidateLcInputBeanMapper;
+import com.cifpay.lc.std.mapper.lc.output.InvalidateLcKernelOutputBeanMapper;
+
+/**
+ * 失效银信证
+ */
+@Service("invalidateLcService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class, BusinessLockInterceptor.class})
+@CoreBusinessTranCode(LcTranCode.INVALIDATE)
+public class InvalidateLcServiceImpl extends LcProductServiceImplBase<InvalidateLcInputBean, InvalidateLcOutputBean> implements InvalidateLcService {
+
+    @Autowired
+    private InvalidateLcKernel invalidateLc;
+
+    @Autowired
+    private InvalidateAppointmentKernel invalidateAppointmentKernel;
+
+    @Autowired
+    private LcConfirmPayDao lcConfirmPayDao;
+
+    @Override
+    protected void validateInputParameters(InvalidateLcInputBean inputBean) throws CoreValidationRejectException {
+        if (inputBean.getInvalidateType() == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_INVALIDATE_TYPE_MISS, "请填写失效类型");
+        }
+
+        if (LcInvalidateType.FORCE.compareTo(inputBean.getInvalidateType()) == 0) {
+            if (StringUtils.isEmpty(inputBean.getLcAppointmentId())) {
+                throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_APPOINTMENT_ID_MISS, "请填写履约ID");
+            }
+        }
+    }
+
+    @Override
+    protected void validateLc(InvalidateLcInputBean inputBean, Lc lc) throws CoreValidationRejectException {
+        if (lc == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_NOT_EXISTS, "银信证记录不存在");
+        }
+
+        String inputInvalidType = inputBean.getInvalidateType().getCode(); // 失效类型
+
+        if (LcInvalidateType.WITHDRAW.getCode().compareTo(inputInvalidType) == 0) {
+            // 撤回失效，要求银信证状态“已开证”
+            if (!LcStatusType.OPENED.getStatusCode().equals(lc.getLcStatus())) {
+                throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED, "银信证状态非已开证，不能撤回失效");
+            }
+        } else if (LcInvalidateType.SENDBACK.getCode().compareTo(inputInvalidType) == 0) {
+            // 退回失效，单次解付要求状态必须是“已收证”或“已履约”
+            if (LcPayType.SINGLE_PAY.getCode().equals(lc.getPayType())) {
+                String lcStatus = lc.getLcStatus();
+                if (!LcStatusType.RECIEVED.getStatusCode().equals(lcStatus) &&
+                	!LcStatusType.APPOINTMENT_DONE.getStatusCode().equals(lcStatus) &&
+                	!LcStatusType.APPLIED.getStatusCode().equals(lcStatus)) {
+                    throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED, "银信证状态非收证或履约，不能退回失效");
+                }
+            }
+            // 退回失效，多次解付要求银信证不存在“已申请解付”记录
+            if (LcPayType.MULTIPAY_PAY_WITH_SAME_PAYEE.getCode().compareTo(lc.getPayType()) == 0) {
+                List<LcConfirmPay> listApply = lcConfirmPayDao.selectByLcId(inputBean.getLcId());
+                if (listApply.size() > 0) {
+                    throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED, "银信证存在申请解付记录，不能退回失效");
+                }
+            }
+        } else if (LcInvalidateType.MULTIPLE_INVALID.getCode().compareTo(inputInvalidType) == 0) {
+            // 多次履约失效
+        } else if (LcInvalidateType.FORCE.getCode().compareTo(inputInvalidType) == 0) {
+            // 强制失效，无要求
+        } else {
+
+        }
+    }
+
+    @Override
+    protected void validateLcProductRule(InvalidateLcInputBean inputBean, LcProductCache lcProduct, CoreBusinessContext context) throws CoreValidationRejectException {
+
+    }
+
+    @Override
+    public BusinessOutput<InvalidateLcOutputBean> processBusiness(InvalidateLcInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+
+        logger.info("~~~进入失效银信证交易");
+        if (inputBean.getInvalidateType().compareTo(LcInvalidateType.MULTIPLE_INVALID) == 0) {
+            // 、针对履约进行失效，金额返回银信证余额
+            InvalidateAppointmentKernelInputBean kernelInputBean = new InvalidateAppointmentKernelInputBean();
+            kernelInputBean.setLcId(inputBean.getLcId());
+            kernelInputBean.setMerId(inputBean.getMerId());
+            kernelInputBean.setLcAppointmentId(inputBean.getLcAppointmentId());
+            kernelInputBean.setRemark(inputBean.getRemark());
+
+            BusinessOutput<InvalidateAppointmentKernelOutputBean> kernelOutputBean = invalidateAppointmentKernel.invokeKernel(kernelInputBean, context);
+            if (kernelOutputBean.isSuccess()) {
+                InvalidateLcOutputBean outputBean = new InvalidateLcOutputBean();
+                outputBean.setLcId(kernelOutputBean.getData().getLcId());
+                outputBean.setLcInvalidateId(kernelOutputBean.getData().getLcInvalidateId());
+                outputBean.setInvalidateAmount(kernelOutputBean.getData().getInvalidateAmount());
+                outputBean.setLcStatus(kernelOutputBean.getData().getLcStatus());
+                outputBean.setLcStatusDesc(kernelOutputBean.getData().getLcStatusDesc());
+                return BusinessOutput.success(outputBean);
+            }
+            return BusinessOutput.fail(kernelOutputBean.getReturnCode(), kernelOutputBean.getReturnMsg());
+
+        } else {
+            // 针对银信证进行失效
+            InvalidateLcKernelInputBean kernelInputBean = InvalidateLcInputBeanMapper.toInvalidateLcKernelInputBean(inputBean);
+            BusinessOutput<InvalidateLcKernelOutputBean> kernelOutputBean = invalidateLc.invokeKernel(kernelInputBean, context);
+
+            if (kernelOutputBean.isSuccess()) {
+
+                InvalidateLcOutputBean outputBean = InvalidateLcKernelOutputBeanMapper.toInvalidateLcOutputBean(kernelOutputBean.getData());
+                return BusinessOutput.success(outputBean);
+            }
+
+            return BusinessOutput.fail(kernelOutputBean.getReturnCode(), kernelOutputBean.getReturnMsg());
+        }
+    }
+
+}

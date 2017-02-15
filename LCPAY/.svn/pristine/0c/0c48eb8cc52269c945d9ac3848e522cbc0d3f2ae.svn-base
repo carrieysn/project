@@ -1,0 +1,74 @@
+package com.cifpay.lc.gateway.controller.lc;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.InvalidateLcService;
+import com.cifpay.lc.constant.BizConstants;
+import com.cifpay.lc.constant.enums.LcInvalidateType;
+import com.cifpay.lc.domain.lc.InvalidateLcInputBean;
+import com.cifpay.lc.domain.lc.InvalidateLcOutputBean;
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+import com.cifpay.lc.domain.security.MerchantRequest;
+import com.cifpay.lc.gateway.input.lc.InvalidateReq;
+import com.cifpay.lc.gateway.output.lc.InvalidateResp;
+import com.cifpay.lc.util.StringUtil;
+
+/**
+ * 失效
+ * 
+ * @author liwenfu
+ *
+ */
+@RestController
+@RequestMapping("/lc")
+public class InvalidateController extends GatewayBaseController {
+
+	@Autowired
+	private InvalidateLcService invalidateLcService;
+
+	@ResponseBody
+	@RequestMapping("/invalidate")
+	public InvalidateResp handleRequest(@RequestBody MerchantRequest<InvalidateReq> merReq) {
+
+		logger.info("~~~进入invalidate");
+
+		InvalidateReq reqBean = merReq.getData();
+
+		String strMerId = merReq.getMerId();
+		String strInvalidateType = reqBean.getInvalidateType();
+		String strRemark = reqBean.getRemark();
+
+		InvalidateLcInputBean inputBean = new InvalidateLcInputBean();
+		inputBean.setMerId(strMerId);
+		inputBean.setLcId(reqBean.getLcId());
+		inputBean.setInvalidateType(LcInvalidateType.parseCode(strInvalidateType));
+		if (StringUtil.isDigit(reqBean.getLcAppointmentId())) {
+			inputBean.setLcAppointmentId(Long.parseLong(reqBean.getLcAppointmentId()));
+		}
+		inputBean.setRemark(strRemark);
+
+		BusinessOutput<InvalidateLcOutputBean> output = invalidateLcService.execute(new BusinessInput<InvalidateLcInputBean>(inputBean));
+
+		InvalidateResp response = new InvalidateResp();
+		response.setReturnCode(output.getReturnCode());
+		response.setReturnMsg(output.getReturnMsg());
+
+		if (output.isSuccess()) {
+			InvalidateLcOutputBean outputBean = output.getData();
+
+			response.setLcId(String.valueOf(outputBean.getLcId()));
+			response.setLcStatus(outputBean.getLcStatus());
+			response.setLcStatusDesc(outputBean.getLcStatusDesc());
+			response.setInvalidateId(String.valueOf(outputBean.getLcInvalidateId()));
+			response.setInvalidateAmount(BizConstants.decimalFormat.format(outputBean.getInvalidateAmount()));
+		}
+
+		return response;
+	}
+}

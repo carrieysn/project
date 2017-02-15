@@ -1,0 +1,32 @@
+package com.cifpay.lc.domain.lc;
+
+import com.cifpay.lc.constant.enums.PayChannel;
+
+public class OpenLcInputBean extends BaseLcInputBean {
+
+    private static final long serialVersionUID = 4100379068773292602L;
+
+    private String remark; // 备注
+
+    private PayChannel payChannel;
+
+    public OpenLcInputBean() {
+        this.payChannel = PayChannel.NORMAL;
+    }
+
+    public OpenLcInputBean(PayChannel payChannel) {
+        this.payChannel = payChannel;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public PayChannel getPayChannel() {
+        return payChannel;
+    }
+}

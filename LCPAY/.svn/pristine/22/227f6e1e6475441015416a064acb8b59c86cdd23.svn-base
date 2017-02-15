@@ -1,0 +1,16 @@
+package com.cifpay.lc.api;
+
+import com.cifpay.lc.constant.enums.LoggerEnum;
+import com.cifpay.lc.domain.AbstractInputBean;
+
+/**
+ *
+ *
+ */
+public final class VoidObject extends AbstractInputBean {
+    private static final long serialVersionUID = -1409255385019621988L;
+
+    public VoidObject() {
+        this.setScene(LoggerEnum.Scene.VOID);
+    }
+}

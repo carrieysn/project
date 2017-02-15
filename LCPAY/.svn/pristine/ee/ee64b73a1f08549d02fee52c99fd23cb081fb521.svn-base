@@ -1,0 +1,878 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_B_LC_NOTIFICATION
+DROP TABLE IF EXISTS `CIFPAY_B_LC_NOTIFICATION`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_B_LC_NOTIFICATION` (
+  `NOTICE_ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `NOTICE_TYPE` varchar(2) COLLATE utf8_bin NOT NULL COMMENT '通知类型：10通知收单商户开证结果，50通知商户提现结果，90通知收单商户银信证已解付',
+  `LC_ID` bigint(20) NOT NULL,
+  `HANDLE_STATUS` varchar(2) COLLATE utf8_bin NOT NULL COMMENT '处理状态：10未发送，20发送中，30发送失败，40对方处理失败，50通知成功，99已过期',
+  `CREATED_DT` datetime NOT NULL COMMENT '创建时间',
+  `UPDATED_DT` datetime DEFAULT NULL COMMENT '更新时间',
+  `LAST_SENT_DT` datetime DEFAULT NULL COMMENT '最后发送时间',
+  `RETRY_COUNT` int(11) NOT NULL DEFAULT '0' COMMENT '已重发次数',
+  `RECIEVER_TYPE` char(1) COLLATE utf8_bin NOT NULL COMMENT '通知接收者类型：1收单商户，其他数字或字母待扩展',
+  `RECIEVER_ID` varchar(100) COLLATE utf8_bin NOT NULL COMMENT '通知接收者ID，若通知接收者类型为收单商户，收通知接收者ID对应为该收单商户的UID',
+  `NOTIFY_URL` varchar(512) COLLATE utf8_bin NOT NULL COMMENT '通知接收URL地址',
+  `MSG_BLOCK_CNT` int(11) NOT NULL COMMENT '通知内容总块数',
+  `MSG_BLOCK1` varchar(2000) COLLATE utf8_bin NOT NULL COMMENT '通知内容块1',
+  `MSG_BLOCK2` varchar(2000) COLLATE utf8_bin DEFAULT NULL COMMENT '通知内容块2',
+  `MSG_BLOCK3` varchar(2000) COLLATE utf8_bin DEFAULT NULL COMMENT '通知内容块3',
+  `HANDLED_BY_SERVER_NODE` varchar(100) COLLATE utf8_bin DEFAULT NULL COMMENT '执行通知的节点',
+  `REC_VALIDATE_HASH` varchar(64) COLLATE utf8_bin DEFAULT NULL COMMENT '数据校验码',
+  PRIMARY KEY (`NOTICE_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='B版银信证通知表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_B_SW_OPEN_QUEUE_MSG
+DROP TABLE IF EXISTS `CIFPAY_B_SW_OPEN_QUEUE_MSG`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_B_SW_OPEN_QUEUE_MSG` (
+  `MSG_ID` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '需要提现的银信证ID',
+  `MID` varchar(32) NOT NULL COMMENT '商户号',
+  `RECHARGE_ORDER_ID` varchar(128) NOT NULL COMMENT '归属的充值交易单ID',
+  `TYPE` varchar(5) NOT NULL COMMENT '面值类型，例如n10表示10元面额',
+  `SNO` varchar(30) NOT NULL COMMENT '消息序号',
+  `SW_STATUS` varchar(1) NOT NULL COMMENT '写队列状态(星意), 1处理中，2处理成功，3处理失败',
+  `ACC_STATUS` varchar(1) NOT NULL COMMENT '写队列状态(账户系统), 1处理中 2处理成功 3处理失败',
+  `RECIEVE_TIME` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT 'MQ消息接收时间',
+  `HANDLE_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'MQ消息处理时间',
+  `HANDLE_BY` varchar(256) DEFAULT NULL COMMENT '负责处理该消息的应用节点ID',
+  `EXCHANGE_NAME` varchar(100) NOT NULL COMMENT '队列exchange名称',
+  `QUEUE_NAME` varchar(100) NOT NULL COMMENT '队列名称',
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  PRIMARY KEY (`MSG_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='存储从星意批量开证MQ消息队列接收到的消息记录';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_B_SW_RECV_DATE_QUEUE_MSG
+DROP TABLE IF EXISTS `CIFPAY_B_SW_RECV_DATE_QUEUE_MSG`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_B_SW_RECV_DATE_QUEUE_MSG` (
+  `MSG_ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `RECHARGE_ORDER_ID` varchar(128) DEFAULT NULL COMMENT '归属的充值交易单ID',
+  `TYPE` varchar(5) DEFAULT NULL COMMENT '面值类型',
+  `SNO` varchar(32) DEFAULT NULL COMMENT '消息序号',
+  `NEW_LC_RECV_VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '新的收证有效期',
+  `HANDLE_STATUS` varchar(1) NOT NULL COMMENT '处理状态，1处理中，2等待开证后再处理，8处理成功，9处理失败',
+  `WAIT_OPEN_RETRY_CNT` int(11) NOT NULL DEFAULT '0' COMMENT '等待开证重试次数',
+  `HANDLE_FAIL_DESC` varchar(256) DEFAULT NULL COMMENT '处理失败原因',
+  `RESULT_SEND_STATUS` varchar(1) DEFAULT NULL COMMENT '结果发送状态：0未发送，1发送中，8已发送，9发送失败',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT 'MQ消息接收时间',
+  `UPDATE_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'MQ消息处理时间',
+  `LOCKED_BY` varchar(256) DEFAULT NULL COMMENT '负责处理该消息的应用节点ID',
+  PRIMARY KEY (`MSG_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='存储从星意批量提现MQ消息队列接收到的消息记录';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_B_SW_WITHDRAW_QUEUE_MSG
+DROP TABLE IF EXISTS `CIFPAY_B_SW_WITHDRAW_QUEUE_MSG`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_B_SW_WITHDRAW_QUEUE_MSG` (
+  `LC_ID` bigint(20) NOT NULL COMMENT '需要提现的银信证ID',
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `WITHDRAW_ORDER_ID` varchar(128) DEFAULT NULL COMMENT '归属的提现交易单ID',
+  `HANDLE_STATUS` varchar(1) NOT NULL COMMENT '消息处理状态，1处理中，8提现处理成功，9提现处理失败',
+  `HANDLE_FAIL_DESC` varchar(256) DEFAULT NULL COMMENT 'MQ消息处理失败原因',
+  `WAIT_OPEN_RETRY_CNT` int(11) NOT NULL DEFAULT '0' COMMENT '等待开证重试次数',
+  `SW_OUTPUT_EXCHANGE_NAME` varchar(100) DEFAULT NULL COMMENT '银信证往星意输出的MQ exchange名字',
+  `SW_OUTPUT_QUEUE_NAME` varchar(100) DEFAULT NULL COMMENT '银信证往星意输出的队列名字',
+  `SW_SEND_STATUS` varchar(1) NOT NULL COMMENT '星意队列发送状态，0未发送，8发送成功，9发送失败',
+  `SW_SEND_FAIL_DESC` varchar(256) DEFAULT NULL COMMENT '星意队列发送失败原因',
+  `ACC_OUTPUT_EXCHANGE_NAME` varchar(100) DEFAULT NULL COMMENT '银信证往账务中心输出的MQ exchange名字',
+  `ACC_OUTPUT_QUEUE_NAME` varchar(100) DEFAULT NULL COMMENT '银信证往账务中心输出的队列名字',
+  `ACC_SEND_STATUS` varchar(1) NOT NULL COMMENT '账户中心队列发送状态，0未发送，5无需发送，8发送成功，9发送失败',
+  `ACC_SEND_FAIL_DESC` varchar(256) DEFAULT NULL COMMENT '账户中心队列发送失败原因',
+  `SW_LAST_SEND_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `ACC_LAST_SEND_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `CREATE_TIME` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT 'MQ消息接收时间',
+  `UPDATE_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'MQ消息处理时间',
+  `LOCKED_STATUS` varchar(1) NOT NULL COMMENT '当前记录是否处于被锁定状态，1是，0否',
+  `LOCKED_BY_NODE` varchar(256) DEFAULT NULL COMMENT '当前锁定该记录的应用节点ID',
+  PRIMARY KEY (`LC_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='存储从星意批量提现MQ消息队列接收到的消息记录';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_B_TRD_BUSINESS
+DROP TABLE IF EXISTS `CIFPAY_B_TRD_BUSINESS`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_B_TRD_BUSINESS` (
+  `JOURNAL_NO` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '银行交易序列号',
+  `BANK_STATE` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '银行交易状态,银行冻结:CREDIT_BANK_FOREEZE,银行解冻:CREDIT_BANK_UNFOREEZE,银行划款:CREDIT_BANK_PAYED,银行交易状态（冻结、解冻、划款）',
+  `LC_ID` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '银信交易ID',
+  `ORDER_ID` varchar(128) COLLATE utf8_bin NOT NULL COMMENT '业务订单编号',
+  `THIRD_ID` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '第三方系统标识',
+  `LC_STATE` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '银信证状态',
+  `TRADE_CHN_TYPE` varchar(2) COLLATE utf8_bin NOT NULL COMMENT '交易渠道类型',
+  `TRADE_CHN_ID` varchar(15) COLLATE utf8_bin NOT NULL COMMENT '交易渠道ID',
+  `PAY_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '交易金额',
+  `PAYER_BANK_CODE` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '付款方银行编码',
+  `PAYER_BANK_CARD_NO` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '付款者银行卡号',
+  `PAYER_BANK_ACCNO` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '付款者账号',
+  `PAYER_MOBILE` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '付款人手机号码',
+  `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+  `BANK_WORK_DATE` datetime DEFAULT NULL COMMENT '银行交易开始日期',
+  `DEAD_LINE` datetime DEFAULT NULL COMMENT '银行交易截至日期',
+  `IS_SUCCESS` varchar(2) COLLATE utf8_bin DEFAULT NULL COMMENT '是否成功(S:成功 F:失败 N:无效 C:初始化 E:异常)',
+  `TRADE_COUNTS` int(11) DEFAULT NULL COMMENT '交易执行次数',
+  `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
+  `RECV_BANK_CODE` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '收款方银行编码',
+  `RECV_BANK_CARD_NO` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '收款者卡号',
+  `RECV_BANK_ACCNAME` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '收款方账户名',
+  `RECV_BANK_ACCNO` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '收款方账号',
+  `REMARK` varchar(100) COLLATE utf8_bin DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`JOURNAL_NO`),
+  UNIQUE KEY `AK_CHK_TRD_BUSI_01` (`BANK_STATE`,`LC_ID`,`ORDER_ID`,`THIRD_ID`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT COMMENT='B版交易渠道业务记录表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_B_TRD_JOURNAL
+DROP TABLE IF EXISTS `CIFPAY_B_TRD_JOURNAL`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_B_TRD_JOURNAL` (
+  `JOURNAL_NO` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '银行流水号',
+  `LC_ID` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '银信证ID',
+  `LC_STATE` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '银信证状态',
+  `TRADE_CHN_TYPE` varchar(2) COLLATE utf8_bin NOT NULL COMMENT '交易渠道类型',
+  `TRADE_CHN_ID` varchar(15) COLLATE utf8_bin NOT NULL COMMENT '交易渠道ID',
+  `THIRD_ID` varchar(128) COLLATE utf8_bin DEFAULT NULL COMMENT '第三方编号',
+  `ORDER_ID` varchar(128) COLLATE utf8_bin DEFAULT NULL COMMENT '业务订单编号',
+  `CREATE_TIME` datetime DEFAULT NULL COMMENT '创建时间',
+  `BANK_RETURN_CODE` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '银行交易返回错误编码',
+  `BANK_RETURN_MSG` varchar(1024) COLLATE utf8_bin DEFAULT NULL COMMENT '银行主机返回错误信息',
+  `IS_SUCCESS` varchar(2) COLLATE utf8_bin DEFAULT NULL COMMENT '是否成功(S:成功 F:失败 N:无效 C:初始化 E:异常)',
+  `BANK_STATE` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '银行交易状态（冻结、解冻、划款）',
+  `UPDATE_TIME` datetime DEFAULT NULL COMMENT '更新时间',
+  `REMARK` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '备注',
+  `FUTURE1` varchar(1024) COLLATE utf8_bin DEFAULT NULL COMMENT '保留字段1',
+  `FUTURE2` varchar(1024) COLLATE utf8_bin DEFAULT NULL COMMENT '保留字段2',
+  `HOST_JOURNAL_NO` varchar(64) COLLATE utf8_bin DEFAULT NULL COMMENT '主机响应流水',
+  `REC_VALIDATE_HASH` varchar(64) COLLATE utf8_bin DEFAULT NULL COMMENT '数据校验码'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT COMMENT='银信证与所有交易渠道的交易流水表(不含同步/查询交易流水)';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_B_TRD_SYNC
+DROP TABLE IF EXISTS `CIFPAY_B_TRD_SYNC`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_B_TRD_SYNC` (
+  `JOURNAL_NO` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '银行交易流水',
+  `TRADE_CHN_TYPE` varchar(2) COLLATE utf8_bin NOT NULL COMMENT '交易渠道类型',
+  `TRADE_CHN_ID` varchar(15) COLLATE utf8_bin NOT NULL COMMENT '交易渠道ID',
+  `LC_ID` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '银信交易ID',
+  `ORDER_ID` varchar(32) COLLATE utf8_bin NOT NULL COMMENT '订单号',
+  `SYNC_TIME` datetime DEFAULT NULL COMMENT '交易同步时间',
+  `IS_SUCCESS` char(2) COLLATE utf8_bin DEFAULT NULL COMMENT '交易是否成功',
+  `BANK_STATE` varchar(32) COLLATE utf8_bin DEFAULT NULL COMMENT '银行交易状态（冻结、解冻、划款）',
+  PRIMARY KEY (`JOURNAL_NO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ROW_FORMAT=COMPACT;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_GUID_WORKER_ID
+DROP TABLE IF EXISTS `CIFPAY_GUID_WORKER_ID`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_GUID_WORKER_ID` (
+  `MACHINE_ID` varchar(32) NOT NULL COMMENT '用于表示该机器节点的唯一ID，例如对机器名的MD5值',
+  `APP_INSTANCE_ID` varchar(32) NOT NULL COMMENT '用于表示该应用实例在该机器节点的唯一ID，例如对某个文件路径的MD5值',
+  `WORKER_ID` int(10) unsigned NOT NULL COMMENT '该应用被分配到的Snowflake worker id，支持0到1023的整数值',
+  `MACHINE_NAME` varchar(256) NOT NULL COMMENT '机器名称',
+  `APP_BINARY_PATH` varchar(2048) DEFAULT NULL COMMENT '可选，用于记录该应用实现的二进制文件所在磁盘路径',
+  `INITIALIZED_DATE` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '该应用节点的首次初始化日期',
+  `APP_LAST_STARTED_DATE` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '该应用节点最近一次启动的日期',
+  PRIMARY KEY (`MACHINE_ID`,`APP_INSTANCE_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用于分配和登记所有应用节点的Snowflake Worker Id，该Worker Id提供给Snowflake算法用于生成各数据表的主键ID值';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC
+DROP TABLE IF EXISTS `CIFPAY_LC`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC` (
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `BATCH_NO` varchar(64) DEFAULT NULL COMMENT '批次号，批量开证时使用',
+  `PRODUCT_ID` bigint(20) NOT NULL COMMENT '银信证产品ID',
+  `PRODUCT_CODE` varchar(32) NOT NULL COMMENT '银信证产品代码',
+  `LC_NO` varchar(512) DEFAULT NULL COMMENT '银信证展示编号',
+  `LC_TYPE` varchar(16) DEFAULT NULL COMMENT '银信证类型：CP300、CP500、CP700',
+  `LC_CURRENCY` varchar(8) DEFAULT NULL COMMENT '币种：CHY',
+  `LC_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '银信证开证总额(单位分)',
+  `LC_FREEZING_AMOUNT` decimal(19,2) DEFAULT '0.00' COMMENT '银信证冻结金额(单位分)，系统冻结金额，而非银行的冻结金额，包含已履约和已申请解付的金额',
+  `LC_BALANCE` decimal(19,2) DEFAULT NULL COMMENT '银信证可用余额(单位分)',
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `ORDER_ID` varchar(128) DEFAULT NULL COMMENT '订单号',
+  `PAYER_ID` varchar(32) DEFAULT NULL COMMENT '开证人标识信息',
+  `PAYER_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `PAYER_TYPE` varchar(16) DEFAULT NULL COMMENT '开证人类型：个人:PERSONAL  企业:ENTERPRISE',
+  `PAYER_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '开证人银行代码：ICBC、ALIPAY',
+  `PAYER_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `PAYER_MOBILE` varchar(32) DEFAULT NULL,
+  `RECV_ID` varchar(32) DEFAULT NULL COMMENT '收证人信息',
+  `RECV_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `RECV_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：个人:PERSONAL  企业:ENTERPRISE',
+  `RECV_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '机构代码：工商银行、平安银行、支付宝',
+  `RECV_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '收证人银行名称',
+  `RECV_MOBILE` varchar(32) DEFAULT NULL,
+  `LC_STATUS` varchar(2) DEFAULT NULL COMMENT '银信证状态：10已开证、20已收证、30已履约、31部分履约、32已展期、40已申请解付、41已刹车、50已执行解付、88已解付完成、90已解冻退回、91预失效',
+  `RECV_VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '收证有效期',
+  `SEND_VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '履约有效期',
+  `CONFIRM_VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '申请解付有效期',
+  `PAY_VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '执行解付有效期（到期执行解付）',
+  `LC_STATE_RETURN_URL` varchar(512) DEFAULT NULL COMMENT '银信证开证回调URL',
+  `LC_STATE_NOTIFY_URL` varchar(512) DEFAULT NULL COMMENT '银信证状态变更通知URL',
+  `LC_ORDER_DETAIL_URL` varchar(512) DEFAULT NULL COMMENT '银信证商户订单详情URL',
+  `THIRD_PARTY_CODE` varchar(64) DEFAULT NULL COMMENT '第三方认证机构代码',
+  `PAY_TYPE` varchar(16) DEFAULT '1' COMMENT '解付类型：SINGLE单次解付、MULTIPLE同收款人多次解付、',
+  `IS_VALID` bit(1) NOT NULL DEFAULT b'1' COMMENT '是否有效，1有效，0无效',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `REMARK` varchar(512) DEFAULT '1' COMMENT '备注',
+  PRIMARY KEY (`LC_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证主表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_ACC
+DROP TABLE IF EXISTS `CIFPAY_LC_ACC`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_ACC` (
+  `LC_ACC_ID` bigint(20) NOT NULL,
+  `LC_ID` bigint(20) DEFAULT NULL,
+  `LC_OPEN_AMT` decimal(19,2) DEFAULT '0.00' COMMENT '银信证开证金额',
+  `LC_FREEZE_AMT` decimal(19,2) DEFAULT '0.00' COMMENT '银信证冻结金额',
+  `LC_AVAILABLE_AMT` decimal(19,2) DEFAULT '0.00' COMMENT '银信证可用余额',
+  `LC_APPOINTMENT_AMT` decimal(19,2) DEFAULT '0.00' COMMENT '银信证履约金额',
+  `CHANGE_AMT` decimal(19,2) DEFAULT '0.00' COMMENT '变化金额',
+  `BIZ_TABLE` varchar(64) DEFAULT NULL COMMENT '业务操作的表名',
+  `BIZ_SEQNO` bigint(20) DEFAULT NULL COMMENT '业务操作ID',
+  `CREATE_TIME` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `REMARK` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`LC_ACC_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='多次解付银信证消费明细';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_BANK
+DROP TABLE IF EXISTS `CIFPAY_LC_BANK`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_BANK` (
+  `BANK_CODE` varchar(32) NOT NULL COMMENT '机构代码',
+  `BANK_NAME` varchar(128) DEFAULT NULL COMMENT '机构名称',
+  `BANK_TYPE` varchar(32) DEFAULT NULL COMMENT '类型：BANK银行、THIRD_PARTY第三方',
+  `IS_VALID` int(11) NOT NULL DEFAULT '0' COMMENT '启用状态：0 待开通，1 正常，2 关闭',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`BANK_CODE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证机构代码定义表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_CONFIRM_PAY
+DROP TABLE IF EXISTS `CIFPAY_LC_CONFIRM_PAY`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_CONFIRM_PAY` (
+  `LC_CONFIRM_ID` bigint(20) NOT NULL COMMENT '申请解付记录ID',
+  `LC_SEND_ID` bigint(20) NOT NULL COMMENT '履约记录ID',
+  `LC_ID` bigint(20) DEFAULT NULL COMMENT '银信证ID',
+  `BATCH_NO` varchar(64) DEFAULT NULL COMMENT '批次编号，批量提现时使用',
+  `LC_BALANCE` decimal(19,2) DEFAULT NULL COMMENT '银信证余额（单位分）',
+  `LC_PAY_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '申请解付金额（单位分）',
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `ORDER_ID` varchar(128) DEFAULT NULL COMMENT '订单号',
+  `VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '申请解付有效期时长（到期执行解付）',
+  `SIGN_CODE` varchar(128) DEFAULT NULL COMMENT '申请解付凭证',
+  `CONFIRM_STATUS` varchar(32) DEFAULT NULL COMMENT '处理结果：申请解付成功、失败、0处理中',
+  `PROCESS_STATUS` int(11) DEFAULT NULL COMMENT '流程状态：0待处理、50已由执行解付处理、41已由刹车处理、90已由失效处理',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '申请解付创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`LC_CONFIRM_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证申请解付记录表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_INVALID
+DROP TABLE IF EXISTS `CIFPAY_LC_INVALID`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_INVALID` (
+  `LC_INVALID_ID` bigint(20) NOT NULL COMMENT '失效记录ID',
+  `LC_ID` bigint(20) DEFAULT NULL COMMENT '银信证ID',
+  `INVALID_TYPE` varchar(32) DEFAULT NULL COMMENT '失效类型：1=撤回失效、2=退回失效、3=强制失效（我方客服操作）、4=到期失效',
+  `LC_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '银信证金额（单位分）',
+  `LC_BALANCE` decimal(19,2) DEFAULT NULL COMMENT '银信证余额（单位分）',
+  `INVALID_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '失效金额（单位分）',
+  `LC_INVALID_STATUS` varchar(32) DEFAULT NULL COMMENT '失效状态：处理中、成功、失败、不确定',
+  `LC_INVALID_RESPONSE` varchar(256) DEFAULT NULL COMMENT '失效结果：银行接口返回的错误/成功信息',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`LC_INVALID_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证失效记录表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_LOCK
+DROP TABLE IF EXISTS `CIFPAY_LC_LOCK`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_LOCK` (
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `TRADE_CODE` varchar(32) NOT NULL COMMENT '交易代码',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`LC_ID`,`TRADE_CODE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证业务锁\r\n保证同一时间，仅存在一个进程对银信证进行操作';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_LOG
+DROP TABLE IF EXISTS `CIFPAY_LC_LOG`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_LOG` (
+  `LOG_ID` bigint(20) NOT NULL COMMENT '记录ID',
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `STEP_LOG_ID` bigint(20) DEFAULT NULL COMMENT '银信证过程表的id，例如openid，sendid',
+  `TRADE_CODE` varchar(32) DEFAULT NULL COMMENT '交易代码，初始化证INIT，开证 OPEN，收证RECV，履约 APPOINTMENT，申请解付 APPLY，解付 TRANSFER，展期 DEFER，刹车 SUSPEND，定时任务 TIMERTASK',
+  `LC_STATUS` varchar(32) DEFAULT NULL COMMENT '银信证状态，10开证、20已收证、30已履约、31已展期、40已申请解付、41已刹车、50已执行解付、88已解付完成、99已失效',
+  `LC_RESPONSE` varchar(256) DEFAULT NULL COMMENT '银信证交易结果',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`LOG_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证交易流水表，每次银信证状态改变时，记录日志';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_OPEN
+DROP TABLE IF EXISTS `CIFPAY_LC_OPEN`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_OPEN` (
+  `LC_OPEN_ID` bigint(20) NOT NULL COMMENT '开证记录ID',
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `LC_BATCH_ID` bigint(20) DEFAULT NULL COMMENT '银信证批次ID',
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `ORDER_ID` varchar(128) DEFAULT NULL COMMENT '订单号',
+  `LC_CURRENCY` varchar(8) DEFAULT NULL COMMENT '银信证币种',
+  `LC_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '银信证开证总额(单位分)',
+  `PAYER_ID` varchar(32) DEFAULT NULL COMMENT '开证人标识信息',
+  `PAYER_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `PAYER_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：1:个人 2:企业',
+  `PAYER_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '开证人银行代码：ICBC、ALIPAY',
+  `PAYER_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `PAYER_MOBILE` varchar(32) DEFAULT NULL,
+  `RECV_ID` varchar(32) DEFAULT NULL COMMENT '收证人信息',
+  `RECV_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `RECV_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：1:个人 2:企业',
+  `RECV_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '工商银行、平安银行、支付宝',
+  `RECV_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `RECV_MOBILE` varchar(32) DEFAULT NULL,
+  `VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '开证有效期',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `TRADE_TIME` timestamp NULL DEFAULT NULL COMMENT '开证处理日期',
+  `LC_OPEN_STATUS` varchar(32) DEFAULT NULL COMMENT '开证状态：0处理中、1成功、2失败、3不确定、4未支付',
+  `LC_OPEN_RESPONSE` varchar(2560) DEFAULT NULL COMMENT '开证结果：银行接口返回的错误/成功信息',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改日期',
+  PRIMARY KEY (`LC_OPEN_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证开证记录表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_OPEN_BATCH
+DROP TABLE IF EXISTS `CIFPAY_LC_OPEN_BATCH`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_OPEN_BATCH` (
+  `BATCH_OPEN_ID` bigint(20) NOT NULL COMMENT '批次号',
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `ORDER_ID` varchar(128) DEFAULT NULL COMMENT '批次订单号',
+  `LC_CURRENCY` varchar(50) DEFAULT NULL COMMENT '币种：CHY',
+  `LC_BATCH_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '批次开证总额(单位分)',
+  `LC_BATCH_BALANCE` decimal(19,2) DEFAULT NULL COMMENT '批次开证余额',
+  `PAYER_ID` varchar(32) DEFAULT NULL COMMENT '开证人标识信息',
+  `PAYER_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `PAYER_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：1:个人 2:企业',
+  `PAYER_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '开证人银行代码：ICBC、ALIPAY',
+  `PAYER_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改日期',
+  PRIMARY KEY (`BATCH_OPEN_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='批量开证记录表，保存批量开证时的操作结果';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_PAGE
+DROP TABLE IF EXISTS `CIFPAY_LC_PAGE`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_PAGE` (
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `VERSION` varchar(10) DEFAULT NULL COMMENT '版本号',
+  `PAGE_URI` varchar(256) DEFAULT NULL COMMENT '银信证静态资源ID',
+  `STORE_TYPE` varchar(30) DEFAULT NULL COMMENT '存储方式，fastdfs、阿里云等',
+  `STORE_PATH` varchar(256) DEFAULT NULL COMMENT '存储的物理路径',
+  `STORE_GROUP` varchar(30) DEFAULT NULL COMMENT 'fastdfs需要有group',
+  `TRAN_STATUS` int(1) NOT NULL DEFAULT '0' COMMENT '处理标志，0=待处理；1=处理中；2=处理成功，3=处理失败',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `GEN_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '生成静态资源时间',
+  `LOCKED_BY_NODE` varchar(256) DEFAULT NULL COMMENT '当前锁定该记录的应用节点ID',
+  PRIMARY KEY (`LC_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证证化页面资源';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_PAGE_TEMPLATE
+DROP TABLE IF EXISTS `CIFPAY_LC_PAGE_TEMPLATE`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_PAGE_TEMPLATE` (
+  `TEMPLATE_CODE` varchar(50) NOT NULL COMMENT '模板编号',
+  `VERSION` varchar(20) NOT NULL COMMENT '版本号',
+  `TRAN_STATUS` int(1) NOT NULL DEFAULT '0' COMMENT '处理状态，0=无进程占用处理；1=处理中',
+  `LOCKED_BY_NODE` varchar(256) DEFAULT NULL COMMENT '当前锁定该记录的应用节点ID',
+  `CREATE_TIME` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `UPDATE_TIME` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`TEMPLATE_CODE`,`VERSION`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='证化页面模板表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_PAGE_TEMPLATE_DETAIL
+DROP TABLE IF EXISTS `CIFPAY_LC_PAGE_TEMPLATE_DETAIL`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_PAGE_TEMPLATE_DETAIL` (
+  `TEMPLATE_CODE` varchar(50) NOT NULL COMMENT '模板编号',
+  `VERSION` varchar(20) NOT NULL COMMENT '版本号',
+  `TEMPLATE_FILE_NAME` varchar(50) NOT NULL COMMENT '模板文件名称',
+  `TEMPLATE_FILE_PATH` varchar(512) NOT NULL COMMENT '原始模板文件全路径',
+  `SYS_FILE_PATH` varchar(512) DEFAULT NULL COMMENT '上传后文件全路径',
+  `ITEM_NAME` varchar(64) DEFAULT NULL COMMENT '在模板文件中的唯一标识名称，##name##',
+  `ITEM_CATEGORY` varchar(64) DEFAULT NULL COMMENT '分类，非静态引入资源与业务相关。如果此项不为空则ITEM_NAME与字典项相对应',
+  `SEQ` int(11) DEFAULT NULL COMMENT '【重要】次序号，后上传的模板文件里面可能引用先上传的文件路径。通常情况下图片资源要先上传，然后css和js，最后才是网页模板',
+  `CREATE_TIME` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`TEMPLATE_CODE`,`VERSION`,`TEMPLATE_FILE_NAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='证化页面模板明细表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_PAY
+DROP TABLE IF EXISTS `CIFPAY_LC_PAY`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_PAY` (
+  `LC_PAY_ID` bigint(20) NOT NULL COMMENT '解付记录ID',
+  `LC_CONFIRM_ID` bigint(20) NOT NULL COMMENT '申请解付记录ID',
+  `LC_ID` bigint(20) DEFAULT NULL COMMENT '银信证ID',
+  `MID` varchar(32) DEFAULT NULL,
+  `ORDER_ID` varchar(128) DEFAULT NULL COMMENT '订单号',
+  `TOTAL_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '解付金额（单位分）',
+  `TRADE_TIME` timestamp NULL DEFAULT NULL COMMENT '解付处理日期',
+  `VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '解付有效期',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `LC_PAY_STATUS` varchar(32) DEFAULT NULL COMMENT '解付状态：处理中、成功、失败、不确定',
+  `LC_PAY_RESPONSE` varchar(256) DEFAULT NULL COMMENT '解付结果：银行接口返回的错误/成功信息',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`LC_PAY_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证执行解付记录表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_PRODUCT
+DROP TABLE IF EXISTS `CIFPAY_LC_PRODUCT`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_PRODUCT` (
+  `PRODUCT_ID` bigint(20) NOT NULL COMMENT '银信证产品ID',
+  `PRODUCT_CODE` varchar(32) NOT NULL COMMENT '银信证产品代码',
+  `PRODUCT_NAME` varchar(32) DEFAULT NULL COMMENT '银信证产品名称',
+  `PRODUCT_DESCRIPTION` varchar(256) DEFAULT NULL COMMENT '银信证产品描述',
+  `LC_TYPE` varchar(16) DEFAULT NULL COMMENT '银信证类型',
+  `LC_CURRENCY` varchar(8) DEFAULT NULL COMMENT '银信证币种',
+  `LC_AMOUNT_MIN` decimal(19,2) DEFAULT NULL COMMENT '银信证最小开证总额(单位分)',
+  `LC_AMOUNT_MAX` decimal(19,2) DEFAULT NULL COMMENT '银信证最大开证总额(单位分)',
+  `LC_STANDARD` bit(1) DEFAULT NULL COMMENT '银信证标准证：标准证不可以修改177的有效日期',
+  `PAYER_TYPE` varchar(16) DEFAULT NULL COMMENT '开证人类别：10个人、20企业、30全部',
+  `PAYER_ACCNO_TYPE` varchar(16) DEFAULT NULL COMMENT '支付账号类别：借记卡、信用卡、全部',
+  `RECV_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类别：10个人、20企业、30全部',
+  `THIRD_PARTY_TYPE` varchar(16) DEFAULT NULL COMMENT '第三方认证机构类别：企业、个人、指定机构',
+  `THIRD_PARTY_CODE` varchar(32) DEFAULT NULL COMMENT '第三方认证机构代码',
+  `LC_INVALID_HANDLE_CHANNEL` varchar(1) DEFAULT '9' COMMENT '银信证失效处理渠道，1=银行标准；9=其他，（暂时保留，用于区分星意和标准版）',
+  `ALLOW_MULTIPLE_OPEN` bit(1) DEFAULT NULL COMMENT '是否支持批量开证',
+  `ALLOW_PARTIAL_PAY` bit(1) DEFAULT NULL COMMENT '是否支持部分解付',
+  `AUTO_OPEN` bit(1) DEFAULT NULL COMMENT '自动开证',
+  `AUTO_RECV` bit(1) DEFAULT NULL COMMENT '自动收证',
+  `AUTO_SEND` bit(1) DEFAULT NULL COMMENT '自动履约',
+  `AUTO_CONFIRM` bit(1) DEFAULT NULL COMMENT '自动申请解付',
+  `AUTO_PAY` bit(1) DEFAULT NULL COMMENT '自动执行解付',
+  `SHOW_RECV` bit(1) DEFAULT NULL COMMENT '显示收证节点（UI）',
+  `SHOW_SEND` bit(1) DEFAULT NULL COMMENT '显示履约节点（UI）',
+  `SHOW_CONFIRM` bit(1) DEFAULT NULL COMMENT '显示申请解付节点（UI）',
+  `SHOW_SUCCESS` bit(1) DEFAULT NULL COMMENT '显示资金到账节点（UI）',
+  `DISPLAY_NAME_OPEN` varchar(64) DEFAULT NULL COMMENT '开证名称（UI）',
+  `DISPLAY_NAME_RECV` varchar(64) DEFAULT NULL COMMENT '收证名称（UI）',
+  `DISPLAY_NAME_SEND` varchar(64) DEFAULT NULL COMMENT '履约名称（UI）',
+  `DISPLAY_NAME_CONFIRM` varchar(64) DEFAULT NULL COMMENT '申请解付名称（UI）',
+  `DISPLAY_NAME_PAY` varchar(64) DEFAULT NULL COMMENT '执行解付名称（UI）',
+  `DISPLAY_NAME_SUCCESS` varchar(64) DEFAULT NULL COMMENT '资金到账名称（UI）',
+  `VALID_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '生效日期',
+  `PRODUCT_STATUS` varchar(16) NOT NULL DEFAULT '0' COMMENT '0未生效、1已生效、2已停用、3审批中',
+  `DEL_FLAG` bit(1) NOT NULL DEFAULT b'0' COMMENT '删除标识',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改日期',
+  `IS_TEMPLATE` bit(1) DEFAULT NULL COMMENT '是否模板',
+  `TEMPLATE_NAME` varchar(32) DEFAULT NULL COMMENT '模板名称',
+  `TEMPLATE_DESCRIPTION` varchar(256) DEFAULT NULL COMMENT '模板描述',
+  PRIMARY KEY (`PRODUCT_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证产品';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_RECV
+DROP TABLE IF EXISTS `CIFPAY_LC_RECV`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_RECV` (
+  `LC_RECV_ID` bigint(20) NOT NULL COMMENT '收证记录ID',
+  `LC_ID` bigint(20) DEFAULT NULL COMMENT '银信证ID',
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `RECV_ID` varchar(32) DEFAULT NULL COMMENT '收证人信息',
+  `RECV_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `RECV_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：1:个人 2:企业',
+  `RECV_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '收证方机构代码：工商银行、平安银行、支付宝',
+  `RECV_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `RECV_MOBILE` varchar(32) DEFAULT NULL,
+  `VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '收证有效期',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改日期',
+  PRIMARY KEY (`LC_RECV_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证收证记录表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_RECV_BATCH
+DROP TABLE IF EXISTS `CIFPAY_LC_RECV_BATCH`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_RECV_BATCH` (
+  `BATCH_RECV_ID` bigint(20) NOT NULL,
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `RECV_ID` varchar(32) DEFAULT NULL COMMENT '收证人信息',
+  `RECV_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `RECV_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：1:个人 2:企业',
+  `RECV_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '收证方机构代码：工商银行、平安银行、支付宝',
+  `RECV_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '收证有效期',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '修改日期',
+  PRIMARY KEY (`BATCH_RECV_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_SEND
+DROP TABLE IF EXISTS `CIFPAY_LC_SEND`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_SEND` (
+  `LC_SEND_ID` bigint(20) NOT NULL COMMENT '履约记录ID',
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `ORDER_ID` varchar(128) DEFAULT NULL COMMENT '订单号',
+  `ORDER_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '订单金额（单位分）',
+  `ORDER_CONTENT` varchar(1024) DEFAULT NULL COMMENT '订单内容，例如快递信息等',
+  `LC_CONFIRM_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '履约金额（单位分）',
+  `LC_BALANCE` decimal(19,2) DEFAULT NULL COMMENT '银信证当前余额（单位分）',
+  `SEND_TYPE` varchar(64) DEFAULT NULL COMMENT '履约方式：CP300、CP500、CP700',
+  `SEND_SIGN_CODE` varchar(64) DEFAULT NULL COMMENT '履约验证码',
+  `SEND_ORG_ID` varchar(64) DEFAULT NULL COMMENT '履约机构',
+  `SEND_ORDER_ID` varchar(64) DEFAULT NULL COMMENT '履约订单号',
+  `SEND_STATUS` varchar(32) DEFAULT NULL COMMENT '处理结果：0处理中、1处理成功、2处理失败、3不确定',
+  `PROCESS_STATUS` int(11) DEFAULT NULL COMMENT '流程状态：0待处理、32已由展期处理、40已由申请解付处理、90已由失效处理',
+  `SEND_TIME` timestamp NULL DEFAULT NULL COMMENT '履约日期',
+  `VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '履约有效期',
+  `REMARK` varchar(256) DEFAULT NULL COMMENT '备注',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`LC_SEND_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证履约记录表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_SEND_ORG
+DROP TABLE IF EXISTS `CIFPAY_LC_SEND_ORG`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_SEND_ORG` (
+  `ORG_ID` varchar(64) NOT NULL COMMENT '履约机构ID',
+  `ORG_NAME` varchar(128) DEFAULT NULL COMMENT '履约机构名称',
+  `ITF_URL` varchar(1024) DEFAULT NULL COMMENT '接口调用地址',
+  `FINISH_REGEX` varchar(256) DEFAULT NULL COMMENT '接口返回内容履约完成正则表达式',
+  `CREATE_TIME` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ORG_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='履约机构';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_STATUS_TYPE
+DROP TABLE IF EXISTS `CIFPAY_LC_STATUS_TYPE`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_STATUS_TYPE` (
+  `STATUS_CODE` varchar(32) NOT NULL,
+  `STATUS_NAME` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`STATUS_CODE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证状态定义表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_TRADE
+DROP TABLE IF EXISTS `CIFPAY_LC_TRADE`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_TRADE` (
+  `TRADE_CODE` varchar(32) NOT NULL,
+  `TRADE_NAME` varchar(256) DEFAULT NULL,
+  `TRADE_DESC` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`TRADE_CODE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证交易定义表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_TRD_FLOW
+DROP TABLE IF EXISTS `CIFPAY_LC_TRD_FLOW`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_TRD_FLOW` (
+  `FLOW_ID` bigint(20) NOT NULL COMMENT '表主键',
+  `BUSINESS_ID` bigint(20) NOT NULL COMMENT '业务ID',
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `TRADE_TYPE` varchar(20) NOT NULL COMMENT '交易类型',
+  `TRADE_FLOW_ID` varchar(20) NOT NULL COMMENT '冻结流水号、解冻流水号、划款流水号',
+  `CREATE_FREEZE_DATE` varchar(10) DEFAULT NULL,
+  `RTN_SERIAL_NO` varchar(20) DEFAULT NULL COMMENT '(最新)返回交易流水',
+  `RTN_TRADE_DATE` varchar(10) DEFAULT NULL COMMENT '(最新)返回交易日期',
+  `RTN_CODE` varchar(10) DEFAULT NULL COMMENT '(最新)返回响应码',
+  `RTN_MSG` varchar(800) DEFAULT NULL COMMENT '(最新)返回响应信息',
+  `RTN_CREATE_FREEZE_DATE` varchar(10) DEFAULT NULL,
+  `TRADE_RESULT` varchar(5) DEFAULT NULL COMMENT '经转化的交易结果 0成功 1失败 2状态未明',
+  `INSERT_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',
+  PRIMARY KEY (`FLOW_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_TRD_LOCK
+DROP TABLE IF EXISTS `CIFPAY_LC_TRD_LOCK`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_TRD_LOCK` (
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `INSERT_TIME` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',
+  PRIMARY KEY (`LC_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_TRD_MAIN
+DROP TABLE IF EXISTS `CIFPAY_LC_TRD_MAIN`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_TRD_MAIN` (
+  `BUSINESS_ID` bigint(20) NOT NULL COMMENT '表主键',
+  `LC_ID` bigint(20) NOT NULL COMMENT '银信证ID',
+  `TRADE_TYPE` varchar(10) NOT NULL COMMENT '交易类型：FREEZE、UNFREEZE、PAY、QUERY',
+  `TRADE_BANK_CODE` varchar(10) NOT NULL COMMENT '交易银行代码：ICBC、BOC、ABC ...',
+  `UNFREEZE_SERIAL_NO` bigint(20) DEFAULT NULL COMMENT '解冻流水ID,一次冻结多次解付使用',
+  `PAYER_BANK_CODE` varchar(10) DEFAULT NULL COMMENT '付款方银行代码(标识)',
+  `PAYEE_BANK_CODE` varchar(10) DEFAULT NULL COMMENT '收款方银行代码(标识)',
+  `ACCOUNT_NO` varchar(30) DEFAULT NULL COMMENT '冻结帐号、解冻帐号、付款人帐号',
+  `CARD_NO` varchar(30) DEFAULT NULL COMMENT '冻结卡号、解冻卡号、付款人卡号',
+  `CURRENCY` varchar(10) NOT NULL COMMENT '币种',
+  `AMOUNT` decimal(19,2) NOT NULL COMMENT '交易金额',
+  `HOLD_DATE` varchar(10) DEFAULT NULL COMMENT '截至(保留)日期 格式yyyy-mm-dd',
+  `HOLD_TYPE` varchar(1) DEFAULT NULL COMMENT '保留类型：3全额冻结 ',
+  `MOBILE` varchar(20) DEFAULT NULL COMMENT '电话号码',
+  `ORDER_ID` varchar(30) DEFAULT NULL COMMENT ' 订单号',
+  `THIRD_ID` varchar(30) DEFAULT NULL COMMENT '第三方商家号 ',
+  `PAYEE_CARD_NO` varchar(30) DEFAULT NULL COMMENT '收款人卡号',
+  `PAYEE_ACCOUNT_NO` varchar(30) DEFAULT NULL COMMENT '收款方帐号',
+  `BRANCH_NO` varchar(10) DEFAULT NULL COMMENT '开卡行号',
+  `RTN_SERIAL_NO` varchar(20) DEFAULT NULL COMMENT '(最新)返回交易流水',
+  `RTN_TRADE_DATE` varchar(10) DEFAULT NULL COMMENT '(最新)返回交易日期',
+  `RTN_CODE` varchar(10) DEFAULT NULL COMMENT '(最新)返回响应码',
+  `RTN_MSG` varchar(800) DEFAULT NULL COMMENT '(最新)返回响应信息',
+  `RTN_CREATE_FREEZE_DATE` varchar(10) DEFAULT NULL COMMENT '建立保留日期 格式yyyy-mm-dd',
+  `FLOW_ID` bigint(20) DEFAULT NULL,
+  `TRADE_RESULT` varchar(5) DEFAULT NULL COMMENT '经转化的交易结果 0成功 1失败 2状态未明',
+  `SYS_RETURN_CODE` int(8) DEFAULT NULL,
+  `INSERT_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '插入时间',
+  `LAST_UPD_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+  PRIMARY KEY (`BUSINESS_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_LC_TYPE
+DROP TABLE IF EXISTS `CIFPAY_LC_TYPE`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_LC_TYPE` (
+  `LC_TYPE` varchar(16) NOT NULL COMMENT '银信证类型',
+  `LC_TYPE_DESC` varchar(512) DEFAULT NULL COMMENT '银信证类型描述',
+  `MAX_DAYS_TO_RECEIVE` int(11) DEFAULT NULL COMMENT '默认收证期（天）',
+  `MAX_DAYS_TO_SEND` int(11) DEFAULT NULL COMMENT '默认履约期（天）',
+  `MAX_DAYS_TO_CONFIRM_PAY` int(11) DEFAULT NULL COMMENT '默认签收期（天）',
+  `MAX_DAYS_TO_PAY` int(11) DEFAULT NULL COMMENT '默认解付期（天）',
+  `IS_VALID` int(11) NOT NULL DEFAULT '0' COMMENT '启用状态：0 待开通，1 正常，2 已关闭',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新日期',
+  PRIMARY KEY (`LC_TYPE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证类型定义表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_PRE_LC
+DROP TABLE IF EXISTS `CIFPAY_PRE_LC`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_PRE_LC` (
+  `LC_ID` bigint(20) NOT NULL COMMENT '预开证银信证ID（同银信证ID一致）',
+  `BATCH_NO` varchar(64) DEFAULT NULL COMMENT '批次号',
+  `MID` varchar(32) NOT NULL COMMENT '商户号',
+  `ORDER_ID` varchar(128) DEFAULT NULL COMMENT '订单号',
+  `PRODUCT_ID` bigint(20) NOT NULL COMMENT '银信证产品ID',
+  `PRODUCT_CODE` varchar(32) NOT NULL COMMENT '银信证产品代码',
+  `LC_NO` varchar(512) DEFAULT NULL COMMENT '银信证展示编号',
+  `LC_TYPE` varchar(16) DEFAULT NULL COMMENT '银信证类型：CP300、CP500、CP700',
+  `LC_CURRENCY` varchar(8) DEFAULT NULL COMMENT '币种',
+  `LC_AMOUNT` decimal(19,2) DEFAULT NULL COMMENT '银信证开证总额(单位分)',
+  `PAYER_ID` varchar(32) DEFAULT NULL COMMENT '开证人标识信息',
+  `PAYER_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `PAYER_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：1:个人 2:企业',
+  `PAYER_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '开证人银行代码：ICBC、ALIPAY',
+  `PAYER_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `PAYER_MOBILE` varchar(32) DEFAULT NULL,
+  `RECV_ID` varchar(32) DEFAULT NULL COMMENT '收证人信息',
+  `RECV_ACCNO` varchar(32) DEFAULT NULL COMMENT '银行卡号、支付宝账号',
+  `RECV_TYPE` varchar(16) DEFAULT NULL COMMENT '收证人类型：1:个人 2:企业',
+  `RECV_BANK_CODE` varchar(32) DEFAULT NULL COMMENT '机构代码：工商银行、平安银行、支付宝',
+  `RECV_BANK_NAME` varchar(128) DEFAULT NULL COMMENT '开证人银行名称',
+  `RECV_MOBILE` varchar(32) DEFAULT NULL,
+  `LC_STATUS` varchar(32) DEFAULT NULL COMMENT '银信证状态，00新建、88交易成功、99交易失败',
+  `RECV_VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '收证有效期',
+  `SEND_VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '履约有效期',
+  `CONFIRM_VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '申请解付有效期',
+  `PAY_VALID_TIME` timestamp NULL DEFAULT NULL COMMENT '执行解付有效期',
+  `LC_STATE_RETURN_URL` varchar(512) DEFAULT NULL COMMENT 'UI响应式开证回调URL，若为纯API后台开证，则该字段可选',
+  `LC_STATE_NOTIFY_URL` varchar(512) DEFAULT NULL COMMENT '银信证状态变更通知URL',
+  `LC_ORDER_DETAIL_URL` varchar(512) DEFAULT NULL COMMENT '银信证商户订单详情URL',
+  `THIRD_PARTY_CODE` varchar(32) DEFAULT NULL COMMENT '第三方认证机构代码',
+  `PAY_TYPE` varchar(16) DEFAULT NULL COMMENT '解付类型：SINGLE单次解付、MULTIPLE同收款人多次解付、',
+  `IS_VALID` bit(1) NOT NULL DEFAULT b'1' COMMENT '是否有效',
+  `CREATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `REMARK` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`LC_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证预开证表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_SYS_CODE
+DROP TABLE IF EXISTS `CIFPAY_SYS_CODE`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_SYS_CODE` (
+  `CODE_TYPE` varchar(32) NOT NULL,
+  `CODE_VALUE` varchar(32) NOT NULL,
+  `CODE_DESC` varchar(64) DEFAULT NULL,
+  `REMARK` varchar(64) DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`CODE_TYPE`,`CODE_VALUE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数据字典';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_SYS_ERR_CODE
+DROP TABLE IF EXISTS `CIFPAY_SYS_ERR_CODE`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_SYS_ERR_CODE` (
+  `ERR_CODE` int(11) NOT NULL,
+  `ERR_MSG` varchar(256) DEFAULT NULL,
+  `CATEGORY` varchar(32) DEFAULT NULL COMMENT '错误码分类',
+  `REMARK` varchar(256) DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='错误码表';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_SYS_PARAM
+DROP TABLE IF EXISTS `CIFPAY_SYS_PARAM`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_SYS_PARAM` (
+  `PARAM_CODE` varchar(32) NOT NULL,
+  `PARAM_VALUE` varchar(1024) DEFAULT NULL,
+  `REMARK` varchar(256) DEFAULT NULL,
+  `CREATE_TIME` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`PARAM_CODE`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统参数';
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_THIRD_ICBCBANKENT_PAYENT
+DROP TABLE IF EXISTS `CIFPAY_THIRD_ICBCBANKENT_PAYENT`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_THIRD_ICBCBANKENT_PAYENT` (
+  `BATCH_SEQNO` varchar(35) NOT NULL,
+  `DETAIL_SEQNO` varchar(35) NOT NULL,
+  `CALLER_CODE` varchar(15) NOT NULL COMMENT '调用者（应用系统）的唯一代码，CIFPAYLC代表调用者为银信证核心业务应用',
+  `CALLER_INSTRUCTION_NO` varchar(32) NOT NULL COMMENT '调用者应用系统的为该交易定义的唯一批次号，该批次号在调用者应用系统内部必须保证唯一',
+  `CALLER_INSTRUCTION_DETAIL_NO` varchar(32) NOT NULL COMMENT '调用者应用系统的为每笔交易指令明细定义的序号，必须保证在批次号内唯一',
+  `PAY_ENTERPRISE_CODE` varchar(15) NOT NULL COMMENT '付款方企业代码，例如XDS表示使用星电商公司的账号作为付款方',
+  `TRAN_DATE` varchar(8) NOT NULL COMMENT '交易日期yyyyMMdd',
+  `TRAN_TIME` varchar(12) NOT NULL COMMENT '交易时间hhmmssaaabbb精确到微秒',
+  `CURRENCY_CODE` varchar(8) NOT NULL COMMENT '银信证定义币种代码，CNY人民币',
+  `ICBC_CURRENCY_TYPE` varchar(3) NOT NULL COMMENT '工行定义的币种代码，001人民币',
+  `PAY_AMT` decimal(17,0) unsigned NOT NULL COMMENT '金额，无正负号，不带小数点，以分作单位',
+  `ICBC_CIS` varchar(60) NOT NULL COMMENT '集团CIS号，银企客户注册时的归属编码',
+  `ICBC_BANK_CODE` varchar(3) NOT NULL COMMENT '归属银行编号，银企客户注册时的归属单位',
+  `ICBC_CERT_ID` varchar(40) NOT NULL COMMENT '证书ID',
+  `ICBC_PAY_TYPE` varchar(1) NOT NULL COMMENT '记账处理方式，1加急，2普通',
+  `PAY_ACCOUNT_NO` varchar(19) NOT NULL COMMENT '本方账号，即付方账号',
+  `RECV_BANK_CODE` varchar(255) NOT NULL COMMENT '收款银行代码，对应LC_BANK表',
+  `RECV_BANK_NAME` varchar(60) NOT NULL COMMENT '交易对方银行名称，长度不能超出银行限制',
+  `RECV_BANK_CITY_NAME` varchar(40) NOT NULL COMMENT '收款方所在城市名称',
+  `RECV_ACCOUNT_NO` varchar(34) NOT NULL COMMENT '对方账号',
+  `RECV_ACCOUNT_NAME` varchar(100) NOT NULL COMMENT '对方账户名称',
+  `FUND_USE_DESC` varchar(20) NOT NULL COMMENT '用途中文描述',
+  `SUMMARY` varchar(20) DEFAULT NULL COMMENT '摘要',
+  `CORPORATE_PERSONAL_FLAG` varchar(1) NOT NULL COMMENT '对公对私标志，0对公账户，1个人账户',
+  `CROSS_BANK_FLAG` varchar(1) NOT NULL COMMENT '系统内外标志，1系统内，2系统外',
+  `SAME_CITY_FLAG` varchar(1) DEFAULT NULL COMMENT '同城异地标志，1同城，2异地',
+  `TXN_RESULT_STATUS` varchar(1) NOT NULL COMMENT '交易结果状态，N新交易待处理，S银行交易成功，F银行交易失败，P银行处理中，U交易结果暂不明确',
+  `BANK_RET_BATCH_SERIAL_NO` varchar(15) DEFAULT NULL COMMENT '平台交易流水号，银行产生的银行批次号',
+  `BANK_RET_DETAIL_ORDER_NO` varchar(6) DEFAULT NULL COMMENT '银行产生的批次内的小序号，和银行产生的批次组合后在银行端对应唯一一笔交易明细',
+  `BANK_ORI_DETAIL_RESULT_CODE` varchar(2) DEFAULT NULL,
+  `BANK_ADDI_BATCH_RETURN_CODE` varchar(5) DEFAULT NULL,
+  `BANK_ADDI_BATCH_RETURN_MSG` varchar(100) DEFAULT NULL,
+  `BANK_ADDI_DETAIL_RETURN_CODE` varchar(5) DEFAULT NULL,
+  `BANK_ADDI_DETAIL_RETURN_MSG` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`BATCH_SEQNO`,`DETAIL_SEQNO`),
+  UNIQUE KEY `UDX_PAYENT_01` (`BATCH_SEQNO`,`DETAIL_SEQNO`),
+  UNIQUE KEY `UDX_PAYENT_02` (`CALLER_CODE`,`CALLER_INSTRUCTION_NO`,`CALLER_INSTRUCTION_DETAIL_NO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Data exporting was unselected.
+
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_TRADE_TYPE
+DROP TABLE IF EXISTS `CIFPAY_TRADE_TYPE`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_TRADE_TYPE` (
+  `TRADE_STATUS` varchar(32) NOT NULL,
+  `TRADE_DESC` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`TRADE_STATUS`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银信证交易状态定义表';
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

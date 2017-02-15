@@ -1,0 +1,10 @@
+package com.cifpay.lc.domain.message;
+
+import java.io.Serializable;
+
+/**
+ * Created by sweet on 16-10-26.
+ */
+public abstract class MessageParamBean implements Serializable {
+    private static final long serialVersionUID = 3007013778902964694L;
+}

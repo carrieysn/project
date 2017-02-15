@@ -1,0 +1,116 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class LcAcc {
+    private Long lcAccId;
+
+    private Long lcId;
+
+    private BigDecimal lcOpenAmt;
+
+    private BigDecimal lcFreezeAmt;
+
+    private BigDecimal lcAvailableAmt;
+
+    private BigDecimal lcAppointmentAmt;
+
+    private BigDecimal changeAmt;
+
+    private String bizTable;
+
+    private Long bizSeqno;
+
+    private Date createTime;
+
+    private String remark;
+
+    public Long getLcAccId() {
+        return lcAccId;
+    }
+
+    public void setLcAccId(Long lcAccId) {
+        this.lcAccId = lcAccId;
+    }
+
+    public Long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(Long lcId) {
+        this.lcId = lcId;
+    }
+
+    public BigDecimal getLcOpenAmt() {
+        return lcOpenAmt;
+    }
+
+    public void setLcOpenAmt(BigDecimal lcOpenAmt) {
+        this.lcOpenAmt = lcOpenAmt;
+    }
+
+    public BigDecimal getLcFreezeAmt() {
+        return lcFreezeAmt;
+    }
+
+    public void setLcFreezeAmt(BigDecimal lcFreezeAmt) {
+        this.lcFreezeAmt = lcFreezeAmt;
+    }
+
+    public BigDecimal getLcAvailableAmt() {
+        return lcAvailableAmt;
+    }
+
+    public void setLcAvailableAmt(BigDecimal lcAvailableAmt) {
+        this.lcAvailableAmt = lcAvailableAmt;
+    }
+
+    public BigDecimal getLcAppointmentAmt() {
+        return lcAppointmentAmt;
+    }
+
+    public void setLcAppointmentAmt(BigDecimal lcAppointmentAmt) {
+        this.lcAppointmentAmt = lcAppointmentAmt;
+    }
+
+    public BigDecimal getChangeAmt() {
+        return changeAmt;
+    }
+
+    public void setChangeAmt(BigDecimal changeAmt) {
+        this.changeAmt = changeAmt;
+    }
+
+    public String getBizTable() {
+        return bizTable;
+    }
+
+    public void setBizTable(String bizTable) {
+        this.bizTable = bizTable == null ? null : bizTable.trim();
+    }
+
+    public Long getBizSeqno() {
+        return bizSeqno;
+    }
+
+    public void setBizSeqno(Long bizSeqno) {
+        this.bizSeqno = bizSeqno;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark == null ? null : remark.trim();
+    }
+}

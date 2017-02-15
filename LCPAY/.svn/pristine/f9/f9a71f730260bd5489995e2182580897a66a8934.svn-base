@@ -1,0 +1,70 @@
+package com.cifpay.lc.gateway.input.bank;
+
+/**
+ * Created by sweet on 16-9-21.
+ */
+public class DepositReq {
+    private Long lcId; // 银信证ID(*)
+    private String mid; // 商户号(*)
+
+    private String mobileNo; // 手机号
+    private String accountNo; // 银联卡号
+    private String smsCode;     // 短信验证码
+
+    public Long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(Long lcId) {
+        this.lcId = lcId;
+    }
+
+    public String getMid() {
+        return mid;
+    }
+
+    public void setMid(String mid) {
+        this.mid = mid;
+    }
+
+    public String getAccountNo() {
+        return accountNo;
+    }
+
+    public void setAccountNo(String accountNo) {
+        this.accountNo = accountNo;
+    }
+
+    public String getSmsCode() {
+        return smsCode;
+    }
+
+    public void setSmsCode(String smsCode) {
+        this.smsCode = smsCode;
+    }
+
+    public String getMobileNo() {
+        return mobileNo;
+    }
+
+    public void setMobileNo(String mobileNo) {
+        this.mobileNo = mobileNo;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DepositReq [lcId=");
+        builder.append(lcId);
+        builder.append(", mid=");
+        builder.append(mid);
+        builder.append(", mobileNo=");
+        builder.append(mobileNo);
+        builder.append(", accountNo=");
+        builder.append(accountNo);
+        builder.append(", smsCode=");
+        builder.append(smsCode);
+        builder.append("]");
+        return builder.toString();
+    }
+}

@@ -1,0 +1,9 @@
+package com.cifpay.lc.std.sched.task;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public abstract class BaseTask {
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+}

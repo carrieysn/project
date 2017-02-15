@@ -1,0 +1,13 @@
+package com.cifpay.lc.api.gateway.basic.signkey;
+
+import com.cifpay.lc.api.CoreBusinessService;
+
+/**
+ * 商户私有信息提供服务，通过该服务接口，Gateway可以获取到指定商户的商户状态、签名Key等敏感信息。
+ * 
+ * 
+ *
+ */
+public interface MerPrivateInfoProviderService extends CoreBusinessService<String, MerFrontValidationMaterial> {
+
+}

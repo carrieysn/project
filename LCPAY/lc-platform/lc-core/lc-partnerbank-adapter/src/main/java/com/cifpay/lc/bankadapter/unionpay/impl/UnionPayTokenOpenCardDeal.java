@@ -1,0 +1,222 @@
+package com.cifpay.lc.bankadapter.unionpay.impl;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.alibaba.dubbo.common.utils.StringUtils;
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.input.AbsTradeParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.OpenCardParam;
+import com.cifpay.lc.bankadapter.api.output.AbsBusinessResult;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+import com.cifpay.lc.bankadapter.unionpay.constant.UnionPayConfig;
+import com.cifpay.lc.bankadapter.unionpay.util.DataUtil;
+import com.cifpay.lc.bankadapter.unionpay.util.EncryptDataUtil;
+import com.cifpay.lc.bankadapter.unionpay.util.UnionPaySettingUtil;
+import com.cifpay.lc.bankadapter.universal.IBankDeal;
+import com.cifpay.lc.bankadapter.universal.tool.StringTool;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.db.dao.AdminLcMerchantDao;
+import com.cifpay.lc.core.db.dao.LcTrdUnionPayFlowDao;
+import com.cifpay.lc.core.db.dao.LcTrdUnionPayTokenDao;
+import com.cifpay.lc.core.db.dao.TrdCodeDescDao;
+import com.cifpay.lc.core.db.pojo.AdminLcMerchant;
+import com.cifpay.lc.core.db.pojo.TrdCodeDesc;
+import com.cifpay.lc.core.db.pojo.TrdUnionPayFlow;
+import com.cifpay.lc.core.db.pojo.UnionPayTrdToken;
+import com.cifpay.lc.core.exception.BankAdapterException;
+import com.cifpay.lc.core.uid.LcTrdFlowIdWorker;
+
+/**
+ * 无跳转 银联全渠道支付开通交易
+ * 
+ * @author Administrator
+ *
+ */
+@Component
+public class UnionPayTokenOpenCardDeal implements IBankDeal {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(UnionPayTokenOpenCardDeal.class);
+
+	@Autowired
+	private LcTrdFlowIdWorker idWork;
+
+	@Autowired
+	private LcTrdUnionPayFlowDao unionPayFlowDao;
+
+	@Autowired
+	private LcTrdUnionPayTokenDao lcTrdUnionPayTokenDao;
+
+	@Autowired
+	private TrdCodeDescDao trdCodeDescDao;
+
+	@Autowired
+	private AdminLcMerchantDao adminLcMerchantDao;
+
+	@Override
+	public String getBankCode() {
+		// TODO Auto-generated method stub
+		return TradeConstant.TRADE_CONFIG.TRADE_UNION_PAY + TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_OPEN_CARD;
+	}
+
+	@Override
+
+	public AbsBusinessResult bankDeal(AbsTradeParam tradeParam) throws Exception {
+		// TODO
+		OpenCardParam param = (OpenCardParam) tradeParam;
+		// 1. 转换发送银联参数
+		Map<String, String> requestData = transToReqData(param);
+		LOGGER.info("无跳转-银联全渠道支付开通交易请求数据！ {}", StringTool.printMap(requestData));
+		// 2. 插入流水记录 TODO 设置状态为未明
+		TrdUnionPayFlow flowInfo = insertUnionPayFlow(param);
+		// 3. 发送请求
+		String requestFrontUrl = UnionPayConfig.frontTransUrl;
+
+		String html = EncryptDataUtil.createAutoFormHtml(requestFrontUrl, requestData,
+				UnionPaySettingUtil.encoding_UTF8); // 生成自动跳转的Html表单
+
+		LOGGER.info("无跳转-银联全渠道支付开通交易请求返回html表单！ ", html);
+
+		GeneralTradeResult result = new GeneralTradeResult();
+		Map<String, String> resultMap = new HashMap<String, String>();
+		resultMap.put("data", html);
+		result.setResultMap(resultMap);
+		return result;
+
+	}
+
+	public GeneralTradeResult transToSysParam(GeneralTradeResult result, String respCode) {
+		TrdCodeDesc codeDesc = new TrdCodeDesc();
+		codeDesc.setPlatformId(TradeConstant.TRADE_CONFIG.TRADE_UNION_PAY);
+		codeDesc.setRespCode(respCode);
+		TrdCodeDesc getCodeDesc = trdCodeDescDao.selectBySelective(codeDesc);
+		int sysCode = 0;
+		String resultDesc = "";
+		if (null == getCodeDesc) {
+			sysCode = ReturnCode.CORE_BA_UNDEFINE_N105999;
+		} else {
+			sysCode = DataUtil.isEmpty(getCodeDesc.getSysCode()) ? ReturnCode.CORE_BA_UNDEFINE_N105999
+					: Integer.valueOf(getCodeDesc.getSysCode());
+			resultDesc = getCodeDesc.getSysDesc();
+		}
+		result.setSysReturnCode(sysCode);
+		result.setResultDesc(resultDesc);
+		return result;
+	}
+
+	// 记录银联交易渠道流水信息
+	public TrdUnionPayFlow insertUnionPayFlow(OpenCardParam param) {
+
+		TrdUnionPayFlow payFlow = new TrdUnionPayFlow();
+		long flowId = idWork.nextId();
+		payFlow.setFlowId(flowId);
+		payFlow.setBusinessId(param.getBusinessId());
+		payFlow.setLcId(param.getLcId());
+		payFlow.setMerId(param.getMerId());
+		payFlow.setSubMerId(param.getSubMerId());
+		payFlow.setTxnTime(param.getTxnTime());
+		payFlow.setOrderId(param.getOrderId());
+		payFlow.setTxnType(UnionPaySettingUtil.opencard_txnType);
+		payFlow.setTxnSubType(UnionPaySettingUtil.opencard_txnSubType);
+		payFlow.setBizType(UnionPaySettingUtil.token_bizType);
+		payFlow.setInsertTime(new Date());
+		payFlow.setSyncTradeResult(UnionPaySettingUtil.TRADE_RESULT__UNKNOWN);
+		unionPayFlowDao.insertSelective(payFlow);
+		return payFlow;
+
+	}
+
+	public Map<String, String> transToReqData(OpenCardParam param) {
+		return transToReqData4Level2(param);
+	}
+
+	public Map<String, String> transToReqData4Level2(OpenCardParam param) {
+
+		Map<String, String> inputParam = new HashMap<String, String>();
+		String accNo = param.getAccNo();
+		inputParam.put("version", UnionPaySettingUtil.version);
+		inputParam.put("encoding", UnionPaySettingUtil.encoding_UTF8);
+		inputParam.put("signMethod", UnionPaySettingUtil.signMethod);
+		inputParam.put("txnType", UnionPaySettingUtil.opencard_txnType);
+		inputParam.put("txnSubType", UnionPaySettingUtil.opencard_txnSubType);
+		inputParam.put("bizType", UnionPaySettingUtil.token_bizType);
+		inputParam.put("channelType", UnionPaySettingUtil.channelType);
+		// String merId = UnionPaySettingUtil.getTokenMerId();
+		String subMerId = param.getSubMerId();// 二级商户代码
+		inputParam.put("merId", subMerId);
+		// param.setMerId(merId);
+
+		// inputParam.put("subMerId", subMerId);
+		AdminLcMerchant merChant = adminLcMerchantDao.selectMerchantInfos(subMerId);
+		if (null == merChant) {
+			LOGGER.info("二级商户信息不能为空");
+			throw new BankAdapterException(ReturnCode.CORE_BA_PARAM_EXCEPTION_N105011, "二级商户信息不能为空.");
+		}
+		// inputParam.put("subMerName", merChant.getMerchantName());// 二级商户名称
+		// inputParam.put("subMerAbbr", merChant.getMerSiteName());// 二级商户简称
+		inputParam.put("reqReserved", "subMerId=" + subMerId + "#accNo=" + accNo + "");
+		inputParam.put("accessType", UnionPaySettingUtil.accessType_0);// 普通类商户
+		inputParam.put("orderId", param.getOrderId());
+		inputParam.put("txnTime", param.getTxnTime());
+		inputParam.put("accType", StringUtils.isEmpty(param.getAccType()) ? "01" : param.getAccType());
+		
+		String trId = merChant.getTrId();// 需设置？
+		inputParam.put("tokenPayData", "{trId=" + trId + "&tokenType=" + merChant.getTokenType() + "}");// 测试
+		inputParam.put("frontUrl", UnionPaySettingUtil.openCartFrontUrL);// 前台通知地址
+																			// 需设置
+		inputParam.put("backUrl", UnionPaySettingUtil.openCartBackUrL);
+		// inputParam =
+		// EncryptDataUtil.sign(inputParam,UnionPaySettingUtil.encoding_UTF8);
+		inputParam = UnionPaySettingUtil.signData(inputParam, merChant.getAdminCredentials());
+		// contentData.put("reqReserved", "111");
+		return inputParam;
+	}
+
+	public Map<String, String> transToReqData4Level1(OpenCardParam param) {
+
+		Map<String, String> inputParam = new HashMap<String, String>();
+		String accNo = param.getAccNo();
+		inputParam.put("version", UnionPaySettingUtil.version);
+		inputParam.put("encoding", UnionPaySettingUtil.encoding_UTF8);
+		inputParam.put("signMethod", UnionPaySettingUtil.signMethod);
+		inputParam.put("txnType", UnionPaySettingUtil.opencard_txnType);
+		inputParam.put("txnSubType", UnionPaySettingUtil.opencard_txnSubType);
+		inputParam.put("bizType", UnionPaySettingUtil.token_bizType);
+		inputParam.put("channelType", UnionPaySettingUtil.channelType);
+		String merId = UnionPaySettingUtil.getTokenMerId();
+		inputParam.put("merId", merId);
+		param.setMerId(merId);
+		String subMerId = param.getSubMerId();// 二级商户代码
+		AdminLcMerchant merChant = adminLcMerchantDao.selectMerchantInfos(subMerId);
+		if (null == merChant) {
+			LOGGER.info("二级商户信息不能为空");
+			throw new BankAdapterException(ReturnCode.CORE_BA_PARAM_EXCEPTION_N105011, "二级商户信息不能为空.");
+		}
+		inputParam.put("subMerId", subMerId);
+		inputParam.put("subMerName", merChant.getMerchantName());// 二级商户名称
+		inputParam.put("subMerAbbr", merChant.getMerSiteName());// 二级商户简称
+		inputParam.put("reqReserved", "subMerId=" + subMerId + "#accNo=" + accNo + "");
+		inputParam.put("accessType", UnionPaySettingUtil.accessType_2);// 测试
+		inputParam.put("orderId", param.getOrderId());
+		inputParam.put("txnTime", param.getTxnTime());
+		inputParam.put("accType", StringUtils.isEmpty(param.getAccType()) ? "01" : param.getAccType());
+		String trId = merChant.getTrId();// 需设置？
+		
+		inputParam.put("tokenPayData", "{trId=" + trId + "&tokenType=" + merChant.getTokenType() + "}");// 测试
+		inputParam.put("frontUrl", UnionPaySettingUtil.openCartFrontUrL);// 前台通知地址
+																			// 需设置
+		inputParam.put("backUrl", UnionPaySettingUtil.openCartBackUrL);
+		// inputParam =
+		// EncryptDataUtil.sign(inputParam,UnionPaySettingUtil.encoding_UTF8);
+		inputParam = UnionPaySettingUtil.signData(inputParam, merChant.getAdminCredentials());
+		// contentData.put("reqReserved", "111");
+		return inputParam;
+	}
+
+}

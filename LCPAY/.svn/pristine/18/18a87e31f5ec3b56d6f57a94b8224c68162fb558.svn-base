@@ -1,0 +1,83 @@
+package com.cifpay.lc.std.business.lc;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.ApplyService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.BizConstants.LcTranCode;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.core.cache.pojo.LcProductCache;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.common.CoreBusinessTranCode;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.domain.lc.ApplyInputBean;
+import com.cifpay.lc.domain.lc.ApplyOutputBean;
+import com.cifpay.lc.std.interceptor.BusinessLockInterceptor;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.interceptor.LcAutoFlowProcessingInterceptor;
+import com.cifpay.lc.std.domain.kernel.ApplyKernelInputBean;
+import com.cifpay.lc.std.domain.kernel.ApplyKernelOutputBean;
+import com.cifpay.lc.std.kernel.lc.ApplyKernel;
+import com.cifpay.lc.std.mapper.lc.input.ApplyInputBeanMapper;
+import com.cifpay.lc.std.mapper.lc.output.ApplyKernelOutputBeanMapper;
+
+/**
+ * 申请解付
+ * 
+ * @author sweet
+ *
+ */
+@Service("applyService")
+@CoreBusinessInterceptorConfig({ BusinessLoggingInterceptor.class, BusinessLockInterceptor.class, LcAutoFlowProcessingInterceptor.class })
+@CoreBusinessTranCode(LcTranCode.APPLY)
+public class ApplyServiceImpl extends LcProductServiceImplBase<ApplyInputBean, ApplyOutputBean> implements ApplyService {
+
+	@Autowired
+	private ApplyKernel apply;
+
+	@Override
+	public void validateInputParameters(ApplyInputBean inputBean) throws CoreValidationRejectException {
+
+		if (inputBean.getLcId() <= 0) {
+			throw new CoreValidationRejectException(103200, "银信证ID不允许为空");
+		}
+	}
+
+	@Override
+	protected void validateLc(ApplyInputBean inputBean, Lc lc) throws CoreValidationRejectException {
+		if (lc == null) {
+			throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_NOT_EXISTS, "银信证记录不存在");
+		}
+		if (lc.getLcStatus() != null && LcStatusType.RETREAT.getStatusCode().compareTo(lc.getLcStatus()) == 0) {
+			throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_INVALID, "银信证已失效");
+		}
+	}
+
+	@Override
+	protected void validateLcProductRule(ApplyInputBean inputBean, LcProductCache lcProduct, CoreBusinessContext context) throws CoreValidationRejectException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected BusinessOutput<ApplyOutputBean> processBusiness(ApplyInputBean inputBean, CoreBusinessContext context) throws CoreBusinessException {
+
+		logger.info("~~~进入申请解付交易");
+
+		ApplyKernelInputBean kernelInputBean = ApplyInputBeanMapper.toApplyKernelInputBean(inputBean);
+		BusinessOutput<ApplyKernelOutputBean> kernelOutputBean = apply.invokeKernel(kernelInputBean, context);
+
+		if (kernelOutputBean.isSuccess()) {
+			ApplyOutputBean outputBean = ApplyKernelOutputBeanMapper.toApplyOutputBean(kernelOutputBean.getData());
+
+			return BusinessOutput.success(outputBean);
+		}
+
+		return BusinessOutput.fail(kernelOutputBean.getReturnCode(), kernelOutputBean.getReturnMsg());
+	}
+}

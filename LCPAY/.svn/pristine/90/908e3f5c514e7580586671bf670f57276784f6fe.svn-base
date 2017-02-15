@@ -1,0 +1,74 @@
+package com.cifpay.lc.core.common;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.cifpay.lc.core.component.BusinessLockProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cifpay.lc.constant.BizConstants.LcTranCode;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.db.dao.LcLockDao;
+import com.cifpay.lc.core.db.pojo.LcLock;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DbBusinessLockProvider implements BusinessLockProvider {
+
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private LcLockDao lcLockDao; // 锁表控重DAO
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.cifpay.lc.core.component.BusinessLockProvider#lock(java.util.Collection,
+     * com.cifpay.lc.constant.BizConstants.LcTranCode)
+     */
+    @Override
+    public void lock(Long[] lcIdList, LcTranCode lcTranCode) throws CoreBusinessException {
+        try {
+            List<Long> lcList = Arrays.asList(lcIdList);
+            logger.debug("业务加锁：{}", String.join(",", lcList.stream().map(x -> x.toString()).toArray(String[]::new)));
+            // 插入锁表防止高并发时重复交易
+            List<LcLock> lcLockList = lcList.stream().map(x -> {
+                LcLock lcLock = new LcLock();
+                lcLock.setLcId(x);
+                lcLock.setTradeCode(lcTranCode.getTranCodeStr());
+
+                return lcLock;
+            }).collect(Collectors.toList());
+
+            lcLockDao.bulkInsert(lcLockList);
+
+        } catch (Exception e) {
+            logger.warn("业务加锁失败", e);
+            throw new CoreBusinessException(ReturnCode.CORE_COMMON_BEGIN_BUSINESS_LOCK_FAILED, "业务加锁失败");
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.cifpay.lc.core.component.BusinessLockProvider#unLock()
+     */
+    @Override
+    public void unLock(Long[] lcIdList, LcTranCode lcTranCode) {
+        try {
+            List<Long> lcList = Arrays.asList(lcIdList);
+            // 交易处理完成从锁表删除
+            lcLockDao.bulkRemove(lcIdList, lcTranCode.getTranCodeStr());
+
+            logger.debug("业务解锁：{}", String.join(",", lcList.stream().map(x -> x.toString()).toArray(String[]::new)));
+        } catch (Exception e) {
+            throw new CoreBusinessException(ReturnCode.CORE_COMMON_BEGIN_BUSINESS_LOCK_FAILED, e.getMessage());
+        }
+    }
+
+}

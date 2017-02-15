@@ -1,0 +1,49 @@
+package com.cifpay.lc.core.cache.service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+
+import com.cifpay.lc.core.cache.pojo.LcCache;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+
+@Component
+public class LcCacheServant {
+
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    private static final String KEY_PREFIX = "LC_";
+
+    @Autowired
+    LcDao lcDao;
+
+    @Cacheable(value = KEY_PREFIX, key = "'Lc_selectByPrimaryKey' + #lcId", unless = "#result == null")
+    public LcCache selectByPrimaryKey(Long lcId) {
+        Lc lc = lcDao.selectByPrimaryKey(lcId);
+        if (lc != null) {
+            LcCache lcCache = new LcCache();
+            BeanUtils.copyProperties(lc, lcCache);
+
+            return lcCache;
+        }
+
+        return null;
+    }
+
+    @CacheEvict(value = KEY_PREFIX, key = "'Lc_selectByPrimaryKey' + #lc.getLcId()")
+    public int insert(Lc lc) {
+        return lcDao.insert(lc);
+    }
+
+
+    @CacheEvict(value = KEY_PREFIX, key = "'Lc_selectByPrimaryKey' + #lc.getLcId()", condition = "#result == true ")
+    public boolean updateByPrimaryKeySelective(Lc lc) {
+        return lcDao.updateByPrimaryKeySelective(lc);
+    }
+
+}

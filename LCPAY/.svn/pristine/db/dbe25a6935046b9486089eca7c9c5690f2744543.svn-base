@@ -1,0 +1,24 @@
+package com.cifpay.lc.std.util;
+
+import java.io.Serializable;
+
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.std.domain.paychannel.FreezeOutputBean;
+
+public class BeanFactory {
+
+    public static <T extends Serializable> FreezeOutputBean<T> getSucFreezeOutputBean() {
+        FreezeOutputBean<T> outputBean = new FreezeOutputBean<T>();
+        outputBean.setSuccess(true);
+        outputBean.setMessage("操作成功");
+        return outputBean;
+    }
+
+    public static <T extends Serializable> FreezeOutputBean<T> getFailFreezeOutputBean(String message) {
+        FreezeOutputBean<T> outputBean = new FreezeOutputBean<T>();
+        outputBean.setSuccess(false);
+        outputBean.setMessage(message);
+        outputBean.setLcTranStatus(LcTranStatus.FAIL);
+        return outputBean;
+    }
+}

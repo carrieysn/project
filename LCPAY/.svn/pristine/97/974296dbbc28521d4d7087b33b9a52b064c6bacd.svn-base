@@ -1,0 +1,16 @@
+package com.cifpay.lc.std.domain.kernel;
+
+public class InvalidateLcKernelInputBean extends KernelBaseInputBean {
+
+	private static final long serialVersionUID = 7481444774522649998L;
+
+	private String remark; 	// 备注
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+}

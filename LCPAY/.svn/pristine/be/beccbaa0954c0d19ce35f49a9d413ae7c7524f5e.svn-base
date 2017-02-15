@@ -1,0 +1,41 @@
+package com.cifpay.lc.gateway.common.exception;
+
+/**
+ * API接口抛出的异常
+ */
+public abstract class AbstractGatewayApiException extends AbstractGatewayException {
+    private static final long serialVersionUID = -6629234737489757804L;
+
+    public AbstractGatewayApiException(int returnCode, String message) {
+        super(returnCode, message);
+    }
+
+    public AbstractGatewayApiException(int returnCode, String message, Throwable cause) {
+        super(returnCode, message, cause);
+    }
+
+    public AbstractGatewayApiException(int returnCode, Throwable cause) {
+        super(returnCode, cause);
+    }
+
+    public String getFormatedReturnCode() {
+        return getFormatedReturnCodePrefix() + "-" + Math.abs(this.getReturnCode());
+    }
+
+    @Override
+    public String getMessage() {
+        String msg = super.getMessage();
+        return "[" + getFormatedReturnCode() + "]" + msg;
+    }
+
+    /**
+     * 用于格式化返回码，以便错误信息查看者可以快速地区分错误的大致范围。
+     * 例如，假设错误码为-123456，实现将getFormatedReturnCodePrefix()设定为“VA”，那么，
+     * 最终通过getMessage( )获取到的异常信息类似如下：
+     * <p>
+     * “[VA-123456]银信证当前所处状态不允此进行此操作”
+     *
+     * @return
+     */
+    protected abstract String getFormatedReturnCodePrefix();
+}

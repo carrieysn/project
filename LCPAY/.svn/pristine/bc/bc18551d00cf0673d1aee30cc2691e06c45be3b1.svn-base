@@ -1,0 +1,94 @@
+package com.cifpay.lc.std.sched.task.lc;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.gateway.lc.InvalidateLcService;
+import com.cifpay.lc.api.gateway.lc.TransferService;
+import com.cifpay.lc.constant.enums.LcInvalidateType;
+import com.cifpay.lc.core.db.dao.LcConfirmPayDao;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcConfirmPay;
+import com.cifpay.lc.domain.lc.InvalidateLcInputBean;
+import com.cifpay.lc.domain.lc.TransferInputBean;
+import com.cifpay.lc.std.sched.task.SimpleTask;
+
+/**
+ *超过执行解付有效期则自动划款解付
+ * @author Administrator
+ *
+ */
+@Component
+public class LcApplyInvalidateTask extends SimpleTask {
+
+private static Logger logger = LoggerFactory.getLogger(TransferTask.class);
+    
+    public String DISTRIBUTE_LOCK_PREFIX = "/CIFPAY/LOCK/LCAUTOINVALIDATE";
+
+    @Autowired
+    private LcDao lcDao;
+
+    @Autowired
+    private InvalidateLcService invalidateLcService;
+    
+    @Override
+	public String getLockName() {
+		return DISTRIBUTE_LOCK_PREFIX;
+	}
+
+
+	@Override
+	public void handleBusiness() {
+		int startIndex = 0;
+        int PAGE_SIZE = 200;
+        
+        List<String> count = new ArrayList<String>();
+        List<Lc> lcList = lcDao.selectApplyExpired(startIndex, PAGE_SIZE);
+        
+        while (lcList != null && !lcList.isEmpty()) {
+            lcList.stream().parallel().forEach(x -> {
+            	InvalidateLcInputBean inputBean = new InvalidateLcInputBean();
+                inputBean.setLcId(x.getLcId());
+                inputBean.setMerId(x.getMid());
+                inputBean.setInvalidateType(LcInvalidateType.SENDBACK);
+                inputBean.setRemark("[履约到期，未申请解付]自动失效");
+                
+            	executor.execute(new Runnable() {
+	                @Override
+					public void run() {
+	                	try {
+		                    invalidateLcService.execute(new BusinessInput<>(inputBean));
+		                    count.add("1");
+		                } catch (Exception e) {
+		                    logger.error("自动失效发生错误：", e);
+		                }
+					}
+            	});
+            });
+
+            startIndex += PAGE_SIZE;
+            lcList = lcDao.selectApplyExpired(startIndex, PAGE_SIZE);
+        }
+        logger.debug(" ======== 失效操作：[开证到期，未收证]处理完成......共处理{}条 ======== ", count.size());
+	}
+
+
+
+	/**
+     * [收证有效期]到期（每分钟执行）
+     */
+    @Scheduled(cron = "0 * * * * *")
+    public void checkLcTransfer() {
+    	logger.debug(" ======== 开始失效操作：[开证到期，未收证] ========  ");
+        execute();
+        logger.debug(" ======== 结束失效操作：[开证到期，未收证]  =========");
+    }
+}

@@ -1,0 +1,280 @@
+package com.cifpay.lc.versionb.withdraw.icbcbankent;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.dubbo.rpc.RpcException;
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.xds.withdraw.BankEnterpriseTransferInputBean;
+import com.cifpay.lc.api.xds.withdraw.BankEnterpriseTransferOutputBean;
+import com.cifpay.lc.api.xds.withdraw.BankEnterpriseTransferService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.gateway.common.exception.GatewayException;
+import com.cifpay.lc.gateway.common.exception.GatewayProcessException;
+import com.cifpay.lc.gateway.common.exception.GatewayValidationRejectException;
+import com.cifpay.lc.util.DateUtil;
+import com.cifpay.lc.versionb.VersionBMerchantSignValidator;
+
+/**
+ * B版银企互联转账API接口
+ * 
+ * 
+ *
+ */
+@RestController
+@RequestMapping("/icbc")
+public class BankEntDirectTransferOutController {
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	private boolean isLoggerDebugEnabled = logger.isDebugEnabled();
+
+	@Autowired
+	private BankDirectTransferOutInputValidator inputValidator;
+
+	@Autowired
+	private VersionBMerchantSignValidator versionBMerchantSignValidator;
+
+	@Autowired
+	private BankEnterpriseTransferService bankEntTransferService;
+
+	/**
+	 * 调用工商银行的银企直联接口进行提现（资金划出）操作，即从企业账户中划出资金到指定的个人账户。 <br>
+	 * 
+	 * 输入参数：<br>
+	 * 
+	 * <pre>
+	 * requestId
+	 * requestTime
+	 * merId
+	 * sign
+	 * orderId
+	 * orderDesc
+	 * amount
+	 * currency
+	 * payerBankCode
+	 * payerBankAcctNo
+	 * payerMobile
+	 * useCode
+	 * payeeBankCode
+	 * payeeBankAcctNo
+	 * payeeName
+	 * payeeMobile
+	 * payeeAcctType
+	 * payeeBankName
+	 * payeeCityName
+	 * noticeUrl
+	 * </pre>
+	 * 
+	 * @param reqParams
+	 * @param response
+	 * @return 输出参数如下：<br>
+	 * 
+	 *         <pre>
+	 * responseTime
+	 * sign
+	 * orderId
+	 * requestId
+	 * lcId
+	 * lcNo
+	 * state
+	 * tradeAmt
+	 * tradeTime
+	 * returnCode
+	 * returnMessage
+	 *         </pre>
+	 */
+	@RequestMapping(path = "/transferOut", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@ResponseBody
+	public Map<String, String> transferOut(@RequestParam Map<String, String> reqParams, HttpServletResponse response) {
+		Map<String, String> result = new LinkedHashMap<String, String>();
+
+		if (isLoggerDebugEnabled) {
+			logger.debug("~~~收到提现请求，reqParams：{}", String.valueOf(reqParams));
+		}
+
+		String requestId = reqParams.get("requestId");
+		String requestTime = reqParams.get("requestTime");
+		String merId = reqParams.get("merId");
+		String sign = reqParams.get("sign");
+
+		String userCode = reqParams.get("userCode");
+		String orderId = reqParams.get("orderId");
+		String orderDesc = reqParams.get("orderDesc");
+		String amount = reqParams.get("amount");
+		String currency = reqParams.get("currency");
+		String payerBankCode = reqParams.get("payerBankCode");
+		String payerBankAcctNo = reqParams.get("payerBankAcctNo");
+		String payerMobile = reqParams.get("payerMobile");
+		String payeeBankCode = reqParams.get("payeeBankCode");
+		String payeeBankAcctNo = reqParams.get("payeeBankAcctNo");
+		String payeeName = reqParams.get("payeeName");
+		String payeeMobile = reqParams.get("payeeMobile");
+		String payeeAcctType = reqParams.get("payeeAcctType");
+		String payeeBankName = reqParams.get("payeeBankName");
+		String payeeCityName = reqParams.get("payeeCityName");
+		String noticeUrl = reqParams.get("noticeUrl");
+
+		try {
+			inputValidator.validate(reqParams);
+
+			logger.info("请求参数校验通过，处理提现请求，requestId: {}, merId: {}, 交易币别：{}, 交易金额（分）: {}.", requestId, merId, currency,
+					amount);
+
+			Date requestTimeObj = DateUtil.parse(requestTime, "yyyyMMddHHmmss");
+			BigDecimal amountOjb = new BigDecimal(amount);
+
+			BankEnterpriseTransferInputBean inputData = new BankEnterpriseTransferInputBean();
+			inputData.setRequestId(requestId);
+			inputData.setRequestTime(requestTimeObj);
+			inputData.setMerId(merId);
+			inputData.setSign(sign);
+
+			inputData.setOrderId(orderId);
+			inputData.setOrderDesc(orderDesc);
+			inputData.setAmount(amountOjb);
+			inputData.setCurrency(currency);
+			inputData.setPayerBankCode(payerBankCode);
+			inputData.setPayerBankAcctNo(payerBankAcctNo);
+			inputData.setPayerMobile(payerMobile);
+			inputData.setUserCode(userCode);
+			inputData.setPayeeBankCode(payeeBankCode);
+			inputData.setPayeeBankAcctNo(payeeBankAcctNo);
+			inputData.setPayeeName(payeeName);
+			inputData.setPayeeMobile(payeeMobile);
+			inputData.setPayeeAcctType(payeeAcctType);
+			inputData.setPayeeBankName(payeeBankName);
+			inputData.setPayeeCityName(payeeCityName);
+			inputData.setNoticeUrl(noticeUrl);
+
+			BusinessInput<BankEnterpriseTransferInputBean> serviceInput = new BusinessInput<BankEnterpriseTransferInputBean>(
+					inputData);
+			if (isLoggerDebugEnabled) {
+				logger.debug("开始调用Dubbo服务...");
+			}
+			BusinessOutput<BankEnterpriseTransferOutputBean> serviceOutput = bankEntTransferService
+					.execute(serviceInput);
+			if (isLoggerDebugEnabled) {
+				logger.debug("调用Dubbo服务完毕，returnCode: {}, returnMsg: {}", serviceOutput.getReturnCode(),
+						serviceOutput.getReturnMsg());
+			}
+
+			// 组装接口响应结果给商户端
+			BankEnterpriseTransferOutputBean resultData = serviceOutput.getData();
+			String strTradeAmt = "";
+			String strTradeTime = "";
+
+			if (null != resultData) {
+				if (null != resultData.getTradeAmt()) {
+					strTradeAmt = new DecimalFormat("#0").format(resultData.getTradeAmt());
+				} else {
+					strTradeAmt = amount;
+				}
+
+				if (null != resultData.getTradeTime()) {
+					strTradeTime = DateUtil.format(resultData.getTradeTime(), "yyyy-MM-dd HH:mm:ss");
+				}
+			}
+
+			if (ReturnCode.GENERAL_SUCCESS == serviceOutput.getReturnCode()) {
+				// 交易成功
+				result.put("lcId", String.valueOf(resultData.getLcId()));
+				result.put("lcNo", resultData.getLcNo());
+				result.put("state", resultData.getLcState());
+				result.put("tradeAmt", strTradeAmt);
+				result.put("tradeTime", strTradeTime);
+				result.put("returnCode", "SUCCESS");
+				result.put("returnMessage", "提现成功");
+			} else if (ReturnCode.CORE_3RD_ICBC_BANKENT_PAYOUT_RESULT_BANK_PROCESSING == serviceOutput.getReturnCode()) {
+				// 处理中
+				result.put("lcId", String.valueOf(resultData.getLcId()));
+				result.put("lcNo", resultData.getLcNo());
+				result.put("state", resultData.getLcState());
+				result.put("tradeAmt", strTradeAmt);
+				result.put("tradeTime", strTradeTime);
+				result.put("returnCode", "PENDING");
+				if (StringUtils.hasText(serviceOutput.getReturnMsg())) {
+					result.put("returnMessage", "交易处理中或交易结果尚未明确(" + serviceOutput.getReturnMsg() + ")");
+				} else {
+					result.put("returnMessage", "交易处理中或交易结果尚未明确");
+				}
+			} else {
+				// 交易失败
+				result.put("lcId", "");
+				result.put("lcNo", "");
+				result.put("state", "");
+				result.put("tradeAmt", "");
+				result.put("tradeTime", "");
+				result.put("returnCode", "FAILED");
+				if (StringUtils.hasText(serviceOutput.getReturnMsg())) {
+					result.put("returnMessage", "提现失败(" + serviceOutput.getReturnMsg() + ")");
+				} else {
+					result.put("returnMessage", "提现失败");
+				}
+			}
+		} catch (GatewayException e) {
+			result.put("returnCode", "FAILED");
+			result.put("returnMessage", e.getMessage());
+
+			if (e instanceof GatewayValidationRejectException) {
+				if (logger.isDebugEnabled()) {
+					if (ReturnCode.GW_MER_REQUEST_SIGN_INVALID == e.getReturnCode()) {
+						logger.debug("商户提现请求的参数未通过校验：{}", e.getMessage());
+					} else {
+						logger.debug("商户提现请求的参数未通过校验：{}", e.getMessage(), e);
+					}
+				}
+			} else {
+				logger.error("处理商户提现请求时发生错误：{}", e.getMessage(), e);
+			}
+		} catch (Throwable e) {
+			GatewayException tmpEx = null;
+			if (e instanceof RpcException) {
+				tmpEx = new GatewayProcessException(ReturnCode.GW_CORE_BUSINESS_UNAVAILABLE, "核心业务暂时不可用，提现失败");
+			} else {
+				tmpEx = new GatewayProcessException(ReturnCode.GW_CORE_BUSINESS_UNAVAILABLE, "系统繁忙，提现失败");
+			}
+
+			result.put("returnCode", "FAILED");
+			result.put("returnMessage", tmpEx.getMessage());
+			logger.error("处理商户提现请求时发生未知异常：{}", e.getMessage(), e);
+		}
+
+		result.put("orderId", null != orderId ? orderId : "");
+		result.put("requestId", null != requestId ? requestId : "");
+		result.put("responseTime", DateUtil.format(new Date(), "yyyyMMddHHmmss"));
+
+		// 对响应给商户端的报文进行签名
+		versionBMerchantSignValidator.addSign(merId, result);
+
+		return result;
+	}
+
+	// 接收JSON形式的请求
+	@RequestMapping(path = "/transferOut", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@ResponseBody
+	public Map<String, String> transferOutFromJsonReq(@RequestBody Map<String, String> reqParams,
+			HttpServletResponse response) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("~~~接收到JSON形式的提现请求");
+		}
+		return transferOut(reqParams, response);
+	}
+
+}

@@ -1,0 +1,223 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.io.Serializable;
+
+public class BTradeJournal implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1266040401260869887L;
+	
+	/**银行流水号*/
+	private String journalNo;
+	
+	/**银信证ID*/
+    private String lcId;
+    
+    /**银信证状态*/
+    private String lcState;
+    
+    /**交易渠道类型*/
+    private String tradeChnType;
+    
+    /**交易渠道ID*/
+    private String tradeChnId;
+    
+    /**第三方编号*/
+    private String thirdId;
+    
+    /**业务订单编号*/
+    private String orderId;
+    
+    /**创建时间*/
+    private String createTime;
+    
+    /**银行交易返回错误编码*/
+    private String bankReturnCode;
+    
+    /**银行主机返回错误信息*/
+    private String bankReturnMsg;
+    
+    /**是否成功(S:成功 F:失败 N:无效 C:初始化 E:异常)*/
+    private String isSuccess;
+    
+    /**银行交易状态（冻结、解冻、划款）*/
+    private String bankState;
+    
+    /**更新时间*/
+    private String updateTime;
+    
+    /**备注*/
+    private String remark;
+    
+    /**保留字段1*/
+    private String future1;
+    
+    /**保留字段2*/
+    private String future2;
+    
+    /** 主机响应流水 */
+	private String hostJournalNo;
+    
+    /**数据校验码*/
+    private String recValidateHash;
+
+    public String getJournalNo() {
+        return journalNo;
+    }
+
+    public void setJournalNo(String journalNo) {
+        this.journalNo = journalNo == null ? null : journalNo.trim();
+    }
+
+    public String getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(String lcId) {
+        this.lcId = lcId == null ? null : lcId.trim();
+    }
+
+    public String getLcState() {
+        return lcState;
+    }
+
+    public void setLcState(String lcState) {
+        this.lcState = lcState == null ? null : lcState.trim();
+    }
+
+    public String getTradeChnType() {
+        return tradeChnType;
+    }
+
+    public void setTradeChnType(String tradeChnType) {
+        this.tradeChnType = tradeChnType == null ? null : tradeChnType.trim();
+    }
+
+    public String getTradeChnId() {
+        return tradeChnId;
+    }
+
+    public void setTradeChnId(String tradeChnId) {
+        this.tradeChnId = tradeChnId == null ? null : tradeChnId.trim();
+    }
+
+    public String getThirdId() {
+        return thirdId;
+    }
+
+    public void setThirdId(String thirdId) {
+        this.thirdId = thirdId == null ? null : thirdId.trim();
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId == null ? null : orderId.trim();
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getBankReturnCode() {
+        return bankReturnCode;
+    }
+
+    public void setBankReturnCode(String bankReturnCode) {
+        this.bankReturnCode = bankReturnCode == null ? null : bankReturnCode.trim();
+    }
+
+    public String getBankReturnMsg() {
+        return bankReturnMsg;
+    }
+
+    public void setBankReturnMsg(String bankReturnMsg) {
+        this.bankReturnMsg = bankReturnMsg == null ? null : bankReturnMsg.trim();
+    }
+
+    public String getIsSuccess() {
+        return isSuccess;
+    }
+
+    public void setIsSuccess(String isSuccess) {
+        this.isSuccess = isSuccess == null ? null : isSuccess.trim();
+    }
+
+    public String getBankState() {
+        return bankState;
+    }
+
+    public void setBankState(String bankState) {
+        this.bankState = bankState == null ? null : bankState.trim();
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark == null ? null : remark.trim();
+    }
+
+    public String getFuture1() {
+        return future1;
+    }
+
+    public void setFuture1(String future1) {
+        this.future1 = future1 == null ? null : future1.trim();
+    }
+
+    public String getFuture2() {
+        return future2;
+    }
+
+    public void setFuture2(String future2) {
+        this.future2 = future2 == null ? null : future2.trim();
+    }
+
+    public String getHostJournalNo() {
+		return hostJournalNo;
+	}
+
+	public void setHostJournalNo(String hostJournalNo) {
+		this.hostJournalNo = hostJournalNo;
+	}
+
+	public String getRecValidateHash() {
+        return recValidateHash;
+    }
+
+    public void setRecValidateHash(String recValidateHash) {
+        this.recValidateHash = recValidateHash == null ? null : recValidateHash.trim();
+    }
+
+	@Override
+	public String toString() {
+		return "BTradeJournal [journalNo=" + journalNo + ", lcId=" + lcId
+				+ ", lcState=" + lcState + ", tradeChnType=" + tradeChnType
+				+ ", tradeChnId=" + tradeChnId + ", thirdId=" + thirdId
+				+ ", orderId=" + orderId + ", createTime=" + createTime
+				+ ", bankReturnCode=" + bankReturnCode + ", bankReturnMsg="
+				+ bankReturnMsg + ", isSuccess=" + isSuccess + ", bankState="
+				+ bankState + ", updateTime=" + updateTime + ", remark="
+				+ remark + ", future1=" + future1 + ", future2=" + future2
+				+ ", hostJournalNo=" + hostJournalNo + ", recValidateHash="
+				+ recValidateHash + "]";
+	}
+
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>工商银行银企直联接口配置</comment>
+
+	<!-- 模拟银行的银企接口交易，如果为true，则程序不走真正的银企接口，而是直接返回模拟返回交易成功的结果 -->
+	<!-- ******************** #特别注意# ********************* -->
+	<!-- ########## 请不要随意将该标记位设为true  ########## -->
+	<!-- ########## 只要需要进行模拟测试时，才有可能设为true  -->
+	<entry key="icbcBankEnt.mockBankInterfaceAndAlwaysReturnSuccess">false</entry>
+	<!-- ******************** #特别注意# ********************* -->
+	<!-- 工行银企直联服务是否运行在测试环境模式下，如果是，则需要人工去同步银行主机交易日期 -->
+	<entry key="icbcBankEnt.runInTestEnvironmentMode">true</entry>
+	
+	<entry key="icbcBankEnt.NCServer.signInterfaceURL">http://192.168.163.9:449</entry>
+	<entry key="icbcBankEnt.NCServer.tradeInterfaceURL">http://192.168.163.9:448/servlet/ICBCCMPAPIReqServlet</entry>
+	
+	<entry key="icbcBankEnt.supportedEnterpriseCodes">XDS</entry>
+	
+	<entry key="icbcBankEnt.enterprise.XDS.payerBankCode">ICBC</entry>
+	<entry key="icbcBankEnt.enterprise.XDS.payerCityName">深圳</entry>
+	<entry key="icbcBankEnt.enterprise.XDS.icbcCIS">400090001604411</entry>
+	<entry key="icbcBankEnt.enterprise.XDS.icbcBankCode">102</entry>
+	<entry key="icbcBankEnt.enterprise.XDS.icbcCertId">ncrp.y.4000</entry>
+	<entry key="icbcBankEnt.enterprise.XDS.icbcPayAccNo">4000023029200124946</entry>
+	<entry key="icbcBankEnt.enterprise.XDS.icbcPayAccNameCN">邻商随崇矩登酵瘟入晋率咕窄圳齐削登（馈碗纵泽帜）</entry>
+	<entry key="icbcBankEnt.enterprise.XDS.icbcDefaultPayType">2</entry>
+
+</properties>

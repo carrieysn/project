@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>标准银信证核心业务应用所需的配置信息</comment>
+
+	<!-- Dubbo注册中心zookeeper地址 -->
+	<entry key="dubbo.registry.zookeeper.address">127.0.0.1:2181</entry>
+	<entry key="dubbo.registry.cacheFilePathPrefix">c:/app/cifpaylc/standard-business/data/dubbo.registry.cache</entry>
+
+	<!-- 账务中心接口 -->
+	<!-- 账务中心约定的MD5签名算法盐值 -->
+	<entry key="accCenter.signSaltKey">duxjtrmeqkd9z46o7j9eovid0hhb3lqvee11cbb19052e40b07aac0ca060c23ee</entry>
+	<!-- 账户余额增加接口 -->
+	<entry key="accCenter.addBalanceInterfaceURL">http://192.168.163.47:8090/acc/bal/add.shtml</entry>
+	<!-- 冻结接口 -->
+	<entry key="accCenter.freezeInterfaceURL">http://192.168.163.47:8090/acc/blocked/freeze.shtml</entry>
+	<!-- 解冻接口 -->
+	<entry key="accCenter.unfreezeInterfaceURL">http://192.168.163.47:8090/acc/blocked/unfreeze.shtml</entry>
+
+	<!-- 银信证证化页面FastDFS服务器 -->
+	<!-- 银信证证化页面FastDFS服务器的HTTP访问地址 -->
+	<entry key="lcPage.uri">http://192.168.163.25:8888</entry>
+	<!-- 多个服务器以英文逗号分隔 -->
+	<entry key="fastdfs.strTrackerList">192.168.163.25:22122</entry>
+	<!-- FastDFS连接超时毫秒 -->
+	<entry key="fastdfs.connectTimeout">30000</entry>
+	<!-- FastDFS Socket读取超时毫秒 -->
+	<entry key="fastdfs.soTimeout">600000</entry>
+	<entry key="fastdfs.charset">UTF-8</entry>
+	
+	
+	<!-- contextPath，不要加斜杠 -->
+	<entry key="lcPage.contextPath"></entry>
+	<!-- 当前最新启用的银信证模板版本号 -->
+	<entry key="lcPage.templateCode">LC100</entry>
+	<!-- 当前最新启用的银信证模板版本号 -->
+	<entry key="lcPage.templateVersion">v1.0.0</entry>
+	
+	<!-- Redis服务器信息 -->
+	<entry key="cifpay.redis.host">192.168.163.32</entry>
+	<entry key="cifpay.redis.port">6379</entry>
+	<entry key="cifpay.redis.password"></entry>
+	
+	<!-- rabbitmq服务器信息 -->
+	<entry key="cifpay.rabbitmq.host">192.168.163.32</entry>
+	<entry key="cifpay.rabbitmq.port">5672</entry>
+	<entry key="cifpay.rabbitmq.username">guest</entry>
+	<entry key="cifpay.rabbitmq.password">guest</entry>
+	
+	<!-- 短信服务器信息 -->
+	<entry key="cifpay.sms.url">http://222.73.117.158/msg/HttpBatchSendSM</entry>
+	<entry key="cifpay.sms.username">yanqiuping_sw</entry>
+	<entry key="cifpay.sms.password">Shuaiwen27</entry>
+	<!-- 短信发送开关   true时真实发送短信 -->
+	<entry key="cifpay.sms.sendflag">false</entry>
+	
+</properties>

@@ -1,0 +1,79 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.BLcNotification;
+
+@Repository
+public interface BLcNotificationDao {
+	BLcNotification selectByPrimaryKey(Long noticeId);
+
+	void deleteByPrimaryKey(Long noticeId);
+
+	void insert(BLcNotification blcNotification);
+
+	void insertSelective(BLcNotification blcNotification);
+
+	void updateByPrimaryKeySelective(BLcNotification blcNotification);
+
+	void updateByPrimaryKey(BLcNotification blcNotification);
+
+	/**
+	 * 处理状态：未发送
+	 */
+	public static final String STATUS_NEW = "10";
+
+	/**
+	 * 处理状态：发送中
+	 */
+	public static final String STATUS_PROCESSING = "20";
+
+	/**
+	 * 处理状态：发送失败
+	 */
+	public static final String STATUS_SENDING_FAILED = "30";
+
+	/**
+	 * 处理状态：对方处理失败
+	 */
+	public static final String STATUS_RECIEVER_ANSWERED_FAILED = "40";
+
+	/**
+	 * 将待发送的通知记录先锁定为“发送中”状态
+	 * 
+	 * @param noticeType
+	 *            通知类型
+	 * @param serverNode
+	 *            节点ID
+	 * @param lockDate
+	 * @param timeoutLockedDate
+	 * @param lockRowsCnt
+	 *            需要锁定多少行的记录
+	 * @param statusNew
+	 * @param statusProcessing
+	 * @param statusSendingFailed
+	 * @param statusRecieverAnsweredFailed
+	 */
+	int updateAsPendingBeforeSend(@Param("noticeType") String noticeType, @Param("serverNode") String serverNode,
+			@Param("lockDate") Date lockDate, @Param("timeoutLockedDate") Date timeoutLockedDate,
+			@Param("lockRowsCnt") int lockRowsCnt, @Param("statusNew") String statusNew,
+			@Param("statusProcessing") String statusProcessing,
+			@Param("statusSendingFailed") String statusSendingFailed,
+			@Param("statusRecieverAnsweredFailed") String statusRecieverAnsweredFailed);
+
+	/**
+	 * 根据节点ID，获得由该节点锁定的待处理的通知记录
+	 * 
+	 * @param noticeType
+	 *            通知类型
+	 * @param serverNode
+	 * @param statusProcessing
+	 * @return
+	 */
+	List<BLcNotification> selectPendingList(@Param("noticeType") String noticeType,
+			@Param("serverNode") String serverNode, @Param("statusProcessing") String statusProcessing);
+}

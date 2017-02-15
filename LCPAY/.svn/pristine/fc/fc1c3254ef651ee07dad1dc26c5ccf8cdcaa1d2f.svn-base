@@ -1,0 +1,5 @@
+package com.cifpay.lc.core.message.biz.pojo;
+
+public class PreLcMessage {
+
+}

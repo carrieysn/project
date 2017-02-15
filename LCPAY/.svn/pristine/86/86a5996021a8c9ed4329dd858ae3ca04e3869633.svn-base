@@ -1,0 +1,73 @@
+package com.cifpay.lc.gateway.input.bank;
+
+import java.util.Date;
+
+/**
+ * Created by sweet on 16-9-21.
+ */
+public class CreditReq {
+    private Long lcId;          // 银信证ID(*)
+
+    private String accountNo;   //信用卡卡号
+    private Date expiryDate;    //信用卡有效期
+    private int cvv2;           //信用卡反面验证码
+    private String mobileNo;    //手机号
+    private String smsCode;     //短信验证码
+    private Boolean remember;   //记住卡号
+
+    public Long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(Long lcID) {
+        this.lcId = lcID;
+    }
+
+    public String getAccountNo() {
+        return accountNo;
+    }
+
+    public void setAccountNo(String accountNo) {
+        this.accountNo = accountNo;
+    }
+
+    public Date getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(Date expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public int getCvv2() {
+        return cvv2;
+    }
+
+    public void setCvv2(int cvv2) {
+        this.cvv2 = cvv2;
+    }
+
+    public String getMobileNo() {
+        return mobileNo;
+    }
+
+    public void setMobileNo(String mobileNo) {
+        this.mobileNo = mobileNo;
+    }
+
+    public String getSmsCode() {
+        return smsCode;
+    }
+
+    public void setSmsCode(String smsCode) {
+        this.smsCode = smsCode;
+    }
+
+    public Boolean getRemember() {
+        return remember;
+    }
+
+    public void setRemember(Boolean remember) {
+        this.remember = remember;
+    }
+}

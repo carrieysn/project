@@ -1,0 +1,54 @@
+package com.cifpay.lc.core.cache.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import com.cifpay.lc.core.cache.pojo.LcOpenCache;
+import com.cifpay.lc.core.db.dao.LcOpenDao;
+import com.cifpay.lc.core.db.pojo.LcOpen;
+
+/**
+ * Created by sweet on 16-9-13.
+ */
+@Component
+public class LcOpenCacheServant {
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    private static final String KEY_PREFIX = "LC_OPEN_";
+
+    @Autowired
+    private LcOpenDao lcOpenDao;
+
+    @Cacheable(value = KEY_PREFIX, key = "'LcOpen_selectByLcId' + #lcId", unless = "#result == null")
+    public LcOpenCache selectByLcId(Long lcId) {
+        LcOpen lcOpen = lcOpenDao.selectByLcId(lcId);
+
+        if(lcOpen != null){
+        	LcOpenCache lcOpenCache = new LcOpenCache();
+        	BeanUtils.copyProperties(lcOpen, lcOpenCache);
+        	return lcOpenCache;
+        }
+
+        return null;
+    }
+
+    @CacheEvict(value = KEY_PREFIX, key = "'LcOpen_selectByLcId' + #lcOpen.getLcId()")
+    public boolean updateByPrimaryKey(LcOpen lcOpen) {
+        return lcOpenDao.updateByPrimaryKey(lcOpen);
+    }
+
+    @CacheEvict(value = KEY_PREFIX, key = "'LcOpen_selectByLcId' + #lcOpen.getLcId()")
+    public void insert(LcOpen lcOpen) {
+        lcOpenDao.insert(lcOpen);
+    }
+}

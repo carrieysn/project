@@ -1,0 +1,110 @@
+package com.cifpay.lc.domain.message;
+
+
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.util.logging.LoggerEnum;
+import com.cifpay.lc.constant.enums.PayMethod;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * 解冻消息
+ */
+public class LcUnFreezeParamBean<T extends Serializable> extends MessageParamBean {
+    private static final long serialVersionUID = -6570188442684420782L;
+
+    private PayMethod payMethod;        //付款方式
+    private T data;                     //执行解付参数
+
+    private long lcId;                  //银信证Id
+    private Long lcPayId;
+
+    private String serialNo;            //交易流水号
+    private LcTranStatus lcTranStatus;  //交易处理状态
+    private Date transferTime;          //交易时间
+
+    private String lcTransferResponse;
+
+    public LcUnFreezeParamBean() {
+        super(LoggerEnum.Scene.NOTIFY_MERCH);
+    }
+
+    public PayMethod getPayMethod() {
+        return payMethod;
+    }
+
+    public void setPayMethod(PayMethod payMethod) {
+        this.payMethod = payMethod;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(long lcId) {
+        this.lcId = lcId;
+    }
+
+    public Long getLcPayId() {
+        return lcPayId;
+    }
+
+    public void setLcPayId(Long lcPayId) {
+        this.lcPayId = lcPayId;
+    }
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public LcTranStatus getLcTranStatus() {
+        return lcTranStatus;
+    }
+
+    public void setLcTranStatus(LcTranStatus lcTranStatus) {
+        this.lcTranStatus = lcTranStatus;
+    }
+
+    public Date getTransferTime() {
+        return transferTime;
+    }
+
+    public void setTransferTime(Date transferTime) {
+        this.transferTime = transferTime;
+    }
+
+    public String getLcTransferResponse() {
+        return lcTransferResponse;
+    }
+
+    public void setLcTransferResponse(String lcTransferResponse) {
+        this.lcTransferResponse = lcTransferResponse;
+    }
+
+    @Override
+    public String toString() {
+        return "LcUnFreezeParamBean{" +
+                "payMethod=" + payMethod +
+                ", data=" + data +
+                ", lcId=" + lcId +
+                ", lcPayId=" + lcPayId +
+                ", serialNo='" + serialNo + '\'' +
+                ", lcTranStatus=" + lcTranStatus +
+                ", transferTime=" + transferTime +
+                ", lcTransferResponse='" + lcTransferResponse + '\'' +
+                '}';
+    }
+}

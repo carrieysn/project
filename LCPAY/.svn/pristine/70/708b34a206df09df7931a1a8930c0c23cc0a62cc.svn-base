@@ -1,0 +1,22 @@
+package com.cifpay.lc.core.db.dao;
+
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.LcAcc;
+
+@Repository
+public interface LcAccDao {
+
+	LcAcc selectByPrimaryKey(Long lcAccId);
+
+	void deleteByPrimaryKey(Long lcAccId);
+
+	void insert(LcAcc lcAcc);
+
+	void insertSelective(LcAcc lcAcc);
+
+	int updateByPrimaryKeySelective(LcAcc lcAcc);
+
+	int updateByPrimaryKey(LcAcc lcAcc);
+
+}

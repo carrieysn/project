@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta content="telephone=no" name="format-detection" />
+<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>银信证</title>
+
+
+<link rel="stylesheet" href="##Css1##">
+<link rel="stylesheet" href="##Css2##">
+
+<script type="text/javascript" src="##Js1##"></script>
+
+</head>
+
+<body>
+	<div class="card">
+		<h1>银行记账式全新消费体验</h1>
+		<h2>购物消费只需在自己银行账户记账,货到满意银行再帮你付款</h2>
+		<div class="money"><label for="">##CurrencyName##</label>##CurrencySymbol####FeeInteger##<small>.##FeeFraction##</small></div>
+		<div class="moneyUpper"><label for="">（大写）</label>##FeeChinese##</div>
+		<table class="tabList">
+		<tr>
+				<th>委托记账付款银行</td>
+				<th width="42">&nbsp;</td>
+				<th>委托记账收款银行</td>
+			</tr>
+			<tr>
+				<td><img src="##PayBank-BankCode##"></td>
+				<td>&nbsp;</td>
+				<td><img src="##CollectBank-BankCode##"></td>
+			</tr>
+			<tr>
+				<td><a class="btn btn-red"><i>付</i>待记账付款</a></td>
+				<td width="42" class="iconRight"><img src="##IconRight##" class="imgAuto"></td>
+				<td><a class="btn btn-blue"><i>收</i>待记账收款</a></td>
+			</tr>
+			<tr>
+				<td class="color-text colorRed " valign="top">付款人:<b>##PayerName##</b></td>
+				<td>&nbsp;</td>
+				<td class="color-text colorBlue" valign="top">操作时效：<b>##Validity##</b><br>记账人：<b>##AccName##</b></td>
+			</tr>
+		</table>
+		<div class="barBox">
+			<div class="barInfo barInfo1" style="display:none;">
+				<h3>收付双方记账信息</h3>
+				##AccListInfo##
+			</div>
+			
+			<div class="barInfo barInfo2" style="display:none">
+				<h3>收款信息</h3>
+				##CollectInfo##				
+			</div>
+			<div class="barInfo barInfo3" style="display:none;">
+				<h3>划款信息</h3>
+				##TransferInfo##				
+			</div>
+			<div class="barTip1">收付双方记账	</div>
+			<div class="barTip2">收款</div>
+			<div class="barTip3">划款到账</div>
+		</div>
+		<ul class="bar clearfix">
+			<li class="number one full">1</li>
+			<li class="lap"></li>
+			<li class="number two">2</li>
+			<li class="lap"></li>
+			<li class="number three">3</li>
+		</ul>
+		<div class="bar-tip">待付款人和收款人分别完成记账</div>
+		
+		<table class="foterTab" width="100%">
+			<tr>
+				<td width="100">发出银行</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td ><img class="imgAuto" src="##PayBank-BankCode##"></td>
+				<td class="text-right">##PayBankName## ##LcType## ##LcNo##</td>
+			</tr>
+		</table>
+	</div>
+	<div class="zhezhao"></div>
+	<script>
+		$(function(){
+			
+			$('.one').click(function(){				
+				$('.barInfo').hide();
+				$('.barInfo1').show();
+				$('.zhezhao').show();
+			})
+			
+			$('.two').click(function(){				
+				$('.barInfo').hide();
+				$('.barInfo2').show();
+				$('.zhezhao').show();				
+			})
+			
+			$('.three').click(function(){
+				$('.barInfo').hide();
+				$('.barInfo3').show();
+				$('.zhezhao').show();				
+			})			
+			$(document).on("mouseout",".number",function(){
+				$(".barInfo").hide();
+			});
+			
+			$('.zhezhao').click(function(){
+				$(this).hide();
+				$(".barInfo").hide();
+				
+			})
+			
+//			$('.number').on('touchstart',function(e) {
+//				$(".barInfo").hide();
+//			});
+		})
+	</script>
+</body>
+</html>

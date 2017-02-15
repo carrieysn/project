@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcProductDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcProduct" >
+    <id column="PRODUCT_ID" property="productId" jdbcType="BIGINT" />
+    <result column="PRODUCT_CODE" property="productCode" jdbcType="VARCHAR" />
+    <result column="PRODUCT_NAME" property="productName" jdbcType="VARCHAR" />
+    <result column="PRODUCT_DESCRIPTION" property="productDescription" jdbcType="VARCHAR" />
+    <result column="LC_TYPE" property="lcType" jdbcType="VARCHAR" />
+    <result column="LC_CURRENCY" property="lcCurrency" jdbcType="VARCHAR" />
+    <result column="LC_AMOUNT_MIN" property="lcAmountMin" jdbcType="DECIMAL" />
+    <result column="LC_AMOUNT_MAX" property="lcAmountMax" jdbcType="DECIMAL" />
+    <result column="LC_STANDARD" property="lcStandard" jdbcType="BIT" />
+    <result column="PAYER_TYPE" property="payerType" jdbcType="VARCHAR" />
+    <result column="PAYER_ACCNO_TYPE" property="payerAccnoType" jdbcType="VARCHAR" />
+    <result column="RECV_TYPE" property="recvType" jdbcType="VARCHAR" />
+    <result column="THIRD_PARTY_TYPE" property="thirdPartyType" jdbcType="VARCHAR" />
+    <result column="THIRD_PARTY_CODE" property="thirdPartyCode" jdbcType="VARCHAR" />
+    <result column="LC_INVALID_HANDLE_CHANNEL" property="lcInvalidHandleChannel" jdbcType="VARCHAR" />
+    <result column="ALLOW_MULTIPLE_OPEN" property="allowMultipleOpen" jdbcType="BIT" />
+    <result column="ALLOW_PARTIAL_PAY" property="allowPartialPay" jdbcType="BIT" />
+    <result column="AUTO_OPEN" property="autoOpen" jdbcType="BIT" />
+    <result column="AUTO_RECV" property="autoRecv" jdbcType="BIT" />
+    <result column="AUTO_SEND" property="autoSend" jdbcType="BIT" />
+    <result column="AUTO_CONFIRM" property="autoConfirm" jdbcType="BIT" />
+    <result column="AUTO_PAY" property="autoPay" jdbcType="BIT" />
+    <result column="SHOW_RECV" property="showRecv" jdbcType="BIT" />
+    <result column="SHOW_SEND" property="showSend" jdbcType="BIT" />
+    <result column="SHOW_CONFIRM" property="showConfirm" jdbcType="BIT" />
+    <result column="SHOW_SUCCESS" property="showSuccess" jdbcType="BIT" />
+    <result column="DISPLAY_NAME_OPEN" property="displayNameOpen" jdbcType="VARCHAR" />
+    <result column="DISPLAY_NAME_RECV" property="displayNameRecv" jdbcType="VARCHAR" />
+    <result column="DISPLAY_NAME_SEND" property="displayNameSend" jdbcType="VARCHAR" />
+    <result column="DISPLAY_NAME_CONFIRM" property="displayNameConfirm" jdbcType="VARCHAR" />
+    <result column="DISPLAY_NAME_PAY" property="displayNamePay" jdbcType="VARCHAR" />
+    <result column="DISPLAY_NAME_SUCCESS" property="displayNameSuccess" jdbcType="VARCHAR" />
+    <result column="VALID_TIME" property="validTime" jdbcType="TIMESTAMP" />
+    <result column="PRODUCT_STATUS" property="productStatus" jdbcType="VARCHAR" />
+    <result column="DEL_FLAG" property="delFlag" jdbcType="BIT" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="IS_TEMPLATE" property="isTemplate" jdbcType="BIT" />
+    <result column="TEMPLATE_NAME" property="templateName" jdbcType="VARCHAR" />
+    <result column="TEMPLATE_DESCRIPTION" property="templateDescription" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PRODUCT_ID, PRODUCT_CODE, PRODUCT_NAME, PRODUCT_DESCRIPTION, LC_TYPE, LC_CURRENCY, 
+    LC_AMOUNT_MIN, LC_AMOUNT_MAX, LC_STANDARD, PAYER_TYPE, PAYER_ACCNO_TYPE, RECV_TYPE, 
+    THIRD_PARTY_TYPE, THIRD_PARTY_CODE, LC_INVALID_HANDLE_CHANNEL, ALLOW_MULTIPLE_OPEN, 
+    ALLOW_PARTIAL_PAY, AUTO_OPEN, AUTO_RECV, AUTO_SEND, AUTO_CONFIRM, AUTO_PAY, SHOW_RECV, 
+    SHOW_SEND, SHOW_CONFIRM, SHOW_SUCCESS, DISPLAY_NAME_OPEN, DISPLAY_NAME_RECV, DISPLAY_NAME_SEND, 
+    DISPLAY_NAME_CONFIRM, DISPLAY_NAME_PAY, DISPLAY_NAME_SUCCESS, VALID_TIME, PRODUCT_STATUS, 
+    DEL_FLAG, CREATE_TIME, UPDATE_TIME, IS_TEMPLATE, TEMPLATE_NAME, TEMPLATE_DESCRIPTION
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_PRODUCT
+    where PRODUCT_ID = #{productId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC_PRODUCT
+    where PRODUCT_ID = #{productId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcProduct" >
+    insert into CIFPAY_LC_PRODUCT (PRODUCT_ID, PRODUCT_CODE, PRODUCT_NAME, 
+      PRODUCT_DESCRIPTION, LC_TYPE, LC_CURRENCY, 
+      LC_AMOUNT_MIN, LC_AMOUNT_MAX, LC_STANDARD, 
+      PAYER_TYPE, PAYER_ACCNO_TYPE, RECV_TYPE, 
+      THIRD_PARTY_TYPE, THIRD_PARTY_CODE, LC_INVALID_HANDLE_CHANNEL, 
+      ALLOW_MULTIPLE_OPEN, ALLOW_PARTIAL_PAY, AUTO_OPEN, 
+      AUTO_RECV, AUTO_SEND, AUTO_CONFIRM, 
+      AUTO_PAY, SHOW_RECV, SHOW_SEND, SHOW_CONFIRM, 
+      SHOW_SUCCESS, DISPLAY_NAME_OPEN, DISPLAY_NAME_RECV, 
+      DISPLAY_NAME_SEND, DISPLAY_NAME_CONFIRM, DISPLAY_NAME_PAY, 
+      DISPLAY_NAME_SUCCESS, VALID_TIME, PRODUCT_STATUS, 
+      DEL_FLAG, CREATE_TIME, UPDATE_TIME, 
+      IS_TEMPLATE, TEMPLATE_NAME, TEMPLATE_DESCRIPTION
+      )
+    values (#{productId,jdbcType=BIGINT}, #{productCode,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR}, 
+      #{productDescription,jdbcType=VARCHAR}, #{lcType,jdbcType=VARCHAR}, #{lcCurrency,jdbcType=VARCHAR}, 
+      #{lcAmountMin,jdbcType=DECIMAL}, #{lcAmountMax,jdbcType=DECIMAL}, #{lcStandard,jdbcType=BIT}, 
+      #{payerType,jdbcType=VARCHAR}, #{payerAccnoType,jdbcType=VARCHAR}, #{recvType,jdbcType=VARCHAR}, 
+      #{thirdPartyType,jdbcType=VARCHAR}, #{thirdPartyCode,jdbcType=VARCHAR}, #{lcInvalidHandleChannel,jdbcType=VARCHAR}, 
+      #{allowMultipleOpen,jdbcType=BIT}, #{allowPartialPay,jdbcType=BIT}, #{autoOpen,jdbcType=BIT}, 
+      #{autoRecv,jdbcType=BIT}, #{autoSend,jdbcType=BIT}, #{autoConfirm,jdbcType=BIT}, 
+      #{autoPay,jdbcType=BIT}, #{showRecv,jdbcType=BIT}, #{showSend,jdbcType=BIT}, #{showConfirm,jdbcType=BIT}, 
+      #{showSuccess,jdbcType=BIT}, #{displayNameOpen,jdbcType=VARCHAR}, #{displayNameRecv,jdbcType=VARCHAR}, 
+      #{displayNameSend,jdbcType=VARCHAR}, #{displayNameConfirm,jdbcType=VARCHAR}, #{displayNamePay,jdbcType=VARCHAR}, 
+      #{displayNameSuccess,jdbcType=VARCHAR}, #{validTime,jdbcType=TIMESTAMP}, #{productStatus,jdbcType=VARCHAR}, 
+      #{delFlag,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{isTemplate,jdbcType=BIT}, #{templateName,jdbcType=VARCHAR}, #{templateDescription,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcProduct" >
+    insert into CIFPAY_LC_PRODUCT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="productId != null" >
+        PRODUCT_ID,
+      </if>
+      <if test="productCode != null" >
+        PRODUCT_CODE,
+      </if>
+      <if test="productName != null" >
+        PRODUCT_NAME,
+      </if>
+      <if test="productDescription != null" >
+        PRODUCT_DESCRIPTION,
+      </if>
+      <if test="lcType != null" >
+        LC_TYPE,
+      </if>
+      <if test="lcCurrency != null" >
+        LC_CURRENCY,
+      </if>
+      <if test="lcAmountMin != null" >
+        LC_AMOUNT_MIN,
+      </if>
+      <if test="lcAmountMax != null" >
+        LC_AMOUNT_MAX,
+      </if>
+      <if test="lcStandard != null" >
+        LC_STANDARD,
+      </if>
+      <if test="payerType != null" >
+        PAYER_TYPE,
+      </if>
+      <if test="payerAccnoType != null" >
+        PAYER_ACCNO_TYPE,
+      </if>
+      <if test="recvType != null" >
+        RECV_TYPE,
+      </if>
+      <if test="thirdPartyType != null" >
+        THIRD_PARTY_TYPE,
+      </if>
+      <if test="thirdPartyCode != null" >
+        THIRD_PARTY_CODE,
+      </if>
+      <if test="lcInvalidHandleChannel != null" >
+        LC_INVALID_HANDLE_CHANNEL,
+      </if>
+      <if test="allowMultipleOpen != null" >
+        ALLOW_MULTIPLE_OPEN,
+      </if>
+      <if test="allowPartialPay != null" >
+        ALLOW_PARTIAL_PAY,
+      </if>
+      <if test="autoOpen != null" >
+        AUTO_OPEN,
+      </if>
+      <if test="autoRecv != null" >
+        AUTO_RECV,
+      </if>
+      <if test="autoSend != null" >
+        AUTO_SEND,
+      </if>
+      <if test="autoConfirm != null" >
+        AUTO_CONFIRM,
+      </if>
+      <if test="autoPay != null" >
+        AUTO_PAY,
+      </if>
+      <if test="showRecv != null" >
+        SHOW_RECV,
+      </if>
+      <if test="showSend != null" >
+        SHOW_SEND,
+      </if>
+      <if test="showConfirm != null" >
+        SHOW_CONFIRM,
+      </if>
+      <if test="showSuccess != null" >
+        SHOW_SUCCESS,
+      </if>
+      <if test="displayNameOpen != null" >
+        DISPLAY_NAME_OPEN,
+      </if>
+      <if test="displayNameRecv != null" >
+        DISPLAY_NAME_RECV,
+      </if>
+      <if test="displayNameSend != null" >
+        DISPLAY_NAME_SEND,
+      </if>
+      <if test="displayNameConfirm != null" >
+        DISPLAY_NAME_CONFIRM,
+      </if>
+      <if test="displayNamePay != null" >
+        DISPLAY_NAME_PAY,
+      </if>
+      <if test="displayNameSuccess != null" >
+        DISPLAY_NAME_SUCCESS,
+      </if>
+      <if test="validTime != null" >
+        VALID_TIME,
+      </if>
+      <if test="productStatus != null" >
+        PRODUCT_STATUS,
+      </if>
+      <if test="delFlag != null" >
+        DEL_FLAG,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+      <if test="isTemplate != null" >
+        IS_TEMPLATE,
+      </if>
+      <if test="templateName != null" >
+        TEMPLATE_NAME,
+      </if>
+      <if test="templateDescription != null" >
+        TEMPLATE_DESCRIPTION,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="productId != null" >
+        #{productId,jdbcType=BIGINT},
+      </if>
+      <if test="productCode != null" >
+        #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productDescription != null" >
+        #{productDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="lcType != null" >
+        #{lcType,jdbcType=VARCHAR},
+      </if>
+      <if test="lcCurrency != null" >
+        #{lcCurrency,jdbcType=VARCHAR},
+      </if>
+      <if test="lcAmountMin != null" >
+        #{lcAmountMin,jdbcType=DECIMAL},
+      </if>
+      <if test="lcAmountMax != null" >
+        #{lcAmountMax,jdbcType=DECIMAL},
+      </if>
+      <if test="lcStandard != null" >
+        #{lcStandard,jdbcType=BIT},
+      </if>
+      <if test="payerType != null" >
+        #{payerType,jdbcType=VARCHAR},
+      </if>
+      <if test="payerAccnoType != null" >
+        #{payerAccnoType,jdbcType=VARCHAR},
+      </if>
+      <if test="recvType != null" >
+        #{recvType,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartyType != null" >
+        #{thirdPartyType,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartyCode != null" >
+        #{thirdPartyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="lcInvalidHandleChannel != null" >
+        #{lcInvalidHandleChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="allowMultipleOpen != null" >
+        #{allowMultipleOpen,jdbcType=BIT},
+      </if>
+      <if test="allowPartialPay != null" >
+        #{allowPartialPay,jdbcType=BIT},
+      </if>
+      <if test="autoOpen != null" >
+        #{autoOpen,jdbcType=BIT},
+      </if>
+      <if test="autoRecv != null" >
+        #{autoRecv,jdbcType=BIT},
+      </if>
+      <if test="autoSend != null" >
+        #{autoSend,jdbcType=BIT},
+      </if>
+      <if test="autoConfirm != null" >
+        #{autoConfirm,jdbcType=BIT},
+      </if>
+      <if test="autoPay != null" >
+        #{autoPay,jdbcType=BIT},
+      </if>
+      <if test="showRecv != null" >
+        #{showRecv,jdbcType=BIT},
+      </if>
+      <if test="showSend != null" >
+        #{showSend,jdbcType=BIT},
+      </if>
+      <if test="showConfirm != null" >
+        #{showConfirm,jdbcType=BIT},
+      </if>
+      <if test="showSuccess != null" >
+        #{showSuccess,jdbcType=BIT},
+      </if>
+      <if test="displayNameOpen != null" >
+        #{displayNameOpen,jdbcType=VARCHAR},
+      </if>
+      <if test="displayNameRecv != null" >
+        #{displayNameRecv,jdbcType=VARCHAR},
+      </if>
+      <if test="displayNameSend != null" >
+        #{displayNameSend,jdbcType=VARCHAR},
+      </if>
+      <if test="displayNameConfirm != null" >
+        #{displayNameConfirm,jdbcType=VARCHAR},
+      </if>
+      <if test="displayNamePay != null" >
+        #{displayNamePay,jdbcType=VARCHAR},
+      </if>
+      <if test="displayNameSuccess != null" >
+        #{displayNameSuccess,jdbcType=VARCHAR},
+      </if>
+      <if test="validTime != null" >
+        #{validTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="productStatus != null" >
+        #{productStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        #{delFlag,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isTemplate != null" >
+        #{isTemplate,jdbcType=BIT},
+      </if>
+      <if test="templateName != null" >
+        #{templateName,jdbcType=VARCHAR},
+      </if>
+      <if test="templateDescription != null" >
+        #{templateDescription,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcProduct" >
+    update CIFPAY_LC_PRODUCT
+    <set >
+      <if test="productCode != null" >
+        PRODUCT_CODE = #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        PRODUCT_NAME = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productDescription != null" >
+        PRODUCT_DESCRIPTION = #{productDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="lcType != null" >
+        LC_TYPE = #{lcType,jdbcType=VARCHAR},
+      </if>
+      <if test="lcCurrency != null" >
+        LC_CURRENCY = #{lcCurrency,jdbcType=VARCHAR},
+      </if>
+      <if test="lcAmountMin != null" >
+        LC_AMOUNT_MIN = #{lcAmountMin,jdbcType=DECIMAL},
+      </if>
+      <if test="lcAmountMax != null" >
+        LC_AMOUNT_MAX = #{lcAmountMax,jdbcType=DECIMAL},
+      </if>
+      <if test="lcStandard != null" >
+        LC_STANDARD = #{lcStandard,jdbcType=BIT},
+      </if>
+      <if test="payerType != null" >
+        PAYER_TYPE = #{payerType,jdbcType=VARCHAR},
+      </if>
+      <if test="payerAccnoType != null" >
+        PAYER_ACCNO_TYPE = #{payerAccnoType,jdbcType=VARCHAR},
+      </if>
+      <if test="recvType != null" >
+        RECV_TYPE = #{recvType,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartyType != null" >
+        THIRD_PARTY_TYPE = #{thirdPartyType,jdbcType=VARCHAR},
+      </if>
+      <if test="thirdPartyCode != null" >
+        THIRD_PARTY_CODE = #{thirdPartyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="lcInvalidHandleChannel != null" >
+        LC_INVALID_HANDLE_CHANNEL = #{lcInvalidHandleChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="allowMultipleOpen != null" >
+        ALLOW_MULTIPLE_OPEN = #{allowMultipleOpen,jdbcType=BIT},
+      </if>
+      <if test="allowPartialPay != null" >
+        ALLOW_PARTIAL_PAY = #{allowPartialPay,jdbcType=BIT},
+      </if>
+      <if test="autoOpen != null" >
+        AUTO_OPEN = #{autoOpen,jdbcType=BIT},
+      </if>
+      <if test="autoRecv != null" >
+        AUTO_RECV = #{autoRecv,jdbcType=BIT},
+      </if>
+      <if test="autoSend != null" >
+        AUTO_SEND = #{autoSend,jdbcType=BIT},
+      </if>
+      <if test="autoConfirm != null" >
+        AUTO_CONFIRM = #{autoConfirm,jdbcType=BIT},
+      </if>
+      <if test="autoPay != null" >
+        AUTO_PAY = #{autoPay,jdbcType=BIT},
+      </if>
+      <if test="showRecv != null" >
+        SHOW_RECV = #{showRecv,jdbcType=BIT},
+      </if>
+      <if test="showSend != null" >
+        SHOW_SEND = #{showSend,jdbcType=BIT},
+      </if>
+      <if test="showConfirm != null" >
+        SHOW_CONFIRM = #{showConfirm,jdbcType=BIT},
+      </if>
+      <if test="showSuccess != null" >
+        SHOW_SUCCESS = #{showSuccess,jdbcType=BIT},
+      </if>
+      <if test="displayNameOpen != null" >
+        DISPLAY_NAME_OPEN = #{displayNameOpen,jdbcType=VARCHAR},
+      </if>
+      <if test="displayNameRecv != null" >
+        DISPLAY_NAME_RECV = #{displayNameRecv,jdbcType=VARCHAR},
+      </if>
+      <if test="displayNameSend != null" >
+        DISPLAY_NAME_SEND = #{displayNameSend,jdbcType=VARCHAR},
+      </if>
+      <if test="displayNameConfirm != null" >
+        DISPLAY_NAME_CONFIRM = #{displayNameConfirm,jdbcType=VARCHAR},
+      </if>
+      <if test="displayNamePay != null" >
+        DISPLAY_NAME_PAY = #{displayNamePay,jdbcType=VARCHAR},
+      </if>
+      <if test="displayNameSuccess != null" >
+        DISPLAY_NAME_SUCCESS = #{displayNameSuccess,jdbcType=VARCHAR},
+      </if>
+      <if test="validTime != null" >
+        VALID_TIME = #{validTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="productStatus != null" >
+        PRODUCT_STATUS = #{productStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        DEL_FLAG = #{delFlag,jdbcType=BIT},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isTemplate != null" >
+        IS_TEMPLATE = #{isTemplate,jdbcType=BIT},
+      </if>
+      <if test="templateName != null" >
+        TEMPLATE_NAME = #{templateName,jdbcType=VARCHAR},
+      </if>
+      <if test="templateDescription != null" >
+        TEMPLATE_DESCRIPTION = #{templateDescription,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where PRODUCT_ID = #{productId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcProduct" >
+    update CIFPAY_LC_PRODUCT
+    set PRODUCT_CODE = #{productCode,jdbcType=VARCHAR},
+      PRODUCT_NAME = #{productName,jdbcType=VARCHAR},
+      PRODUCT_DESCRIPTION = #{productDescription,jdbcType=VARCHAR},
+      LC_TYPE = #{lcType,jdbcType=VARCHAR},
+      LC_CURRENCY = #{lcCurrency,jdbcType=VARCHAR},
+      LC_AMOUNT_MIN = #{lcAmountMin,jdbcType=DECIMAL},
+      LC_AMOUNT_MAX = #{lcAmountMax,jdbcType=DECIMAL},
+      LC_STANDARD = #{lcStandard,jdbcType=BIT},
+      PAYER_TYPE = #{payerType,jdbcType=VARCHAR},
+      PAYER_ACCNO_TYPE = #{payerAccnoType,jdbcType=VARCHAR},
+      RECV_TYPE = #{recvType,jdbcType=VARCHAR},
+      THIRD_PARTY_TYPE = #{thirdPartyType,jdbcType=VARCHAR},
+      THIRD_PARTY_CODE = #{thirdPartyCode,jdbcType=VARCHAR},
+      LC_INVALID_HANDLE_CHANNEL = #{lcInvalidHandleChannel,jdbcType=VARCHAR},
+      ALLOW_MULTIPLE_OPEN = #{allowMultipleOpen,jdbcType=BIT},
+      ALLOW_PARTIAL_PAY = #{allowPartialPay,jdbcType=BIT},
+      AUTO_OPEN = #{autoOpen,jdbcType=BIT},
+      AUTO_RECV = #{autoRecv,jdbcType=BIT},
+      AUTO_SEND = #{autoSend,jdbcType=BIT},
+      AUTO_CONFIRM = #{autoConfirm,jdbcType=BIT},
+      AUTO_PAY = #{autoPay,jdbcType=BIT},
+      SHOW_RECV = #{showRecv,jdbcType=BIT},
+      SHOW_SEND = #{showSend,jdbcType=BIT},
+      SHOW_CONFIRM = #{showConfirm,jdbcType=BIT},
+      SHOW_SUCCESS = #{showSuccess,jdbcType=BIT},
+      DISPLAY_NAME_OPEN = #{displayNameOpen,jdbcType=VARCHAR},
+      DISPLAY_NAME_RECV = #{displayNameRecv,jdbcType=VARCHAR},
+      DISPLAY_NAME_SEND = #{displayNameSend,jdbcType=VARCHAR},
+      DISPLAY_NAME_CONFIRM = #{displayNameConfirm,jdbcType=VARCHAR},
+      DISPLAY_NAME_PAY = #{displayNamePay,jdbcType=VARCHAR},
+      DISPLAY_NAME_SUCCESS = #{displayNameSuccess,jdbcType=VARCHAR},
+      VALID_TIME = #{validTime,jdbcType=TIMESTAMP},
+      PRODUCT_STATUS = #{productStatus,jdbcType=VARCHAR},
+      DEL_FLAG = #{delFlag,jdbcType=BIT},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      IS_TEMPLATE = #{isTemplate,jdbcType=BIT},
+      TEMPLATE_NAME = #{templateName,jdbcType=VARCHAR},
+      TEMPLATE_DESCRIPTION = #{templateDescription,jdbcType=VARCHAR}
+    where PRODUCT_ID = #{productId,jdbcType=BIGINT}
+  </update>
+</mapper>

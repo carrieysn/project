@@ -1,0 +1,21 @@
+package com.cifpay.lc.core.component;
+
+import com.cifpay.lc.constant.BizConstants.LcTranCode;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+
+public interface BusinessLockProvider {
+
+    /**
+     * 业务加锁
+     *
+     * @param lcIdList
+     * @param lcTranCode
+     */
+    void lock(Long[] lcIdList, LcTranCode lcTranCode) throws CoreBusinessException;
+
+    /**
+     * 业务解锁
+     */
+    void unLock(Long[] lcIdList, LcTranCode lcTranCode);
+
+}

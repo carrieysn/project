@@ -1,0 +1,41 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.UnionPayTrdMain;
+
+@Repository
+public interface LcTrdUnionPayMainDao {
+
+	UnionPayTrdMain selectByPrimaryKey(Long businessId);
+
+	UnionPayTrdMain selectBySelective(UnionPayTrdMain unionPayTrdMain);
+
+	void deleteByPrimaryKey(Long businessId);
+
+	void insert(UnionPayTrdMain unionPayTrdMain);
+
+	int insertSelective(UnionPayTrdMain unionPayTrdMain);
+
+	void updateByPrimaryKeySelective(UnionPayTrdMain unionPayTrdMain);
+
+	void updateByPrimaryKey(UnionPayTrdMain unionPayTrdMain);
+
+	void updateResult(UnionPayTrdMain unionPayTrdMain);
+
+	UnionPayTrdMain selectByTxnKey(UnionPayTrdMain unionPayTrdMain);
+
+	UnionPayTrdMain selectByQueryId(String queryId);
+
+	void updateMainAsynResult(UnionPayTrdMain unionPayTrdMain);
+
+	List<UnionPayTrdMain> selectToQueryTrade();
+
+	Long selectToRefund(Long lcId);
+
+	void updateMainQueryTimes(UnionPayTrdMain unionPayTrdMain);
+
+	UnionPayTrdMain selectUndo(UnionPayTrdMain tm);
+}

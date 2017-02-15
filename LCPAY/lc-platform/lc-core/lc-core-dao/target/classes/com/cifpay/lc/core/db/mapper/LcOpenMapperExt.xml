@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcOpenDao" >
+  
+  <select id="selectByLcId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_OPEN
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </select>
+  <select id="selectByLcIds" parameterType="map" resultMap="BaseResultMap">  
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_OPEN
+    where LC_ID in
+    <foreach close=")" collection="lcIds" index="index" item="item" open="(" separator=",">  
+             #{item}
+    </foreach> 
+  </select> 
+  <update id="updateByLcOpenIdIdLcOpenStatusSelective" parameterType="map" >
+    update CIFPAY_LC_OPEN
+    <set>
+      <if test="updatingLcOpen.lcId != null" >
+        LC_ID = #{updatingLcOpen.lcId,jdbcType=BIGINT},
+      </if>
+      <if test="updatingLcOpen.mid != null" >
+        MID = #{updatingLcOpen.mid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.lcCurrency != null" >
+        LC_CURRENCY = #{updatingLcOpen.lcCurrency,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.lcAmount != null" >
+        LC_AMOUNT = #{updatingLcOpen.lcAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="updatingLcOpen.payerId != null" >
+        PAYER_ID = #{updatingLcOpen.payerId,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.payerAccno != null" >
+        PAYER_ACCNO = #{updatingLcOpen.payerAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.payerType != null" >
+        PAYER_TYPE = #{updatingLcOpen.payerType,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.payerBankCode != null" >
+        PAYER_BANK_CODE = #{updatingLcOpen.payerBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.payerBankName != null" >
+        PAYER_BANK_NAME = #{updatingLcOpen.payerBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.recvId != null" >
+        RECV_ID = #{updatingLcOpen.recvId,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.recvAccno != null" >
+        RECV_ACCNO = #{updatingLcOpen.recvAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.recvType != null" >
+        RECV_TYPE = #{updatingLcOpen.recvType,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.recvBankCode != null" >
+        RECV_BANK_CODE = #{updatingLcOpen.recvBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.recvBankName != null" >
+        RECV_BANK_NAME = #{updatingLcOpen.recvBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.validTime != null" >
+        RECV_VALID_TIME = #{updatingLcOpen.validTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatingLcOpen.orderId != null" >
+        ORDER_ID = #{updatingLcOpen.orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.remark != null" >
+        REMARK = #{updatingLcOpen.remark,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.tradeTime != null" >
+        TRADE_TIME = #{updatingLcOpen.tradeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatingLcOpen.lcOpenStatus != null" >
+        LC_OPEN_STATUS = #{updatingLcOpen.lcOpenStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.lcOpenResponse != null" >
+        LC_OPEN_RESPONSE = #{updatingLcOpen.lcOpenResponse,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLcOpen.createTime != null" >
+        CREATE_TIME = #{updatingLcOpen.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatingLcOpen.updateTime != null" >
+        UPDATE_TIME = #{updatingLcOpen.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where LC_OPEN_STATUS = #{lcOpenStatus,jdbcType=VARCHAR} and LC_OPEN_ID = #{lcOpenId,jdbcType=BIGINT}
+  </update>
+
+  <update id="updateBankResponse" parameterType="map" >
+    update CIFPAY_LC_OPEN
+    <set >
+      <if test="map.lcOpenStatus != null" >
+        LC_OPEN_STATUS = #{map.lcOpenStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="map.lcOpenResponse != null" >
+        LC_OPEN_RESPONSE = #{map.lcOpenResponse,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeTime != null" >
+        TRADE_TIME = #{tradeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where LC_OPEN_ID in
+    <foreach collection="lcOpenIds" index="index" item="item" open="(" separator="," close=")" >  
+             #{item}
+    </foreach> 
+  </update>
+  
+  <update id="updateLcState" parameterType="map" >
+    update CIFPAY_LC_OPEN
+    <set >
+      <if test="lcOpenStatus != null" >
+        LC_OPEN_STATUS = #{lcOpenStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="lcOpenResponse != null" >
+        LC_OPEN_RESPONSE = #{lcOpenResponse,jdbcType=VARCHAR},
+      </if>
+      <if test="tradeTime != null" >
+        TRADE_TIME = #{tradeTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where LC_OPEN_ID = #{lcOpenId,jdbcType=BIGINT} and LC_OPEN_STATUS != #{sucLcOpenStatus,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectByLcIdSuccess" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_OPEN
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+      and LC_OPEN_STATUS = 1
+  </select>
+</mapper>

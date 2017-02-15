@@ -1,0 +1,24 @@
+package com.cifpay.lc.std.business.message;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.CoreBusinessService;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessServiceImplBase;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+
+import java.io.Serializable;
+
+public abstract class LcMessageServiceBase<I extends Serializable, O extends Serializable> extends CoreBusinessServiceImplBase<I, O> implements CoreBusinessService<I, O> {
+
+    protected abstract BusinessOutput<O> _processBusiness(I inputBean, CoreBusinessContext context) throws CoreBusinessException;
+
+    @Override
+    protected BusinessOutput<O> processBusiness(I inputBean, CoreBusinessContext context) throws CoreBusinessException {
+
+        BusinessOutput<O> output = _processBusiness(inputBean, context);
+
+        // TODO: 失败时自动重试
+
+        return output;
+    }
+}

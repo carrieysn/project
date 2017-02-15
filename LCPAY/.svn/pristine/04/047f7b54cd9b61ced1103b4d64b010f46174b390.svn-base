@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cifpay.lc.core.db.dao.TrdUnionPayFlowMapper">
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow">
+    <id column="FLOW_ID" jdbcType="BIGINT" property="flowId" />
+    <result column="BUSINESS_ID" jdbcType="BIGINT" property="businessId" />
+    <result column="LC_ID" jdbcType="BIGINT" property="lcId" />
+    <result column="TXN_TYPE" jdbcType="VARCHAR" property="txnType" />
+    <result column="TXN_SUB_TYPE" jdbcType="VARCHAR" property="txnSubType" />
+    <result column="MER_ID" jdbcType="VARCHAR" property="merId" />
+    <result column="ORDER_ID" jdbcType="VARCHAR" property="orderId" />
+    <result column="ORIG_FLOW_ID" jdbcType="VARCHAR" property="origFlowId" />
+    <result column="TXN_TIME" jdbcType="VARCHAR" property="txnTime" />
+    <result column="TXN_AMT" jdbcType="BIGINT" property="txnAmt" />
+    <result column="CURRENCY_CODE" jdbcType="VARCHAR" property="currencyCode" />
+    <result column="NEW_FLOW_ID" jdbcType="VARCHAR" property="newFlowId" />
+    <result column="TRACE_NO" jdbcType="VARCHAR" property="traceNo" />
+    <result column="TRACE_TIME" jdbcType="VARCHAR" property="traceTime" />
+    <result column="ASYN_RESP_CODE" jdbcType="VARCHAR" property="asynRespCode" />
+    <result column="ASYN_RESP_MSG" jdbcType="VARCHAR" property="asynRespMsg" />
+    <result column="SYNC_RESP_CODE" jdbcType="VARCHAR" property="syncRespCode" />
+    <result column="SYNC_RESP_MSG" jdbcType="VARCHAR" property="syncRespMsg" />
+    <result column="SETTLE_AMT" jdbcType="BIGINT" property="settleAmt" />
+    <result column="SETTLE_CURRENCY_CODE" jdbcType="VARCHAR" property="settleCurrencyCode" />
+    <result column="SETTLE_DATE" jdbcType="VARCHAR" property="settleDate" />
+    <result column="SYNC_TRADE_RESULT" jdbcType="VARCHAR" property="syncTradeResult" />
+    <result column="ASYN_TRADE_RESULT" jdbcType="VARCHAR" property="asynTradeResult" />
+    <result column="INSERT_TIME" jdbcType="TIMESTAMP" property="insertTime" />
+    <result column="LAST_UPD_TIME" jdbcType="TIMESTAMP" property="lastUpdTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    FLOW_ID, BUSINESS_ID, LC_ID, TXN_TYPE, TXN_SUB_TYPE, MER_ID, ORDER_ID, ORIG_FLOW_ID, 
+    TXN_TIME, TXN_AMT, CURRENCY_CODE, NEW_FLOW_ID, TRACE_NO, TRACE_TIME, ASYN_RESP_CODE, 
+    ASYN_RESP_MSG, SYNC_RESP_CODE, SYNC_RESP_MSG, SETTLE_AMT, SETTLE_CURRENCY_CODE, SETTLE_DATE, 
+    SYNC_TRADE_RESULT, ASYN_TRADE_RESULT, INSERT_TIME, LAST_UPD_TIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_TRD_UNIONPAY_FLOW
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from CIFPAY_LC_TRD_UNIONPAY_FLOW
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow">
+    insert into CIFPAY_LC_TRD_UNIONPAY_FLOW (FLOW_ID, BUSINESS_ID, LC_ID, 
+      TXN_TYPE, TXN_SUB_TYPE, MER_ID, 
+      ORDER_ID, ORIG_FLOW_ID, TXN_TIME, 
+      TXN_AMT, CURRENCY_CODE, NEW_FLOW_ID, 
+      TRACE_NO, TRACE_TIME, ASYN_RESP_CODE, 
+      ASYN_RESP_MSG, SYNC_RESP_CODE, SYNC_RESP_MSG, 
+      SETTLE_AMT, SETTLE_CURRENCY_CODE, SETTLE_DATE, 
+      SYNC_TRADE_RESULT, ASYN_TRADE_RESULT, INSERT_TIME, 
+      LAST_UPD_TIME)
+    values (#{flowId,jdbcType=BIGINT}, #{businessId,jdbcType=BIGINT}, #{lcId,jdbcType=BIGINT}, 
+      #{txnType,jdbcType=VARCHAR}, #{txnSubType,jdbcType=VARCHAR}, #{merId,jdbcType=VARCHAR}, 
+      #{orderId,jdbcType=VARCHAR}, #{origFlowId,jdbcType=VARCHAR}, #{txnTime,jdbcType=VARCHAR}, 
+      #{txnAmt,jdbcType=BIGINT}, #{currencyCode,jdbcType=VARCHAR}, #{newFlowId,jdbcType=VARCHAR}, 
+      #{traceNo,jdbcType=VARCHAR}, #{traceTime,jdbcType=VARCHAR}, #{asynRespCode,jdbcType=VARCHAR}, 
+      #{asynRespMsg,jdbcType=VARCHAR}, #{syncRespCode,jdbcType=VARCHAR}, #{syncRespMsg,jdbcType=VARCHAR}, 
+      #{settleAmt,jdbcType=BIGINT}, #{settleCurrencyCode,jdbcType=VARCHAR}, #{settleDate,jdbcType=VARCHAR}, 
+      #{syncTradeResult,jdbcType=VARCHAR}, #{asynTradeResult,jdbcType=VARCHAR}, #{insertTime,jdbcType=TIMESTAMP}, 
+      #{lastUpdTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow">
+    insert into CIFPAY_LC_TRD_UNIONPAY_FLOW
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="flowId != null">
+        FLOW_ID,
+      </if>
+      <if test="businessId != null">
+        BUSINESS_ID,
+      </if>
+      <if test="lcId != null">
+        LC_ID,
+      </if>
+      <if test="txnType != null">
+        TXN_TYPE,
+      </if>
+      <if test="txnSubType != null">
+        TXN_SUB_TYPE,
+      </if>
+      <if test="merId != null">
+        MER_ID,
+      </if>
+      <if test="orderId != null">
+        ORDER_ID,
+      </if>
+      <if test="origFlowId != null">
+        ORIG_FLOW_ID,
+      </if>
+      <if test="txnTime != null">
+        TXN_TIME,
+      </if>
+      <if test="txnAmt != null">
+        TXN_AMT,
+      </if>
+      <if test="currencyCode != null">
+        CURRENCY_CODE,
+      </if>
+      <if test="newFlowId != null">
+        NEW_FLOW_ID,
+      </if>
+      <if test="traceNo != null">
+        TRACE_NO,
+      </if>
+      <if test="traceTime != null">
+        TRACE_TIME,
+      </if>
+      <if test="asynRespCode != null">
+        ASYN_RESP_CODE,
+      </if>
+      <if test="asynRespMsg != null">
+        ASYN_RESP_MSG,
+      </if>
+      <if test="syncRespCode != null">
+        SYNC_RESP_CODE,
+      </if>
+      <if test="syncRespMsg != null">
+        SYNC_RESP_MSG,
+      </if>
+      <if test="settleAmt != null">
+        SETTLE_AMT,
+      </if>
+      <if test="settleCurrencyCode != null">
+        SETTLE_CURRENCY_CODE,
+      </if>
+      <if test="settleDate != null">
+        SETTLE_DATE,
+      </if>
+      <if test="syncTradeResult != null">
+        SYNC_TRADE_RESULT,
+      </if>
+      <if test="asynTradeResult != null">
+        ASYN_TRADE_RESULT,
+      </if>
+      <if test="insertTime != null">
+        INSERT_TIME,
+      </if>
+      <if test="lastUpdTime != null">
+        LAST_UPD_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="flowId != null">
+        #{flowId,jdbcType=BIGINT},
+      </if>
+      <if test="businessId != null">
+        #{businessId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null">
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="txnType != null">
+        #{txnType,jdbcType=VARCHAR},
+      </if>
+      <if test="txnSubType != null">
+        #{txnSubType,jdbcType=VARCHAR},
+      </if>
+      <if test="merId != null">
+        #{merId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="origFlowId != null">
+        #{origFlowId,jdbcType=VARCHAR},
+      </if>
+      <if test="txnTime != null">
+        #{txnTime,jdbcType=VARCHAR},
+      </if>
+      <if test="txnAmt != null">
+        #{txnAmt,jdbcType=BIGINT},
+      </if>
+      <if test="currencyCode != null">
+        #{currencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="newFlowId != null">
+        #{newFlowId,jdbcType=VARCHAR},
+      </if>
+      <if test="traceNo != null">
+        #{traceNo,jdbcType=VARCHAR},
+      </if>
+      <if test="traceTime != null">
+        #{traceTime,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespCode != null">
+        #{asynRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespMsg != null">
+        #{asynRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespCode != null">
+        #{syncRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespMsg != null">
+        #{syncRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="settleAmt != null">
+        #{settleAmt,jdbcType=BIGINT},
+      </if>
+      <if test="settleCurrencyCode != null">
+        #{settleCurrencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="settleDate != null">
+        #{settleDate,jdbcType=VARCHAR},
+      </if>
+      <if test="syncTradeResult != null">
+        #{syncTradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="asynTradeResult != null">
+        #{asynTradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null">
+        #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdTime != null">
+        #{lastUpdTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow">
+    update CIFPAY_LC_TRD_UNIONPAY_FLOW
+    <set>
+      <if test="businessId != null">
+        BUSINESS_ID = #{businessId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null">
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="txnType != null">
+        TXN_TYPE = #{txnType,jdbcType=VARCHAR},
+      </if>
+      <if test="txnSubType != null">
+        TXN_SUB_TYPE = #{txnSubType,jdbcType=VARCHAR},
+      </if>
+      <if test="merId != null">
+        MER_ID = #{merId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null">
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="origFlowId != null">
+        ORIG_FLOW_ID = #{origFlowId,jdbcType=VARCHAR},
+      </if>
+      <if test="txnTime != null">
+        TXN_TIME = #{txnTime,jdbcType=VARCHAR},
+      </if>
+      <if test="txnAmt != null">
+        TXN_AMT = #{txnAmt,jdbcType=BIGINT},
+      </if>
+      <if test="currencyCode != null">
+        CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="newFlowId != null">
+        NEW_FLOW_ID = #{newFlowId,jdbcType=VARCHAR},
+      </if>
+      <if test="traceNo != null">
+        TRACE_NO = #{traceNo,jdbcType=VARCHAR},
+      </if>
+      <if test="traceTime != null">
+        TRACE_TIME = #{traceTime,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespCode != null">
+        ASYN_RESP_CODE = #{asynRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespMsg != null">
+        ASYN_RESP_MSG = #{asynRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespCode != null">
+        SYNC_RESP_CODE = #{syncRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespMsg != null">
+        SYNC_RESP_MSG = #{syncRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="settleAmt != null">
+        SETTLE_AMT = #{settleAmt,jdbcType=BIGINT},
+      </if>
+      <if test="settleCurrencyCode != null">
+        SETTLE_CURRENCY_CODE = #{settleCurrencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="settleDate != null">
+        SETTLE_DATE = #{settleDate,jdbcType=VARCHAR},
+      </if>
+      <if test="syncTradeResult != null">
+        SYNC_TRADE_RESULT = #{syncTradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="asynTradeResult != null">
+        ASYN_TRADE_RESULT = #{asynTradeResult,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null">
+        INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdTime != null">
+        LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow">
+    update CIFPAY_LC_TRD_UNIONPAY_FLOW
+    set BUSINESS_ID = #{businessId,jdbcType=BIGINT},
+      LC_ID = #{lcId,jdbcType=BIGINT},
+      TXN_TYPE = #{txnType,jdbcType=VARCHAR},
+      TXN_SUB_TYPE = #{txnSubType,jdbcType=VARCHAR},
+      MER_ID = #{merId,jdbcType=VARCHAR},
+      ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      ORIG_FLOW_ID = #{origFlowId,jdbcType=VARCHAR},
+      TXN_TIME = #{txnTime,jdbcType=VARCHAR},
+      TXN_AMT = #{txnAmt,jdbcType=BIGINT},
+      CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR},
+      NEW_FLOW_ID = #{newFlowId,jdbcType=VARCHAR},
+      TRACE_NO = #{traceNo,jdbcType=VARCHAR},
+      TRACE_TIME = #{traceTime,jdbcType=VARCHAR},
+      ASYN_RESP_CODE = #{asynRespCode,jdbcType=VARCHAR},
+      ASYN_RESP_MSG = #{asynRespMsg,jdbcType=VARCHAR},
+      SYNC_RESP_CODE = #{syncRespCode,jdbcType=VARCHAR},
+      SYNC_RESP_MSG = #{syncRespMsg,jdbcType=VARCHAR},
+      SETTLE_AMT = #{settleAmt,jdbcType=BIGINT},
+      SETTLE_CURRENCY_CODE = #{settleCurrencyCode,jdbcType=VARCHAR},
+      SETTLE_DATE = #{settleDate,jdbcType=VARCHAR},
+      SYNC_TRADE_RESULT = #{syncTradeResult,jdbcType=VARCHAR},
+      ASYN_TRADE_RESULT = #{asynTradeResult,jdbcType=VARCHAR},
+      INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP}
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </update>
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow">
+    <id column="FLOW_ID" jdbcType="BIGINT" property="flowId" />
+    <result column="BUSINESS_ID" jdbcType="BIGINT" property="businessId" />
+    <result column="LC_ID" jdbcType="BIGINT" property="lcId" />
+    <result column="TXN_TYPE" jdbcType="VARCHAR" property="txnType" />
+    <result column="TXN_SUB_TYPE" jdbcType="VARCHAR" property="txnSubType" />
+    <result column="ORIG_FLOW_ID" jdbcType="VARCHAR" property="origFlowId" />
+    <result column="ORDER_ID" jdbcType="VARCHAR" property="orderId" />
+    <result column="TXN_AMT" jdbcType="BIGINT" property="txnAmt" />
+    <result column="CURRENCY_CODE" jdbcType="VARCHAR" property="currencyCode" />
+    <result column="NEW_FLOW_ID" jdbcType="VARCHAR" property="newFlowId" />
+    <result column="TRACE_NO" jdbcType="VARCHAR" property="traceNo" />
+    <result column="TRACE_TIME" jdbcType="VARCHAR" property="traceTime" />
+    <result column="ASYN_RESP_CODE" jdbcType="VARCHAR" property="asynRespCode" />
+    <result column="ASYN_RESP_MSG" jdbcType="VARCHAR" property="asynRespMsg" />
+    <result column="SYNC_RESP_CODE" jdbcType="VARCHAR" property="syncRespCode" />
+    <result column="SYNC_RESP_MSG" jdbcType="VARCHAR" property="syncRespMsg" />
+    <result column="SETTLE_AMT" jdbcType="BIGINT" property="settleAmt" />
+    <result column="SETTLE_CURRENCY_CODE" jdbcType="VARCHAR" property="settleCurrencyCode" />
+    <result column="SETTLE_DATE" jdbcType="VARCHAR" property="settleDate" />
+    <result column="INSERT_TIME" jdbcType="TIMESTAMP" property="insertTime" />
+    <result column="LAST_UPD_TIME" jdbcType="TIMESTAMP" property="lastUpdTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    FLOW_ID, BUSINESS_ID, LC_ID, TXN_TYPE, TXN_SUB_TYPE, ORIG_FLOW_ID, ORDER_ID, TXN_AMT, 
+    CURRENCY_CODE, NEW_FLOW_ID, TRACE_NO, TRACE_TIME, ASYN_RESP_CODE, ASYN_RESP_MSG, 
+    SYNC_RESP_CODE, SYNC_RESP_MSG, SETTLE_AMT, SETTLE_CURRENCY_CODE, SETTLE_DATE, INSERT_TIME, 
+    LAST_UPD_TIME
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_TRD_UNIONPAY_FLOW
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from CIFPAY_LC_TRD_UNIONPAY_FLOW
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow">
+    insert into CIFPAY_LC_TRD_UNIONPAY_FLOW (FLOW_ID, BUSINESS_ID, LC_ID, 
+      TXN_TYPE, TXN_SUB_TYPE, ORIG_FLOW_ID, 
+      ORDER_ID, TXN_AMT, CURRENCY_CODE, 
+      NEW_FLOW_ID, TRACE_NO, TRACE_TIME, 
+      ASYN_RESP_CODE, ASYN_RESP_MSG, SYNC_RESP_CODE, 
+      SYNC_RESP_MSG, SETTLE_AMT, SETTLE_CURRENCY_CODE, 
+      SETTLE_DATE, INSERT_TIME, LAST_UPD_TIME
+      )
+    values (#{flowId,jdbcType=BIGINT}, #{businessId,jdbcType=BIGINT}, #{lcId,jdbcType=BIGINT}, 
+      #{txnType,jdbcType=VARCHAR}, #{txnSubType,jdbcType=VARCHAR}, #{origFlowId,jdbcType=VARCHAR}, 
+      #{orderId,jdbcType=VARCHAR}, #{txnAmt,jdbcType=BIGINT}, #{currencyCode,jdbcType=VARCHAR}, 
+      #{newFlowId,jdbcType=VARCHAR}, #{traceNo,jdbcType=VARCHAR}, #{traceTime,jdbcType=VARCHAR}, 
+      #{asynRespCode,jdbcType=VARCHAR}, #{asynRespMsg,jdbcType=VARCHAR}, #{syncRespCode,jdbcType=VARCHAR}, 
+      #{syncRespMsg,jdbcType=VARCHAR}, #{settleAmt,jdbcType=BIGINT}, #{settleCurrencyCode,jdbcType=VARCHAR}, 
+      #{settleDate,jdbcType=VARCHAR}, #{insertTime,jdbcType=TIMESTAMP}, #{lastUpdTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow">
+    insert into CIFPAY_LC_TRD_UNIONPAY_FLOW
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="flowId != null">
+        FLOW_ID,
+      </if>
+      <if test="businessId != null">
+        BUSINESS_ID,
+      </if>
+      <if test="lcId != null">
+        LC_ID,
+      </if>
+      <if test="txnType != null">
+        TXN_TYPE,
+      </if>
+      <if test="txnSubType != null">
+        TXN_SUB_TYPE,
+      </if>
+      <if test="origFlowId != null">
+        ORIG_FLOW_ID,
+      </if>
+      <if test="orderId != null">
+        ORDER_ID,
+      </if>
+      <if test="txnAmt != null">
+        TXN_AMT,
+      </if>
+      <if test="currencyCode != null">
+        CURRENCY_CODE,
+      </if>
+      <if test="newFlowId != null">
+        NEW_FLOW_ID,
+      </if>
+      <if test="traceNo != null">
+        TRACE_NO,
+      </if>
+      <if test="traceTime != null">
+        TRACE_TIME,
+      </if>
+      <if test="asynRespCode != null">
+        ASYN_RESP_CODE,
+      </if>
+      <if test="asynRespMsg != null">
+        ASYN_RESP_MSG,
+      </if>
+      <if test="syncRespCode != null">
+        SYNC_RESP_CODE,
+      </if>
+      <if test="syncRespMsg != null">
+        SYNC_RESP_MSG,
+      </if>
+      <if test="settleAmt != null">
+        SETTLE_AMT,
+      </if>
+      <if test="settleCurrencyCode != null">
+        SETTLE_CURRENCY_CODE,
+      </if>
+      <if test="settleDate != null">
+        SETTLE_DATE,
+      </if>
+      <if test="insertTime != null">
+        INSERT_TIME,
+      </if>
+      <if test="lastUpdTime != null">
+        LAST_UPD_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="flowId != null">
+        #{flowId,jdbcType=BIGINT},
+      </if>
+      <if test="businessId != null">
+        #{businessId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null">
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="txnType != null">
+        #{txnType,jdbcType=VARCHAR},
+      </if>
+      <if test="txnSubType != null">
+        #{txnSubType,jdbcType=VARCHAR},
+      </if>
+      <if test="origFlowId != null">
+        #{origFlowId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="txnAmt != null">
+        #{txnAmt,jdbcType=BIGINT},
+      </if>
+      <if test="currencyCode != null">
+        #{currencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="newFlowId != null">
+        #{newFlowId,jdbcType=VARCHAR},
+      </if>
+      <if test="traceNo != null">
+        #{traceNo,jdbcType=VARCHAR},
+      </if>
+      <if test="traceTime != null">
+        #{traceTime,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespCode != null">
+        #{asynRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespMsg != null">
+        #{asynRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespCode != null">
+        #{syncRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespMsg != null">
+        #{syncRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="settleAmt != null">
+        #{settleAmt,jdbcType=BIGINT},
+      </if>
+      <if test="settleCurrencyCode != null">
+        #{settleCurrencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="settleDate != null">
+        #{settleDate,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null">
+        #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdTime != null">
+        #{lastUpdTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow">
+    update CIFPAY_LC_TRD_UNIONPAY_FLOW
+    <set>
+      <if test="businessId != null">
+        BUSINESS_ID = #{businessId,jdbcType=BIGINT},
+      </if>
+      <if test="lcId != null">
+        LC_ID = #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="txnType != null">
+        TXN_TYPE = #{txnType,jdbcType=VARCHAR},
+      </if>
+      <if test="txnSubType != null">
+        TXN_SUB_TYPE = #{txnSubType,jdbcType=VARCHAR},
+      </if>
+      <if test="origFlowId != null">
+        ORIG_FLOW_ID = #{origFlowId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null">
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="txnAmt != null">
+        TXN_AMT = #{txnAmt,jdbcType=BIGINT},
+      </if>
+      <if test="currencyCode != null">
+        CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="newFlowId != null">
+        NEW_FLOW_ID = #{newFlowId,jdbcType=VARCHAR},
+      </if>
+      <if test="traceNo != null">
+        TRACE_NO = #{traceNo,jdbcType=VARCHAR},
+      </if>
+      <if test="traceTime != null">
+        TRACE_TIME = #{traceTime,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespCode != null">
+        ASYN_RESP_CODE = #{asynRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="asynRespMsg != null">
+        ASYN_RESP_MSG = #{asynRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespCode != null">
+        SYNC_RESP_CODE = #{syncRespCode,jdbcType=VARCHAR},
+      </if>
+      <if test="syncRespMsg != null">
+        SYNC_RESP_MSG = #{syncRespMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="settleAmt != null">
+        SETTLE_AMT = #{settleAmt,jdbcType=BIGINT},
+      </if>
+      <if test="settleCurrencyCode != null">
+        SETTLE_CURRENCY_CODE = #{settleCurrencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="settleDate != null">
+        SETTLE_DATE = #{settleDate,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null">
+        INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdTime != null">
+        LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.TrdUnionPayFlow">
+    update CIFPAY_LC_TRD_UNIONPAY_FLOW
+    set BUSINESS_ID = #{businessId,jdbcType=BIGINT},
+      LC_ID = #{lcId,jdbcType=BIGINT},
+      TXN_TYPE = #{txnType,jdbcType=VARCHAR},
+      TXN_SUB_TYPE = #{txnSubType,jdbcType=VARCHAR},
+      ORIG_FLOW_ID = #{origFlowId,jdbcType=VARCHAR},
+      ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      TXN_AMT = #{txnAmt,jdbcType=BIGINT},
+      CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR},
+      NEW_FLOW_ID = #{newFlowId,jdbcType=VARCHAR},
+      TRACE_NO = #{traceNo,jdbcType=VARCHAR},
+      TRACE_TIME = #{traceTime,jdbcType=VARCHAR},
+      ASYN_RESP_CODE = #{asynRespCode,jdbcType=VARCHAR},
+      ASYN_RESP_MSG = #{asynRespMsg,jdbcType=VARCHAR},
+      SYNC_RESP_CODE = #{syncRespCode,jdbcType=VARCHAR},
+      SYNC_RESP_MSG = #{syncRespMsg,jdbcType=VARCHAR},
+      SETTLE_AMT = #{settleAmt,jdbcType=BIGINT},
+      SETTLE_CURRENCY_CODE = #{settleCurrencyCode,jdbcType=VARCHAR},
+      SETTLE_DATE = #{settleDate,jdbcType=VARCHAR},
+      INSERT_TIME = #{insertTime,jdbcType=TIMESTAMP},
+      LAST_UPD_TIME = #{lastUpdTime,jdbcType=TIMESTAMP}
+    where FLOW_ID = #{flowId,jdbcType=BIGINT}
+  </update>
+</mapper>

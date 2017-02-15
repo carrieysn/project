@@ -1,0 +1,42 @@
+package com.cifpay.lc.gateway.output.lc;
+
+public class TransferResp extends LcBaseResp {
+
+    private String transferAmount;    // 银信证交易金额（单位分）
+
+    private String lcPayId;     // 开证ID
+    private String channel;     // 支付渠道
+    private String serialNo;    // 交易流水号
+
+    public String getTransferAmount() {
+        return transferAmount;
+    }
+
+    public void setTransferAmount(String transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+    public String getLcPayId() {
+        return lcPayId;
+    }
+
+    public void setLcPayId(String lcPayId) {
+        this.lcPayId = lcPayId;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
+    }
+}

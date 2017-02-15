@@ -1,0 +1,10 @@
+package com.cifpay.lc.api.xds.offlinepayment;
+
+import com.cifpay.lc.api.CoreBusinessService;
+
+/**
+ * Created by yx on 2016/5/10.
+ */
+public interface OfflinePayBusinessService extends CoreBusinessService<OfflinePayInputBean,OfflinePayOutputBean> {
+
+}

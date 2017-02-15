@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcPageTemplateDetailDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcPageTemplateDetail" >
+    <id column="TEMPLATE_CODE" property="templateCode" jdbcType="VARCHAR" />
+    <id column="VERSION" property="version" jdbcType="VARCHAR" />
+    <id column="TEMPLATE_FILE_NAME" property="templateFileName" jdbcType="VARCHAR" />
+    <result column="TEMPLATE_FILE_PATH" property="templateFilePath" jdbcType="VARCHAR" />
+    <result column="SYS_FILE_PATH" property="sysFilePath" jdbcType="VARCHAR" />
+    <result column="ITEM_NAME" property="itemName" jdbcType="VARCHAR" />
+    <result column="ITEM_CATEGORY" property="itemCategory" jdbcType="VARCHAR" />
+    <result column="SEQ" property="seq" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    TEMPLATE_CODE, VERSION, TEMPLATE_FILE_NAME, TEMPLATE_FILE_PATH, SYS_FILE_PATH, ITEM_NAME, 
+    ITEM_CATEGORY, SEQ, CREATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_PAGE_TEMPLATE_DETAIL
+    where TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR}
+      and VERSION = #{version,jdbcType=VARCHAR}
+      and TEMPLATE_FILE_NAME = #{templateFileName,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map" >
+    delete from CIFPAY_LC_PAGE_TEMPLATE_DETAIL
+    where TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR}
+      and VERSION = #{version,jdbcType=VARCHAR}
+      and TEMPLATE_FILE_NAME = #{templateFileName,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcPageTemplateDetail" >
+    insert into CIFPAY_LC_PAGE_TEMPLATE_DETAIL (TEMPLATE_CODE, VERSION, TEMPLATE_FILE_NAME, 
+      TEMPLATE_FILE_PATH, SYS_FILE_PATH, ITEM_NAME, 
+      ITEM_CATEGORY, SEQ, CREATE_TIME
+      )
+    values (#{templateCode,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, #{templateFileName,jdbcType=VARCHAR}, 
+      #{templateFilePath,jdbcType=VARCHAR}, #{sysFilePath,jdbcType=VARCHAR}, #{itemName,jdbcType=VARCHAR}, 
+      #{itemCategory,jdbcType=VARCHAR}, #{seq,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcPageTemplateDetail" >
+    insert into CIFPAY_LC_PAGE_TEMPLATE_DETAIL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="templateCode != null" >
+        TEMPLATE_CODE,
+      </if>
+      <if test="version != null" >
+        VERSION,
+      </if>
+      <if test="templateFileName != null" >
+        TEMPLATE_FILE_NAME,
+      </if>
+      <if test="templateFilePath != null" >
+        TEMPLATE_FILE_PATH,
+      </if>
+      <if test="sysFilePath != null" >
+        SYS_FILE_PATH,
+      </if>
+      <if test="itemName != null" >
+        ITEM_NAME,
+      </if>
+      <if test="itemCategory != null" >
+        ITEM_CATEGORY,
+      </if>
+      <if test="seq != null" >
+        SEQ,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="templateCode != null" >
+        #{templateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="templateFileName != null" >
+        #{templateFileName,jdbcType=VARCHAR},
+      </if>
+      <if test="templateFilePath != null" >
+        #{templateFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="sysFilePath != null" >
+        #{sysFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="itemName != null" >
+        #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="itemCategory != null" >
+        #{itemCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="seq != null" >
+        #{seq,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcPageTemplateDetail" >
+    update CIFPAY_LC_PAGE_TEMPLATE_DETAIL
+    <set >
+      <if test="templateFilePath != null" >
+        TEMPLATE_FILE_PATH = #{templateFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="sysFilePath != null" >
+        SYS_FILE_PATH = #{sysFilePath,jdbcType=VARCHAR},
+      </if>
+      <if test="itemName != null" >
+        ITEM_NAME = #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="itemCategory != null" >
+        ITEM_CATEGORY = #{itemCategory,jdbcType=VARCHAR},
+      </if>
+      <if test="seq != null" >
+        SEQ = #{seq,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR}
+      and VERSION = #{version,jdbcType=VARCHAR}
+      and TEMPLATE_FILE_NAME = #{templateFileName,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcPageTemplateDetail" >
+    update CIFPAY_LC_PAGE_TEMPLATE_DETAIL
+    set TEMPLATE_FILE_PATH = #{templateFilePath,jdbcType=VARCHAR},
+      SYS_FILE_PATH = #{sysFilePath,jdbcType=VARCHAR},
+      ITEM_NAME = #{itemName,jdbcType=VARCHAR},
+      ITEM_CATEGORY = #{itemCategory,jdbcType=VARCHAR},
+      SEQ = #{seq,jdbcType=INTEGER},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+    where TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR}
+      and VERSION = #{version,jdbcType=VARCHAR}
+      and TEMPLATE_FILE_NAME = #{templateFileName,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>

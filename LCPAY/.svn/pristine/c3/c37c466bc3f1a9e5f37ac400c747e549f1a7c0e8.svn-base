@@ -1,0 +1,39 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.Collection;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.LcLock;
+
+@Repository
+public interface LcLockDao {
+
+	LcLock selectByPrimaryKey(@Param("lcId") Long lcId, @Param("tradeCode") String tradeCode);
+
+	void deleteByPrimaryKey(@Param("lcId") Long lcId, @Param("tradeCode") String tradeCode);
+
+	void insert(LcLock lcLock);
+
+	void insertSelective(LcLock lcLock);
+
+	void updateByPrimaryKeySelective(LcLock lcLock);
+
+	void updateByPrimaryKey(LcLock lcLock);
+
+	/**
+	 * 批量插入记录
+	 * 
+	 * @param lcLockList
+	 */
+	void bulkInsert(@Param("lcLockList") Collection<LcLock> lcLockList);
+
+	/**
+	 * 批量删除记录
+	 * 
+	 * @param lcIds
+	 * @param tradeCode
+	 */
+	void bulkRemove(@Param("lcIds") Long[] lcIds, @Param("tradeCode") String tradeCode);
+}

@@ -1,0 +1,53 @@
+package com.cifpay.lc.gateway.output.svip;
+
+import com.cifpay.lc.domain.security.MerchantResponseData;
+
+public class SvipCardOpeningResult extends MerchantResponseData {
+
+	private String lcId;			// 银信证ID
+	private String lcStatus; 		// 银信证状态
+	private String lcStatusDesc; 	// 银信证状态描述
+
+	private String orderId; 	// 商户订单号
+	private String lcAmount; 	// 银信证开证金额（单位分）
+
+	public String getLcId() {
+		return lcId;
+	}
+
+	public void setLcId(String lcId) {
+		this.lcId = lcId;
+	}
+
+	public String getLcStatus() {
+		return lcStatus;
+	}
+
+	public void setLcStatus(String lcStatus) {
+		this.lcStatus = lcStatus;
+	}
+
+	public String getLcStatusDesc() {
+		return lcStatusDesc;
+	}
+
+	public void setLcStatusDesc(String lcStatusDesc) {
+		this.lcStatusDesc = lcStatusDesc;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getLcAmount() {
+		return lcAmount;
+	}
+
+	public void setLcAmount(String lcAmount) {
+		this.lcAmount = lcAmount;
+	}
+}

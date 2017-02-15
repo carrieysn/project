@@ -1,0 +1,20 @@
+package com.cifpay.lc.api.message;
+
+import java.io.Serializable;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.BusinessService;
+
+public interface MessageService <I extends Serializable, O extends Serializable> extends BusinessService {
+	
+	/**
+	 * 每一个Core业务层的业务类必须实现该接口方法。
+	 * 
+	 * @param input
+	 * @return
+	 */
+	BusinessOutput<O> execute(BusinessInput<I> input);
+	
+}
+

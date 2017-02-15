@@ -1,0 +1,16 @@
+package com.cifpay.lc.api.gateway.quickpay;
+
+import com.cifpay.lc.api.CoreBusinessService;
+import com.cifpay.lc.domain.quickpay.QuickPaySmsTokenApplyInputBean;
+import com.cifpay.lc.domain.quickpay.QuickPaySmsTokenApplyOutputBean;
+
+/**
+ * 申请单笔支付交易的短信验证码
+ * 
+ * 
+ *
+ */
+public interface QuickPaySmsTokenApplyService
+		extends CoreBusinessService<QuickPaySmsTokenApplyInputBean, QuickPaySmsTokenApplyOutputBean> {
+
+}

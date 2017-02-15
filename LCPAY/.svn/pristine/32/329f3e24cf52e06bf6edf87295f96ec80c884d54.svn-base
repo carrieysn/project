@@ -1,0 +1,68 @@
+package com.cifpay.lc.constant;
+
+/**
+ * 定义整个银信证支付平台系统所有可能出现的返回码，其中使用大于或等于0的整数值表示成功的返回码，使用小于0的整数值表示失败的返回码。<br>
+ * <p>
+ * <p>
+ * 返回码格式约定如下：<br>
+ * <p>
+ * {@code
+ * <p>
+ * 1 0 9 9 9 9
+ * - - - - - -
+ * | | | | | |
+ * |_|_|_|_|_|_____________ 前两位代表应用系统在银信网银公司内部的唯一APP ID，银信证支付平台系统的APP ID是10。
+ * | | | |
+ * |_|_|_|_________________第3位代表APP内的子系统、应用层或模块ID，例如Gateway层、Core层、Channel层等，有效范围是0 ~ 9。
+ * | | |
+ * |_|_|_____________________第4~6共3位数字代码子系统内的一个错误码，在子系统范围内可自由发挥，有效范围是000 ~ 999。
+ * <p>
+ * 具体分配如下：
+ * 100xxx预留；
+ * 101xxx用于表示gateway层的返回码；
+ * 102xxx用于表示core层公共的返回码；
+ * 103xxx用于表示core层【标准银信证业务】公共的返回码；
+ * 104xxx用于表示core层【非标准银信证业务】公共的返回码；
+ * 105xxx用于表示core层银信证合作银行适配接口环节的返回码；
+ * 106xxx用于标识银信证公共代码返回；
+ * 107xxx用于表示银信证产品逻辑的返回码；
+ * 108xxx用于标识银信证消息队列返回码；
+ * 109xxx预留（其中使用 -109999 表示银信证平台系统的内部未知错误）。
+ * }
+ */
+public interface ReturnCode extends GatewayReturnCode, CoreCommonReturnCode, CoreStandardLcReturnCode,
+        CoreLcBankAdapterReturnCode, CoreProductReturnCode,
+        CoreLcReturnCode, MessageReturnCode {
+
+    /**
+     * 全局通用的成功返回码，通常情况下使用0表示成功，预留了其他大于0的值表示其他情况（例如表示交易处理中）
+     * returnMsg: 操作成功
+     */
+//    int GENERAL_SUCCESS = 0;
+    int GENERAL_SUCCESS = 100000;
+
+    /**
+     * BusinessOutput对象默认的returnCode，表示业务方法的程序未设置BusinessOutput对象的returnCode.
+     */
+    int UNDEFINED_RETURN_CODE = -109998;
+
+    /**
+     * 银信证平台系统内部未知错误，原则上业务代码不能直接使用该笼统的错误码，该错误主要提供在系统公共模块在捕获和处理未知异常时使用。
+     */
+    int UNKNOWN_ERROR = -109999;
+
+    /**
+     * 银信证平台系统内部未知错误，原则上业务代码不能直接使用该笼统的错误码，该错误主要提供在系统公共模块在捕获和处理未知异常时使用。
+     */
+    int LOCK_ERROR = -109997;
+
+    /**
+     * 银信证平台系统内部未知错误，原则上业务代码不能直接使用该笼统的错误码，该错误主要提供在系统公共模块在捕获和处理未知异常时使用。
+     */
+    int SERVER_UNAVALIABLE = -109996;
+
+    /**
+     * 参数不正确
+     */
+    int SERVER_PARAM_ERROR = -109995;
+}

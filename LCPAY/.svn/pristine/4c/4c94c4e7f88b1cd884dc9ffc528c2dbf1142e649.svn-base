@@ -1,0 +1,95 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.util.Date;
+
+public class AdminSmsTemplate {
+    private Integer id;
+
+    private String smsTemName;
+
+    private String smsTemContent;
+
+    private Integer smsTemType;
+
+    private Integer userId;
+
+    private Date createTime;
+
+    private Integer smsState;
+
+    private String smsRemark;
+
+    private String smsTemParam;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getSmsTemName() {
+        return smsTemName;
+    }
+
+    public void setSmsTemName(String smsTemName) {
+        this.smsTemName = smsTemName == null ? null : smsTemName.trim();
+    }
+
+    public String getSmsTemContent() {
+        return smsTemContent;
+    }
+
+    public void setSmsTemContent(String smsTemContent) {
+        this.smsTemContent = smsTemContent == null ? null : smsTemContent.trim();
+    }
+
+    public Integer getSmsTemType() {
+        return smsTemType;
+    }
+
+    public void setSmsTemType(Integer smsTemType) {
+        this.smsTemType = smsTemType;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Integer getSmsState() {
+        return smsState;
+    }
+
+    public void setSmsState(Integer smsState) {
+        this.smsState = smsState;
+    }
+
+    public String getSmsRemark() {
+        return smsRemark;
+    }
+
+    public void setSmsRemark(String smsRemark) {
+        this.smsRemark = smsRemark == null ? null : smsRemark.trim();
+    }
+
+    public String getSmsTemParam() {
+        return smsTemParam;
+    }
+
+    public void setSmsTemParam(String smsTemParam) {
+        this.smsTemParam = smsTemParam == null ? null : smsTemParam.trim();
+    }
+}

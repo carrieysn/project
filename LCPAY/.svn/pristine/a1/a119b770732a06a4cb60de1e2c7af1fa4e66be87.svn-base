@@ -1,0 +1,25 @@
+package com.cifpay.lc.message;
+
+import com.cifpay.lc.api.message.MqMessageService;
+import com.cifpay.lc.std.business.TestLogbackInitializer;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(
+        locations = {"classpath:com/cifpay/lc/std/business/config/spring-root-context.xml"},
+        initializers = {TestLogbackInitializer.class})
+public class MessageServiceTest {
+
+    @Autowired
+    private MqMessageService mqMessageService;
+
+    @Test
+    public void sendMessageTest() {
+        mqMessageService.sendMessage(null, null, null);
+    }
+}

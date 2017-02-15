@@ -1,0 +1,63 @@
+package com.cifpay.lc.bankadapter.universal.service.impl.unionpay;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.bankadapter.api.input.AbsTradeParam;
+import com.cifpay.lc.bankadapter.universal.service.UnionPayTrdBusinessService;
+import com.cifpay.lc.core.db.dao.LcTrdUnionPayMainDao;
+import com.cifpay.lc.core.db.dao.LcTrdUnionPayTokenDao;
+import com.cifpay.lc.core.db.pojo.UnionPayTrdMain;
+import com.cifpay.lc.core.db.pojo.UnionPayTrdToken;
+
+@Service
+public class UnionPayTrdBusinessServiceImpl implements UnionPayTrdBusinessService {
+	@Autowired
+	private LcTrdUnionPayMainDao mainDao;
+	private LcTrdUnionPayTokenDao tokenDao;
+
+	public UnionPayTrdMain selectBySelective(AbsTradeParam param) {
+		UnionPayTrdMain tm = new UnionPayTrdMain();
+		tm.setLcId(param.getLcId());
+		tm.setTxnId(param.getTxnId());
+		return mainDao.selectBySelective(tm);
+	}
+
+	public UnionPayTrdMain selectToRefund(Long lcId) {
+		return mainDao.selectToRefund(lcId);
+	}
+	
+	public int insertMainSelective(UnionPayTrdMain tm) {
+		return mainDao.insertSelective(tm);
+	}
+
+	public void updateMainResult(UnionPayTrdMain tm) {
+		mainDao.updateResult(tm);
+	}
+
+	public void updateMainByPrimaryKeySelective(UnionPayTrdMain tm) {
+		mainDao.updateByPrimaryKeySelective(tm);
+	}
+
+	public UnionPayTrdToken selectTokenBySelective(String merId, String accNo) {
+		UnionPayTrdToken tt = new UnionPayTrdToken();
+		tt.setMerId(merId);
+		tt.setAccNo(accNo);
+		return tokenDao.selectBySelective(tt);
+	}
+
+	@Override
+	public UnionPayTrdMain selectByTxnKey(String orderId,String txnTime) {
+		// TODO Auto-generated method stub
+		UnionPayTrdMain tm = new UnionPayTrdMain();
+		tm.setOrderId(orderId);
+		tm.setTxnTime(txnTime);
+		return mainDao.selectByTxnKey(tm);
+	}
+
+	@Override
+	public void updateMainAsynResult(UnionPayTrdMain unionPayTrdMain) {
+		mainDao.updateMainAsynResult(unionPayTrdMain);
+	}
+
+}

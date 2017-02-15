@@ -1,0 +1,298 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+
+public class BTradeBusiness  implements Serializable {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -287215662645287116L;
+	
+	/**银行交易序列号*/
+	private String journalNo;
+
+    /**银行交易状态
+    银行冻结:CREDIT_BANK_FOREEZE
+    银行解冻:CREDIT_BANK_UNFOREEZE
+    银行划款:CREDIT_BANK_PAYED
+    银行交易状态（冻结、解冻、划款）*/
+    private String bankState;
+    
+    /**银信交易ID*/
+    private String lcId;
+    
+    /**业务订单编号*/
+    private String orderId;
+    
+    /**第三方系统标识*/
+    private String thirdId;
+    
+    /**银信证状态*/
+    private String lcState;
+    
+    /**交易渠道类型*/
+    private String tradeChnType;
+    
+    /**交易渠道ID*/
+    private String tradeChnId;
+    
+    /**交易金额*/
+    private BigDecimal payAmount;
+    
+    /**付款方银行编码*/
+    private String payerBankCode;
+    
+    /**付款者银行卡号*/
+    private String payerBankCardNo;
+    
+    /**付款者账号*/
+    private String payerBankAccNo;
+    
+    /**付款人手机号码*/
+    private String payerMobile;
+    
+    /**创建时间*/
+    private String createTime;
+    
+    /**银行交易开始日期*/
+    private String bankWorkDate;
+    
+    /**银行交易截至日期*/
+    private String deadLine;
+    
+    /**是否成功(S:成功 F:失败 N:无效 C:初始化 E:异常)*/
+    private String isSuccess;
+    
+    /**交易执行次数*/
+    private Integer tradeCounts;
+    
+    /**更新时间*/
+    private String updateTime;
+    
+    /**收款方银行编码*/
+    private String recvBankCode;
+    
+    /**收款者卡号*/
+    private String recvBankCardNo;
+    
+    /**收款方账号*/
+    private String recvBankAccno;
+    
+    /**收款方账户名*/
+    private String recvBankAccName;
+    
+    /**备注*/
+    private String remark;
+
+	public String getJournalNo() {
+		return journalNo;
+	}
+
+	public void setJournalNo(String journalNo) {
+		this.journalNo = journalNo;
+	}
+
+	public String getBankState() {
+		return bankState;
+	}
+
+	public void setBankState(String bankState) {
+		this.bankState = bankState;
+	}
+
+	public String getLcId() {
+		return lcId;
+	}
+
+	public void setLcId(String lcId) {
+		this.lcId = lcId;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getThirdId() {
+		return thirdId;
+	}
+
+	public void setThirdId(String thirdId) {
+		this.thirdId = thirdId;
+	}
+
+	public String getLcState() {
+		return lcState;
+	}
+
+	public void setLcState(String lcState) {
+		this.lcState = lcState;
+	}
+
+	public String getTradeChnType() {
+		return tradeChnType;
+	}
+
+	public void setTradeChnType(String tradeChnType) {
+		this.tradeChnType = tradeChnType;
+	}
+
+	public String getTradeChnId() {
+		return tradeChnId;
+	}
+
+	public void setTradeChnId(String tradeChnId) {
+		this.tradeChnId = tradeChnId;
+	}
+
+	public BigDecimal getPayAmount() {
+		return payAmount;
+	}
+
+	public void setPayAmount(BigDecimal payAmount) {
+		this.payAmount = payAmount;
+	}
+
+	public String getPayerBankCode() {
+		return payerBankCode;
+	}
+
+	public void setPayerBankCode(String payerBankCode) {
+		this.payerBankCode = payerBankCode;
+	}
+
+	public String getPayerBankCardNo() {
+		return payerBankCardNo;
+	}
+
+	public void setPayerBankCardNo(String payerBankCardNo) {
+		this.payerBankCardNo = payerBankCardNo;
+	}
+
+	public String getPayerBankAccNo() {
+		return payerBankAccNo;
+	}
+
+	public void setPayerBankAccNo(String payerBankAccNo) {
+		this.payerBankAccNo = payerBankAccNo;
+	}
+
+	public String getPayerMobile() {
+		return payerMobile;
+	}
+
+	public void setPayerMobile(String payerMobile) {
+		this.payerMobile = payerMobile;
+	}
+
+	public String getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+
+	public String getBankWorkDate() {
+		return bankWorkDate;
+	}
+
+	public void setBankWorkDate(String bankWorkDate) {
+		this.bankWorkDate = bankWorkDate;
+	}
+
+	public String getDeadLine() {
+		return deadLine;
+	}
+
+	public void setDeadLine(String deadLine) {
+		this.deadLine = deadLine;
+	}
+
+	public String getIsSuccess() {
+		return isSuccess;
+	}
+
+	public void setIsSuccess(String isSuccess) {
+		this.isSuccess = isSuccess;
+	}
+
+	public Integer getTradeCounts() {
+		return tradeCounts;
+	}
+
+	public void setTradeCounts(Integer tradeCounts) {
+		this.tradeCounts = tradeCounts;
+	}
+
+	public String getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public String getRecvBankCode() {
+		return recvBankCode;
+	}
+
+	public void setRecvBankCode(String recvBankCode) {
+		this.recvBankCode = recvBankCode;
+	}
+
+	public String getRecvBankCardNo() {
+		return recvBankCardNo;
+	}
+
+	public void setRecvBankCardNo(String recvBankCardNo) {
+		this.recvBankCardNo = recvBankCardNo;
+	}
+
+	public String getRecvBankAccno() {
+		return recvBankAccno;
+	}
+
+	public void setRecvBankAccno(String recvBankAccno) {
+		this.recvBankAccno = recvBankAccno;
+	}
+
+	public String getRecvBankAccName() {
+		return recvBankAccName;
+	}
+
+	public void setRecvBankAccName(String recvBankAccName) {
+		this.recvBankAccName = recvBankAccName;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	@Override
+	public String toString() {
+		return "BTradeBusiness [journalNo=" + journalNo + ", bankState="
+				+ bankState + ", lcId=" + lcId + ", orderId=" + orderId
+				+ ", thirdId=" + thirdId + ", lcState=" + lcState
+				+ ", tradeChnType=" + tradeChnType + ", tradeChnId="
+				+ tradeChnId + ", payAmount=" + payAmount + ", payerBankCode="
+				+ payerBankCode + ", payerBankCardNo=" + payerBankCardNo
+				+ ", payerBankAccNo=" + payerBankAccNo + ", payerMobile="
+				+ payerMobile + ", createTime=" + createTime
+				+ ", bankWorkDate=" + bankWorkDate + ", deadLine=" + deadLine
+				+ ", isSuccess=" + isSuccess + ", tradeCounts=" + tradeCounts
+				+ ", updateTime=" + updateTime + ", recvBankCode="
+				+ recvBankCode + ", recvBankCardNo=" + recvBankCardNo
+				+ ", recvBankAccno=" + recvBankAccno + ", recvBankAccName="
+				+ recvBankAccName + ", remark=" + remark + "]";
+	}
+
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.cifpay.lc</groupId>
+		<artifactId>lc-platform-parent</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>lc-core-parent</artifactId>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>lc-standard</module>
+		<module>lc-core-common</module>
+		<module>lc-core-dao</module>
+		<module>lc-partnerbank-adapter</module>
+		<module>lc-partnerbank-adapter-api</module>
+		<module>third-tradeplatform-adapter</module>
+		<module>third-tradeplatform-adapter-api</module>
+		<module>lc-core-cache</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-framework</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.curator</groupId>
+			<artifactId>curator-recipes</artifactId>
+		</dependency>
+	</dependencies>
+
+</project>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcInvalidDao">
+    <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcInvalid">
+        <id column="LC_INVALID_ID" property="lcInvalidId" jdbcType="BIGINT"/>
+        <result column="LC_ID" property="lcId" jdbcType="BIGINT"/>
+        <result column="INVALID_TYPE" property="invalidType" jdbcType="VARCHAR"/>
+        <result column="LC_AMOUNT" property="lcAmount" jdbcType="DECIMAL"/>
+        <result column="LC_BALANCE" property="lcBalance" jdbcType="DECIMAL"/>
+        <result column="INVALID_AMOUNT" property="invalidAmount" jdbcType="DECIMAL"/>
+        <result column="LC_INVALID_STATUS" property="lcInvalidStatus" jdbcType="VARCHAR"/>
+        <result column="LC_INVALID_RESPONSE" property="lcInvalidResponse" jdbcType="VARCHAR"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    LC_INVALID_ID, LC_ID, INVALID_TYPE, LC_AMOUNT, LC_BALANCE, INVALID_AMOUNT, LC_INVALID_STATUS, 
+    LC_INVALID_RESPONSE, CREATE_TIME, UPDATE_TIME, REMARK
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from CIFPAY_LC_INVALID
+        where LC_INVALID_ID = #{lcInvalidId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from CIFPAY_LC_INVALID
+    where LC_INVALID_ID = #{lcInvalidId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcInvalid">
+    insert into CIFPAY_LC_INVALID (LC_INVALID_ID, LC_ID, INVALID_TYPE, 
+      LC_AMOUNT, LC_BALANCE, INVALID_AMOUNT, 
+      LC_INVALID_STATUS, LC_INVALID_RESPONSE, CREATE_TIME, 
+      UPDATE_TIME, REMARK)
+    values (#{lcInvalidId,jdbcType=BIGINT}, #{lcId,jdbcType=BIGINT}, #{invalidType,jdbcType=VARCHAR}, 
+      #{lcAmount,jdbcType=DECIMAL}, #{lcBalance,jdbcType=DECIMAL}, #{invalidAmount,jdbcType=DECIMAL}, 
+      #{lcInvalidStatus,jdbcType=VARCHAR}, #{lcInvalidResponse,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcInvalid">
+        insert into CIFPAY_LC_INVALID
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="lcInvalidId != null">
+                LC_INVALID_ID,
+            </if>
+            <if test="lcId != null">
+                LC_ID,
+            </if>
+            <if test="invalidType != null">
+                INVALID_TYPE,
+            </if>
+            <if test="lcAmount != null">
+                LC_AMOUNT,
+            </if>
+            <if test="lcBalance != null">
+                LC_BALANCE,
+            </if>
+            <if test="invalidAmount != null">
+                INVALID_AMOUNT,
+            </if>
+            <if test="lcInvalidStatus != null">
+                LC_INVALID_STATUS,
+            </if>
+            <if test="lcInvalidResponse != null">
+                LC_INVALID_RESPONSE,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="remark != null">
+                REMARK,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="lcInvalidId != null">
+                #{lcInvalidId,jdbcType=BIGINT},
+            </if>
+            <if test="lcId != null">
+                #{lcId,jdbcType=BIGINT},
+            </if>
+            <if test="invalidType != null">
+                #{invalidType,jdbcType=VARCHAR},
+            </if>
+            <if test="lcAmount != null">
+                #{lcAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="lcBalance != null">
+                #{lcBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="invalidAmount != null">
+                #{invalidAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="lcInvalidStatus != null">
+                #{lcInvalidStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="lcInvalidResponse != null">
+                #{lcInvalidResponse,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcInvalid">
+        update CIFPAY_LC_INVALID
+        <set>
+            <if test="lcId != null">
+                LC_ID = #{lcId,jdbcType=BIGINT},
+            </if>
+            <if test="invalidType != null">
+                INVALID_TYPE = #{invalidType,jdbcType=VARCHAR},
+            </if>
+            <if test="lcAmount != null">
+                LC_AMOUNT = #{lcAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="lcBalance != null">
+                LC_BALANCE = #{lcBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="invalidAmount != null">
+                INVALID_AMOUNT = #{invalidAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="lcInvalidStatus != null">
+                LC_INVALID_STATUS = #{lcInvalidStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="lcInvalidResponse != null">
+                LC_INVALID_RESPONSE = #{lcInvalidResponse,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remark != null">
+                REMARK = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where LC_INVALID_ID = #{lcInvalidId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcInvalid">
+    update CIFPAY_LC_INVALID
+    set LC_ID = #{lcId,jdbcType=BIGINT},
+      INVALID_TYPE = #{invalidType,jdbcType=VARCHAR},
+      LC_AMOUNT = #{lcAmount,jdbcType=DECIMAL},
+      LC_BALANCE = #{lcBalance,jdbcType=DECIMAL},
+      INVALID_AMOUNT = #{invalidAmount,jdbcType=DECIMAL},
+      LC_INVALID_STATUS = #{lcInvalidStatus,jdbcType=VARCHAR},
+      LC_INVALID_RESPONSE = #{lcInvalidResponse,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where LC_INVALID_ID = #{lcInvalidId,jdbcType=BIGINT}
+  </update>
+</mapper>

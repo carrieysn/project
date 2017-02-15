@@ -1,0 +1,91 @@
+package com.cifpay.lc.domain.lc;
+
+import com.cifpay.lc.constant.enums.PayChannel;
+
+/**
+ * Created by sweet on 16-10-17.
+ */
+public class OpenLcUnionDepositInputBean extends OpenLcInputBean {
+
+    private static final long serialVersionUID = -8051927988277172848L;
+
+    public OpenLcUnionDepositInputBean() {
+        super(PayChannel.UNION_DEPOSIT);
+    }
+
+    private String accNo;   // 账号
+    private String smsCode; // 短信验证码
+    private String phoneNo; // 手机号
+
+    private String certifTp;    // 证件类型（可选）
+    private String certifId;    // 证件号码（可选）
+    private String customerNm;  // 姓名（可选）
+//    private String reqReserved; // 请求方保留域（可选）
+
+    public String getAccNo() {
+        return accNo;
+    }
+
+    public void setAccNo(String accNo) {
+        this.accNo = accNo;
+    }
+
+    public String getSmsCode() {
+        return smsCode;
+    }
+
+    public void setSmsCode(String smsCode) {
+        this.smsCode = smsCode;
+    }
+
+    public String getCertifTp() {
+        return certifTp;
+    }
+
+    public void setCertifTp(String certifTp) {
+        this.certifTp = certifTp;
+    }
+
+    public String getCertifId() {
+        return certifId;
+    }
+
+    public void setCertifId(String certifId) {
+        this.certifId = certifId;
+    }
+
+    public String getCustomerNm() {
+        return customerNm;
+    }
+
+    public void setCustomerNm(String customerNm) {
+        this.customerNm = customerNm;
+    }
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("OpenLcUnionDepositInputBean [accNo=");
+        builder.append(accNo);
+        builder.append(", smsCode=");
+        builder.append(smsCode);
+        builder.append(", phoneNo=");
+        builder.append(phoneNo);
+        builder.append(", certifTp=");
+        builder.append(certifTp);
+        builder.append(", certifId=");
+        builder.append(certifId);
+        builder.append(", customerNm=");
+        builder.append(customerNm);
+        builder.append("]");
+        return builder.toString();
+    }
+}

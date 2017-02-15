@@ -1,0 +1,30 @@
+package com.cifpay.lc.domain.security;
+
+import java.io.Serializable;
+
+/**
+ * Gateway接口统一响应给商户的data格式。原则上所有Gateway接口的返回对象类型必须继承自本类型（
+ * 除了开证等部分接口URL或HTML自动跳转的情形除外）。
+ */
+public class MerchantResponseData implements Serializable {
+    private static final long serialVersionUID = -4368791878437856682L;
+
+    private int returnCode = 0;
+    private String returnMsg = "General Success";
+
+    public int getReturnCode() {
+        return returnCode;
+    }
+
+    public void setReturnCode(int returnCode) {
+        this.returnCode = returnCode;
+    }
+
+    public String getReturnMsg() {
+        return returnMsg;
+    }
+
+    public void setReturnMsg(String returnMsg) {
+        this.returnMsg = returnMsg;
+    }
+}

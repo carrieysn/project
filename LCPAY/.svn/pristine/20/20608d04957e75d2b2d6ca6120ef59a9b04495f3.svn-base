@@ -1,0 +1,427 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.util.Date;
+
+public class AdminLcMerchant {
+    private Integer merId;
+
+    private String merCode;
+
+    private String merchantName;
+
+    private String merSiteName;
+
+    private String merSiteDomain;
+
+    private String encryptType;
+
+    private String encryptKey;
+
+    private String decryptKey;
+
+    private String defLcType;
+
+    private String defPayeeBankCode;
+
+    private String defPayeeBankAcct;
+
+    private String merchantStatus;
+
+    private Date createdDt;
+
+    private Date updatedDt;
+
+    private String merType;
+
+    private String businessLicense;
+
+    private String organizationImg;
+
+    private String licenseImg;
+
+    private String merLogo;
+
+    private String bankName;
+
+    private String accountName;
+
+    private String bankAccount;
+
+    private String personalName;
+
+    private String identityCard;
+
+    private String idCardImg;
+
+    private String contactName;
+
+    private String telephone;
+
+    private String fixedTelephone;
+
+    private String contactEmail;
+
+    private String contactAddress;
+
+    private String referee;
+
+    private String merReview;
+
+    private String reviewRemark;
+
+    private Integer userId;
+
+    private Date reviewDt;
+
+    private String cifpayMerId;
+
+    private String cifpayKey;
+
+    private String channelMerId;
+
+    private String channelKey;
+
+    private String trId;
+
+    private String tokenType;
+    
+    private AdminCredentials adminCredentials;
+
+    public Integer getMerId() {
+        return merId;
+    }
+
+    public void setMerId(Integer merId) {
+        this.merId = merId;
+    }
+
+    public String getMerCode() {
+        return merCode;
+    }
+
+    public void setMerCode(String merCode) {
+        this.merCode = merCode == null ? null : merCode.trim();
+    }
+
+    public String getMerchantName() {
+        return merchantName;
+    }
+
+    public void setMerchantName(String merchantName) {
+        this.merchantName = merchantName == null ? null : merchantName.trim();
+    }
+
+    public String getMerSiteName() {
+        return merSiteName;
+    }
+
+    public void setMerSiteName(String merSiteName) {
+        this.merSiteName = merSiteName == null ? null : merSiteName.trim();
+    }
+
+    public String getMerSiteDomain() {
+        return merSiteDomain;
+    }
+
+    public void setMerSiteDomain(String merSiteDomain) {
+        this.merSiteDomain = merSiteDomain == null ? null : merSiteDomain.trim();
+    }
+
+    public String getEncryptType() {
+        return encryptType;
+    }
+
+    public void setEncryptType(String encryptType) {
+        this.encryptType = encryptType == null ? null : encryptType.trim();
+    }
+
+    public String getEncryptKey() {
+        return encryptKey;
+    }
+
+    public void setEncryptKey(String encryptKey) {
+        this.encryptKey = encryptKey == null ? null : encryptKey.trim();
+    }
+
+    public String getDecryptKey() {
+        return decryptKey;
+    }
+
+    public void setDecryptKey(String decryptKey) {
+        this.decryptKey = decryptKey == null ? null : decryptKey.trim();
+    }
+
+    public String getDefLcType() {
+        return defLcType;
+    }
+
+    public void setDefLcType(String defLcType) {
+        this.defLcType = defLcType == null ? null : defLcType.trim();
+    }
+
+    public String getDefPayeeBankCode() {
+        return defPayeeBankCode;
+    }
+
+    public void setDefPayeeBankCode(String defPayeeBankCode) {
+        this.defPayeeBankCode = defPayeeBankCode == null ? null : defPayeeBankCode.trim();
+    }
+
+    public String getDefPayeeBankAcct() {
+        return defPayeeBankAcct;
+    }
+
+    public void setDefPayeeBankAcct(String defPayeeBankAcct) {
+        this.defPayeeBankAcct = defPayeeBankAcct == null ? null : defPayeeBankAcct.trim();
+    }
+
+    public String getMerchantStatus() {
+        return merchantStatus;
+    }
+
+    public void setMerchantStatus(String merchantStatus) {
+        this.merchantStatus = merchantStatus == null ? null : merchantStatus.trim();
+    }
+
+    public Date getCreatedDt() {
+        return createdDt;
+    }
+
+    public void setCreatedDt(Date createdDt) {
+        this.createdDt = createdDt;
+    }
+
+    public Date getUpdatedDt() {
+        return updatedDt;
+    }
+
+    public void setUpdatedDt(Date updatedDt) {
+        this.updatedDt = updatedDt;
+    }
+
+    public String getMerType() {
+        return merType;
+    }
+
+    public void setMerType(String merType) {
+        this.merType = merType == null ? null : merType.trim();
+    }
+
+    public String getBusinessLicense() {
+        return businessLicense;
+    }
+
+    public void setBusinessLicense(String businessLicense) {
+        this.businessLicense = businessLicense == null ? null : businessLicense.trim();
+    }
+
+    public String getOrganizationImg() {
+        return organizationImg;
+    }
+
+    public void setOrganizationImg(String organizationImg) {
+        this.organizationImg = organizationImg == null ? null : organizationImg.trim();
+    }
+
+    public String getLicenseImg() {
+        return licenseImg;
+    }
+
+    public void setLicenseImg(String licenseImg) {
+        this.licenseImg = licenseImg == null ? null : licenseImg.trim();
+    }
+
+    public String getMerLogo() {
+        return merLogo;
+    }
+
+    public void setMerLogo(String merLogo) {
+        this.merLogo = merLogo == null ? null : merLogo.trim();
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName == null ? null : bankName.trim();
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName == null ? null : accountName.trim();
+    }
+
+    public String getBankAccount() {
+        return bankAccount;
+    }
+
+    public void setBankAccount(String bankAccount) {
+        this.bankAccount = bankAccount == null ? null : bankAccount.trim();
+    }
+
+    public String getPersonalName() {
+        return personalName;
+    }
+
+    public void setPersonalName(String personalName) {
+        this.personalName = personalName == null ? null : personalName.trim();
+    }
+
+    public String getIdentityCard() {
+        return identityCard;
+    }
+
+    public void setIdentityCard(String identityCard) {
+        this.identityCard = identityCard == null ? null : identityCard.trim();
+    }
+
+    public String getIdCardImg() {
+        return idCardImg;
+    }
+
+    public void setIdCardImg(String idCardImg) {
+        this.idCardImg = idCardImg == null ? null : idCardImg.trim();
+    }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName == null ? null : contactName.trim();
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone == null ? null : telephone.trim();
+    }
+
+    public String getFixedTelephone() {
+        return fixedTelephone;
+    }
+
+    public void setFixedTelephone(String fixedTelephone) {
+        this.fixedTelephone = fixedTelephone == null ? null : fixedTelephone.trim();
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail == null ? null : contactEmail.trim();
+    }
+
+    public String getContactAddress() {
+        return contactAddress;
+    }
+
+    public void setContactAddress(String contactAddress) {
+        this.contactAddress = contactAddress == null ? null : contactAddress.trim();
+    }
+
+    public String getReferee() {
+        return referee;
+    }
+
+    public void setReferee(String referee) {
+        this.referee = referee == null ? null : referee.trim();
+    }
+
+    public String getMerReview() {
+        return merReview;
+    }
+
+    public void setMerReview(String merReview) {
+        this.merReview = merReview == null ? null : merReview.trim();
+    }
+
+    public String getReviewRemark() {
+        return reviewRemark;
+    }
+
+    public void setReviewRemark(String reviewRemark) {
+        this.reviewRemark = reviewRemark == null ? null : reviewRemark.trim();
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Date getReviewDt() {
+        return reviewDt;
+    }
+
+    public void setReviewDt(Date reviewDt) {
+        this.reviewDt = reviewDt;
+    }
+
+    public String getCifpayMerId() {
+        return cifpayMerId;
+    }
+
+    public void setCifpayMerId(String cifpayMerId) {
+        this.cifpayMerId = cifpayMerId == null ? null : cifpayMerId.trim();
+    }
+
+    public String getCifpayKey() {
+        return cifpayKey;
+    }
+
+    public void setCifpayKey(String cifpayKey) {
+        this.cifpayKey = cifpayKey == null ? null : cifpayKey.trim();
+    }
+
+    public String getChannelMerId() {
+        return channelMerId;
+    }
+
+    public void setChannelMerId(String channelMerId) {
+        this.channelMerId = channelMerId == null ? null : channelMerId.trim();
+    }
+
+    public String getChannelKey() {
+        return channelKey;
+    }
+
+    public void setChannelKey(String channelKey) {
+        this.channelKey = channelKey == null ? null : channelKey.trim();
+    }
+
+    public String getTrId() {
+        return trId;
+    }
+
+    public void setTrId(String trId) {
+        this.trId = trId == null ? null : trId.trim();
+    }
+
+    public String getTokenType() {
+        return tokenType;
+    }
+
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType == null ? null : tokenType.trim();
+    }
+
+	public AdminCredentials getAdminCredentials() {
+		return adminCredentials;
+	}
+
+	public void setAdminCredentials(AdminCredentials adminCredentials) {
+		this.adminCredentials = adminCredentials;
+	}
+    
+    
+}

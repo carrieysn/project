@@ -1,0 +1,12 @@
+package com.cifpay.lc.api.gateway.union;
+
+import java.util.List;
+
+import com.cifpay.lc.api.BusinessService;
+import com.cifpay.lc.domain.query.UnionUserAccountDto;
+
+public interface MerInfoService extends BusinessService {
+
+    public UnionUserAccountDto findById(String mid, String merUserid, int accNoType);
+
+}

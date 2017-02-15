@@ -1,0 +1,50 @@
+package com.cifpay.lc.std.sched.task;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.core.db.dao.LcConfirmPayDao;
+import com.cifpay.lc.core.db.pojo.LcConfirmPay;
+import com.cifpay.lc.domain.lc.TransferInputBean;
+import com.cifpay.lc.std.business.merchant.lc.TransferServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+public class TransferTask {
+
+    private static Logger logger = LoggerFactory.getLogger(TransferTask.class);
+
+    @Autowired
+    private LcConfirmPayDao lcComfirmPayDao;
+
+    @Autowired
+    private TransferServiceImpl transferService;
+
+    /**
+     * 5分钟检查一次有效期，如果到时则转账
+     */
+    // @Scheduled(fixedDelayString="300000", initialDelay=10000L)
+    @Scheduled(cron = "50 */1 * * * *")
+    public void checkLcTransfer() {
+        // 超过执行解付有效期则自动划款解付
+        List<LcConfirmPay> listApply = lcComfirmPayDao.select4ExpiredAutoTransfer();
+
+        logger.info(" ======== 开始转账操作：共" + listApply.size() + "条记录 ======== ");
+
+        for (LcConfirmPay lcConfirmPay : listApply) {
+            TransferInputBean inputBean = new TransferInputBean();
+            inputBean.setLcId(lcConfirmPay.getLcId());
+            inputBean.setMerId(lcConfirmPay.getMid());
+            inputBean.setApplyId(lcConfirmPay.getLcConfirmId());
+            inputBean.setRemark("到期自动执行解付");
+
+            transferService.execute(new BusinessInput<>(inputBean));
+        }
+
+        logger.info(" ======== 结束转账操作 ======== ");
+    }
+}

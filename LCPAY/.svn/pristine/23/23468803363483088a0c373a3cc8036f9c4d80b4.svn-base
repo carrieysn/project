@@ -1,0 +1,37 @@
+package com.cifpay.lc.constant.enums;
+
+/**
+ * 支付渠道
+ */
+public enum OpenChannel {
+    UNKONWN("UNKONWN", "未知"),
+    BANK("BANK", "银行开证"),
+    UNION("UNION", "银联开证");
+
+    private String code;
+    private String desc;
+
+    private OpenChannel(String code, String desc) {
+        this.code = code;
+        this.desc = desc;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public static OpenChannel parse(String code) {
+        OpenChannel channel = null;
+        if (BANK.code.equals(code)) {
+            channel = BANK;
+        } else if (UNION.code.equals(code)) {
+            channel = UNION;
+        }
+
+        return channel;
+    }
+}

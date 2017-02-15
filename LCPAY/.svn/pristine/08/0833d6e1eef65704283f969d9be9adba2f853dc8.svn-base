@@ -1,0 +1,281 @@
+package com.cifpay.lc.std.paychannel.impl;
+
+import java.util.List;
+
+import com.cifpay.lc.bankadapter.api.input.unionpay.ExpiryCifParam;
+import com.cifpay.lc.domain.lc.*;
+import com.cifpay.lc.std.domain.paychannel.*;
+import com.cifpay.lc.std.paychannel.ExpiryInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alibaba.fastjson.JSON;
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.sms.SmsValidateCodeService;
+import com.cifpay.lc.bankadapter.api.IBankTradeService;
+import com.cifpay.lc.bankadapter.api.constant.TradeConfig;
+import com.cifpay.lc.bankadapter.api.input.unionpay.OpenCifParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.PayCifParam;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.constant.enums.LcTypeEnum;
+import com.cifpay.lc.constant.enums.PayHandler;
+import com.cifpay.lc.constant.enums.SmsType;
+import com.cifpay.lc.core.db.dao.AdminLcMerCreDao;
+import com.cifpay.lc.core.db.pojo.AdminLcMerCre;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.domain.message.SmsParamBean;
+import com.cifpay.lc.domain.message.union.CreditParam;
+import com.cifpay.lc.domain.sms.SmsSendOutputBean;
+import com.cifpay.lc.std.mapper.LcTranStatusMapper;
+import com.cifpay.lc.std.paychannel.FreezeInterface;
+import com.cifpay.lc.std.paychannel.TransferInterface;
+import com.cifpay.lc.std.util.BeanFactory;
+
+public abstract class UnionBase<IOpen extends OpenLcInputBean>
+        implements FreezeInterface<IOpen, OpenLcOutputBean>,
+        TransferInterface<TransferInputBean, TransferOutputBean>,
+        ExpiryInterface<InvalidateLcInputBean, InvalidateLcOutputBean> {
+
+    @Autowired
+    private SmsValidateCodeService smsValidateCodeService;
+
+    @Autowired
+    private AdminLcMerCreDao adminLcMerCreDao;
+
+    @Autowired
+    private IBankTradeService bankTradeService;
+
+    /**
+     * 开证模板方法
+     */
+    public FreezeOutputBean<CreditParam> freeze(IOpen inputBean, FreezeInputBean freezeInputBean) {
+
+        String merId = inputBean.getMerId();
+
+        String phoneNo = inputBean.getPhoneNo();
+
+        String smsCode = inputBean.getSmsCode();
+
+        //
+        BusinessOutput<SmsSendOutputBean> businessOutput = querySmsCode(merId, phoneNo, smsCode);
+
+        if (businessOutput.isFailed()) {
+            return BeanFactory.getFailFreezeOutputBean(businessOutput.getReturnMsg());
+        }
+
+        //
+        List<AdminLcMerCre> adminLcMerCreList = queryAdminLcMerCreList(merId);
+
+        if (adminLcMerCreList == null || adminLcMerCreList.size() != 1) {
+            return BeanFactory.getFailFreezeOutputBean("未找到对应的银联二级商户号");
+        }
+
+        //
+        saveUserUnionInfo(inputBean, freezeInputBean);
+
+        try {
+
+            OpenCifParam param = createOpenCifParam(inputBean, freezeInputBean, adminLcMerCreList.get(0).getXnMerId());
+
+            GeneralTradeResult response = bankTradeService.doTrade(param);
+
+            return generateFreezeResp(response, param.getTxnTime());
+
+        } catch (Throwable e) {
+            return BeanFactory.getFailFreezeOutputBean(e.getMessage());
+        }
+    }
+
+    @Override
+    public UnfreezeOutputBean<CreditParam> unfreeze(TransferInputBean inputBean, UnfreezeInputBean unfreezeInputBean) {
+
+        Lc lc = unfreezeInputBean.getLc();
+
+        // CP200不需要发起交易，只把数据库数据补全
+        if (LcTypeEnum.CP200.getCode().equalsIgnoreCase(lc.getLcType())) {
+            return BeanFactory.getSucUnfreezeOutputBean();
+        }
+
+        List<AdminLcMerCre> adminLcMerCreList = queryAdminLcMerCreList(inputBean.getMerId());
+
+        if (adminLcMerCreList == null || adminLcMerCreList.size() != 1) {
+            return BeanFactory.getFailUnfreezeOutputBean("未找到对应的银联二级商户号");
+        }
+
+        try {
+
+            PayCifParam payCifParam = createTransferCifParam(inputBean, unfreezeInputBean);
+
+            payCifParam.setSubMerId(adminLcMerCreList.get(0).getXnMerId());
+
+            payCifParam.setReqReserved(JSON.toJSONString(new ReqReservedBean(PayHandler.UNFREEZE)));
+
+            GeneralTradeResult response = bankTradeService.doTrade(payCifParam);
+            LcTranStatus tranStatus = LcTranStatusMapper.parseUnionResult(response.getTradeResult());
+
+            UnfreezeOutputBean<CreditParam> outputBean;
+            if (TradeConfig.TRADE_RESULT_SUCCEED_0.equalsIgnoreCase(response.getTradeResult())) {
+                outputBean = BeanFactory.getSucUnfreezeOutputBean();
+
+                // 银连受理成功，还未真实解冻
+                tranStatus = LcTranStatus.UNCERTAIN;
+
+            } else {
+                outputBean = BeanFactory.getFailUnfreezeOutputBean(response.getResultDesc());
+            }
+
+            // 返回结果
+            outputBean.setSerialNo(response.getQueryId());
+            outputBean.setMessage(response.getResultDesc());
+            outputBean.setLcTranStatus(tranStatus);
+
+            CreditParam creditParam = new CreditParam();
+            creditParam.setTradeResult(response.getTradeResult());
+            creditParam.setResultDesc(response.getResultDesc());
+            outputBean.setData(creditParam);
+
+            return outputBean;
+
+        } catch (Throwable e) {
+            return BeanFactory.getFailUnfreezeOutputBean(e.getMessage());
+        }
+    }
+
+    @Override
+    public ExpiryOutputBean expiry(InvalidateLcInputBean inputBean, ExpiryInputBean expiryInputBean) {
+        try {
+            List<AdminLcMerCre> adminLcMerCreList = queryAdminLcMerCreList(inputBean.getMerId());
+
+            if (adminLcMerCreList == null || adminLcMerCreList.size() != 1) {
+                return BeanFactory.getFailExpiryOutputBean("未找到对应的银联二级商户号");
+            }
+
+            ExpiryCifParam expiryCifParam = createExpiryCifParam(inputBean, expiryInputBean);
+            expiryCifParam.setSubMerId(adminLcMerCreList.get(0).getXnMerId());
+            expiryCifParam.setReqReserved(JSON.toJSONString(new ReqReservedBean(PayHandler.Expiry)));
+
+            GeneralTradeResult response = bankTradeService.doTrade(expiryCifParam);
+            LcTranStatus tranStatus = LcTranStatusMapper.parseUnionResult(response.getTradeResult());
+
+            ExpiryOutputBean<CreditParam> outputBean;
+            if (TradeConfig.TRADE_RESULT_SUCCEED_0.equalsIgnoreCase(response.getTradeResult())) {
+                outputBean = BeanFactory.getSucExpiryOutputBean();
+
+                // 银连受理成功，还未真实解冻
+                tranStatus = LcTranStatus.UNCERTAIN;
+
+            } else {
+                outputBean = BeanFactory.getFailExpiryOutputBean(response.getResultDesc());
+            }
+
+            // 返回结果
+            outputBean.setSerialNo(response.getQueryId());
+            outputBean.setMessage(response.getResultDesc());
+            outputBean.setLcTranStatus(tranStatus);
+
+            CreditParam creditParam = new CreditParam();
+            creditParam.setTradeResult(response.getTradeResult());
+            creditParam.setResultDesc(response.getResultDesc());
+            outputBean.setData(creditParam);
+
+            return outputBean;
+        } catch (Throwable e) {
+            return BeanFactory.getFailExpiryOutputBean(e.getMessage());
+        }
+    }
+
+    /**
+     * 验证短信验证码
+     *
+     * @param merId
+     * @param phone
+     * @param smsCode
+     * @return 验证失败返回true, 否则返回false
+     */
+    protected BusinessOutput<SmsSendOutputBean> querySmsCode(String merId, String phone, String smsCode) {
+
+        // 验证短信验证码
+        SmsParamBean smsParamBean = new SmsParamBean();
+        smsParamBean.setSmstype(SmsType.SMS_OPEN.getCode());
+        smsParamBean.setMerId(merId);
+        smsParamBean.setPhone(phone);
+        smsParamBean.setSmsCode(smsCode);
+
+        return smsValidateCodeService.execute(new BusinessInput<SmsParamBean>(smsParamBean));
+    }
+
+    /**
+     * @param inputBean
+     * @param freezeInputBean
+     */
+    protected void saveUserUnionInfo(IOpen inputBean, FreezeInputBean freezeInputBean) {
+
+    }
+
+    /**
+     * 查询二级商户号
+     *
+     * @param merId
+     * @return
+     */
+    protected List<AdminLcMerCre> queryAdminLcMerCreList(String merId) {
+        return adminLcMerCreDao.selectByMerCodeAndCardType(merId, getCardType());
+    }
+
+    protected FreezeOutputBean<CreditParam> generateFreezeResp(GeneralTradeResult response, String txnTime) {
+        LcTranStatus tranStatus = LcTranStatusMapper.parseUnionResult(response.getTradeResult());
+
+        FreezeOutputBean<CreditParam> outputBean;
+
+        if (TradeConfig.TRADE_RESULT_SUCCEED_0.equalsIgnoreCase(response.getTradeResult())) {
+            outputBean = BeanFactory.getSucFreezeOutputBean();
+
+            // 银联受理成功，还未真实冻结（设置LcTranStatus 更新数据库状态为“交易状态未知”）
+            tranStatus = LcTranStatus.UNCERTAIN;
+        } else {
+            outputBean = BeanFactory.getFailFreezeOutputBean(response.getResultDesc());
+        }
+
+        // 返回结果
+        outputBean.setSerialNo(response.getQueryId());
+        outputBean.setMessage(response.getResultDesc());
+        outputBean.setLcTranStatus(tranStatus);
+
+        CreditParam creditParam = new CreditParam();
+        creditParam.setTradeResult(response.getTradeResult());
+        creditParam.setResultDesc(response.getResultDesc());
+        creditParam.setTxnTime(txnTime);
+        outputBean.setData(creditParam);
+
+        return outputBean;
+    }
+
+    /**
+     * @return
+     */
+    protected abstract int getCardType();
+
+    /**
+     * @param inputBean
+     * @param freezeInputBean
+     * @param subMerId
+     * @return
+     * @throws Exception
+     */
+    protected abstract OpenCifParam createOpenCifParam(IOpen inputBean,
+                                                       FreezeInputBean freezeInputBean,
+                                                       String subMerId) throws Exception;
+
+    /**
+     * @param inputBean
+     * @param unfreezeInputBean
+     * @return
+     * @throws Exception
+     */
+    protected abstract PayCifParam createTransferCifParam(TransferInputBean inputBean,
+                                                          UnfreezeInputBean unfreezeInputBean) throws Exception;
+
+    protected abstract ExpiryCifParam createExpiryCifParam(InvalidateLcInputBean invalidateLcInputBean,
+                                                           ExpiryInputBean expiryInputBean) throws Exception;
+}

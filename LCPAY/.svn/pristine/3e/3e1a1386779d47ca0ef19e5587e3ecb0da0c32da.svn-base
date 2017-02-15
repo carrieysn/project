@@ -1,0 +1,99 @@
+package com.cifpay.lc.constant;
+
+import java.text.DecimalFormat;
+
+/**
+ * 业务常量类
+ */
+public class BizConstants {
+
+    /**
+     * 时间格式化格式
+     */
+    public static String DateFormat_std = "yyyy-MM-dd HH:mm:ss";
+
+    public static DecimalFormat decimalFormat = new DecimalFormat("#");
+
+    /**
+     * 交易码 初始化证INIT，开证 OPEN，收证RECV，履约 APPOINTMENT，申请解付 APPLY，解付 TRANSFER，展期
+     * DEFER，刹车 SUSPEND，定时任务 TIMERTASK, 原路退款REFUND
+     */
+    public enum LcTranCode {
+        INIT("INIT"),
+        OPEN("OPEN"),
+        BATCH_OPEN("BATCH_OPEN"),
+        RECV("RECV"),
+        APPOINTMENT("APPOINTMENT"),
+        APPLY("APPLY"),
+        TRANSFER("TRANSFER"),
+        DEFER("DEFER"),
+        SUSPEND("SUSPEND"),
+        INVALIDATE("INVALIDATE"),
+        TIMERTASK("TIMERTASK"),
+        REFUND("REFUND");
+
+        private String tranCode;
+
+        private LcTranCode(String tranCode) {
+            this.tranCode = tranCode;
+        }
+
+        public String getTranCodeStr() {
+            return tranCode;
+        }
+    }
+
+    /**
+     * 调用银行接口的返回值，0=成功；1=失败；2=不确定；3=调用异常
+     */
+    public enum BankRetCode {
+        Success("0"), Fail("1"), Uncertain("2"), Exception("3");
+
+        private String bankRetCode;
+
+        private BankRetCode(String bankRetCode) {
+            this.bankRetCode = bankRetCode;
+        }
+
+        public String getBankRetCode() {
+            return bankRetCode;
+        }
+    }
+
+    public enum MsgConstant {
+
+        KEYEXPIREDEVENT("__keyevent@0__:expired", "redis键过期事件通知"),
+
+        EXPIRETOPIC("expire_topic", "redis中到期待处理的队列名"),
+
+        EXPIREBIZPREFIX("BID_", "过期需要处理的key前缀");
+
+        private String key;
+
+        private String val;
+
+        private MsgConstant(String key, String val) {
+            this.key = key;
+            this.val = val;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getVal() {
+            return val;
+        }
+
+        public void setVal(String val) {
+            this.val = val;
+        }
+
+
+    }
+
+}

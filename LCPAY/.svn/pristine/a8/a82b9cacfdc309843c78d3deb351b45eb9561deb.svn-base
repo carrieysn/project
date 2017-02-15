@@ -1,0 +1,22 @@
+package com.cifpay.lc.std.domain.kernel;
+
+public class InvalidateAppointmentKernelInputBean extends KernelBaseInputBean{
+
+	private static final long serialVersionUID = -1063831474403587194L;
+
+	private long lcAppointmentId; 	// 履约ID
+	private String remark; 			// 备注
+	
+	public long getLcAppointmentId() {
+		return lcAppointmentId;
+	}
+	public void setLcAppointmentId(long lcAppointmentId) {
+		this.lcAppointmentId = lcAppointmentId;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+}

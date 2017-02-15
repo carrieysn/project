@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cifpay.lc.core.db.dao.ThirdICBCBankentPayentDao">
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.ThirdICBCBankentPayent">
+    <id column="BATCH_SEQNO" jdbcType="VARCHAR" property="batchSeqno" />
+    <id column="DETAIL_SEQNO" jdbcType="VARCHAR" property="detailSeqno" />
+    <result column="CALLER_CODE" jdbcType="VARCHAR" property="callerCode" />
+    <result column="CALLER_INSTRUCTION_NO" jdbcType="VARCHAR" property="callerInstructionNo" />
+    <result column="CALLER_INSTRUCTION_DETAIL_NO" jdbcType="VARCHAR" property="callerInstructionDetailNo" />
+    <result column="PAY_ENTERPRISE_CODE" jdbcType="VARCHAR" property="payEnterpriseCode" />
+    <result column="TRAN_DATE" jdbcType="VARCHAR" property="tranDate" />
+    <result column="TRAN_TIME" jdbcType="VARCHAR" property="tranTime" />
+    <result column="CURRENCY_CODE" jdbcType="VARCHAR" property="currencyCode" />
+    <result column="ICBC_CURRENCY_TYPE" jdbcType="VARCHAR" property="icbcCurrencyType" />
+    <result column="PAY_AMT" jdbcType="DECIMAL" property="payAmt" />
+    <result column="ICBC_CIS" jdbcType="VARCHAR" property="icbcCis" />
+    <result column="ICBC_BANK_CODE" jdbcType="VARCHAR" property="icbcBankCode" />
+    <result column="ICBC_CERT_ID" jdbcType="VARCHAR" property="icbcCertId" />
+    <result column="ICBC_PAY_TYPE" jdbcType="VARCHAR" property="icbcPayType" />
+    <result column="PAY_ACCOUNT_NO" jdbcType="VARCHAR" property="payAccountNo" />
+    <result column="RECV_BANK_CODE" jdbcType="VARCHAR" property="recvBankCode" />
+    <result column="RECV_BANK_NAME" jdbcType="VARCHAR" property="recvBankName" />
+    <result column="RECV_BANK_CITY_NAME" jdbcType="VARCHAR" property="recvBankCityName" />
+    <result column="RECV_ACCOUNT_NO" jdbcType="VARCHAR" property="recvAccountNo" />
+    <result column="RECV_ACCOUNT_NAME" jdbcType="VARCHAR" property="recvAccountName" />
+    <result column="FUND_USE_DESC" jdbcType="VARCHAR" property="fundUseDesc" />
+    <result column="SUMMARY" jdbcType="VARCHAR" property="summary" />
+    <result column="CORPORATE_PERSONAL_FLAG" jdbcType="VARCHAR" property="corporatePersonalFlag" />
+    <result column="CROSS_BANK_FLAG" jdbcType="VARCHAR" property="crossBankFlag" />
+    <result column="SAME_CITY_FLAG" jdbcType="VARCHAR" property="sameCityFlag" />
+    <result column="TXN_RESULT_STATUS" jdbcType="VARCHAR" property="txnResultStatus" />
+    <result column="BANK_RET_BATCH_SERIAL_NO" jdbcType="VARCHAR" property="bankRetBatchSerialNo" />
+    <result column="BANK_RET_DETAIL_ORDER_NO" jdbcType="VARCHAR" property="bankRetDetailOrderNo" />
+    <result column="BANK_ORI_DETAIL_RESULT_CODE" jdbcType="VARCHAR" property="bankOriDetailResultCode" />
+    <result column="BANK_ADDI_BATCH_RETURN_CODE" jdbcType="VARCHAR" property="bankAddiBatchReturnCode" />
+    <result column="BANK_ADDI_BATCH_RETURN_MSG" jdbcType="VARCHAR" property="bankAddiBatchReturnMsg" />
+    <result column="BANK_ADDI_DETAIL_RETURN_CODE" jdbcType="VARCHAR" property="bankAddiDetailReturnCode" />
+    <result column="BANK_ADDI_DETAIL_RETURN_MSG" jdbcType="VARCHAR" property="bankAddiDetailReturnMsg" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    BATCH_SEQNO, DETAIL_SEQNO, CALLER_CODE, CALLER_INSTRUCTION_NO, CALLER_INSTRUCTION_DETAIL_NO, 
+    PAY_ENTERPRISE_CODE, TRAN_DATE, TRAN_TIME, CURRENCY_CODE, ICBC_CURRENCY_TYPE, PAY_AMT, 
+    ICBC_CIS, ICBC_BANK_CODE, ICBC_CERT_ID, ICBC_PAY_TYPE, PAY_ACCOUNT_NO, RECV_BANK_CODE, 
+    RECV_BANK_NAME, RECV_BANK_CITY_NAME, RECV_ACCOUNT_NO, RECV_ACCOUNT_NAME, FUND_USE_DESC, 
+    SUMMARY, CORPORATE_PERSONAL_FLAG, CROSS_BANK_FLAG, SAME_CITY_FLAG, TXN_RESULT_STATUS, 
+    BANK_RET_BATCH_SERIAL_NO, BANK_RET_DETAIL_ORDER_NO, BANK_ORI_DETAIL_RESULT_CODE, 
+    BANK_ADDI_BATCH_RETURN_CODE, BANK_ADDI_BATCH_RETURN_MSG, BANK_ADDI_DETAIL_RETURN_CODE, 
+    BANK_ADDI_DETAIL_RETURN_MSG
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_THIRD_ICBCBANKENT_PAYENT
+    where BATCH_SEQNO = #{batchSeqno,jdbcType=VARCHAR}
+      and DETAIL_SEQNO = #{detailSeqno,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from CIFPAY_THIRD_ICBCBANKENT_PAYENT
+    where BATCH_SEQNO = #{batchSeqno,jdbcType=VARCHAR}
+      and DETAIL_SEQNO = #{detailSeqno,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.ThirdICBCBankentPayent">
+    insert into CIFPAY_THIRD_ICBCBANKENT_PAYENT (BATCH_SEQNO, DETAIL_SEQNO, CALLER_CODE, 
+      CALLER_INSTRUCTION_NO, CALLER_INSTRUCTION_DETAIL_NO, 
+      PAY_ENTERPRISE_CODE, TRAN_DATE, TRAN_TIME, 
+      CURRENCY_CODE, ICBC_CURRENCY_TYPE, PAY_AMT, 
+      ICBC_CIS, ICBC_BANK_CODE, ICBC_CERT_ID, 
+      ICBC_PAY_TYPE, PAY_ACCOUNT_NO, RECV_BANK_CODE, 
+      RECV_BANK_NAME, RECV_BANK_CITY_NAME, RECV_ACCOUNT_NO, 
+      RECV_ACCOUNT_NAME, FUND_USE_DESC, SUMMARY, 
+      CORPORATE_PERSONAL_FLAG, CROSS_BANK_FLAG, SAME_CITY_FLAG, 
+      TXN_RESULT_STATUS, BANK_RET_BATCH_SERIAL_NO, 
+      BANK_RET_DETAIL_ORDER_NO, BANK_ORI_DETAIL_RESULT_CODE, 
+      BANK_ADDI_BATCH_RETURN_CODE, BANK_ADDI_BATCH_RETURN_MSG, 
+      BANK_ADDI_DETAIL_RETURN_CODE, BANK_ADDI_DETAIL_RETURN_MSG
+      )
+    values (#{batchSeqno,jdbcType=VARCHAR}, #{detailSeqno,jdbcType=VARCHAR}, #{callerCode,jdbcType=VARCHAR}, 
+      #{callerInstructionNo,jdbcType=VARCHAR}, #{callerInstructionDetailNo,jdbcType=VARCHAR}, 
+      #{payEnterpriseCode,jdbcType=VARCHAR}, #{tranDate,jdbcType=VARCHAR}, #{tranTime,jdbcType=VARCHAR}, 
+      #{currencyCode,jdbcType=VARCHAR}, #{icbcCurrencyType,jdbcType=VARCHAR}, #{payAmt,jdbcType=DECIMAL}, 
+      #{icbcCis,jdbcType=VARCHAR}, #{icbcBankCode,jdbcType=VARCHAR}, #{icbcCertId,jdbcType=VARCHAR}, 
+      #{icbcPayType,jdbcType=VARCHAR}, #{payAccountNo,jdbcType=VARCHAR}, #{recvBankCode,jdbcType=VARCHAR}, 
+      #{recvBankName,jdbcType=VARCHAR}, #{recvBankCityName,jdbcType=VARCHAR}, #{recvAccountNo,jdbcType=VARCHAR}, 
+      #{recvAccountName,jdbcType=VARCHAR}, #{fundUseDesc,jdbcType=VARCHAR}, #{summary,jdbcType=VARCHAR}, 
+      #{corporatePersonalFlag,jdbcType=VARCHAR}, #{crossBankFlag,jdbcType=VARCHAR}, #{sameCityFlag,jdbcType=VARCHAR}, 
+      #{txnResultStatus,jdbcType=VARCHAR}, #{bankRetBatchSerialNo,jdbcType=VARCHAR}, 
+      #{bankRetDetailOrderNo,jdbcType=VARCHAR}, #{bankOriDetailResultCode,jdbcType=VARCHAR}, 
+      #{bankAddiBatchReturnCode,jdbcType=VARCHAR}, #{bankAddiBatchReturnMsg,jdbcType=VARCHAR}, 
+      #{bankAddiDetailReturnCode,jdbcType=VARCHAR}, #{bankAddiDetailReturnMsg,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.ThirdICBCBankentPayent">
+    insert into CIFPAY_THIRD_ICBCBANKENT_PAYENT
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="batchSeqno != null">
+        BATCH_SEQNO,
+      </if>
+      <if test="detailSeqno != null">
+        DETAIL_SEQNO,
+      </if>
+      <if test="callerCode != null">
+        CALLER_CODE,
+      </if>
+      <if test="callerInstructionNo != null">
+        CALLER_INSTRUCTION_NO,
+      </if>
+      <if test="callerInstructionDetailNo != null">
+        CALLER_INSTRUCTION_DETAIL_NO,
+      </if>
+      <if test="payEnterpriseCode != null">
+        PAY_ENTERPRISE_CODE,
+      </if>
+      <if test="tranDate != null">
+        TRAN_DATE,
+      </if>
+      <if test="tranTime != null">
+        TRAN_TIME,
+      </if>
+      <if test="currencyCode != null">
+        CURRENCY_CODE,
+      </if>
+      <if test="icbcCurrencyType != null">
+        ICBC_CURRENCY_TYPE,
+      </if>
+      <if test="payAmt != null">
+        PAY_AMT,
+      </if>
+      <if test="icbcCis != null">
+        ICBC_CIS,
+      </if>
+      <if test="icbcBankCode != null">
+        ICBC_BANK_CODE,
+      </if>
+      <if test="icbcCertId != null">
+        ICBC_CERT_ID,
+      </if>
+      <if test="icbcPayType != null">
+        ICBC_PAY_TYPE,
+      </if>
+      <if test="payAccountNo != null">
+        PAY_ACCOUNT_NO,
+      </if>
+      <if test="recvBankCode != null">
+        RECV_BANK_CODE,
+      </if>
+      <if test="recvBankName != null">
+        RECV_BANK_NAME,
+      </if>
+      <if test="recvBankCityName != null">
+        RECV_BANK_CITY_NAME,
+      </if>
+      <if test="recvAccountNo != null">
+        RECV_ACCOUNT_NO,
+      </if>
+      <if test="recvAccountName != null">
+        RECV_ACCOUNT_NAME,
+      </if>
+      <if test="fundUseDesc != null">
+        FUND_USE_DESC,
+      </if>
+      <if test="summary != null">
+        SUMMARY,
+      </if>
+      <if test="corporatePersonalFlag != null">
+        CORPORATE_PERSONAL_FLAG,
+      </if>
+      <if test="crossBankFlag != null">
+        CROSS_BANK_FLAG,
+      </if>
+      <if test="sameCityFlag != null">
+        SAME_CITY_FLAG,
+      </if>
+      <if test="txnResultStatus != null">
+        TXN_RESULT_STATUS,
+      </if>
+      <if test="bankRetBatchSerialNo != null">
+        BANK_RET_BATCH_SERIAL_NO,
+      </if>
+      <if test="bankRetDetailOrderNo != null">
+        BANK_RET_DETAIL_ORDER_NO,
+      </if>
+      <if test="bankOriDetailResultCode != null">
+        BANK_ORI_DETAIL_RESULT_CODE,
+      </if>
+      <if test="bankAddiBatchReturnCode != null">
+        BANK_ADDI_BATCH_RETURN_CODE,
+      </if>
+      <if test="bankAddiBatchReturnMsg != null">
+        BANK_ADDI_BATCH_RETURN_MSG,
+      </if>
+      <if test="bankAddiDetailReturnCode != null">
+        BANK_ADDI_DETAIL_RETURN_CODE,
+      </if>
+      <if test="bankAddiDetailReturnMsg != null">
+        BANK_ADDI_DETAIL_RETURN_MSG,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="batchSeqno != null">
+        #{batchSeqno,jdbcType=VARCHAR},
+      </if>
+      <if test="detailSeqno != null">
+        #{detailSeqno,jdbcType=VARCHAR},
+      </if>
+      <if test="callerCode != null">
+        #{callerCode,jdbcType=VARCHAR},
+      </if>
+      <if test="callerInstructionNo != null">
+        #{callerInstructionNo,jdbcType=VARCHAR},
+      </if>
+      <if test="callerInstructionDetailNo != null">
+        #{callerInstructionDetailNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payEnterpriseCode != null">
+        #{payEnterpriseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="tranDate != null">
+        #{tranDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tranTime != null">
+        #{tranTime,jdbcType=VARCHAR},
+      </if>
+      <if test="currencyCode != null">
+        #{currencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="icbcCurrencyType != null">
+        #{icbcCurrencyType,jdbcType=VARCHAR},
+      </if>
+      <if test="payAmt != null">
+        #{payAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="icbcCis != null">
+        #{icbcCis,jdbcType=VARCHAR},
+      </if>
+      <if test="icbcBankCode != null">
+        #{icbcBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="icbcCertId != null">
+        #{icbcCertId,jdbcType=VARCHAR},
+      </if>
+      <if test="icbcPayType != null">
+        #{icbcPayType,jdbcType=VARCHAR},
+      </if>
+      <if test="payAccountNo != null">
+        #{payAccountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankCode != null">
+        #{recvBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankName != null">
+        #{recvBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankCityName != null">
+        #{recvBankCityName,jdbcType=VARCHAR},
+      </if>
+      <if test="recvAccountNo != null">
+        #{recvAccountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="recvAccountName != null">
+        #{recvAccountName,jdbcType=VARCHAR},
+      </if>
+      <if test="fundUseDesc != null">
+        #{fundUseDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="summary != null">
+        #{summary,jdbcType=VARCHAR},
+      </if>
+      <if test="corporatePersonalFlag != null">
+        #{corporatePersonalFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="crossBankFlag != null">
+        #{crossBankFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="sameCityFlag != null">
+        #{sameCityFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="txnResultStatus != null">
+        #{txnResultStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="bankRetBatchSerialNo != null">
+        #{bankRetBatchSerialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankRetDetailOrderNo != null">
+        #{bankRetDetailOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankOriDetailResultCode != null">
+        #{bankOriDetailResultCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiBatchReturnCode != null">
+        #{bankAddiBatchReturnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiBatchReturnMsg != null">
+        #{bankAddiBatchReturnMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiDetailReturnCode != null">
+        #{bankAddiDetailReturnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiDetailReturnMsg != null">
+        #{bankAddiDetailReturnMsg,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.ThirdICBCBankentPayent">
+    update CIFPAY_THIRD_ICBCBANKENT_PAYENT
+    <set>
+      <if test="callerCode != null">
+        CALLER_CODE = #{callerCode,jdbcType=VARCHAR},
+      </if>
+      <if test="callerInstructionNo != null">
+        CALLER_INSTRUCTION_NO = #{callerInstructionNo,jdbcType=VARCHAR},
+      </if>
+      <if test="callerInstructionDetailNo != null">
+        CALLER_INSTRUCTION_DETAIL_NO = #{callerInstructionDetailNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payEnterpriseCode != null">
+        PAY_ENTERPRISE_CODE = #{payEnterpriseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="tranDate != null">
+        TRAN_DATE = #{tranDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tranTime != null">
+        TRAN_TIME = #{tranTime,jdbcType=VARCHAR},
+      </if>
+      <if test="currencyCode != null">
+        CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="icbcCurrencyType != null">
+        ICBC_CURRENCY_TYPE = #{icbcCurrencyType,jdbcType=VARCHAR},
+      </if>
+      <if test="payAmt != null">
+        PAY_AMT = #{payAmt,jdbcType=DECIMAL},
+      </if>
+      <if test="icbcCis != null">
+        ICBC_CIS = #{icbcCis,jdbcType=VARCHAR},
+      </if>
+      <if test="icbcBankCode != null">
+        ICBC_BANK_CODE = #{icbcBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="icbcCertId != null">
+        ICBC_CERT_ID = #{icbcCertId,jdbcType=VARCHAR},
+      </if>
+      <if test="icbcPayType != null">
+        ICBC_PAY_TYPE = #{icbcPayType,jdbcType=VARCHAR},
+      </if>
+      <if test="payAccountNo != null">
+        PAY_ACCOUNT_NO = #{payAccountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankCode != null">
+        RECV_BANK_CODE = #{recvBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankName != null">
+        RECV_BANK_NAME = #{recvBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="recvBankCityName != null">
+        RECV_BANK_CITY_NAME = #{recvBankCityName,jdbcType=VARCHAR},
+      </if>
+      <if test="recvAccountNo != null">
+        RECV_ACCOUNT_NO = #{recvAccountNo,jdbcType=VARCHAR},
+      </if>
+      <if test="recvAccountName != null">
+        RECV_ACCOUNT_NAME = #{recvAccountName,jdbcType=VARCHAR},
+      </if>
+      <if test="fundUseDesc != null">
+        FUND_USE_DESC = #{fundUseDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="summary != null">
+        SUMMARY = #{summary,jdbcType=VARCHAR},
+      </if>
+      <if test="corporatePersonalFlag != null">
+        CORPORATE_PERSONAL_FLAG = #{corporatePersonalFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="crossBankFlag != null">
+        CROSS_BANK_FLAG = #{crossBankFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="sameCityFlag != null">
+        SAME_CITY_FLAG = #{sameCityFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="txnResultStatus != null">
+        TXN_RESULT_STATUS = #{txnResultStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="bankRetBatchSerialNo != null">
+        BANK_RET_BATCH_SERIAL_NO = #{bankRetBatchSerialNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankRetDetailOrderNo != null">
+        BANK_RET_DETAIL_ORDER_NO = #{bankRetDetailOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="bankOriDetailResultCode != null">
+        BANK_ORI_DETAIL_RESULT_CODE = #{bankOriDetailResultCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiBatchReturnCode != null">
+        BANK_ADDI_BATCH_RETURN_CODE = #{bankAddiBatchReturnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiBatchReturnMsg != null">
+        BANK_ADDI_BATCH_RETURN_MSG = #{bankAddiBatchReturnMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiDetailReturnCode != null">
+        BANK_ADDI_DETAIL_RETURN_CODE = #{bankAddiDetailReturnCode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankAddiDetailReturnMsg != null">
+        BANK_ADDI_DETAIL_RETURN_MSG = #{bankAddiDetailReturnMsg,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where BATCH_SEQNO = #{batchSeqno,jdbcType=VARCHAR}
+      and DETAIL_SEQNO = #{detailSeqno,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.ThirdICBCBankentPayent">
+    update CIFPAY_THIRD_ICBCBANKENT_PAYENT
+    set CALLER_CODE = #{callerCode,jdbcType=VARCHAR},
+      CALLER_INSTRUCTION_NO = #{callerInstructionNo,jdbcType=VARCHAR},
+      CALLER_INSTRUCTION_DETAIL_NO = #{callerInstructionDetailNo,jdbcType=VARCHAR},
+      PAY_ENTERPRISE_CODE = #{payEnterpriseCode,jdbcType=VARCHAR},
+      TRAN_DATE = #{tranDate,jdbcType=VARCHAR},
+      TRAN_TIME = #{tranTime,jdbcType=VARCHAR},
+      CURRENCY_CODE = #{currencyCode,jdbcType=VARCHAR},
+      ICBC_CURRENCY_TYPE = #{icbcCurrencyType,jdbcType=VARCHAR},
+      PAY_AMT = #{payAmt,jdbcType=DECIMAL},
+      ICBC_CIS = #{icbcCis,jdbcType=VARCHAR},
+      ICBC_BANK_CODE = #{icbcBankCode,jdbcType=VARCHAR},
+      ICBC_CERT_ID = #{icbcCertId,jdbcType=VARCHAR},
+      ICBC_PAY_TYPE = #{icbcPayType,jdbcType=VARCHAR},
+      PAY_ACCOUNT_NO = #{payAccountNo,jdbcType=VARCHAR},
+      RECV_BANK_CODE = #{recvBankCode,jdbcType=VARCHAR},
+      RECV_BANK_NAME = #{recvBankName,jdbcType=VARCHAR},
+      RECV_BANK_CITY_NAME = #{recvBankCityName,jdbcType=VARCHAR},
+      RECV_ACCOUNT_NO = #{recvAccountNo,jdbcType=VARCHAR},
+      RECV_ACCOUNT_NAME = #{recvAccountName,jdbcType=VARCHAR},
+      FUND_USE_DESC = #{fundUseDesc,jdbcType=VARCHAR},
+      SUMMARY = #{summary,jdbcType=VARCHAR},
+      CORPORATE_PERSONAL_FLAG = #{corporatePersonalFlag,jdbcType=VARCHAR},
+      CROSS_BANK_FLAG = #{crossBankFlag,jdbcType=VARCHAR},
+      SAME_CITY_FLAG = #{sameCityFlag,jdbcType=VARCHAR},
+      TXN_RESULT_STATUS = #{txnResultStatus,jdbcType=VARCHAR},
+      BANK_RET_BATCH_SERIAL_NO = #{bankRetBatchSerialNo,jdbcType=VARCHAR},
+      BANK_RET_DETAIL_ORDER_NO = #{bankRetDetailOrderNo,jdbcType=VARCHAR},
+      BANK_ORI_DETAIL_RESULT_CODE = #{bankOriDetailResultCode,jdbcType=VARCHAR},
+      BANK_ADDI_BATCH_RETURN_CODE = #{bankAddiBatchReturnCode,jdbcType=VARCHAR},
+      BANK_ADDI_BATCH_RETURN_MSG = #{bankAddiBatchReturnMsg,jdbcType=VARCHAR},
+      BANK_ADDI_DETAIL_RETURN_CODE = #{bankAddiDetailReturnCode,jdbcType=VARCHAR},
+      BANK_ADDI_DETAIL_RETURN_MSG = #{bankAddiDetailReturnMsg,jdbcType=VARCHAR}
+    where BATCH_SEQNO = #{batchSeqno,jdbcType=VARCHAR}
+      and DETAIL_SEQNO = #{detailSeqno,jdbcType=VARCHAR}
+  </update>
+</mapper>

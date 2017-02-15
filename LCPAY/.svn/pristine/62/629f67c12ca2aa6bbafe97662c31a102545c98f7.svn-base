@@ -1,0 +1,416 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay;
+
+import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.xds.chinapay.UnionpayBusinessInputBean;
+import com.cifpay.lc.api.xds.chinapay.UnionpayBusinessOutputBean;
+import com.cifpay.lc.api.xds.chinapay.UnionpayBusinessService;
+import com.cifpay.lc.api.xds.chinapay.UnionpayPaymentService;
+import com.cifpay.lc.api.xds.chinapay.UnionpayQueryInputBean;
+import com.cifpay.lc.api.xds.chinapay.UnionpayQueryOutputBean;
+import com.cifpay.lc.api.xds.chinapay.UnionpayQueryService;
+import com.cifpay.lc.api.xds.chinapay.UnionpayTransferInputBean;
+import com.cifpay.lc.api.xds.chinapay.UnionpayTransferOutputBean;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.AccountPropertyType;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.constant.enums.PreLcStatus;
+import com.cifpay.lc.gateway.common.HttpParamPair;
+import com.cifpay.lc.util.DateUtil;
+import com.cifpay.lc.versionb.VersionBMerchantSignValidator;
+import com.cifpay.lc.versionb.recharge.online.alipay.AliPayRtnMsg;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.AlipayUtil;
+import com.cifpay.lc.versionb.recharge.online.alipay.util.ConvertTool;
+import com.cifpay.lc.versionb.recharge.online.chinapay.constant.BaseConstant;
+import com.cifpay.lc.versionb.recharge.online.chinapay.constant.UnionpayConfig;
+import com.cifpay.lc.versionb.recharge.online.chinapay.domain.wap.UnionpayPaymentNoticeData;
+import com.cifpay.lc.versionb.recharge.online.chinapay.domain.wap.UnionpayPaymentRequest;
+import com.cifpay.lc.versionb.recharge.online.chinapay.domain.wap.UnionpayPaymentReturnData;
+import com.cifpay.lc.versionb.recharge.online.chinapay.util.DateTools;
+import com.cifpay.lc.versionb.recharge.online.chinapay.util.UnionpayParam;
+import com.cifpay.lc.versionb.recharge.online.chinapay.util.UnionpayUtil;
+import com.cifpay.lc.versionb.recharge.online.chinapay.util.wap.PersSignSupervise;
+
+/**
+ * 银联在线支付
+ * 
+ * 
+ *
+ */
+@Controller
+@RequestMapping("/unionpay")
+public class UnionpayPaymentController {
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	//判断是否是debug环境下的日志输出
+	private boolean isLoggerDebugEnabled = logger.isDebugEnabled();
+	
+	@Autowired
+	private VersionBMerchantSignValidator versionBMerchantSignValidator;
+	
+	@Autowired
+	private UnionpayPaymentService unionpayPaymentService;
+	
+	@Autowired
+	private UnionpayQueryService unionpayQueryService;
+	
+	@Autowired
+	private UnionpayBusinessService unionpayBusinessService;
+	
+	@Value("${unionpay.returnUrl}")
+	private String unionpayReturnUrl;
+
+	@Value("${unionpay.noticeUrl}")
+	private String unionpayNoticeUrl;
+	
+	@Autowired
+	private UnionpayUtil unionpayUtil;
+	
+	@Autowired
+	private PersSignSupervise persSignSupervise;
+
+	// 跳转至银联在线支付页面
+	@RequestMapping(path = "/toPay", method = RequestMethod.POST)
+	public ModelAndView paymentEntry(@ModelAttribute UnionpayPaymentRequest paymentRequest) {
+		if (isLoggerDebugEnabled) {
+			logger.debug("~~~接收到商户的HTTP充值请求: {}", paymentRequest);
+		}
+		
+		ModelAndView mv = new ModelAndView("webpay/AutoForwardExternalTradeSystemPage");
+		String externalTradeSystemPaymentFrontUrl = UnionpayConfig.unionpay_wap_url;
+		List<HttpParamPair> externalPaymentParams = new ArrayList<HttpParamPair>();
+
+		AliPayRtnMsg msg = new AliPayRtnMsg();
+		Map<String, String> validMap = UnionpayParaValidation.validation(paymentRequest, versionBMerchantSignValidator);
+		if (!"SUCCESS".equals(validMap.get("retCode"))) {
+			msg.setOrderId(paymentRequest.getOrderId());
+			msg.setRequestId(paymentRequest.getRequestId());
+			msg.setUserCode(paymentRequest.getUserCode());
+			msg.setReturnCode("FAIL");
+			msg.setReturnMessage(validMap.get("retMsg"));
+			Map<String, String> attsMap = ConvertTool.beanToMap(msg);
+			versionBMerchantSignValidator.addSign(paymentRequest.getMerId(), attsMap);// 加签
+			
+			externalPaymentParams = unionpayUtil.paramsMapToList(attsMap);
+			mv.addObject("externalTradeSystemPaymentFrontUrl", paymentRequest.getReturnUrl());
+			mv.addObject("externalPaymentParams", externalPaymentParams);
+			return mv;
+		}
+
+		// 创建预开证记录
+		BusinessInput<UnionpayTransferInputBean> businessInput = new BusinessInput<UnionpayTransferInputBean>();
+		UnionpayTransferInputBean inputBean = new UnionpayTransferInputBean();
+		inputBean.setRequestId(paymentRequest.getRequestId());
+		inputBean.setOrderId(paymentRequest.getOrderId());
+		inputBean.setMid(paymentRequest.getMerId());
+		inputBean.setOrderDesc(paymentRequest.getOrderDesc());
+		inputBean.setCurrency(paymentRequest.getCurrency());
+		inputBean.setAmount(new BigDecimal(paymentRequest.getAmount()));
+		inputBean.setLcReturnUrl(paymentRequest.getReturnUrl());
+		inputBean.setLcNotifyUrl(paymentRequest.getNoticeUrl());
+		inputBean.setPayerBankCode("UNIONPAY");
+		inputBean.setPayerBankName("银联");
+		inputBean.setPayerId(paymentRequest.getUserCode());
+		inputBean.setPayerType(paymentRequest.getType());
+		inputBean.setRecvAccno(UnionpayConfig.unionpay_no);
+		inputBean.setRecvBankCode("UNIONPAY");
+		inputBean.setRecvBankName("银联");
+		inputBean.setRecvId(UnionpayConfig.partner);
+		inputBean.setRecvType(AccountPropertyType.CORPORATE.getCode());
+		businessInput.setData(inputBean);
+		BusinessOutput<UnionpayTransferOutputBean> businessOutput = unionpayPaymentService.execute(businessInput);
+		if (businessOutput.getReturnCode() != ReturnCode.GENERAL_SUCCESS) {
+			msg.setOrderId(paymentRequest.getOrderId());
+			msg.setRequestId(paymentRequest.getRequestId());
+			msg.setUserCode(paymentRequest.getUserCode());
+			msg.setReturnCode("FAIL");
+			msg.setReturnMessage(businessOutput.getReturnMsg());
+			Map<String, String> attsMap = ConvertTool.beanToMap(msg);
+			versionBMerchantSignValidator.addSign(paymentRequest.getMerId(), attsMap);// 加签
+			
+			externalPaymentParams = unionpayUtil.paramsMapToList(attsMap);
+			mv.addObject("externalTradeSystemPaymentFrontUrl", paymentRequest.getReturnUrl());
+			mv.addObject("externalPaymentParams", externalPaymentParams);
+			return mv;
+		}
+		
+		UnionpayTransferOutputBean outputBean = businessOutput.getData();
+		UnionpayParam param = new UnionpayParam();
+		param.setVersion(BaseConstant.UNIONPAY_VERSION);     
+		//param.setAccessType("0");  
+		//param.setAcqCode("000000000000014");     
+		param.setMerId(BaseConstant.MERID);       
+		param.setMerOrderNo(outputBean.getOrderId());  
+		param.setTranDate(DateTools.getCurNumDate());    
+		param.setTranTime(DateTools.getCurNumTime());    
+		param.setOrderAmt(new DecimalFormat().format(new BigDecimal(paymentRequest.getAmount())));    
+		String type = paymentRequest.getType();
+		if("1".equals(type)){
+			param.setTranType(BaseConstant.UNIONPAY_TRANTYPE_PERS);    
+		}else if("2".equals(type)){
+			param.setTranType(BaseConstant.UNIONPAY_TRANTYPE_CORP);    
+		}
+		param.setBusiType(BaseConstant.UNIONPAY_BUSITYPE);    
+		//param.setCurryNo("CNY");     
+		//param.setSplitType("");   
+		//param.setSplitMethod(""); 
+		//param.setMerSplitMsg(""); 
+		//param.setBankInstNo("");  
+		param.setMerPageUrl(unionpayReturnUrl);  
+		param.setMerBgUrl(unionpayNoticeUrl);    
+		//param.setCommodityMsg("");
+		param.setMerResv(outputBean.getLcId().toString());     
+		//param.setTranReserved("");
+		//param.setCardTranData("");
+		//param.setPayTimeOut("");  
+		//param.setTimeStamp("");   
+		//param.setRemoteAddr("");  
+		//param.setRiskData("");    
+
+		logger.info("银信证传递给银联的交易编号: {}", outputBean.getLcId());
+		if (isLoggerDebugEnabled) {
+			logger.debug("银信证传递给银联的回调地址：returnUrl: {}, noticeUrl: {}", unionpayReturnUrl, unionpayNoticeUrl);
+		}
+		
+		Map<String, String> paramMap = unionpayUtil.unionpayMap(param);
+		
+		logger.info("银信证传递给银联的请求参数: {}", paramMap);
+		externalPaymentParams = unionpayUtil.paramsMapToList(paramMap);
+
+		mv.addObject("externalTradeSystemPaymentFrontUrl", externalTradeSystemPaymentFrontUrl);
+		mv.addObject("externalPaymentParams", externalPaymentParams);
+		return mv;
+	}
+
+	// 银联在线支付完成后，会通过浏览器回调该方法
+	@RequestMapping(path = "/handleReturn", method = RequestMethod.POST)
+	public ModelAndView handleUnionpayReturn(@ModelAttribute UnionpayPaymentReturnData paymentResult, HttpServletRequest req) throws Exception {
+		req.setCharacterEncoding("utf-8");
+		//银联返回商户订单号
+		String merOrderNo = paymentResult.getMerOrderNo();
+		//订单支付状态
+		String orderStatus = paymentResult.getOrderStatus();
+		//订单金额
+		String orderAmt = paymentResult.getOrderAmt();
+		//收单流水号
+		String acqSeqId = paymentResult.getAcqSeqId();
+		//交易时间(yyyyMMddHHmmss)
+		String tradTime = paymentResult.getTranDate().concat(paymentResult.getTranTime());
+		//商户LcId
+		String lcId = paymentResult.getMerResv();
+		
+		BusinessInput<UnionpayQueryInputBean> businessInput = new BusinessInput<UnionpayQueryInputBean>();
+		UnionpayQueryInputBean inputBean = new UnionpayQueryInputBean();
+		inputBean.setLcId(Long.valueOf(lcId));
+		businessInput.setData(inputBean);
+		BusinessOutput<UnionpayQueryOutputBean> businessOutput = unionpayQueryService.execute(businessInput);
+		UnionpayQueryOutputBean outputBean = businessOutput.getData();
+		AliPayRtnMsg msg = new AliPayRtnMsg();
+		
+		//解析 返回报文
+		Enumeration<String> requestNames = req.getParameterNames();
+		Map<String, String> resultMap = new HashMap<String, String>();
+		while(requestNames.hasMoreElements()){
+			String name = requestNames.nextElement();
+			String value = req.getParameter(name);
+			resultMap.put(name, value);
+		}
+		// 计算得出通知验证结果
+		boolean verify_result = persSignSupervise.verify(resultMap);
+		// 验签成功
+		if (verify_result) {
+			// 银联返回交易成功
+			if (orderStatus.equals("0000")) {
+				if (!verifyAmt(outputBean, orderAmt)) {
+					// 通过银联实际交易的金额跟订单金额不一致，系统将认为非法交易，当作失败交易处理
+					logger.warn("实际支付金额跟订单金额不一致，商户号：{}，订单号：{}，订单金额（分）：{}，实际支付金额（元）：{}", outputBean.getMid(),
+							outputBean.getOrderId(), outputBean.getAmount(), orderAmt);
+					msg = processReturn(outputBean, tradTime, PreLcStatus.FAIL.getCode(), "", "FAIL",
+							"实际支付金额跟订单金额不一致");
+				} else {
+					// 调用核心业务记录充值交易的结果
+					BusinessInput<UnionpayBusinessInputBean> businessInput1 = new BusinessInput<UnionpayBusinessInputBean>();
+					UnionpayBusinessInputBean inputBean1 = new UnionpayBusinessInputBean();
+					inputBean1.setLcId(Long.valueOf(lcId));
+					inputBean1.setAliAcctNo(null);
+					inputBean1.setAliTradeNo(acqSeqId);
+					inputBean1.setTradeTime(tradTime);
+					inputBean1.setNeedSendNoticeToMerchant(false); // 此时先不通知商户
+					inputBean1.setNeedSendNoticeToAccCenter(false); // 此时先不通知账务中心
+					businessInput1.setData(inputBean1);
+
+					logger.info("[BEGIN]调用核心业务层AlipayBusinessService记录成功交易的结果...");
+					BusinessOutput<UnionpayBusinessOutputBean> businessOutput1 = unionpayBusinessService
+							.execute(businessInput1);
+					logger.info("[END]调用核心业务层AlipayBusinessService记录成功交易的结果，核心业务层返回 returnCode: {}, returnMsg: {}",
+							businessOutput1.getReturnCode(), businessOutput1.getReturnMsg());
+					msg = processReturn(outputBean, tradTime, LcStatusType.SUCCESS.getStatusCode(), "", "SUCCESS", "充值成功");
+				}
+			} else {
+				// 银联返回交易失败
+				msg = processReturn(outputBean, tradTime, PreLcStatus.FAIL.getCode(), "", "FAIL", "银联交易失败");
+			}
+		} else {// 验签失败
+			msg = processReturn(outputBean, tradTime, PreLcStatus.FAIL.getCode(), "", "FAIL", "返回验签失败");
+		}
+		
+		Map<String, String> attsMap = ConvertTool.beanToMap(msg);
+		attsMap.remove("sign");
+		versionBMerchantSignValidator.addSign(outputBean.getMid(), attsMap);// 加签
+		
+		String merchantReturnUrl = outputBean.getLcReturnUrl();
+		logger.info("returnUrl:" + merchantReturnUrl + "\n 返回参数" + attsMap);
+		List<HttpParamPair> merchantReturnParams = new ArrayList<HttpParamPair>();
+		merchantReturnParams = unionpayUtil.paramsMapToList(attsMap);
+
+		ModelAndView mv = new ModelAndView("webpay/AutoReturnMerchantPage");
+		mv.addObject("formSubmitMethod", "get");
+		mv.addObject("merchantReturnUrl", merchantReturnUrl);
+		mv.addObject("merchantReturnParams", merchantReturnParams);
+		return mv;
+	}
+
+	// 银联在线支付完成后，会通过服务器异步调用该方法
+	@RequestMapping(path = "/handleNotice", method = RequestMethod.POST)
+	@ResponseBody
+	public String handleUnionpayNotice(@ModelAttribute UnionpayPaymentNoticeData paymentNotice, HttpServletRequest req) {
+		try {
+			req.setCharacterEncoding("utf-8");
+			//银联返回商户订单号
+			String merOrderNo = paymentNotice.getMerOrderNo();
+			//订单支付状态
+			String orderStatus = paymentNotice.getOrderStatus();
+			//订单金额
+			String orderAmt = paymentNotice.getOrderAmt();
+			//收单流水号
+			String acqSeqId = paymentNotice.getAcqSeqId();
+			//交易时间(yyyyMMddHHmmss)
+			String tradTime = paymentNotice.getTranDate().concat(paymentNotice.getTranTime());
+			//商户LcId
+			String lcId = paymentNotice.getMerResv();
+			
+			BusinessInput<UnionpayQueryInputBean> businessInput = new BusinessInput<UnionpayQueryInputBean>();
+			UnionpayQueryInputBean inputBean = new UnionpayQueryInputBean();
+			inputBean.setLcId(Long.valueOf(lcId));
+			businessInput.setData(inputBean);
+			BusinessOutput<UnionpayQueryOutputBean> businessOutput = unionpayQueryService.execute(businessInput);
+			UnionpayQueryOutputBean outputBean = businessOutput.getData();
+			AliPayRtnMsg msg = new AliPayRtnMsg();
+			
+			//解析 返回报文
+			Enumeration<String> requestNames = req.getParameterNames();
+			Map<String, String> resultMap = new HashMap<String, String>();
+			while(requestNames.hasMoreElements()){
+				String name = requestNames.nextElement();
+				String value = req.getParameter(name);
+				value = URLDecoder.decode(value, "UTF-8");
+				resultMap.put(name, value);
+			}
+			// 验证消息是否是银联发出的合法消息
+			boolean verify_result = persSignSupervise.verify(resultMap);
+			
+			// true验签通过
+			if (verify_result) {
+				if (orderStatus.equals("0000")) {
+					// 支付宝通知银信证：交易成功
+					BusinessInput<UnionpayBusinessInputBean> businessInput1 = new BusinessInput<UnionpayBusinessInputBean>();
+					UnionpayBusinessInputBean inputBean1 = new UnionpayBusinessInputBean();
+					inputBean1.setLcId(Long.valueOf(lcId));
+					inputBean1.setAliTradeNo(acqSeqId);
+					inputBean1.setTradeTime(tradTime);
+					inputBean1.setNeedSendNoticeToMerchant(true);
+					inputBean1.setNeedSendNoticeToAccCenter(true);
+					businessInput1.setData(inputBean1);
+	
+					// 调用核心业务记录充值交易的结果
+					logger.info("[BEGIN]调用核心业务层UnionpayBusinessService记录成功交易的结果...");
+					BusinessOutput<UnionpayBusinessOutputBean> businessOutput1 = unionpayBusinessService.execute(businessInput1);
+					logger.info("[END]调用核心业务层UnionpayBusinessService记录成功交易的结果，核心业务层返回 returnCode: {}, returnMsg: {}",
+							businessOutput1.getReturnCode(), businessOutput1.getReturnMsg());
+	
+					if (ReturnCode.GENERAL_SUCCESS == businessOutput1.getReturnCode()) {
+						// FIXME: 发现对于交易成功，目前是由核心业务层通知商户的
+						return "success";
+					}
+					return "fail";
+				} else {
+					// 银联通知银信证：交易失败
+					msg = processReturn(outputBean, tradTime, PreLcStatus.FAIL.getCode(), "", "FAIL", "银联交易失败");
+					Map<String, String> attsMap = ConvertTool.beanToMap(msg);
+					versionBMerchantSignValidator.addSign(outputBean.getMid(), attsMap);// 加签
+					logger.info("noticeUrl:" + outputBean.getLcNotifyUrl() + "\n 返回参数:" + attsMap);
+					AlipayUtil.sendRequest(attsMap, outputBean.getLcNotifyUrl());
+					return "fail";
+				}
+			} else {
+				// 对银联返回的消息验签未通过
+				msg = processReturn(outputBean, tradTime, PreLcStatus.FAIL.getCode(), "", "FAIL", "返回验签失败");
+				Map<String, String> attsMap = ConvertTool.beanToMap(msg);
+				versionBMerchantSignValidator.addSign(outputBean.getMid(), attsMap);// 加签
+				logger.info("noticeUrl:" + outputBean.getLcNotifyUrl() + "\n 返回参数:" + attsMap);
+	
+				// 通知商户
+				AlipayUtil.sendRequest(attsMap, outputBean.getLcNotifyUrl());
+	
+				return "fail";
+			}
+		} catch (Exception e) {
+			logger.error("接收银联异步通知异常: {}", e.getMessage(), e);
+			return "fail";
+		}
+	}
+	
+	// 验证两边金额是否一致
+	private boolean verifyAmt(UnionpayQueryOutputBean outputBean, String tradeAmtYuanFromAlipay) {
+		BigDecimal expectedTradeAmtFen = outputBean.getAmount();
+		BigDecimal tradeFee = new BigDecimal(tradeAmtYuanFromAlipay);
+		// 判断支付宝返回金额和冻结金额是否相等
+		if (expectedTradeAmtFen.compareTo(tradeFee) != 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private AliPayRtnMsg processReturn(UnionpayQueryOutputBean outputBean, String tradeTime, String lcState,
+			String aliAcctNo, String retCode, String retMsg) {
+		AliPayRtnMsg msg = new AliPayRtnMsg();
+		msg.setOrderId(outputBean.getOrderId());
+		msg.setMerId(outputBean.getMid());
+		msg.setRequestId(outputBean.getRequestId());
+		msg.setLcId(outputBean.getLcId().toString());
+		msg.setResponseTime(DateUtil.format(new Date()));
+		msg.setSign("Base64");
+		msg.setTradeAmt(outputBean.getAmount().toString());
+		msg.setTradeTime(tradeTime);
+		msg.setUserCode(outputBean.getUserCode());
+		msg.setAliAcctNo(aliAcctNo);
+		msg.setState(lcState);
+		msg.setReturnCode(retCode);
+		msg.setReturnMessage(retMsg);
+		return msg;
+	}
+}

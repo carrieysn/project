@@ -1,0 +1,55 @@
+package com.cifpay.lc.std.business.bank;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.gateway.bank.OpenCardService;
+import com.cifpay.lc.bankadapter.api.IBankTradeService;
+import com.cifpay.lc.bankadapter.api.input.unionpay.OpenCardParam;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.db.dao.AdminLcMerCreDao;
+import com.cifpay.lc.core.db.pojo.AdminLcMerCre;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.domain.bank.OpenCardInputBean;
+import com.cifpay.lc.domain.enums.AdminCardType;
+
+
+@Service("openCardService")
+public class OpenCardServiceImpl implements OpenCardService{
+
+    @Autowired
+    private IBankTradeService tradeService;
+    
+    @Autowired
+    private AdminLcMerCreDao adminLcMerCreDao;
+    
+    @Override
+    public String openCard(OpenCardInputBean input) {
+        
+        List<AdminLcMerCre> adminLcMerCreList = adminLcMerCreDao
+                .selectByMerCodeAndCardType(input.getMerId(), AdminCardType.DEPOSIT.getCode());
+        
+        if (adminLcMerCreList == null || adminLcMerCreList.size() != 1) {
+            throw new CoreBusinessException(ReturnCode.CORE_STD_SECOND_MER_NOT_EXIST, "未找到对应的银联二级商户号");
+        }
+        
+        OpenCardParam param = new OpenCardParam();
+        
+        BeanUtils.copyProperties(input, param);
+        
+        param.setSubMerId(adminLcMerCreList.get(0).getXnMerId());
+        
+        GeneralTradeResult result = tradeService.doTrade(param);
+        
+        Map<String,String> map = result.getResultMap();
+        
+        String html = map.get("data");
+        
+        return html;
+    }
+}

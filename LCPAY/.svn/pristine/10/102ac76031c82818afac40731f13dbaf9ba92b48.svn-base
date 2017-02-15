@@ -1,0 +1,15 @@
+package com.cifpay.lc.api.example;
+
+import java.util.Date;
+
+import com.cifpay.lc.api.CoreBusinessService;
+
+/**
+ * 样例
+ * 
+ * 
+ *
+ */
+public interface ServerClockService extends CoreBusinessService<String, Date> {
+
+}

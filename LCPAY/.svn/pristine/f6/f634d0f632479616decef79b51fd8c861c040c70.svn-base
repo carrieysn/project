@@ -1,0 +1,85 @@
+package com.cifpay.lc.gateway.controller.batch;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.batch.BatchApplyService;
+import com.cifpay.lc.constant.BizConstants;
+import com.cifpay.lc.domain.batch.BatchApplyInputBean;
+import com.cifpay.lc.domain.batch.BatchApplyInputDto;
+import com.cifpay.lc.domain.batch.BatchApplyOutputBean;
+import com.cifpay.lc.domain.batch.BatchApplyOutputDto;
+import com.cifpay.lc.domain.security.MerchantRequest;
+import com.cifpay.lc.gateway.common.exception.GatewayLcException;
+import com.cifpay.lc.gateway.common.util.CPUtil;
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+import com.cifpay.lc.gateway.input.batch.BatchWithdrawReq;
+import com.cifpay.lc.gateway.input.batch.WithdrawReq;
+import com.cifpay.lc.gateway.output.batch.BatchWithdrawResp;
+import com.cifpay.lc.gateway.output.batch.WithdrawResp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 批量提现
+ */
+@RestController
+@RequestMapping("/lc")
+public class BatchWithdrawController extends GatewayBaseController {
+
+    @Autowired
+    private BatchApplyService batchApplyService;
+
+    @ResponseBody
+    @RequestMapping("/batchApply")
+    public BatchWithdrawResp handleRequest(@RequestBody MerchantRequest<BatchWithdrawReq> merReq) {
+        logger.info("===进入batch/withdraw");
+
+        BatchWithdrawReq reqBean = merReq.getData();
+        List<WithdrawReq> listWithdraw = reqBean.getListWithdraw();
+
+        List<BatchApplyInputDto> listApply = new ArrayList<BatchApplyInputDto>();
+
+        for (WithdrawReq withdrawReq : listWithdraw) {
+            BatchApplyInputDto applyInputBean = new BatchApplyInputDto();
+            CPUtil.reflectBean2Bean(withdrawReq, applyInputBean);
+            applyInputBean.setMerId(reqBean.getMerId());
+            listApply.add(applyInputBean);
+        }
+
+        BatchApplyInputBean inputBean = new BatchApplyInputBean();
+        inputBean.setApplyList(listApply);
+
+        BusinessOutput<BatchApplyOutputBean> output = batchApplyService.execute(new BusinessInput<BatchApplyInputBean>(inputBean));
+
+        if (output.isSuccess()) {
+            BatchApplyOutputBean outputBean = output.getData();
+            List<BatchApplyOutputDto> listApplyOutputBean = outputBean.getApplyOutputList();
+
+            BatchWithdrawResp response = new BatchWithdrawResp();
+            List<WithdrawResp> listWithdrawResp = new ArrayList<WithdrawResp>();
+            for (BatchApplyOutputDto applyOutputBean : listApplyOutputBean) {
+                WithdrawResp withdrawResp = new WithdrawResp();
+                listWithdrawResp.add(withdrawResp);
+
+                withdrawResp.setLcId(String.valueOf(applyOutputBean.getLcId()));
+                withdrawResp.setLcStatus(applyOutputBean.getLcStatus());
+                withdrawResp.setLcStatusDesc(applyOutputBean.getLcStatusDesc());
+
+                withdrawResp.setLcAppointmentId(String.valueOf(applyOutputBean.getLcAppointmentId()));
+                withdrawResp.setLcConfirmId(String.valueOf(applyOutputBean.getLcConfirmId()));
+                withdrawResp.setLcPayAmount(BizConstants.decimalFormat.format(applyOutputBean.getLcPayAmount()));
+            }
+
+            response.setListWithdrawResp(listWithdrawResp);
+            return response;
+        }
+
+        throw new GatewayLcException(output.getReturnCode(), output.getReturnMsg());
+    }
+}

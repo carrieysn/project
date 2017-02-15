@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcDao" >
+
+  <select id="selectSinglePay4ExpireInvalidity" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where LC_STATUS = #{lcStatus,jdbcType=VARCHAR}
+    	and IS_VALID = '1'
+    	and PAY_TYPE = '1' 
+    	<if test="lcStatus == '10'" >
+    	and RECV_VALID_TIME <![CDATA[<]]> now() 
+    	</if>
+    	<if test="lcStatus == '20'" >
+    	and SEND_VALID_TIME <![CDATA[<]]> now() 
+    	</if>
+    	<if test="lcStatus == '30'" >
+    	and CONFIRM_VALID_TIME <![CDATA[<]]> now() 
+    	</if>
+  </select>
+  
+  <select id="selectByMidOrderId" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where MID = #{mid,jdbcType=VARCHAR} and ORDER_ID = #{orderId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectListByProductCodeLcStatus" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where PRODUCT_CODE = #{productCode,jdbcType=VARCHAR} and LC_STATUS = #{lcStatus,jdbcType=VARCHAR}
+  </select>
+  
+  <update id="updateByLcIdLcStatusSelective" parameterType="com.cifpay.lc.core.db.pojo.Lc" >
+    update CIFPAY_LC
+    <set >
+      <if test="updatingLc.batchNo != null" >
+        BATCH_NO = #{updatingLc.batchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.productId != null" >
+        PRODUCT_ID = #{updatingLc.productId,jdbcType=BIGINT},
+      </if>
+      <if test="updatingLc.productCode != null" >
+        PRODUCT_CODE = #{updatingLc.productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.lcNo != null" >
+        LC_NO = #{updatingLc.lcNo,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.lcType != null" >
+        LC_TYPE = #{updatingLc.lcType,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.lcCurrency != null" >
+        LC_CURRENCY = #{updatingLc.lcCurrency,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.lcAmount != null" >
+        LC_AMOUNT = #{updatingLc.lcAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="updatingLc.lcFreezingAmount != null" >
+        LC_FREEZING_AMOUNT = #{updatingLc.lcFreezingAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="updatingLc.lcBalance != null" >
+        LC_BALANCE = #{updatingLc.lcBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="updatingLc.mid != null" >
+        MID = #{updatingLc.mid,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.orderId != null" >
+        ORDER_ID = #{updatingLc.orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.payerId != null" >
+        PAYER_ID = #{updatingLc.payerId,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.payerAccno != null" >
+        PAYER_ACCNO = #{updatingLc.payerAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.payerType != null" >
+        PAYER_TYPE = #{updatingLc.payerType,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.payerBankCode != null" >
+        PAYER_BANK_CODE = #{updatingLc.payerBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.payerBankName != null" >
+        PAYER_BANK_NAME = #{updatingLc.payerBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.recvId != null" >
+        RECV_ID = #{updatingLc.recvId,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.recvAccno != null" >
+        RECV_ACCNO = #{updatingLc.recvAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.recvType != null" >
+        RECV_TYPE = #{updatingLc.recvType,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.recvBankCode != null" >
+        RECV_BANK_CODE = #{updatingLc.recvBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.recvBankName != null" >
+        RECV_BANK_NAME = #{updatingLc.recvBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.lcStatus != null" >
+        LC_STATUS = #{updatingLc.lcStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.recvValidTime != null" >
+        RECV_VALID_TIME = #{updatingLc.recvValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatingLc.sendValidTime != null" >
+        SEND_VALID_TIME = #{updatingLc.sendValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatingLc.confirmValidTime != null" >
+        CONFIRM_VALID_TIME = #{updatingLc.confirmValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatingLc.payValidTime != null" >
+        PAY_VALID_TIME = #{updatingLc.payValidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatingLc.lcStateReturnUrl != null" >
+        LC_STATE_RETURN_URL = #{updatingLc.lcStateReturnUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.lcStateNotifyUrl != null" >
+        LC_STATE_NOTIFY_URL = #{updatingLc.lcStateNotifyUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.lcOrderDetailUrl != null" >
+        LC_ORDER_DETAIL_URL = #{updatingLc.lcOrderDetailUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.thirdPartyCode != null" >
+        THIRD_PARTY_CODE = #{updatingLc.thirdPartyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.payType != null" >
+        PAY_TYPE = #{updatingLc.payType,jdbcType=VARCHAR},
+      </if>
+      <if test="updatingLc.isValid != null" >
+        IS_VALID = #{updatingLc.isValid,jdbcType=BIT},
+      </if>
+      <if test="updatingLc.createTime != null" >
+        CREATE_TIME = #{updatingLc.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatingLc.updateTime != null" >
+        UPDATE_TIME = #{updatingLc.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatingLc.remark != null" >
+        REMARK = #{updatingLc.remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where LC_STATUS = #{lcStatus,jdbcType=VARCHAR} and LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="decreaseLcBalance" parameterType="map">
+    update CIFPAY_LC
+    set 
+      LC_BALANCE = LC_BALANCE - #{decreaseAmount,jdbcType=DECIMAL},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP} 
+    where LC_BALANCE >= #{decreaseAmount,jdbcType=DECIMAL} and LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectByLcIds" parameterType="map" resultMap="BaseResultMap">  
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where LC_ID in
+    <foreach close=")" collection="lcIds" index="index" item="item" open="(" separator=",">  
+             #{item}
+    </foreach> 
+  </select> 
+  
+  <select id="selectPreInvalidLcWithApplyValidTimeExpired" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where LC_STATUS = 91
+    	and CONFIRM_VALID_TIME <![CDATA[<]]> now()
+    limit 0, 200
+  </select>
+  
+  <select id="selectRecvExpired" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where LC_STATUS = '10' 
+    	and RECV_VALID_TIME <![CDATA[<]]> now()
+    limit #{offset,jdbcType=INTEGER}, #{rows,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectAppointmentExpired" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where LC_STATUS = '20' 
+    	and SEND_VALID_TIME <![CDATA[<]]> now()
+    limit #{offset,jdbcType=INTEGER}, #{rows,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectApplyExpired" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where LC_STATUS = '30' 
+    	and CONFIRM_VALID_TIME <![CDATA[<]]> now()
+    limit #{offset,jdbcType=INTEGER}, #{rows,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectAppointmentExpired_Multiple" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where LC_STATUS = '31' 
+    	and SEND_VALID_TIME <![CDATA[<]]> now()
+    limit 0, 200
+  </select>
+  
+  <select id="selectPreInvalid2Invalid" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC
+    where LC_STATUS = '91' 
+    	and LC_FREEZING_AMOUNT=0
+    	and LC_BALANCE=0
+    limit 0, 200
+  </select>
+  
+  <update id="decreaseFreezingAmount" parameterType="map" >
+    UPDATE CIFPAY_LC
+    SET	LC_FREEZING_AMOUNT = IFNULL(LC_FREEZING_AMOUNT,0) - #{amount,jdbcType=DECIMAL}
+    WHERE 
+    	LC_FREEZING_AMOUNT <![CDATA[>=]]> #{amount,jdbcType=DECIMAL} 
+    	and LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="freezeAmount" parameterType="map" >
+    UPDATE CIFPAY_LC 
+	SET LC_FREEZING_AMOUNT = IFNULL(LC_FREEZING_AMOUNT,0) + #{amount,jdbcType=DECIMAL} , 
+		LC_BALANCE = LC_BALANCE - #{amount,jdbcType=DECIMAL} 
+	WHERE LC_BALANCE <![CDATA[>=]]> #{amount,jdbcType=DECIMAL} 
+	AND   LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="unfreezeAmount" parameterType="map" >
+    UPDATE CIFPAY_LC 
+	SET LC_FREEZING_AMOUNT = IFNULL(LC_FREEZING_AMOUNT,0) - #{amount,jdbcType=DECIMAL} , 
+		LC_BALANCE = IFNULL(LC_BALANCE,0) + #{amount,jdbcType=DECIMAL} 
+	WHERE LC_FREEZING_AMOUNT <![CDATA[>=]]> #{amount,jdbcType=DECIMAL} 
+	AND   LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+  
+</mapper>

@@ -1,0 +1,343 @@
+package com.cifpay.lc.core.db.pojo;
+
+public class ThirdICBCBankentPayent {
+    private String batchSeqno;
+
+    private String detailSeqno;
+
+    private String callerCode;
+
+    private String callerInstructionNo;
+
+    private String callerInstructionDetailNo;
+
+    private String payEnterpriseCode;
+
+    private String tranDate;
+
+    private String tranTime;
+
+    private String currencyCode;
+
+    private String icbcCurrencyType;
+
+    private Long payAmt;
+
+    private String icbcCis;
+
+    private String icbcBankCode;
+
+    private String icbcCertId;
+
+    private String icbcPayType;
+
+    private String payAccountNo;
+
+    private String recvBankCode;
+
+    private String recvBankName;
+
+    private String recvBankCityName;
+
+    private String recvAccountNo;
+
+    private String recvAccountName;
+
+    private String fundUseDesc;
+
+    private String summary;
+
+    private String corporatePersonalFlag;
+
+    private String crossBankFlag;
+
+    private String sameCityFlag;
+
+    private String txnResultStatus;
+
+    private String bankRetBatchSerialNo;
+
+    private String bankRetDetailOrderNo;
+
+    private String bankOriDetailResultCode;
+
+    private String bankAddiBatchReturnCode;
+
+    private String bankAddiBatchReturnMsg;
+
+    private String bankAddiDetailReturnCode;
+
+    private String bankAddiDetailReturnMsg;
+
+    public String getBatchSeqno() {
+        return batchSeqno;
+    }
+
+    public void setBatchSeqno(String batchSeqno) {
+        this.batchSeqno = batchSeqno == null ? null : batchSeqno.trim();
+    }
+
+    public String getDetailSeqno() {
+        return detailSeqno;
+    }
+
+    public void setDetailSeqno(String detailSeqno) {
+        this.detailSeqno = detailSeqno == null ? null : detailSeqno.trim();
+    }
+
+    public String getCallerCode() {
+        return callerCode;
+    }
+
+    public void setCallerCode(String callerCode) {
+        this.callerCode = callerCode == null ? null : callerCode.trim();
+    }
+
+    public String getCallerInstructionNo() {
+        return callerInstructionNo;
+    }
+
+    public void setCallerInstructionNo(String callerInstructionNo) {
+        this.callerInstructionNo = callerInstructionNo == null ? null : callerInstructionNo.trim();
+    }
+
+    public String getCallerInstructionDetailNo() {
+        return callerInstructionDetailNo;
+    }
+
+    public void setCallerInstructionDetailNo(String callerInstructionDetailNo) {
+        this.callerInstructionDetailNo = callerInstructionDetailNo == null ? null : callerInstructionDetailNo.trim();
+    }
+
+    public String getPayEnterpriseCode() {
+        return payEnterpriseCode;
+    }
+
+    public void setPayEnterpriseCode(String payEnterpriseCode) {
+        this.payEnterpriseCode = payEnterpriseCode == null ? null : payEnterpriseCode.trim();
+    }
+
+    public String getTranDate() {
+        return tranDate;
+    }
+
+    public void setTranDate(String tranDate) {
+        this.tranDate = tranDate == null ? null : tranDate.trim();
+    }
+
+    public String getTranTime() {
+        return tranTime;
+    }
+
+    public void setTranTime(String tranTime) {
+        this.tranTime = tranTime == null ? null : tranTime.trim();
+    }
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode == null ? null : currencyCode.trim();
+    }
+
+    public String getIcbcCurrencyType() {
+        return icbcCurrencyType;
+    }
+
+    public void setIcbcCurrencyType(String icbcCurrencyType) {
+        this.icbcCurrencyType = icbcCurrencyType == null ? null : icbcCurrencyType.trim();
+    }
+
+    public Long getPayAmt() {
+        return payAmt;
+    }
+
+    public void setPayAmt(Long payAmt) {
+        this.payAmt = payAmt;
+    }
+
+    public String getIcbcCis() {
+        return icbcCis;
+    }
+
+    public void setIcbcCis(String icbcCis) {
+        this.icbcCis = icbcCis == null ? null : icbcCis.trim();
+    }
+
+    public String getIcbcBankCode() {
+        return icbcBankCode;
+    }
+
+    public void setIcbcBankCode(String icbcBankCode) {
+        this.icbcBankCode = icbcBankCode == null ? null : icbcBankCode.trim();
+    }
+
+    public String getIcbcCertId() {
+        return icbcCertId;
+    }
+
+    public void setIcbcCertId(String icbcCertId) {
+        this.icbcCertId = icbcCertId == null ? null : icbcCertId.trim();
+    }
+
+    public String getIcbcPayType() {
+        return icbcPayType;
+    }
+
+    public void setIcbcPayType(String icbcPayType) {
+        this.icbcPayType = icbcPayType == null ? null : icbcPayType.trim();
+    }
+
+    public String getPayAccountNo() {
+        return payAccountNo;
+    }
+
+    public void setPayAccountNo(String payAccountNo) {
+        this.payAccountNo = payAccountNo == null ? null : payAccountNo.trim();
+    }
+
+    public String getRecvBankCode() {
+        return recvBankCode;
+    }
+
+    public void setRecvBankCode(String recvBankCode) {
+        this.recvBankCode = recvBankCode == null ? null : recvBankCode.trim();
+    }
+
+    public String getRecvBankName() {
+        return recvBankName;
+    }
+
+    public void setRecvBankName(String recvBankName) {
+        this.recvBankName = recvBankName == null ? null : recvBankName.trim();
+    }
+
+    public String getRecvBankCityName() {
+        return recvBankCityName;
+    }
+
+    public void setRecvBankCityName(String recvBankCityName) {
+        this.recvBankCityName = recvBankCityName == null ? null : recvBankCityName.trim();
+    }
+
+    public String getRecvAccountNo() {
+        return recvAccountNo;
+    }
+
+    public void setRecvAccountNo(String recvAccountNo) {
+        this.recvAccountNo = recvAccountNo == null ? null : recvAccountNo.trim();
+    }
+
+    public String getRecvAccountName() {
+        return recvAccountName;
+    }
+
+    public void setRecvAccountName(String recvAccountName) {
+        this.recvAccountName = recvAccountName == null ? null : recvAccountName.trim();
+    }
+
+    public String getFundUseDesc() {
+        return fundUseDesc;
+    }
+
+    public void setFundUseDesc(String fundUseDesc) {
+        this.fundUseDesc = fundUseDesc == null ? null : fundUseDesc.trim();
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary == null ? null : summary.trim();
+    }
+
+    public String getCorporatePersonalFlag() {
+        return corporatePersonalFlag;
+    }
+
+    public void setCorporatePersonalFlag(String corporatePersonalFlag) {
+        this.corporatePersonalFlag = corporatePersonalFlag == null ? null : corporatePersonalFlag.trim();
+    }
+
+    public String getCrossBankFlag() {
+        return crossBankFlag;
+    }
+
+    public void setCrossBankFlag(String crossBankFlag) {
+        this.crossBankFlag = crossBankFlag == null ? null : crossBankFlag.trim();
+    }
+
+    public String getSameCityFlag() {
+        return sameCityFlag;
+    }
+
+    public void setSameCityFlag(String sameCityFlag) {
+        this.sameCityFlag = sameCityFlag == null ? null : sameCityFlag.trim();
+    }
+
+    public String getTxnResultStatus() {
+        return txnResultStatus;
+    }
+
+    public void setTxnResultStatus(String txnResultStatus) {
+        this.txnResultStatus = txnResultStatus == null ? null : txnResultStatus.trim();
+    }
+
+    public String getBankRetBatchSerialNo() {
+        return bankRetBatchSerialNo;
+    }
+
+    public void setBankRetBatchSerialNo(String bankRetBatchSerialNo) {
+        this.bankRetBatchSerialNo = bankRetBatchSerialNo == null ? null : bankRetBatchSerialNo.trim();
+    }
+
+    public String getBankRetDetailOrderNo() {
+        return bankRetDetailOrderNo;
+    }
+
+    public void setBankRetDetailOrderNo(String bankRetDetailOrderNo) {
+        this.bankRetDetailOrderNo = bankRetDetailOrderNo == null ? null : bankRetDetailOrderNo.trim();
+    }
+
+    public String getBankOriDetailResultCode() {
+        return bankOriDetailResultCode;
+    }
+
+    public void setBankOriDetailResultCode(String bankOriDetailResultCode) {
+        this.bankOriDetailResultCode = bankOriDetailResultCode == null ? null : bankOriDetailResultCode.trim();
+    }
+
+    public String getBankAddiBatchReturnCode() {
+        return bankAddiBatchReturnCode;
+    }
+
+    public void setBankAddiBatchReturnCode(String bankAddiBatchReturnCode) {
+        this.bankAddiBatchReturnCode = bankAddiBatchReturnCode == null ? null : bankAddiBatchReturnCode.trim();
+    }
+
+    public String getBankAddiBatchReturnMsg() {
+        return bankAddiBatchReturnMsg;
+    }
+
+    public void setBankAddiBatchReturnMsg(String bankAddiBatchReturnMsg) {
+        this.bankAddiBatchReturnMsg = bankAddiBatchReturnMsg == null ? null : bankAddiBatchReturnMsg.trim();
+    }
+
+    public String getBankAddiDetailReturnCode() {
+        return bankAddiDetailReturnCode;
+    }
+
+    public void setBankAddiDetailReturnCode(String bankAddiDetailReturnCode) {
+        this.bankAddiDetailReturnCode = bankAddiDetailReturnCode == null ? null : bankAddiDetailReturnCode.trim();
+    }
+
+    public String getBankAddiDetailReturnMsg() {
+        return bankAddiDetailReturnMsg;
+    }
+
+    public void setBankAddiDetailReturnMsg(String bankAddiDetailReturnMsg) {
+        this.bankAddiDetailReturnMsg = bankAddiDetailReturnMsg == null ? null : bankAddiDetailReturnMsg.trim();
+    }
+}

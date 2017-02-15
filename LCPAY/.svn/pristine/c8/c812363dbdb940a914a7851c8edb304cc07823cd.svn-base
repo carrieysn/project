@@ -1,0 +1,19 @@
+package com.cifpay.lc.std.mapper.lc.input;
+
+import org.springframework.beans.BeanUtils;
+
+import com.cifpay.lc.domain.lc.AppointmentInputBean;
+import com.cifpay.lc.std.domain.kernel.AppointmentKernelInputBean;
+
+public class AppointmentInputBeanMapper {
+
+	public static AppointmentKernelInputBean toAppointmentKernelInputBean(AppointmentInputBean inputBean) {
+		AppointmentKernelInputBean result = new AppointmentKernelInputBean();
+		if (inputBean != null) {
+			BeanUtils.copyProperties(inputBean, result);
+		}
+
+		return result;
+	}
+
+}

@@ -1,0 +1,47 @@
+package com.cifpay.lc.api;
+
+import java.io.Serializable;
+
+import com.cifpay.lc.util.logging.AbstractInputBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cifpay.lc.constant.ReturnCode;
+
+/**
+ *
+ *
+ */
+public abstract class AbstractServiceStub<I extends AbstractInputBean, O extends Serializable> implements CoreBusinessService<I, O> {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    private boolean isLoggerDebugEnabled = logger.isDebugEnabled();
+    private CoreBusinessService<I, O> remote;
+
+    public AbstractServiceStub(CoreBusinessService<I, O> remote) {
+        this.remote = remote;
+    }
+
+    @Override
+    public BusinessOutput<O> execute(BusinessInput<I> input) {
+        long startTime = 0L;
+        if (isLoggerDebugEnabled) {
+            startTime = System.currentTimeMillis();
+            logger.debug("[RPC]Start to call Dubbo remote service: {}", input);
+        }
+        try {
+            return remote.execute(input);
+        } catch (Exception e) {
+            logger.error("Dubbo RPC Exception: {}", e.getMessage(), e);
+            BusinessOutput<O> errorOutput = new BusinessOutput<O>();
+            errorOutput.setReturnCode(ReturnCode.CORE_COMMON_REMOTE_SERVICE_TEMP_UNAVAILABLE);
+            errorOutput.setReturnMsg("银企适配服务暂时不可用");
+            return errorOutput;
+        } finally {
+            if (isLoggerDebugEnabled) {
+                logger.debug("[RPC]End to call Dubbo remote service, elapsed time: {}ms",
+                        (System.currentTimeMillis() - startTime));
+            }
+        }
+    }
+
+}

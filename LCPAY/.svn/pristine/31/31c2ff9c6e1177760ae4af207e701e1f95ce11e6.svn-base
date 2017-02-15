@@ -1,0 +1,8 @@
+package com.cifpay.lc.domain;
+
+import java.io.Serializable;
+
+public class AbstractOutputBean implements Serializable {
+    private static final long serialVersionUID = -8089914687750997045L;
+
+}

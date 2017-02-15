@@ -1,0 +1,76 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay.util.wap;
+
+import java.util.Map;
+import java.util.Properties;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.chinapay.secss.SecssUtil;
+
+@Component
+public class PersSignSupervise implements InitializingBean {
+
+	private Properties initProps;
+	
+	
+	@Value("${chinapay.pers.verify.file}")
+	private String verifyFile;
+	
+	@Value("${chinapay.pers.sign.filePath}")
+	private String signFilePath;
+	
+	@Value("${chinapay.pers.sign.file}")
+	private String signFile;
+	
+	@Value("${chinapay.pers.sign.file.password}")
+	private String signFilePassword;
+	
+	@Value("${chinapay.pers.sign.cert.type}")
+	private String signCertType;
+	
+	@Value("${chinapay.pers.sign.invalid.fields}")
+	private String signInvalidFields;
+	
+	@Value("${chinapay.pers.signature.field}")
+	private String signatureField;
+	
+	@Value("${chinapay.pers.log4j.name}")
+	private String log4jName;
+	
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		
+		initProps = new Properties();
+		initProps.setProperty("verify.file", verifyFile);
+		initProps.setProperty("sign.filePath", signFilePath);
+		initProps.setProperty("sign.file", signFile);
+		initProps.setProperty("sign.file.password", signFilePassword);
+		initProps.setProperty("sign.cert.type", signCertType);
+		initProps.setProperty("sign.invalid.fields", signInvalidFields);
+		initProps.setProperty("signature.field", signatureField);
+		initProps.setProperty("log4j.name", log4jName);
+	}
+
+	public String sign(Map signMap) {
+		SecssUtil secssUtil = new SecssUtil();
+		secssUtil.init(initProps);
+		secssUtil.sign(signMap);
+
+		System.out.println(secssUtil.getErrCode());
+		System.out.println(secssUtil.getErrMsg());
+
+		return secssUtil.getSign();
+	}
+
+	public boolean verify(Map map) {
+		SecssUtil secssUtil = new SecssUtil();
+		secssUtil.init(initProps);
+		secssUtil.verify(map);
+		if ("00".equals(secssUtil.getErrCode()))
+			return true;
+		return false;
+	}
+
+}

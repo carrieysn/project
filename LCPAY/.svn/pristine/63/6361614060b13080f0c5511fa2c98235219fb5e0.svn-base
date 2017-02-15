@@ -1,0 +1,176 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.util.Date;
+
+public class BSwRecvDateQueueMsg {
+
+	/**
+	 * 处理中
+	 */
+	public static final String HANDLE_STATUS_PROCESSING = "1";
+
+	/**
+	 * 等待开证完成后再处理该消息
+	 */
+	public static final String HANDLE_STATUS_WAIT_LC_OPEN = "2";
+
+	/**
+	 * 处理成功
+	 */
+	public static final String HANDLE_STATUS_SUCCESS = "8";
+
+	/**
+	 * 处理失败
+	 */
+	public static final String HANDLE_STATUS_FAILED = "9";
+
+	/**
+	 * 未发送
+	 */
+	public static final String RESULT_SEND_STATUS_PENDING = "0";
+
+	/**
+	 * 发送中
+	 */
+	public static final String RESULT_SEND_STATUS_SENDING = "1";
+
+	/**
+	 * 发送成功
+	 */
+	public static final String RESULT_SEND_STATUS_SEND_OK = "8";
+
+	/**
+	 * 发送失败
+	 */
+	public static final String RESULT_SEND_STATUS_SEND_FAILED = "9";
+
+	private Long msgId;
+
+	private String mid;
+
+	private String rechargeOrderId;
+
+	private String type;
+
+	private String sno;
+
+	private Date newLcRecvValidTime;
+
+	private String handleStatus;
+
+	private Integer waitOpenRetryCnt;
+
+	private String handleFailDesc;
+
+	private String resultSendStatus;
+
+	private Date createTime;
+
+	private Date updateTime;
+
+	private String lockedBy;
+
+	public Long getMsgId() {
+		return msgId;
+	}
+
+	public void setMsgId(Long msgId) {
+		this.msgId = msgId;
+	}
+
+	public String getMid() {
+		return mid;
+	}
+
+	public void setMid(String mid) {
+		this.mid = mid == null ? null : mid.trim();
+	}
+
+	public String getRechargeOrderId() {
+		return rechargeOrderId;
+	}
+
+	public void setRechargeOrderId(String rechargeOrderId) {
+		this.rechargeOrderId = rechargeOrderId == null ? null : rechargeOrderId.trim();
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type == null ? null : type.trim();
+	}
+
+	public String getSno() {
+		return sno;
+	}
+
+	public void setSno(String sno) {
+		this.sno = sno == null ? null : sno.trim();
+	}
+
+	public Date getNewLcRecvValidTime() {
+		return newLcRecvValidTime;
+	}
+
+	public void setNewLcRecvValidTime(Date newLcRecvValidTime) {
+		this.newLcRecvValidTime = newLcRecvValidTime;
+	}
+
+	public String getHandleStatus() {
+		return handleStatus;
+	}
+
+	public void setHandleStatus(String handleStatus) {
+		this.handleStatus = handleStatus == null ? null : handleStatus.trim();
+	}
+
+	public Integer getWaitOpenRetryCnt() {
+		return waitOpenRetryCnt;
+	}
+
+	public void setWaitOpenRetryCnt(Integer waitOpenRetryCnt) {
+		this.waitOpenRetryCnt = waitOpenRetryCnt;
+	}
+
+	public String getHandleFailDesc() {
+		return handleFailDesc;
+	}
+
+	public void setHandleFailDesc(String handleFailDesc) {
+		this.handleFailDesc = handleFailDesc == null ? null : handleFailDesc.trim();
+	}
+
+	public String getResultSendStatus() {
+		return resultSendStatus;
+	}
+
+	public void setResultSendStatus(String resultSendStatus) {
+		this.resultSendStatus = resultSendStatus == null ? null : resultSendStatus.trim();
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public String getLockedBy() {
+		return lockedBy;
+	}
+
+	public void setLockedBy(String lockedBy) {
+		this.lockedBy = lockedBy == null ? null : lockedBy.trim();
+	}
+}

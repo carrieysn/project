@@ -1,0 +1,19 @@
+server:
+  port: 9201
+spring:
+  jmx:
+    default-domain: lc-core-message-server
+
+cifpay:
+  dubbo:
+    enable: true 
+  jmx:
+    enable: true
+  redis:
+    enable: true
+  lock:
+    enable: true
+  amqp:
+    enable: true
+  sms:
+    enable: false

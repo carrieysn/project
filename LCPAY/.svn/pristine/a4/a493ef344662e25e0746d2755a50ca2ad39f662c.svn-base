@@ -1,0 +1,68 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.BTradeBusiness;
+
+/**
+ * 交易渠道业务记录表数据访问接口
+ * @author XXX
+ *
+ */
+@Repository("tradeBusinessDao")
+public interface BTradeBusinessDao {
+
+	/**
+	 * 主键查询银信证银行业务交易记录表(防止重复冻结划款)
+	 * 
+	 * @param id
+	 * @return 银信证银行业务交易记录表信息
+	 */
+	BTradeBusiness get(@Param("lcId") String lcId, @Param("orderId") String orderId, @Param("bankState") String bankState);
+
+	/**
+	 * 主键查询银信证银行业务交易记录表
+	 * 
+	 * @param id
+	 * @return 银信证银行业务交易记录表信息
+	 */
+	BTradeBusiness getByJournalNo(@Param("journalNo") String journalNo);
+
+	/**
+	 * 查询银信证与银行所有交易流水表 列表
+	 * 
+	 * @param lcBankBusiness
+	 * @return 银信证与银行所有交易流水表信息列表
+	 */
+	List<BTradeBusiness> selectList(BTradeBusiness tradeBusiness);
+
+	/**
+	 * 保存银信证与银行所有交易流水表
+	 * 
+	 * @param lcBankBusiness
+	 *            银信证与银行所有交易流水表信息
+	 */
+	int save(BTradeBusiness tradeBusiness);
+
+	/**
+	 * 更新银信证与银行所有交易流水表
+	 * 
+	 * @param lcBankBusiness
+	 *            银信证与银行所有交易流水表信息
+	 * @param lcBankBusiness
+	 * 			   原交易状态
+	 */
+	int updateByOriState(@Param("tradeBusiness") BTradeBusiness tradeBusiness, @Param("oriIsSuccess") String oriIsSuccess);
+	
+	/**
+	 * 根据交易状态集合及其他条件查询银行业务数据
+	 * @param lcBankBusinessCond
+	 * @param isSuccessList
+	 * @return
+	 */
+	public List<BTradeBusiness> qryTradeBusiDataByTradeStates(@Param("tradeBusiness") BTradeBusiness tradeBusinessCond, @Param("tradeStateList")List<String> isSuccessList);
+
+}

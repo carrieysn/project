@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="lc-core-message-server">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <dependent-module archiveName="lc-core-message-biz-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lc-core-message-biz/lc-core-message-biz">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lc-core-api-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lc-core-api/lc-core-api">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lc-partnerbank-adapter-api-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lc-partnerbank-adapter-api/lc-partnerbank-adapter-api">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lc-core-cache-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lc-core-cache/lc-core-cache">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lc-core-dao-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lc-core-dao/lc-core-dao">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lc-core-common-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lc-core-common/lc-core-common">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lc-core-autoconfigure-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lc-core-autoconfigure/lc-core-autoconfigure">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="lc-utils-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/lc-utils/lc-utils">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="message"/>
+        <property name="java-output-path" value="/lc-core-message-server/target/classes"/>
+    </wb-module>
+</project-modules>

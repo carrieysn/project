@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.GuidWorkerIdDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.GuidWorkerId" >
+    <id column="MACHINE_ID" property="machineId" jdbcType="VARCHAR" />
+    <id column="APP_INSTANCE_ID" property="appInstanceId" jdbcType="VARCHAR" />
+    <result column="WORKER_ID" property="workerId" jdbcType="INTEGER" />
+    <result column="MACHINE_NAME" property="machineName" jdbcType="VARCHAR" />
+    <result column="APP_BINARY_PATH" property="appBinaryPath" jdbcType="VARCHAR" />
+    <result column="INITIALIZED_DATE" property="initializedDate" jdbcType="TIMESTAMP" />
+    <result column="APP_LAST_STARTED_DATE" property="appLastStartedDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MACHINE_ID, APP_INSTANCE_ID, WORKER_ID, MACHINE_NAME, APP_BINARY_PATH, INITIALIZED_DATE, 
+    APP_LAST_STARTED_DATE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_GUID_WORKER_ID
+    where MACHINE_ID = #{machineId,jdbcType=VARCHAR}
+      and APP_INSTANCE_ID = #{appInstanceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map" >
+    delete from CIFPAY_GUID_WORKER_ID
+    where MACHINE_ID = #{machineId,jdbcType=VARCHAR}
+      and APP_INSTANCE_ID = #{appInstanceId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.GuidWorkerId" >
+    insert into CIFPAY_GUID_WORKER_ID (MACHINE_ID, APP_INSTANCE_ID, WORKER_ID, 
+      MACHINE_NAME, APP_BINARY_PATH, INITIALIZED_DATE, 
+      APP_LAST_STARTED_DATE)
+    values (#{machineId,jdbcType=VARCHAR}, #{appInstanceId,jdbcType=VARCHAR}, #{workerId,jdbcType=INTEGER}, 
+      #{machineName,jdbcType=VARCHAR}, #{appBinaryPath,jdbcType=VARCHAR}, #{initializedDate,jdbcType=TIMESTAMP}, 
+      #{appLastStartedDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.GuidWorkerId" >
+    insert into CIFPAY_GUID_WORKER_ID
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="machineId != null" >
+        MACHINE_ID,
+      </if>
+      <if test="appInstanceId != null" >
+        APP_INSTANCE_ID,
+      </if>
+      <if test="workerId != null" >
+        WORKER_ID,
+      </if>
+      <if test="machineName != null" >
+        MACHINE_NAME,
+      </if>
+      <if test="appBinaryPath != null" >
+        APP_BINARY_PATH,
+      </if>
+      <if test="initializedDate != null" >
+        INITIALIZED_DATE,
+      </if>
+      <if test="appLastStartedDate != null" >
+        APP_LAST_STARTED_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="machineId != null" >
+        #{machineId,jdbcType=VARCHAR},
+      </if>
+      <if test="appInstanceId != null" >
+        #{appInstanceId,jdbcType=VARCHAR},
+      </if>
+      <if test="workerId != null" >
+        #{workerId,jdbcType=INTEGER},
+      </if>
+      <if test="machineName != null" >
+        #{machineName,jdbcType=VARCHAR},
+      </if>
+      <if test="appBinaryPath != null" >
+        #{appBinaryPath,jdbcType=VARCHAR},
+      </if>
+      <if test="initializedDate != null" >
+        #{initializedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="appLastStartedDate != null" >
+        #{appLastStartedDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.GuidWorkerId" >
+    update CIFPAY_GUID_WORKER_ID
+    <set >
+      <if test="workerId != null" >
+        WORKER_ID = #{workerId,jdbcType=INTEGER},
+      </if>
+      <if test="machineName != null" >
+        MACHINE_NAME = #{machineName,jdbcType=VARCHAR},
+      </if>
+      <if test="appBinaryPath != null" >
+        APP_BINARY_PATH = #{appBinaryPath,jdbcType=VARCHAR},
+      </if>
+      <if test="initializedDate != null" >
+        INITIALIZED_DATE = #{initializedDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="appLastStartedDate != null" >
+        APP_LAST_STARTED_DATE = #{appLastStartedDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where MACHINE_ID = #{machineId,jdbcType=VARCHAR}
+      and APP_INSTANCE_ID = #{appInstanceId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.GuidWorkerId" >
+    update CIFPAY_GUID_WORKER_ID
+    set WORKER_ID = #{workerId,jdbcType=INTEGER},
+      MACHINE_NAME = #{machineName,jdbcType=VARCHAR},
+      APP_BINARY_PATH = #{appBinaryPath,jdbcType=VARCHAR},
+      INITIALIZED_DATE = #{initializedDate,jdbcType=TIMESTAMP},
+      APP_LAST_STARTED_DATE = #{appLastStartedDate,jdbcType=TIMESTAMP}
+    where MACHINE_ID = #{machineId,jdbcType=VARCHAR}
+      and APP_INSTANCE_ID = #{appInstanceId,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

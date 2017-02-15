@@ -1,0 +1,8 @@
+package com.cifpay.lc.domain.lc;
+
+/**
+ * Created by sweet on 16-10-31.
+ */
+public class TransferUnionCreditInputBean extends TransferInputBean {
+    private static final long serialVersionUID = -3173235040595444329L;
+}

@@ -1,0 +1,72 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.LcOpen;
+
+@Repository
+public interface LcOpenDao {
+
+    LcOpen selectByPrimaryKey(Long lcOpenId);
+
+    void deleteByPrimaryKey(Long lcOpenId);
+
+    void insert(LcOpen lcOpen);
+
+    void insertSelective(LcOpen lcOpen);
+
+    void updateByPrimaryKeySelective(LcOpen lcOpen);
+
+    boolean updateByPrimaryKey(LcOpen lcOpen);
+
+    /**
+     * 获取银信证所有的开证记录
+     *
+     * @param lcId
+     * @return
+     */
+    List<LcOpen> selectByLcId(Long lcId);
+
+    List<LcOpen> selectByLcIds(@Param("lcIds") Long... lcIds);
+
+    /**
+     * 获取已经成功的开证记录
+     *
+     * @param lcId
+     * @return
+     */
+    LcOpen selectByLcIdSuccess(Long lcId);
+
+    /**
+     * 根据lcOpenId和lcOpenStatus选择性地更新LC_OPEN记录
+     *
+     * @param updatingLcOpen
+     * @param lcOpenId
+     * @param lcOpenStatus
+     */
+    void updateByLcOpenIdIdLcOpenStatusSelective(@Param("updatingLcOpen") LcOpen updatingLcOpen,
+                                                 @Param("lcOpenId") Long lcOpenId, @Param("lcOpenStatus") String lcOpenStatus);
+
+    /**
+     * 批量更新交易结果
+     *
+     * @param lcOpenIds
+     * @param tradeTime
+     * @param updateTime
+     * @param map
+     * @return
+     */
+    int updateBankResponse(@Param("lcOpenIds") List<Long> lcOpenIds, @Param("tradeTime") Date tradeTime,
+                           @Param("updateTime") Date updateTime, @Param("map") Map<String, String> map);
+
+    int updateLcState(@Param("lcOpenStatus") String lcOpenStatus, @Param("lcOpenResponse") String lcOpenResponse,
+                      @Param("lcOpenId") Long lcOpenId, @Param("tradeTime") Date tradeTime, @Param("updateTime") Date updateTime,
+                      @Param("sucLcOpenStatus") String sucLcOpenStatus);
+
+
+}

@@ -1,0 +1,238 @@
+package com.cifpay.lc.bankadapter.unionpay.impl;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.input.AbsTradeParam;
+import com.cifpay.lc.bankadapter.api.input.unionpay.QueryTradeCifParam;
+import com.cifpay.lc.bankadapter.api.output.AbsBusinessResult;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+import com.cifpay.lc.bankadapter.unionpay.constant.UnionPayConfig;
+import com.cifpay.lc.bankadapter.unionpay.output.DingQueryResult;
+import com.cifpay.lc.bankadapter.unionpay.util.DataUtil;
+import com.cifpay.lc.bankadapter.unionpay.util.EncryptDataUtil;
+import com.cifpay.lc.bankadapter.unionpay.util.HttpClient;
+import com.cifpay.lc.bankadapter.unionpay.util.UnionPaySettingUtil;
+import com.cifpay.lc.bankadapter.universal.IBankDeal;
+import com.cifpay.lc.bankadapter.universal.tool.StringTool;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.db.dao.AdminLcMerchantDao;
+import com.cifpay.lc.core.db.dao.LcTrdUnionPayFlowDao;
+import com.cifpay.lc.core.db.dao.TrdCodeDescDao;
+import com.cifpay.lc.core.db.pojo.AdminLcMerchant;
+import com.cifpay.lc.core.db.pojo.TrdCodeDesc;
+import com.cifpay.lc.core.db.pojo.TrdUnionPayFlow;
+import com.cifpay.lc.core.exception.BankAdapterException;
+import com.cifpay.lc.core.uid.LcTrdFlowIdWorker;
+
+/**
+ * Token 交易状态查询
+ * 
+ * @author Administrator
+ *
+ */
+@Component
+public class UnionPayTokenQueryDeal implements IBankDeal {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(UnionPayDingQueryDeal.class);
+
+	@Autowired
+	private LcTrdFlowIdWorker idWork;
+
+	@Autowired
+	private LcTrdUnionPayFlowDao unionPayFlowDao;
+
+	@Autowired
+	private TrdCodeDescDao trdCodeDescDao;
+
+	@Autowired
+	private AdminLcMerchantDao adminLcMerchantDao;
+
+	@Override
+	public String getBankCode() {
+		// TODO Auto-generated method stub
+		return TradeConstant.TRADE_CONFIG.TRADE_UNION_PAY + TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_QUERY;
+	}
+
+	@Override
+	public AbsBusinessResult bankDeal(AbsTradeParam tradeParam) throws Exception {
+		// TODO Auto-generated method stub
+		QueryTradeCifParam param = (QueryTradeCifParam) tradeParam;
+
+		Map<String, String> queryRequestData = transToReqData(param);
+		LOGGER.info("无跳转-查询交易状态请求数据！ {}", StringTool.printMap(queryRequestData));
+		TrdUnionPayFlow flowInfo = insertUnionPayFlow(param);
+		String singleQueryUrl = UnionPayConfig.singleQueryUrl;
+		// 交易请求url从配置文件读取对应属性文件acp_sdk.properties中的 acpsdk.singleQueryUrl
+		Map<String, String> queryRespData = HttpClient.post(queryRequestData, singleQueryUrl,
+				UnionPaySettingUtil.encoding_UTF8); // 发送请求报文并接受同步应答（默认连接超时时间30秒，读取返回结果超时时间30秒）;这里调用signData之后，调用submitUrl之前不能对submitFromData中的键值对做任何修改，如果修改会导致验签不通过
+		LOGGER.info("无跳转-查询交易状态返回数据！ {}", StringTool.printMap(queryRespData));
+		GeneralTradeResult result = null;
+		if (!queryRespData.isEmpty()) {
+			if (EncryptDataUtil.validate(queryRespData, UnionPaySettingUtil.encoding_UTF8)) {
+				DingQueryResult queryResult = (DingQueryResult) DataUtil.convertMap(DingQueryResult.class,
+						queryRespData);
+				// 请求返回后 更新银联交易渠道流水信息
+				updateUnionPayFlow(queryResult, flowInfo.getFlowId());
+				String origRespCode = queryResult.getOrigRespCode();
+				String respCode = queryResult.getRespCode();
+				result = new GeneralTradeResult();
+				result.setFlowId(flowInfo.getFlowId());
+				result = transToSysParam(result, respCode);
+				result.setQueryId(queryResult.getQueryId());// 被查询交易查询流水号
+				result.setQueryTradeResult(UnionPaySettingUtil.transRespCode4Query(respCode));
+				result.setTradeResult(UnionPaySettingUtil.transRespCode(origRespCode));// 原交易应答码
+				// 业务需求参数 需设置 ？？？？？
+				result.setResultMap(queryRespData);
+			} else {
+				LOGGER.info("验证签名结果[失败].");
+				// 验签失败，需解决验签问题
+				throw new BankAdapterException(ReturnCode.CORE_BA_RESULT_EXCEPTON_N105501, "验证签名结果[失败].");
+			}
+		} else {
+			throw new BankAdapterException(ReturnCode.CORE_BA_RESULT_FAILRESP_N105502, "未获取到返回报文或返回http状态码非200.");
+		}
+		return result;
+
+	}
+
+	public GeneralTradeResult transToSysParam(GeneralTradeResult result, String respCode) {
+		TrdCodeDesc codeDesc = new TrdCodeDesc();
+		codeDesc.setPlatformId(TradeConstant.TRADE_CONFIG.TRADE_UNION_PAY);
+		codeDesc.setRespCode(respCode);
+		TrdCodeDesc getCodeDesc = trdCodeDescDao.selectBySelective(codeDesc);
+		int sysCode = 0;
+		String resultDesc = "";
+		if (null == getCodeDesc) {
+			sysCode = ReturnCode.CORE_BA_UNDEFINE_N105999;
+		} else {
+			sysCode = DataUtil.isEmpty(getCodeDesc.getSysCode()) ? ReturnCode.CORE_BA_UNDEFINE_N105999
+					: Integer.valueOf(getCodeDesc.getSysCode());
+			resultDesc = getCodeDesc.getSysDesc();
+		}
+		result.setSysReturnCode(sysCode);
+		result.setResultDesc(resultDesc);
+		return result;
+	}
+
+	public Map<String, String> transToReqData(QueryTradeCifParam param) {
+		return transToReqData4Level2(param);
+	}
+
+	public Map<String, String> transToReqData4Level2(QueryTradeCifParam param) {
+
+		Map<String, String> inputParam = new HashMap<String, String>();
+
+		inputParam.put("version", UnionPaySettingUtil.version);
+		inputParam.put("encoding", UnionPaySettingUtil.encoding_UTF8);
+		inputParam.put("signMethod", UnionPaySettingUtil.signMethod);
+		inputParam.put("txnType", UnionPaySettingUtil.query_txnType);
+		inputParam.put("txnSubType", UnionPaySettingUtil.query_txnSubType);
+		inputParam.put("bizType", UnionPaySettingUtil.token_bizType);
+		inputParam.put("accessType", UnionPaySettingUtil.accessType_2);
+		inputParam.put("orderId", param.getOrderId());
+		inputParam.put("txnTime", param.getTxnTime());
+		String subMerId = param.getSubMerId();// 二级商户代码
+		// String merId = UnionPaySettingUtil.getDingGouMerId();
+		inputParam.put("merId", subMerId);
+		// param.setMerId(merId);
+		AdminLcMerchant merChant = adminLcMerchantDao.selectMerchantInfos(subMerId);
+		if (null == merChant) {
+			LOGGER.info("二级商户信息不能为空");
+			throw new BankAdapterException(ReturnCode.CORE_BA_PARAM_EXCEPTION_N105001, "二级商户信息不能为空.");
+		}
+		// inputParam =
+		// EncryptDataUtil.sign(inputParam,UnionPaySettingUtil.encoding_UTF8);
+		inputParam = UnionPaySettingUtil.signData(inputParam, merChant.getAdminCredentials());
+
+		return inputParam;
+	}
+
+	public Map<String, String> transToReqData4Level1(QueryTradeCifParam param) {
+
+		Map<String, String> inputParam = new HashMap<String, String>();
+
+		inputParam.put("version", UnionPaySettingUtil.version);
+		inputParam.put("encoding", UnionPaySettingUtil.encoding_UTF8);
+		inputParam.put("signMethod", UnionPaySettingUtil.signMethod);
+		inputParam.put("txnType", UnionPaySettingUtil.query_txnType);
+		inputParam.put("txnSubType", UnionPaySettingUtil.query_txnSubType);
+		inputParam.put("bizType", UnionPaySettingUtil.token_bizType);
+		inputParam.put("accessType", UnionPaySettingUtil.accessType_2);
+		inputParam.put("orderId", param.getOrderId());
+		inputParam.put("txnTime", param.getTxnTime());
+		String subMerId = param.getSubMerId();// 二级商户代码
+		String merId = UnionPaySettingUtil.getDingGouMerId();
+		inputParam.put("merId", merId);
+		param.setMerId(merId);
+		AdminLcMerchant merChant = adminLcMerchantDao.selectMerchantInfos(subMerId);
+		if (null == merChant) {
+			LOGGER.info("二级商户信息不能为空");
+			throw new BankAdapterException(ReturnCode.CORE_BA_PARAM_EXCEPTION_N105001, "二级商户信息不能为空.");
+		}
+		// inputParam =
+		// EncryptDataUtil.sign(inputParam,UnionPaySettingUtil.encoding_UTF8);
+		inputParam = UnionPaySettingUtil.signData(inputParam, merChant.getAdminCredentials());
+
+		return inputParam;
+	}
+
+	// 记录银联交易渠道流水信息
+	public TrdUnionPayFlow insertUnionPayFlow(QueryTradeCifParam param) {
+
+		TrdUnionPayFlow payFlow = new TrdUnionPayFlow();
+		long flowId = idWork.nextId();
+		payFlow.setFlowId(flowId);
+		payFlow.setOrderId(param.getOrderId());
+		payFlow.setTxnTime(param.getTxnTime());
+		payFlow.setLcId(param.getLcId());
+		payFlow.setTxnType(param.getTxnType());
+		payFlow.setTxnSubType(param.getTxnSubType());
+		payFlow.setBusinessId(param.getBusinessId());
+		payFlow.setSubMerId(param.getSubMerId());
+		payFlow.setSyncTradeResult(UnionPaySettingUtil.TRADE_RESULT__UNKNOWN);
+		payFlow.setInsertTime(new Date());
+		unionPayFlowDao.insertSelective(payFlow);
+		return payFlow;
+
+	}
+
+	// 请求返回后 更新银联交易渠道流水信息
+	public void updateUnionPayFlow(DingQueryResult result, long flowId) {
+
+		TrdUnionPayFlow updataFlow = new TrdUnionPayFlow();
+		updataFlow.setFlowId(flowId);
+		String respCode = result.getRespCode();
+		updataFlow.setOrigFlowId(result.getQueryId());// 交易查询流水号 （调用查询接口前
+														// 已经给商户生成的交易流水号）
+		updataFlow.setSyncRespCode(respCode);
+		updataFlow.setSyncRespMsg(result.getRespMsg());
+		updataFlow.setAsynRespCode(result.getOrigRespCode());// 原始交易应答码
+		updataFlow.setAsynRespMsg(result.getOrigRespMsg());// 原始交易应答信息
+		updataFlow.setSyncTradeResult(UnionPaySettingUtil.transRespCode(respCode));
+		if (!StringUtils.isEmpty(result.getSettleAmt())) {
+			updataFlow.setSettleAmt(Long.valueOf(result.getSettleAmt()));
+		}
+		updataFlow.setSettleCurrencyCode(result.getSettleCurrencyCode());
+		updataFlow.setSettleDate(result.getSettleDate());
+		updataFlow.setTraceNo(result.getTraceNo());
+		updataFlow.setTraceTime(result.getTraceTime());
+		updataFlow.setLastUpdTime(new Date());
+		if (!StringUtils.isEmpty(result.getSettleAmt())) {
+			updataFlow.setTxnAmt(Long.valueOf(result.getTxnAmt()));
+		}
+		updataFlow.setCurrencyCode(result.getCurrencyCode());
+		updataFlow.setOrderId(result.getOrderId());
+		unionPayFlowDao.updateUnionPayFlow(updataFlow);
+
+	}
+
+}

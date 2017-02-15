@@ -1,0 +1,108 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.cifpay.lc.core.autoconfigure.mongodb;
+
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.AppenderBase;
+import ch.qos.logback.core.status.ErrorStatus;
+import com.cifpay.lc.util.ApplicationContextUtil;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.MongoClientURI;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.util.StringUtils;
+
+import java.util.Date;
+import java.util.Map;
+
+/**
+ * Logback {@link Appender} to write into MongoDB.
+ *
+ * @author kofemann
+ */
+public class MongoDbAppender extends AppenderBase<LoggingEvent> {
+
+    private String uri;
+    private String collectionName;
+
+    private MongoTemplate mongoTemplate;
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public void setCollectionName(String collectionName) {
+        this.collectionName = collectionName;
+    }
+
+    @Override
+    public void start() {
+
+        // 启动时获取不到Context
+//        ApplicationContext applicationContext = ApplicationContextUtil.getApplicationContext();
+
+        try {
+            if (StringUtils.hasText(uri)) {
+                MongoClientURI mongoClientURI = new MongoClientURI(uri);
+                MongoDbFactory mongoDbFactory = new SimpleMongoDbFactory(mongoClientURI);
+                mongoTemplate = new MongoTemplate(mongoDbFactory);
+            }
+
+        } catch (Exception e) {
+            addStatus(new ErrorStatus("Failed to initialize MondoDB", this, e));
+            return;
+        }
+        super.start();
+    }
+
+
+//    @Override
+//    public void stop() {
+//        super.stop();
+//    }
+
+    @Override
+    protected void append(LoggingEvent e) {
+
+        BasicDBObjectBuilder objectBuilder = BasicDBObjectBuilder.start();
+
+        //首先保存MDC信息
+        Map<String, String> mdc = e.getMDCPropertyMap();
+        if (mdc != null && !mdc.isEmpty()) {
+            for (Map.Entry<String, String> entry : mdc.entrySet()) {
+                objectBuilder.add(entry.getKey(), entry.getValue());
+            }
+        }
+
+        //保存通用信息
+        objectBuilder = objectBuilder.
+                add("timestamp", new Date(e.getTimeStamp())).
+                add("level", e.getLevel().toString()).
+                add("thread", e.getThreadName()).
+                add("logger", e.getLoggerName()).
+                add("message", e.getFormattedMessage());
+
+        if (e.hasCallerData()) {
+            StackTraceElement st = e.getCallerData()[0];
+            String callerData = String.format("%s.%s:%d", st.getClassName(), st.getMethodName(), st.getLineNumber());
+            objectBuilder.add("caller", callerData);
+        }
+
+        //写入mongoDb
+        mongoTemplate.insert(objectBuilder.get(), collectionName);
+    }
+}

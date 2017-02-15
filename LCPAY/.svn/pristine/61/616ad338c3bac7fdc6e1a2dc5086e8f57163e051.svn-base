@@ -1,0 +1,13 @@
+package com.cifpay.lc.gateway.input.freeze;
+
+public class QueryReq {
+	private String orderId; // 订单ID(*)
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+}

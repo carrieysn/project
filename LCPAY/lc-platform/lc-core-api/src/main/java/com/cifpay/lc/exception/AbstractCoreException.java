@@ -1,0 +1,58 @@
+package com.cifpay.lc.exception;
+
+/**
+ * 核心业务层的顶级异常类，所有核心业务新定义的异常必须派生自此异常类。
+ * <p>
+ * ReturnCodes中定义了所有的返回码常量值。
+ *
+ * @see com.cifpay.lc.constant.ReturnCode
+ */
+public abstract class AbstractCoreException extends RuntimeException {
+    private static final long serialVersionUID = -8548008276593097462L;
+    private int returnCode;
+
+    public AbstractCoreException(int returnCode, String message) {
+        super(message);
+        this.returnCode = returnCode;
+    }
+
+    public AbstractCoreException(int returnCode, String message, Throwable cause) {
+        super(message, cause);
+        this.returnCode = returnCode;
+    }
+
+    public AbstractCoreException(int returnCode, Throwable cause) {
+        super(cause);
+        this.returnCode = returnCode;
+    }
+
+    public int getReturnCode() {
+        return returnCode;
+    }
+
+    public String getFormatedReturnCode() {
+        return getFormatedReturnCodePrefix() + "-" + Math.abs(returnCode);
+    }
+
+    public String getOriginalMessage() {
+        return super.getMessage();
+    }
+
+//	@Override
+//	public String getMessage() {
+//		String msg = super.getMessage();
+//		return "[" + getFormatedReturnCode() + "]" + msg;
+//	}
+
+    /**
+     * 用于格式化返回码，以便错误信息查看者可以快速地区分错误的大致范围。
+     * 例如，假设错误码为-123456，实现将getFormatedReturnCodePrefix()设定为“CV”，那么，
+     * 最终通过getMessage( )获取到的异常信息类似如下：
+     * <p>
+     * “[CV-123456]银信证当前所处状态不允此进行此操作”
+     *
+     * @return
+     */
+    protected abstract String getFormatedReturnCodePrefix();
+
+}

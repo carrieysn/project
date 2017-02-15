@@ -1,0 +1,223 @@
+package com.cifpay.lc.std.business.lc;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.RefundLcService;
+import com.cifpay.lc.api.message.MqMessageService;
+import com.cifpay.lc.constant.BizConstants.LcTranCode;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.*;
+import com.cifpay.lc.core.cache.pojo.LcProductCache;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.common.CoreBusinessTranCode;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.dao.LcOpenDao;
+import com.cifpay.lc.core.db.dao.LcPayDao;
+import com.cifpay.lc.core.db.dao.LcRefundDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcOpen;
+import com.cifpay.lc.core.db.pojo.LcPay;
+import com.cifpay.lc.core.db.pojo.LcRefund;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.core.uid.LcRefundWorker;
+import com.cifpay.lc.domain.lc.RefundLcInputBean;
+import com.cifpay.lc.domain.lc.RefundLcOutputBean;
+import com.cifpay.lc.domain.message.LcRefundParamBean;
+import com.cifpay.lc.std.domain.kernel.RefundKernalInputBean;
+import com.cifpay.lc.std.domain.kernel.RefundKernalOutputBean;
+import com.cifpay.lc.std.interceptor.BusinessLockInterceptor;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.paychannel.RefundInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 交易成功的银信证，退款
+ */
+@Service("refundLcService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class, BusinessLockInterceptor.class})
+@CoreBusinessTranCode(LcTranCode.REFUND)
+public class RefundLcServiceImpl extends AbstractLcProductServiceImplBase<RefundLcInputBean, RefundLcOutputBean>
+        implements RefundLcService {
+
+    @Autowired
+    private LcRefundDao lcRefundDao;
+    @Autowired
+    private LcDao lcDao;
+    @Autowired
+    private LcRefundWorker lcRefundWorker;
+    @Autowired
+    private LcOpenDao lcOpenDao;
+    @Autowired
+    private LcPayDao lcPayDao;
+
+    @Autowired
+    private MqMessageService messageService;
+
+    private Map<PayMethod, RefundInterface<? extends RefundLcInputBean, ? extends RefundKernalOutputBean<? extends Serializable>>> refundMappings;
+
+    @Autowired
+    public void setRefundMappings(List<RefundInterface<? extends RefundLcInputBean, ? extends RefundKernalOutputBean<? extends Serializable>>> arrays) {
+
+        this.refundMappings = new HashMap<PayMethod, RefundInterface<? extends RefundLcInputBean, ? extends RefundKernalOutputBean<? extends Serializable>>>();
+
+        for (RefundInterface<? extends RefundLcInputBean, ? extends RefundKernalOutputBean<? extends Serializable>> st : arrays) {
+
+            this.refundMappings.put(st.getOpenLcChannel(), st);
+        }
+    }
+
+    @Override
+    protected void validateInputParameters(RefundLcInputBean inputBean) throws CoreValidationRejectException {
+
+        //
+        if (inputBean.getRefundAmount() == null || inputBean.getRefundAmount().compareTo(BigDecimal.ZERO) < 0) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_LC_PARAMETER_INVALID, "退款金额错误");
+        }
+    }
+
+    @Override
+    protected void validateLc(RefundLcInputBean inputBean, Lc lc) throws CoreValidationRejectException {
+
+        if (lc == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_NOT_EXISTS, "银信证记录不存在");
+        }
+
+        if (lc.getLcStatus() != null && LcStatusType.RETREAT.getStatusCode().compareTo(lc.getLcStatus()) == 0) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_INVALID, "银信证已失效");
+        }
+
+        if (lc.getLcStatus().compareTo(LcStatusType.SUCCESS.getStatusCode()) != 0) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_STATUS_CHECK_UNPASSED, "银信证未完成");
+        }
+
+        if (inputBean.getRefundOrderId() == null) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_AMOUNT_INVALID, "退款订单号不能为空");
+        }
+
+        if (lc.getLcAmount() == null || lc.getLcAmount().compareTo(inputBean.getRefundAmount()) <= 0) {
+            throw new CoreValidationRejectException(ReturnCode.CORE_STD_LC_FAIL, "退款金额不能超过开证金额");
+        }
+    }
+
+    @Override
+    protected void validateLcProductRule(RefundLcInputBean inputBean, LcProductCache lcProduct, CoreBusinessContext context)
+            throws CoreValidationRejectException {
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public BusinessOutput<RefundLcOutputBean> processBusiness(RefundLcInputBean inputBean, CoreBusinessContext context)
+            throws CoreBusinessException {
+        logger.info("进入退款业务处理..." + inputBean.getLcId());
+
+        Date now = new Date();
+
+        Lc lc = lcDao.selectByPrimaryKey(inputBean.getLcId());
+
+        if (lc == null) {
+            return BusinessOutput.fail(ReturnCode.CORE_STD_LC_NOT_EXISTS, "未找到银信证记录");
+        }
+
+        // 查询是否有重复退款订单记录
+        List<LcRefund> refundHistory = lcRefundDao.selectByMidOrderId(inputBean.getMerId(), inputBean.getRefundOrderId());
+
+        if (refundHistory != null && refundHistory.size() > 0) {
+            return BusinessOutput.fail(ReturnCode.CORE_STD_REFUND_REPEAT, "同一refundOrderId不可以重复退款");
+        }
+
+        List<LcRefund> refundList = lcRefundDao.selectByLcId(inputBean.getLcId());
+
+        BigDecimal refundAmount = BigDecimal.ZERO;
+
+        if (refundList != null) {
+            for (LcRefund refund : refundList) {
+                refundAmount = refundAmount.add(refund.getRefundAmount());
+            }
+        }
+
+        refundAmount = refundAmount.add(inputBean.getRefundAmount());
+
+        if (refundAmount.compareTo(lc.getLcAmount()) > 0) {
+            return BusinessOutput.fail(ReturnCode.CORE_STD_AMOUNT_INVALID, "退款金额不正确");
+        }
+
+        LcRefund lcRefund = new LcRefund();
+        lcRefund.setLcId(inputBean.getLcId());
+        lcRefund.setLcRefundId(lcRefundWorker.nextId());
+        lcRefund.setMid(inputBean.getMerId());
+        lcRefund.setOrderId(lc.getOrderId());
+        lcRefund.setRefundOrderId(inputBean.getRefundOrderId());
+        lcRefund.setRefundAmount(inputBean.getRefundAmount());
+        lcRefund.setRefundDate(now);
+        lcRefund.setRefundStatus(ProcessStatus.INPROCESS.getCode());
+
+        //
+        lcRefundDao.insert(lcRefund);
+
+        // 查找对应的开证记录(CP200)
+        LcOpen lcOpen = lcOpenDao.selectByLcIdSuccess(inputBean.getLcId());
+        if (lcOpen == null) {
+            return BusinessOutput.fail(ReturnCode.CORE_STD_PRE_LC_NOT_EXISTS, "未找到开证记录");
+        }
+
+        LcPay lcPay = null;
+        if (LcTypeEnum.CP300.getCode().compareTo(lc.getLcType()) == 0) {
+            // 查询执行解付记录(CP300)
+            List<LcPay> lcPayList = lcPayDao.selectByLcId(lc.getLcId());
+            for (LcPay lp : lcPayList) {
+                if (LcTranStatus.SUCCESS.getTranStatusStr().compareTo(lp.getLcPayStatus()) == 0) {
+                    lcPay = lp;
+                    break;
+                }
+            }
+        }
+
+        RefundKernalInputBean refundKernalInputBean = new RefundKernalInputBean();
+
+        refundKernalInputBean.setLc(lc);
+        refundKernalInputBean.setLcOpen(lcOpen);
+        refundKernalInputBean.setLcRefund(lcRefund);
+        refundKernalInputBean.setLcPay(lcPay);
+
+        PayMethod payChannel = PayMethod.parse(lcOpen.getLcOpenChannel());
+
+        RefundInterface<RefundLcInputBean, RefundKernalOutputBean<Serializable>> handler =
+                (RefundInterface<RefundLcInputBean, RefundKernalOutputBean<Serializable>>) refundMappings.get(payChannel);
+
+        RefundKernalOutputBean<Serializable> result = handler.refund(inputBean, refundKernalInputBean);
+
+        // 把解冻信息放入消息队列
+        LcRefundParamBean lcRefundParamBean = new LcRefundParamBean();
+        lcRefundParamBean.setLcId(lc.getLcId());
+        lcRefundParamBean.setRefundAmount(lcRefund.getRefundAmount());
+        lcRefundParamBean.setLcRefundId(lcRefund.getLcRefundId());
+        lcRefundParamBean.setLcTranStatus(result.getLcTranStatus());
+        lcRefundParamBean.setSerialNo(result.getSerialNo());
+        lcRefundParamBean.setRefundTime(new Date());
+        lcRefundParamBean.setLcTransferResponse(result.getMessage() + "," + result.getLcTranStatus());
+        messageService.sendMessage(MessageEnum.MsgType.LC, MessageEnum.Scene.REFUND_NOTIFY, lcRefundParamBean);
+
+        if (result.isSuccess()) {
+            logger.info("退款业务处理...SUCCESS");
+
+            RefundLcOutputBean outputBean = new RefundLcOutputBean();
+            outputBean.setLcId(lc.getLcId());
+            outputBean.setLcStatus(lc.getLcStatus());
+            outputBean.setLcStatusDesc(LcStatusType.getDesc(lc.getLcStatus()));
+            return BusinessOutput.success(outputBean);
+        }
+
+        return BusinessOutput.fail(ReturnCode.CORE_STD_LC_REFUND_ERROR, "退款失败");
+    }
+
+}

@@ -1,0 +1,95 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cifpay.lc</groupId>
+	<artifactId>lcpay-parent</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>lc-dependencies</module>
+		<module>lc-utils</module>
+		<module>lc-platform</module>
+		<module>lc-sdk</module>
+		<module>mock</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.sourceVersion>1.8</maven.compiler.sourceVersion>
+		<maven.compiler.targetVersion>1.8</maven.compiler.targetVersion>
+	</properties>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.cifpay.lc</groupId>
+				<artifactId>lc-utils</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			
+			<dependency>
+                <groupId>com.cifpay.lc</groupId>
+                <artifactId>lc-core-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cifpay.lc</groupId>
+                <artifactId>lc-core-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cifpay.lc</groupId>
+                <artifactId>lc-core-dao</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cifpay.lc</groupId>
+                <artifactId>lc-partnerbank-adapter-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cifpay.lc</groupId>
+                <artifactId>lc-core-cache</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            
+            <dependency>
+				<groupId>com.cifpay.lc</groupId>
+				<artifactId>lc-core-autoconfigure</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+            <dependency>
+                <groupId>com.cifpay.lc</groupId>
+                <artifactId>lc-core-message-biz</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<source>${maven.compiler.sourceVersion}</source>
+					<target>${maven.compiler.targetVersion}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>nexus-public</id>
+			<name>Nexus public Repository</name>
+			<url>http://192.168.4.221:8081/nexus/content/groups/public</url>
+		</repository>
+	</repositories>
+</project>

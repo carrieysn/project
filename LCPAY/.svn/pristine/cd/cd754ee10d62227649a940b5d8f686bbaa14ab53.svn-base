@@ -1,0 +1,16 @@
+package com.cifpay.lc.api.gateway.quickpay;
+
+import com.cifpay.lc.api.CoreBusinessService;
+import com.cifpay.lc.domain.quickpay.QuickPayEnquiryInputBean;
+import com.cifpay.lc.domain.quickpay.QuickPayEnquiryOutputBean;
+
+/**
+ * 查询支付交易状态
+ * 
+ * 
+ *
+ */
+public interface QuickPayEnquiryService
+		extends CoreBusinessService<QuickPayEnquiryInputBean, QuickPayEnquiryOutputBean> {
+
+}

@@ -1,0 +1,110 @@
+package com.cifpay.lc.std.business.message.lc;
+
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.message.lc.RefundLcNotifyMessageService;
+import com.cifpay.lc.constant.BizConstants;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.dao.LcInvalidDao;
+import com.cifpay.lc.core.db.dao.LcLogDao;
+import com.cifpay.lc.core.db.dao.LcRefundDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcLog;
+import com.cifpay.lc.core.db.pojo.LcRefund;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.uid.LcLogIdWorker;
+import com.cifpay.lc.domain.message.LcRefundParamBean;
+import com.cifpay.lc.domain.message.MessageOutputBean;
+import com.cifpay.lc.std.component.NotifyService;
+import com.cifpay.lc.std.domain.component.notify.RefundAsyncNotifyBean;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.interceptor.MessageLockInterceptor;
+
+/**
+ * 失效
+ */
+@Service("refundLcNotifyMessageService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class, MessageLockInterceptor.class})
+public class RefundLcNotifyMessageServiceImpl extends LcMessageServiceBase<LcRefundParamBean> implements RefundLcNotifyMessageService {
+
+    @Autowired
+    private LcDao lcDao;
+
+    @Autowired
+    private LcInvalidDao lcInvalidDao;
+
+    @Autowired
+    private LcLogDao lcLogDao;
+
+    @Autowired
+    private LcRefundDao lcRefundDao;
+
+    @Autowired
+    private LcLogIdWorker lcLogIdWorker;
+
+    @Autowired
+    private NotifyService notifyService;
+
+    @Override
+    protected BusinessOutput<MessageOutputBean> handleMessage(LcRefundParamBean messageParams,
+                                                              CoreBusinessContext context)
+            throws CoreBusinessException {
+
+        LcRefund obj = new LcRefund();
+
+        obj.setLcRefundId(messageParams.getLcRefundId());
+
+        int status = Integer.parseInt(messageParams.getLcTranStatus().getTranStatusStr());
+
+        obj.setRefundStatus(status);
+
+        obj.setUpdateTime(new Date());
+
+        lcRefundDao.updateByPrimaryKeySelective(obj);
+
+        if (LcTranStatus.SUCCESS.equals(messageParams.getLcTranStatus())) {
+            //
+            LcStatusType lcStatus = LcStatusType.REFUND;
+
+            Lc updateLc = new Lc();
+            updateLc.setLcId(messageParams.getLcId());
+            updateLc.setLcStatus(lcStatus.getStatusCode());
+            updateLc.setUpdateTime(new Date());
+            lcDao.updateByPrimaryKeySelective(updateLc);
+
+            // 记录日志
+            LcLog lcLog = new LcLog();
+            lcLog.setLogId(lcLogIdWorker.nextId());
+            lcLog.setLcId(messageParams.getLcId());
+            lcLog.setStepLogId(messageParams.getLcRefundId());
+            lcLog.setTradeCode(BizConstants.LcTranCode.REFUND.getTranCodeStr());
+            lcLog.setLcStatus(LcStatusType.REFUND.getStatusCode());
+            lcLog.setRemark("执行解付转账");
+            lcLogDao.insert(lcLog);
+
+            Lc lc = lcDao.selectByPrimaryKey(messageParams.getLcId());
+
+            // 通知商户
+            RefundAsyncNotifyBean notifyBean = new RefundAsyncNotifyBean();
+            notifyBean.setLcId(String.valueOf(messageParams.getLcId()));
+            notifyBean.setLcStatus(LcStatusType.REFUND.getStatusCode());
+            notifyBean.setOrderId(lc.getOrderId());
+            notifyBean.setLcAmount(BizConstants.decimalFormat.format(lc.getLcAmount()));
+            notifyBean.setRefundAmount(BizConstants.decimalFormat.format(messageParams.getRefundAmount()));
+            notifyBean.setSerialNo(messageParams.getSerialNo());
+
+            BusinessOutput notifyOutput = notifyService.notify(lc.getMid(), lc.getLcStateNotifyUrl(), notifyBean);
+        }
+
+        // 默认总是认为消息处理成功
+        return BusinessOutput.success(new MessageOutputBean(true));
+    }
+}

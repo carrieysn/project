@@ -1,0 +1,79 @@
+package com.cifpay.lc.core.autoconfigure.redis;
+
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.spi.ThrowableProxyUtil;
+import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.UnsynchronizedAppenderBase;
+import com.cifpay.lc.util.ApplicationContextUtil;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.redis.core.StringRedisTemplate;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Logback {@link Appender} to write into Redis.
+ */
+public class RedisAppender extends UnsynchronizedAppenderBase<LoggingEvent> {
+
+    public static final String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss.SSS";
+
+    // Redis Key
+    private String key;
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    private StringRedisTemplate redisTemplate;
+
+    @Override
+    protected void append(LoggingEvent eventObject) {
+        Map<String, String> redisData = new HashMap<String, String>();
+
+        // 首先保存MDC信息
+        Map<String, String> mdc = eventObject.getMDCPropertyMap();
+        redisData.putAll(mdc);
+
+        // 保存通用信息
+        redisData.put("timestamp", new SimpleDateFormat(DATE_FORMAT).format(new Date(eventObject.getTimeStamp())));
+        redisData.put("level", eventObject.getLevel().toString());
+        redisData.put("thread", eventObject.getThreadName());
+        redisData.put("logger", eventObject.getLoggerName());
+        redisData.put("message", eventObject.getFormattedMessage());
+
+        // 保存错误堆栈
+        IThrowableProxy tp = eventObject.getThrowableProxy();
+        if (tp != null) {
+            String throwable = ThrowableProxyUtil.asString(tp);
+            redisData.put("throwable", throwable);
+        }
+
+        if (eventObject.hasCallerData()) {
+            StackTraceElement st = eventObject.getCallerData()[0];
+            String callerData = String.format("%s.%s:%d", st.getClassName(), st.getMethodName(), st.getLineNumber());
+            redisData.put("caller", callerData);
+        }
+
+        String value = com.alibaba.fastjson.JSON.toJSONString(redisData);
+
+        // 尝试获取RedisTemplate
+        if (redisTemplate == null) {
+            ApplicationContext ctx = ApplicationContextUtil.getApplicationContext();
+            if (ctx != null) {
+                redisTemplate = ctx.getBean(StringRedisTemplate.class);
+            }
+        }
+
+        if (redisTemplate != null) {
+            // 存入redis(list格式)
+            redisTemplate.opsForList().rightPush(key, value);
+        } else {
+            // 写文件
+        	System.out.println(value);
+        }
+    }
+}

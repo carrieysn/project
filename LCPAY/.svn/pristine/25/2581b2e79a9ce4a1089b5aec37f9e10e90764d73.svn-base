@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>商户模拟应用所需的配置信息</comment>
+	
+	<!-- 银信证网关应用的地址 -->
+	<entry key="lcGateway.baseURL">http://127.0.0.1:9100/gw</entry>
+	
+	<!-- 模拟标准银信证商户的商户ID -->
+	<entry key="mock.lcStandardMerchant.merId">1000001</entry>
+	<!-- 模拟标准银信证商户的商户签名Key -->
+	<entry key="mock.lcStandardMerchant.signKey">11c9c951a5ad422d88ccbfafa6912d5e</entry>
+	
+	<!-- 模拟星意商户的商户ID -->
+	<entry key="mock.starwishMerchant.merId">1000001</entry>
+	<!-- 模拟星意商户的商户签名Key -->
+	<entry key="mock.starwishMerchant.signKey">11c9c951a5ad422d88ccbfafa6912d5e</entry>
+	
+
+</properties>

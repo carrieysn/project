@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.MessageHisDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.MessageHis" >
+    <id column="ID" property="id" jdbcType="BIGINT" />
+    <result column="MSG_TYPE" property="msgType" jdbcType="INTEGER" />
+    <result column="SCENE" property="scene" jdbcType="VARCHAR" />
+    <result column="PARAMS" property="params" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="INTEGER" />
+    <result column="COUNT" property="count" jdbcType="INTEGER" />
+    <result column="PLAN_TIME" property="planTime" jdbcType="BIGINT" />
+    <result column="LAST_TIME" property="lastTime" jdbcType="BIGINT" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="BIGINT" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, MSG_TYPE, SCENE, PARAMS, STATUS, COUNT, PLAN_TIME, LAST_TIME, CREATE_TIME, REMARK
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from cifpay_message_his
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from cifpay_message_his
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.MessageHis" >
+    insert into cifpay_message_his (ID, MSG_TYPE, SCENE, 
+      PARAMS, STATUS, COUNT, 
+      PLAN_TIME, LAST_TIME, CREATE_TIME, 
+      REMARK)
+    values (#{id,jdbcType=BIGINT}, #{msgType,jdbcType=INTEGER}, #{scene,jdbcType=VARCHAR}, 
+      #{params,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{count,jdbcType=INTEGER}, 
+      #{planTime,jdbcType=BIGINT}, #{lastTime,jdbcType=BIGINT}, #{createTime,jdbcType=BIGINT}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.MessageHis" >
+    insert into cifpay_message_his
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="msgType != null" >
+        MSG_TYPE,
+      </if>
+      <if test="scene != null" >
+        SCENE,
+      </if>
+      <if test="params != null" >
+        PARAMS,
+      </if>
+      <if test="status != null" >
+        STATUS,
+      </if>
+      <if test="count != null" >
+        COUNT,
+      </if>
+      <if test="planTime != null" >
+        PLAN_TIME,
+      </if>
+      <if test="lastTime != null" >
+        LAST_TIME,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="msgType != null" >
+        #{msgType,jdbcType=INTEGER},
+      </if>
+      <if test="scene != null" >
+        #{scene,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null" >
+        #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="count != null" >
+        #{count,jdbcType=INTEGER},
+      </if>
+      <if test="planTime != null" >
+        #{planTime,jdbcType=BIGINT},
+      </if>
+      <if test="lastTime != null" >
+        #{lastTime,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.MessageHis" >
+    update cifpay_message_his
+    <set >
+      <if test="msgType != null" >
+        MSG_TYPE = #{msgType,jdbcType=INTEGER},
+      </if>
+      <if test="scene != null" >
+        SCENE = #{scene,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null" >
+        PARAMS = #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        STATUS = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="count != null" >
+        COUNT = #{count,jdbcType=INTEGER},
+      </if>
+      <if test="planTime != null" >
+        PLAN_TIME = #{planTime,jdbcType=BIGINT},
+      </if>
+      <if test="lastTime != null" >
+        LAST_TIME = #{lastTime,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.MessageHis" >
+    update cifpay_message_his
+    set MSG_TYPE = #{msgType,jdbcType=INTEGER},
+      SCENE = #{scene,jdbcType=VARCHAR},
+      PARAMS = #{params,jdbcType=VARCHAR},
+      STATUS = #{status,jdbcType=INTEGER},
+      COUNT = #{count,jdbcType=INTEGER},
+      PLAN_TIME = #{planTime,jdbcType=BIGINT},
+      LAST_TIME = #{lastTime,jdbcType=BIGINT},
+      CREATE_TIME = #{createTime,jdbcType=BIGINT},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

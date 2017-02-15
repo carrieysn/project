@@ -1,0 +1,16 @@
+package com.cifpay.lc.api.xds.withdraw;
+
+import java.util.Date;
+
+import com.cifpay.lc.api.CoreBusinessService;
+
+/**
+ * 更新银企互联转账服务测试环境的交易日期。
+ * 
+ * 
+ *
+ */
+public interface UpdateBankEntTestTradeDateService
+		extends CoreBusinessService<UpdateBankEntTestTradeDateInputBean, Date> {
+
+}

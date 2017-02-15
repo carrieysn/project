@@ -1,0 +1,83 @@
+package com.cifpay.lc.std.business.cache;
+
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.cache.CacheBusinessService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.core.cache.reservice.api.InternalCacheService;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.domain.cache.CacheInput;
+import com.cifpay.lc.domain.cache.CacheOutput;
+import com.cifpay.lc.exception.CoreBusinessException;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service("cacheBusinessService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class})
+public class CacheBusinessServiceImpl implements CacheBusinessService {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Map<String, InternalCacheService> cacheProcessersMap = new HashMap<String, InternalCacheService>();
+
+    @Autowired
+    public void initBankDealProcessers(List<InternalCacheService> cacheProcessers) {
+        if (null != cacheProcessers) {
+            for (InternalCacheService bd : cacheProcessers) {
+                cacheProcessersMap.put(bd.getCacheType(), bd);
+            }
+        }
+    }
+
+    @Override
+    public BusinessOutput<CacheOutput> removeCache(CacheInput paramValue) {
+
+        logger.info("updateCache(CacheInput paramValue)");
+        BusinessOutput<CacheOutput> busOutput = new BusinessOutput<CacheOutput>();
+        try {
+            // 校验参数
+            String validate = validate(paramValue);
+            if (!StringUtils.isEmpty(validate)) {
+                return BusinessOutput.fail(ReturnCode.SERVER_PARAM_ERROR, validate);
+            }
+            InternalCacheService dealCache = tradeDealAdapter(paramValue);
+            dealCache.removeCache(paramValue);
+            busOutput.setReturnCode(ReturnCode.GENERAL_SUCCESS);
+            busOutput.setReturnMsg("操作成功");
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            logger.error("移除缓存时，发生未知异常，错误信息()：{}", String.valueOf(e.getMessage()), e);
+            busOutput.setReturnCode(ReturnCode.UNDEFINED_RETURN_CODE);
+            busOutput.setReturnMsg("操作失败");
+        }
+        return busOutput;
+    }
+
+
+    public InternalCacheService tradeDealAdapter(CacheInput paramValue) throws Exception {
+
+        InternalCacheService dealCache = cacheProcessersMap.get(paramValue.getCacheKey());
+        logger.info("=====选择处理类-dealCache:{}", dealCache);
+        if (dealCache == null) {
+            throw new CoreBusinessException(ReturnCode.CORE_BA_PARAM_EXCEPTION_N105001,
+                    "未找到适配的处理器! " + paramValue.getCacheKey());
+        }
+        return dealCache;
+    }
+
+    private String validate(CacheInput paramValue) {
+        if (StringUtils.isEmpty(paramValue.getCacheKey())) {
+            return "缓存键值不能为空";
+        }
+        return null;
+    }
+
+}

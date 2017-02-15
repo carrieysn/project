@@ -1,0 +1,57 @@
+package com.cifpay.lc.core.cache.service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+
+import com.cifpay.lc.core.cache.pojo.LcBankCache;
+import com.cifpay.lc.core.db.dao.LcBankDao;
+import com.cifpay.lc.core.db.pojo.LcBank;
+
+@Component
+public class LcBankCacheServant {
+
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    private static final String KEY_PREFIX = "LC_BANK_";
+
+    @Autowired
+    LcBankDao lcBankDao;
+
+    @Cacheable(value = KEY_PREFIX, key = "'LcBank_selectByPrimaryKey' + #bankCode")
+    public LcBankCache selectByPrimaryKey(String bankCode) {
+        LcBank payBank = lcBankDao.selectByPrimaryKey(bankCode);
+        if (payBank != null) {
+            LcBankCache lcBankCache = new LcBankCache();
+            BeanUtils.copyProperties(payBank, lcBankCache);
+
+            return lcBankCache;
+        }
+        return null;
+    }
+
+    @CachePut(value = KEY_PREFIX, key = "'LcBank_selectByPrimaryKey' + #bankCode")
+    public LcBankCache updateLcBankCache(String bankCode) {
+        LcBankCache lcBankCache = null;
+        LcBank payBank = lcBankDao.selectByPrimaryKey(bankCode);
+        if (payBank != null) {
+            lcBankCache = new LcBankCache();
+            BeanUtils.copyProperties(payBank, lcBankCache);
+        }
+        return lcBankCache;
+    }
+
+    @CacheEvict(value = KEY_PREFIX, key = "'LcBank_selectByPrimaryKey' + #bankCode")
+    public void removeLcBankCache(String bankCode) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("删除lcBank缓存，bankCode:{}", bankCode);
+        }
+    }
+
+
+}

@@ -1,0 +1,10 @@
+server:
+  port: 9080
+spring:
+  jmx:
+    default-domain: lc-mock-merchant
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+

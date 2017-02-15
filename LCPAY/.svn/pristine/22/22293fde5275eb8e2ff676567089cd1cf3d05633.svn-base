@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcLockDao">
+	<resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcLock">
+		<id column="LC_ID" property="lcId" jdbcType="BIGINT" />
+		<id column="TRADE_CODE" property="tradeCode" jdbcType="VARCHAR" />
+		<result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		LC_ID, TRADE_CODE, CREATE_TIME
+	</sql>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		<include refid="Base_Column_List" />
+		from CIFPAY_LC_LOCK
+		where LC_ID = #{lcId,jdbcType=BIGINT}
+		and TRADE_CODE
+		= #{tradeCode,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="map">
+		delete from
+		CIFPAY_LC_LOCK
+		where LC_ID = #{lcId,jdbcType=BIGINT}
+		and TRADE_CODE =
+		#{tradeCode,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcLock">
+		insert into CIFPAY_LC_LOCK
+		(LC_ID, TRADE_CODE, CREATE_TIME
+		)
+		values (#{lcId,jdbcType=BIGINT},
+		#{tradeCode,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcLock">
+		insert into CIFPAY_LC_LOCK
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="lcId != null">
+				LC_ID,
+			</if>
+			<if test="tradeCode != null">
+				TRADE_CODE,
+			</if>
+			<if test="createTime != null">
+				CREATE_TIME,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="lcId != null">
+				#{lcId,jdbcType=BIGINT},
+			</if>
+			<if test="tradeCode != null">
+				#{tradeCode,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcLock">
+		update CIFPAY_LC_LOCK
+		<set>
+			<if test="createTime != null">
+				CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where LC_ID = #{lcId,jdbcType=BIGINT}
+		and TRADE_CODE =
+		#{tradeCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcLock">
+		update
+		CIFPAY_LC_LOCK
+		set CREATE_TIME = #{createTime,jdbcType=TIMESTAMP}
+		where
+		LC_ID = #{lcId,jdbcType=BIGINT}
+		and TRADE_CODE =
+		#{tradeCode,jdbcType=VARCHAR}
+	</update>
+
+</mapper>

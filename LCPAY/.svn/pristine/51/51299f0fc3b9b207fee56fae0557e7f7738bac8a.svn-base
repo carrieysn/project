@@ -1,0 +1,19 @@
+package com.cifpay.lc.domain.batch;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class BatchApplyInputBean implements Serializable {
+
+	private static final long serialVersionUID = 8181746387429178725L;
+
+	private List<BatchApplyInputDto> applyList;
+
+	public List<BatchApplyInputDto> getApplyList() {
+		return applyList;
+	}
+
+	public void setApplyList(List<BatchApplyInputDto> applyList) {
+		this.applyList = applyList;
+	}
+}

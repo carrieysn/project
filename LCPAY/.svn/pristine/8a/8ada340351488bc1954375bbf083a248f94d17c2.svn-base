@@ -1,0 +1,236 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.util.Date;
+
+public class BLcNotification {
+
+	/**
+	 * 通知类型：通知收单商户开证结果
+	 */
+	public static final String TYPE_MER_OPENLC_RESULT = "10";
+
+	/**
+	 * 通知类型：40通知账务中心解冻（退回或扣减）
+	 */
+	public static final String TYPE_NOTICE_ACC_CENTER_UNFREEZE = "40";
+
+	/**
+	 * 通知类型：50通知商户提现结果
+	 */
+	public static final String TYPE_MER_WITHDRAW_RESULT = "50";
+
+	/**
+	 * 通知类型：通知收单商户银信证已解付
+	 */
+	public static final String TYPE_MER_LC_PAYED = "90";
+
+	/**
+	 * 处理状态：未发送
+	 */
+	public static final String STATUS_NEW = "10";
+
+	/**
+	 * 处理状态：发送中
+	 */
+	public static final String STATUS_PROCESSING = "20";
+
+	/**
+	 * 处理状态：发送失败
+	 */
+	public static final String STATUS_SENDING_FAILED = "30";
+
+	/**
+	 * 处理状态：对方处理失败
+	 */
+	public static final String STATUS_RECIEVER_ANSWERED_FAILED = "40";
+
+	/**
+	 * 处理状态：通知成功
+	 */
+	public static final String STATUS_SUCCESS = "50";
+
+	/**
+	 * 处理状态：已过期
+	 */
+	public static final String STATUS_EXPIRED = "99";
+
+	/**
+	 * 通知接收者类型：收单商户
+	 */
+	public static final String RECIEVER_TYPE_MERCHANT = "1";
+
+	/**
+	 * 通知接收者类型：账务中心
+	 */
+	public static final String RECIEVER_TYPE_ACC_CENTER = "2";
+
+	private Long noticeId;
+
+	private String noticeType;
+
+	private Long lcId;
+
+	private String handleStatus;
+
+	private Date createdDt;
+
+	private Date updatedDt;
+
+	private Date lastSentDt;
+
+	private Integer retryCount;
+
+	private String recieverType;
+
+	private String recieverId;
+
+	private String notifyUrl;
+
+	private Integer msgBlockCnt;
+
+	private String msgBlock1;
+
+	private String msgBlock2;
+
+	private String msgBlock3;
+
+	private String handledByServerNode;
+
+	private String recValidateHash;
+
+	public Long getNoticeId() {
+		return noticeId;
+	}
+
+	public void setNoticeId(Long noticeId) {
+		this.noticeId = noticeId;
+	}
+
+	public String getNoticeType() {
+		return noticeType;
+	}
+
+	public void setNoticeType(String noticeType) {
+		this.noticeType = noticeType == null ? null : noticeType.trim();
+	}
+
+	public Long getLcId() {
+		return lcId;
+	}
+
+	public void setLcId(Long lcId) {
+		this.lcId = lcId;
+	}
+
+	public String getHandleStatus() {
+		return handleStatus;
+	}
+
+	public void setHandleStatus(String handleStatus) {
+		this.handleStatus = handleStatus == null ? null : handleStatus.trim();
+	}
+
+	public Date getCreatedDt() {
+		return createdDt;
+	}
+
+	public void setCreatedDt(Date createdDt) {
+		this.createdDt = createdDt;
+	}
+
+	public Date getUpdatedDt() {
+		return updatedDt;
+	}
+
+	public void setUpdatedDt(Date updatedDt) {
+		this.updatedDt = updatedDt;
+	}
+
+	public Date getLastSentDt() {
+		return lastSentDt;
+	}
+
+	public void setLastSentDt(Date lastSentDt) {
+		this.lastSentDt = lastSentDt;
+	}
+
+	public Integer getRetryCount() {
+		return retryCount;
+	}
+
+	public void setRetryCount(Integer retryCount) {
+		this.retryCount = retryCount;
+	}
+
+	public String getRecieverType() {
+		return recieverType;
+	}
+
+	public void setRecieverType(String recieverType) {
+		this.recieverType = recieverType == null ? null : recieverType.trim();
+	}
+
+	public String getRecieverId() {
+		return recieverId;
+	}
+
+	public void setRecieverId(String recieverId) {
+		this.recieverId = recieverId == null ? null : recieverId.trim();
+	}
+
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
+
+	public void setNotifyUrl(String notifyUrl) {
+		this.notifyUrl = notifyUrl == null ? null : notifyUrl.trim();
+	}
+
+	public Integer getMsgBlockCnt() {
+		return msgBlockCnt;
+	}
+
+	public void setMsgBlockCnt(Integer msgBlockCnt) {
+		this.msgBlockCnt = msgBlockCnt;
+	}
+
+	public String getMsgBlock1() {
+		return msgBlock1;
+	}
+
+	public void setMsgBlock1(String msgBlock1) {
+		this.msgBlock1 = msgBlock1 == null ? null : msgBlock1.trim();
+	}
+
+	public String getMsgBlock2() {
+		return msgBlock2;
+	}
+
+	public void setMsgBlock2(String msgBlock2) {
+		this.msgBlock2 = msgBlock2 == null ? null : msgBlock2.trim();
+	}
+
+	public String getMsgBlock3() {
+		return msgBlock3;
+	}
+
+	public void setMsgBlock3(String msgBlock3) {
+		this.msgBlock3 = msgBlock3 == null ? null : msgBlock3.trim();
+	}
+
+	public String getHandledByServerNode() {
+		return handledByServerNode;
+	}
+
+	public void setHandledByServerNode(String handledByServerNode) {
+		this.handledByServerNode = handledByServerNode == null ? null : handledByServerNode.trim();
+	}
+
+	public String getRecValidateHash() {
+		return recValidateHash;
+	}
+
+	public void setRecValidateHash(String recValidateHash) {
+		this.recValidateHash = recValidateHash == null ? null : recValidateHash.trim();
+	}
+}

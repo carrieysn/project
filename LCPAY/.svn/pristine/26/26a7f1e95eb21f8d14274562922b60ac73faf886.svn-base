@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcMerchantDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcMerchant" >
+    <id column="MER_ID" property="merId" jdbcType="INTEGER" />
+    <result column="MER_CODE" property="merCode" jdbcType="VARCHAR" />
+    <result column="MERCHANT_NAME" property="merchantName" jdbcType="VARCHAR" />
+    <result column="MER_SITE_NAME" property="merSiteName" jdbcType="VARCHAR" />
+    <result column="MER_SITE_DOMAIN" property="merSiteDomain" jdbcType="VARCHAR" />
+    <result column="ENCRYPT_TYPE" property="encryptType" jdbcType="VARCHAR" />
+    <result column="ENCRYPT_KEY" property="encryptKey" jdbcType="VARCHAR" />
+    <result column="DECRYPT_KEY" property="decryptKey" jdbcType="VARCHAR" />
+    <result column="DEF_LC_TYPE" property="defLcType" jdbcType="VARCHAR" />
+    <result column="DEF_PAYEE_BANK_CODE" property="defPayeeBankCode" jdbcType="VARCHAR" />
+    <result column="DEF_PAYEE_BANK_ACCT" property="defPayeeBankAcct" jdbcType="VARCHAR" />
+    <result column="MERCHANT_STATUS" property="merchantStatus" jdbcType="CHAR" />
+    <result column="CREATED_DT" property="createdDt" jdbcType="TIMESTAMP" />
+    <result column="UPDATED_DT" property="updatedDt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    MER_ID, MER_CODE, MERCHANT_NAME, MER_SITE_NAME, MER_SITE_DOMAIN, ENCRYPT_TYPE, ENCRYPT_KEY, 
+    DECRYPT_KEY, DEF_LC_TYPE, DEF_PAYEE_BANK_CODE, DEF_PAYEE_BANK_ACCT, MERCHANT_STATUS, 
+    CREATED_DT, UPDATED_DT
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from cifpay_lc_merchant
+    where MER_ID = #{merId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from cifpay_lc_merchant
+    where MER_ID = #{merId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcMerchant" >
+    insert into cifpay_lc_merchant (MER_ID, MER_CODE, MERCHANT_NAME, 
+      MER_SITE_NAME, MER_SITE_DOMAIN, ENCRYPT_TYPE, 
+      ENCRYPT_KEY, DECRYPT_KEY, DEF_LC_TYPE, 
+      DEF_PAYEE_BANK_CODE, DEF_PAYEE_BANK_ACCT, MERCHANT_STATUS, 
+      CREATED_DT, UPDATED_DT)
+    values (#{merId,jdbcType=INTEGER}, #{merCode,jdbcType=VARCHAR}, #{merchantName,jdbcType=VARCHAR}, 
+      #{merSiteName,jdbcType=VARCHAR}, #{merSiteDomain,jdbcType=VARCHAR}, #{encryptType,jdbcType=VARCHAR}, 
+      #{encryptKey,jdbcType=VARCHAR}, #{decryptKey,jdbcType=VARCHAR}, #{defLcType,jdbcType=VARCHAR}, 
+      #{defPayeeBankCode,jdbcType=VARCHAR}, #{defPayeeBankAcct,jdbcType=VARCHAR}, #{merchantStatus,jdbcType=CHAR}, 
+      #{createdDt,jdbcType=TIMESTAMP}, #{updatedDt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcMerchant" >
+    insert into cifpay_lc_merchant
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="merId != null" >
+        MER_ID,
+      </if>
+      <if test="merCode != null" >
+        MER_CODE,
+      </if>
+      <if test="merchantName != null" >
+        MERCHANT_NAME,
+      </if>
+      <if test="merSiteName != null" >
+        MER_SITE_NAME,
+      </if>
+      <if test="merSiteDomain != null" >
+        MER_SITE_DOMAIN,
+      </if>
+      <if test="encryptType != null" >
+        ENCRYPT_TYPE,
+      </if>
+      <if test="encryptKey != null" >
+        ENCRYPT_KEY,
+      </if>
+      <if test="decryptKey != null" >
+        DECRYPT_KEY,
+      </if>
+      <if test="defLcType != null" >
+        DEF_LC_TYPE,
+      </if>
+      <if test="defPayeeBankCode != null" >
+        DEF_PAYEE_BANK_CODE,
+      </if>
+      <if test="defPayeeBankAcct != null" >
+        DEF_PAYEE_BANK_ACCT,
+      </if>
+      <if test="merchantStatus != null" >
+        MERCHANT_STATUS,
+      </if>
+      <if test="createdDt != null" >
+        CREATED_DT,
+      </if>
+      <if test="updatedDt != null" >
+        UPDATED_DT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="merId != null" >
+        #{merId,jdbcType=INTEGER},
+      </if>
+      <if test="merCode != null" >
+        #{merCode,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantName != null" >
+        #{merchantName,jdbcType=VARCHAR},
+      </if>
+      <if test="merSiteName != null" >
+        #{merSiteName,jdbcType=VARCHAR},
+      </if>
+      <if test="merSiteDomain != null" >
+        #{merSiteDomain,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptType != null" >
+        #{encryptType,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptKey != null" >
+        #{encryptKey,jdbcType=VARCHAR},
+      </if>
+      <if test="decryptKey != null" >
+        #{decryptKey,jdbcType=VARCHAR},
+      </if>
+      <if test="defLcType != null" >
+        #{defLcType,jdbcType=VARCHAR},
+      </if>
+      <if test="defPayeeBankCode != null" >
+        #{defPayeeBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="defPayeeBankAcct != null" >
+        #{defPayeeBankAcct,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantStatus != null" >
+        #{merchantStatus,jdbcType=CHAR},
+      </if>
+      <if test="createdDt != null" >
+        #{createdDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedDt != null" >
+        #{updatedDt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcMerchant" >
+    update cifpay_lc_merchant
+    <set >
+      <if test="merCode != null" >
+        MER_CODE = #{merCode,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantName != null" >
+        MERCHANT_NAME = #{merchantName,jdbcType=VARCHAR},
+      </if>
+      <if test="merSiteName != null" >
+        MER_SITE_NAME = #{merSiteName,jdbcType=VARCHAR},
+      </if>
+      <if test="merSiteDomain != null" >
+        MER_SITE_DOMAIN = #{merSiteDomain,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptType != null" >
+        ENCRYPT_TYPE = #{encryptType,jdbcType=VARCHAR},
+      </if>
+      <if test="encryptKey != null" >
+        ENCRYPT_KEY = #{encryptKey,jdbcType=VARCHAR},
+      </if>
+      <if test="decryptKey != null" >
+        DECRYPT_KEY = #{decryptKey,jdbcType=VARCHAR},
+      </if>
+      <if test="defLcType != null" >
+        DEF_LC_TYPE = #{defLcType,jdbcType=VARCHAR},
+      </if>
+      <if test="defPayeeBankCode != null" >
+        DEF_PAYEE_BANK_CODE = #{defPayeeBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="defPayeeBankAcct != null" >
+        DEF_PAYEE_BANK_ACCT = #{defPayeeBankAcct,jdbcType=VARCHAR},
+      </if>
+      <if test="merchantStatus != null" >
+        MERCHANT_STATUS = #{merchantStatus,jdbcType=CHAR},
+      </if>
+      <if test="createdDt != null" >
+        CREATED_DT = #{createdDt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedDt != null" >
+        UPDATED_DT = #{updatedDt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where MER_ID = #{merId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcMerchant" >
+    update cifpay_lc_merchant
+    set MER_CODE = #{merCode,jdbcType=VARCHAR},
+      MERCHANT_NAME = #{merchantName,jdbcType=VARCHAR},
+      MER_SITE_NAME = #{merSiteName,jdbcType=VARCHAR},
+      MER_SITE_DOMAIN = #{merSiteDomain,jdbcType=VARCHAR},
+      ENCRYPT_TYPE = #{encryptType,jdbcType=VARCHAR},
+      ENCRYPT_KEY = #{encryptKey,jdbcType=VARCHAR},
+      DECRYPT_KEY = #{decryptKey,jdbcType=VARCHAR},
+      DEF_LC_TYPE = #{defLcType,jdbcType=VARCHAR},
+      DEF_PAYEE_BANK_CODE = #{defPayeeBankCode,jdbcType=VARCHAR},
+      DEF_PAYEE_BANK_ACCT = #{defPayeeBankAcct,jdbcType=VARCHAR},
+      MERCHANT_STATUS = #{merchantStatus,jdbcType=CHAR},
+      CREATED_DT = #{createdDt,jdbcType=TIMESTAMP},
+      UPDATED_DT = #{updatedDt,jdbcType=TIMESTAMP}
+    where MER_ID = #{merId,jdbcType=INTEGER}
+  </update>
+</mapper>

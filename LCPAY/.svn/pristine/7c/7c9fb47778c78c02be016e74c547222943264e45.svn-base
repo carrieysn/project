@@ -1,0 +1,49 @@
+package com.cifpay.lc.versionb.recharge.online.alipay.util;
+
+/* *
+ *类名：AlipayConfig
+ *功能：基础配置类
+ *详细：设置帐户有关信息
+ */
+public class AlipayConfig {
+
+	// 合作身份者ID，以2088开头由16位纯数字组成的字符串
+	public static final String partner = "2088221310230022";
+	
+	// 收款支付宝账号，以2088开头由16位纯数字组成的字符串，一般情况下收款账号就是签约账号
+	public static final String seller_id = partner;
+
+	// 商户支付宝账号
+	public static final String alipay_no = "admin@et2t.com";
+
+	// 商户的私钥
+	public static final String private_key = "MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAMetakeZZA0U7z0JMDdB+phgF8XJZ5GPOUENrAmHqtZ9M8m1PkY03W8sYHxK/GANtD4GHuNGZPEbagKObSQQytmyWgub455uPncMGkEKX6vFHYcv/cJS6kIERprBLLfLwLQUVwG/cfoYOM5BJCU4fQr79IoaMUyTVkVBnwI9jJOtAgMBAAECgYAiKRzhmvBu/IHhY00IZxVENExc3hQF5wbYhkpEZx1nDIxrmcJJqImpl2H6YanDlRSc99cY8tYaGaKNRWiOnwDU6DxIaen5dtHrqWLbu9ly0R0az+L3H291u8M6MVHPQhyftgFvIUQuw/ChwBEtt+rYFdA/QLdQq2Qpsm+Akphl0QJBAOUzXGwPBpF2aSmmk/pigmIbyVpWBVjF9Su3wqG3/kSiL6Fks0zpNPYh2O4LSm67tcry072ku8Il1MAOoyEaoVcCQQDfBlajIGlywrNM4szIofPmV5gXpZGhrLi5qpBqcDx/czsM52mCzovGUOoqkhnfY0MXyrT4NZZTlylkOCsv97ybAkAmI0K4tFNadwKOrKoo2qVpX8hEYNXo7J+cE6quMCh+ESKtz0zKem+WmRE4ouZSwKdCSt+Syct4RcU94/Ge+4hnAkBf71sPOp8BdY0pMppCZ6AB4oYTDe6SLDkd7KfIkVUEwe2RxG2Xjf+EJERGYahtdkZjEpg7+NkcRfbRHHQ/YwKnAkBeUHGZCBmGPNlv9fSvYSE8y86EW2zhFDX7WRJceUMRollS5k4YyGfw4be1W7eWuoBJHixKnmVr7TjYt+MMVocT";
+	
+	// 支付宝的公钥，无需修改该值
+	public static final String ali_public_key  = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnxj/9qwVfgoUh/y2W89L6BkRAFljhNhgPdyPuBV64bfQNN1PjbCzkIM6qRdKBoLPXmKKMiFYnkd6rAoprih3/PrQEB/VsW8OoM8fxn67UDYuyBTqA23MML9q1+ilIZwBC2AQ2UBVOrFXfFl75p6/B5KsiNG9zpgmLCUYuLkxpLQIDAQAB";
+
+	// 字符编码格式 目前支持 gbk 或 utf-8
+	public static final String input_charset = "utf-8";
+	
+	// 签名方式 不需修改
+	public static final String sign_type = "RSA";
+
+	//支付宝提供给商户的服务接入网关URL(新)
+	public static final String alipay_getway_url = "https://mapi.alipay.com/gateway.do?";
+
+	//支付宝消息验证地址
+	public static final String https_verify_url = "https://mapi.alipay.com/gateway.do?service=notify_verify&";
+
+	//调支付宝接口类型
+	public static final String service = "alipay.wap.create.direct.pay.by.user";
+
+	//支付类型 仅支持：1（商品购买）
+	public static final String pay_type = "1";
+
+	//合作者网站
+	public static final String partner_url = "http://www.et2t.com";
+
+	//调试用，创建TXT日志文件夹路径
+	public static final String log_path = "/opt/alilog/";
+
+}

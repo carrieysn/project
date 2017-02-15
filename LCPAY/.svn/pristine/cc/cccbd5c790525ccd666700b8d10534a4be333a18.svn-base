@@ -1,0 +1,43 @@
+package com.cifpay.lc.bankadapter.api.helper;
+
+import java.util.Map;
+
+public class StringTool {
+
+	public static String printPhone(String phone) {
+		if (phone != null ) {
+			return phone.replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2");
+		}
+		return "";
+	}
+
+	public static String printCard(String cardNo) {
+		if (cardNo != null ) {
+			return cardNo.replaceAll("(\\d{4})\\d{10}(\\w{4})", "$1*****$2");
+		}
+		return "";
+	}
+
+	public static String printMap(Map<String, String> map) {
+		StringBuilder sb = new StringBuilder();
+		if (map != null && map.size() > 0) {
+			for (Map.Entry entry : map.entrySet()) {
+				String key = entry.getKey().toString();
+				String value = null;
+				if ("accNo".equalsIgnoreCase(key)) {
+					value = printCard(entry.getValue().toString());
+				} else if ("phoneNo".equalsIgnoreCase(key)) {
+					value = printPhone(entry.getValue().toString());
+				} else if ("smsCode".equalsIgnoreCase(key) || "cvn2".equalsIgnoreCase(key)
+						|| "expired".equalsIgnoreCase(key)) {
+					value = "******";
+				}
+				else{
+					value = entry.getValue().toString();
+				}
+				sb.append(key + " = " + value);
+			}
+		}
+		return sb.toString();
+	}
+}

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.TrdCodeDescDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.TrdCodeDesc" >
+    <result column="PLATFORM_ID" property="platformId" jdbcType="VARCHAR" />
+    <result column="SYS_CODE" property="sysCode" jdbcType="VARCHAR" />
+    <result column="SYS_DESC" property="sysDesc" jdbcType="VARCHAR" />
+    <result column="RESP_CODE" property="respCode" jdbcType="VARCHAR" />
+    <result column="RESP_DESC" property="respDesc" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    PLATFORM_ID,SYS_CODE,SYS_DESC,RESP_CODE,RESP_DESC
+  </sql>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.TrdCodeDesc" >
+    insert into CIFPAY_LC_TRD_CODE_DESC (PLATFORM_ID, SYS_CODE, SYS_DESC, 
+      RESP_CODE, RESP_DESC)
+    values (#{platformId,jdbcType=VARCHAR}, #{sysCode,jdbcType=VARCHAR}, #{sysDesc,jdbcType=VARCHAR}, 
+      #{respCode,jdbcType=VARCHAR}, #{respDesc,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.TrdCodeDesc" >
+    insert into CIFPAY_LC_TRD_CODE_DESC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="platformId != null" >
+        PLATFORM_ID,
+      </if>
+      <if test="sysCode != null" >
+        SYS_CODE,
+      </if>
+      <if test="sysDesc != null" >
+        SYS_DESC,
+      </if>
+      <if test="respCode != null" >
+        RESP_CODE,
+      </if>
+      <if test="respDesc != null" >
+        RESP_DESC,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="platformId != null" >
+        #{platformId,jdbcType=VARCHAR},
+      </if>
+      <if test="sysCode != null" >
+        #{sysCode,jdbcType=VARCHAR},
+      </if>
+      <if test="sysDesc != null" >
+        #{sysDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="respCode != null" >
+        #{respCode,jdbcType=VARCHAR},
+      </if>
+      <if test="respDesc != null" >
+        #{respDesc,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

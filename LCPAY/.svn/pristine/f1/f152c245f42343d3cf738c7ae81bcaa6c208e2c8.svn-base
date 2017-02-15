@@ -1,0 +1,90 @@
+package com.cifpay.lc.core.cache.reservice;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.core.cache.pojo.MerchantCache;
+import com.cifpay.lc.core.cache.reservice.api.InternalCacheService;
+import com.cifpay.lc.core.db.dao.AdminLcMerchantDao;
+import com.cifpay.lc.core.db.pojo.AdminLcMerchant;
+import com.cifpay.lc.util.security.AESUtils;
+import com.cifpay.lc.util.security.Constants;
+
+public class MerchantCacheComponent implements InternalCacheService{
+	protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    private static final String KEY_PREFIX = "LC_MERCHANT_";
+
+    @Autowired
+    private AdminLcMerchantDao adminLcMerchantDao;
+
+    @Cacheable(value = KEY_PREFIX, key = "'Merchant_get' + #merId")
+    public MerchantCache getCache(String merId) {
+        AdminLcMerchant adminLcMerchant = adminLcMerchantDao.selectAdminLcMerchant(merId);
+        if (adminLcMerchant == null) {
+            throw new RuntimeException("无合法商户信息");
+        }
+        MerchantCache merchantCache = new MerchantCache();
+        merchantCache.setMerCode(merId);
+        merchantCache.setMerchantName(adminLcMerchant.getMerchantName());
+        merchantCache.setMerchantStatus(adminLcMerchant.getMerchantStatus());
+        merchantCache.setEncryptType(adminLcMerchant.getEncryptType());
+        merchantCache.setMerSiteDomain(adminLcMerchant.getMerSiteDomain());
+        merchantCache.setDefPayeeBankAcct(adminLcMerchant.getDefPayeeBankAcct());
+        merchantCache.setDefPayeeBankCode(adminLcMerchant.getDefPayeeBankCode());
+
+        if (!StringUtils.isEmpty(adminLcMerchant.getEncryptKey())) {
+            merchantCache.setEncryptKey(unpacKey(adminLcMerchant.getEncryptKey()));
+        }
+        if (!StringUtils.isEmpty(adminLcMerchant.getDecryptKey())) {
+            merchantCache.setDecryptKey(unpacKey(adminLcMerchant.getDecryptKey()));
+        }
+        return merchantCache;
+    }
+
+    @CachePut(value = KEY_PREFIX, key = "'Merchant_get' + #merId")
+    public MerchantCache updateCache(String merId) {
+        AdminLcMerchant adminLcMerchant = adminLcMerchantDao.selectAdminLcMerchant(merId);
+        if (adminLcMerchant == null) {
+            throw new RuntimeException("无合法商户信息");
+        }
+        MerchantCache merchantCache = new MerchantCache();
+        merchantCache.setMerCode(merId);
+        merchantCache.setMerchantStatus(adminLcMerchant.getMerchantStatus());
+        if (!StringUtils.isEmpty(adminLcMerchant.getEncryptKey())) {
+            merchantCache.setEncryptKey(unpacKey(adminLcMerchant.getEncryptKey()));
+        }
+        if (!StringUtils.isEmpty(adminLcMerchant.getDecryptKey())) {
+            merchantCache.setDecryptKey(unpacKey(adminLcMerchant.getDecryptKey()));
+        }
+        merchantCache.setEncryptType(adminLcMerchant.getEncryptType());
+        merchantCache.setMerSiteDomain(adminLcMerchant.getMerSiteDomain());
+        return merchantCache;
+    }
+
+    @CacheEvict(value = KEY_PREFIX, key = "'Merchant_get' + #merId")
+    public void removeCache(String merId) {
+        if (logger.isDebugEnabled()) {
+            logger.debug("删除Merchant缓存，merId:{}", merId);
+        }
+    }
+
+    private String unpacKey(String secKey) throws IllegalArgumentException {
+        try {
+            return AESUtils.decryptStringFromBase64(secKey, Constants.AES_PWD_FOR_PROTECT_KEY);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("提取商户密钥异常");
+        }
+    }
+    @Override
+	public String getCacheKey() {
+		// TODO Auto-generated method stub
+		return KEY_PREFIX;
+	}
+
+}

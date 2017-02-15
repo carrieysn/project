@@ -1,0 +1,127 @@
+input {
+    border: 1px solid #ddd;
+}
+
+.inp_td {
+    width: 300px
+}
+
+.raya-top {
+    width: 100%;
+    padding: 0 15px;
+    overflow: hidden;
+    border-bottom: 1px solid #ddd;
+    font: normal 12px/36px "Microsoft yahei";
+}
+.raya-top .raya-span{
+	float:left;
+}
+.raya-top .raya-inputdate {
+	margin:5px auto;
+    width: 350px;
+}
+
+.raya-top .raya-inputdate li {
+    float: left;
+    width: 140px;
+    height: 26px;
+    line-height: 26px;
+    overflow: hidden;
+}
+.raya-top .raya-inputdate li.raya-span {
+    width: 25px;
+    text-align: center;
+}
+
+.raya-top .raya-inputdate span {
+    float: left;
+    display: inline-block;
+    padding: 0 10px;
+}
+.Hyman-href {
+    float: right;
+    padding-right: 8px;
+}
+.Hyman-href a {
+    padding-left: 8px;
+}
+.Hyman-button {
+    padding: 0 15px;
+    height: 24px;
+    background-color: #436cd8;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    -webkit-border-radius: 3px;
+    -mos-border-radius: 3px;
+    border-radius: 3px;
+}
+
+
+
+.Hyman-input {
+    width: 140px;
+    height: 26px;
+    line-height: 26px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.Hyman-table {
+    width: 100%;
+    padding: 20px 30px;
+    overflow: hidden;
+}
+.Hyman-table table {
+    width: 100%;
+    border: 1px solid #ddd;
+}
+.Hyman-table td {
+    height: 45px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+.Hyman-table thead {
+    background-color: #f2f2f2;
+}

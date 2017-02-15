@@ -1,0 +1,40 @@
+package com.cifpay.lc.constant.enums;
+
+/**
+ * 付款方式
+ */
+public enum PayMethod {
+
+    NORMAL("BANK", "银行开证"),
+    UNION_CREDIT("UNION_CREDIT", "银联信用卡开证"),
+    UNION_DEPOSIT("UNION_DEPOSIT", "银联储蓄卡开证");
+
+    private String code;
+    private String desc;
+
+    private PayMethod(String code, String desc) {
+        this.code = code;
+        this.desc = desc;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public static PayMethod parse(String code) {
+        PayMethod channel = null;
+        if (NORMAL.code.equals(code)) {
+            channel = NORMAL;
+        } else if (UNION_CREDIT.code.equals(code)) {
+            channel = UNION_CREDIT;
+        } else if (UNION_DEPOSIT.code.equals(code)) {
+            channel = UNION_DEPOSIT;
+        }
+
+        return channel;
+    }
+}

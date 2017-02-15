@@ -1,0 +1,119 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay.util;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.versionb.recharge.online.chinapay.constant.BaseConstant;
+import com.cifpay.lc.versionb.recharge.online.chinapay.util.wap.CorpSignSupervise;
+import com.cifpay.lc.versionb.recharge.online.chinapay.util.wap.PersSignSupervise;
+
+/**
+ * 支付宝接口公用函数类 Created by yx on 2016/3/15.
+ */
+@Component
+public class UnionpayCore {
+
+	@Autowired
+	private PersSignSupervise persSignSupervise;
+	
+	@Autowired
+	private CorpSignSupervise corpSignSupervise;
+	
+	/**
+	 * 配置商户信息
+	 *
+	 * @param alipayParam
+	 * @return map
+	 */
+	public Map<String, String> configInfo(Object param) {
+		Map<String, String> sParaTemp = ConvertTool.beanToMap(param);
+
+		return sParaTemp;
+	}
+
+	/**
+	 * 生成要请求给银联的参数数组
+	 *
+	 * @param sParaTemp
+	 *            请求前的参数数组
+	 * @return 要请求的参数数组
+	 */
+	public Map<String, String> buildRequestPara(Map<String, String> sParaTemp, String tranType) {
+		Map<String, String> sPara = sign(sParaTemp, tranType);
+
+		return sPara;
+	}
+
+	/**
+	 * 请求报文签名 功能：对请求报文进行签名
+	 * 
+	 * @param reqData
+	 *            请求报文map<br>
+	 * @param encoding
+	 *            上送请求报文域encoding字段的值<br>
+	 * @return 签名后的map对象<br>
+	 */
+	public Map<String, String> sign(Map<String, String> reqData, String tranType) {
+		Map<String, String> submitData = filterBlank(reqData);
+		generateSign(submitData, tranType);
+		return submitData;
+	}
+
+	/**
+	 * 生成签名值
+	 * 
+	 * @param data
+	 *            待签名数据Map键值对形式
+	 * 
+	 */
+	public void generateSign(Map<String, String> data, String tranType) {
+		String signature = "";
+		if (BaseConstant.UNIONPAY_TRANTYPE_PERS.equals(tranType)) {
+			// 个人
+			signature = persSignSupervise.sign(data);
+		} else if (BaseConstant.UNIONPAY_TRANTYPE_CORP.equals(tranType)) {
+			// 企业
+			signature = corpSignSupervise.sign(data);
+		}
+
+		data.put("Signature", signature);
+	}
+
+	/**
+	 * 判断字符串是否为NULL或空
+	 * 
+	 * @param s
+	 *            待判断的字符串数据
+	 * @return 判断结果 true-是 false-否
+	 */
+	public boolean isEmpty(String s) {
+		return null == s || "".equals(s.trim());
+	}
+
+	/**
+	 * 过滤请求报文中的空字符串或者空字符串
+	 * 
+	 * @param contentData
+	 * @return
+	 */
+	public Map<String, String> filterBlank(Map<String, String> contentData) {
+		LogUtil.writeLog("打印请求报文域 :");
+		Map<String, String> submitFromData = new HashMap<String, String>();
+		Set<String> keyset = contentData.keySet();
+
+		for (String key : keyset) {
+			String value = contentData.get(key);
+			if (StringUtils.hasText(value)) {
+				// 对value值进行去除前后空处理
+				submitFromData.put(key, value.trim());
+				LogUtil.writeLog(key + "-->" + String.valueOf(value));
+			}
+		}
+		return submitFromData;
+	}
+}

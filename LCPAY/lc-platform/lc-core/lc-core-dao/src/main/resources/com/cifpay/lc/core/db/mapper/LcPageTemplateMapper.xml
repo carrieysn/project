@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcPageTemplateDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcPageTemplate" >
+    <id column="TEMPLATE_CODE" property="templateCode" jdbcType="VARCHAR" />
+    <id column="VERSION" property="version" jdbcType="VARCHAR" />
+    <result column="TRAN_STATUS" property="tranStatus" jdbcType="INTEGER" />
+    <result column="LOCKED_BY_NODE" property="lockedByNode" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    TEMPLATE_CODE, VERSION, TRAN_STATUS, LOCKED_BY_NODE, CREATE_TIME, UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="map" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_PAGE_TEMPLATE
+    where TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR}
+      and VERSION = #{version,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="map" >
+    delete from CIFPAY_LC_PAGE_TEMPLATE
+    where TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR}
+      and VERSION = #{version,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcPageTemplate" >
+    insert into CIFPAY_LC_PAGE_TEMPLATE (TEMPLATE_CODE, VERSION, TRAN_STATUS, 
+      LOCKED_BY_NODE, CREATE_TIME, UPDATE_TIME
+      )
+    values (#{templateCode,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, #{tranStatus,jdbcType=INTEGER}, 
+      #{lockedByNode,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcPageTemplate" >
+    insert into CIFPAY_LC_PAGE_TEMPLATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="templateCode != null" >
+        TEMPLATE_CODE,
+      </if>
+      <if test="version != null" >
+        VERSION,
+      </if>
+      <if test="tranStatus != null" >
+        TRAN_STATUS,
+      </if>
+      <if test="lockedByNode != null" >
+        LOCKED_BY_NODE,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="templateCode != null" >
+        #{templateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="tranStatus != null" >
+        #{tranStatus,jdbcType=INTEGER},
+      </if>
+      <if test="lockedByNode != null" >
+        #{lockedByNode,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcPageTemplate" >
+    update CIFPAY_LC_PAGE_TEMPLATE
+    <set >
+      <if test="tranStatus != null" >
+        TRAN_STATUS = #{tranStatus,jdbcType=INTEGER},
+      </if>
+      <if test="lockedByNode != null" >
+        LOCKED_BY_NODE = #{lockedByNode,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR}
+      and VERSION = #{version,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcPageTemplate" >
+    update CIFPAY_LC_PAGE_TEMPLATE
+    set TRAN_STATUS = #{tranStatus,jdbcType=INTEGER},
+      LOCKED_BY_NODE = #{lockedByNode,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where TEMPLATE_CODE = #{templateCode,jdbcType=VARCHAR}
+      and VERSION = #{version,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>

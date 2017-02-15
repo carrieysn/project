@@ -1,0 +1,22 @@
+package com.cifpay.lc.core.db.dao;
+
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.LcTrade;
+
+@Repository
+public interface LcTradeDao {
+
+	LcTrade selectByPrimaryKey(String tradeCode);
+
+	void deleteByPrimaryKey(String tradeCode);
+
+	void insert(LcTrade lcTrade);
+
+	void insertSelective(LcTrade lcTrade);
+
+	void updateByPrimaryKeySelective(LcTrade lcTrade);
+
+	void updateByPrimaryKey(LcTrade lcTrade);
+
+}

@@ -1,0 +1,42 @@
+-- --------------------------------------------------------
+-- Host:                         192.168.163.2
+-- Server version:               5.6.28-log - MySQL Community Server (GPL)
+-- Server OS:                    Linux
+-- HeidiSQL Version:             9.3.0.4984
+-- --------------------------------------------------------
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+-- Dumping structure for table cifpay_lc_platform.CIFPAY_B_SW_WITHDRAW_QUEUE_MSG
+DROP TABLE IF EXISTS `CIFPAY_B_SW_WITHDRAW_QUEUE_MSG`;
+CREATE TABLE IF NOT EXISTS `CIFPAY_B_SW_WITHDRAW_QUEUE_MSG` (
+  `LC_ID` bigint(20) NOT NULL COMMENT '需要提现的银信证ID',
+  `MID` varchar(32) DEFAULT NULL COMMENT '商户号',
+  `WITHDRAW_ORDER_ID` varchar(128) DEFAULT NULL COMMENT '归属的提现交易单ID',
+  `HANDLE_STATUS` varchar(1) NOT NULL COMMENT '消息处理状态，1处理中，8提现处理成功，9提现处理失败',
+  `HANDLE_FAIL_DESC` varchar(256) DEFAULT NULL COMMENT 'MQ消息处理失败原因',
+  `WAIT_OPEN_RETRY_CNT` int(11) NOT NULL DEFAULT '0' COMMENT '等待开证重试次数',
+  `SW_OUTPUT_EXCHANGE_NAME` varchar(100) DEFAULT NULL COMMENT '银信证往星意输出的MQ exchange名字',
+  `SW_OUTPUT_QUEUE_NAME` varchar(100) DEFAULT NULL COMMENT '银信证往星意输出的队列名字',
+  `SW_SEND_STATUS` varchar(1) NOT NULL COMMENT '星意队列发送状态，0未发送，8发送成功，9发送失败',
+  `SW_SEND_FAIL_DESC` varchar(256) DEFAULT NULL COMMENT '星意队列发送失败原因',
+  `ACC_OUTPUT_EXCHANGE_NAME` varchar(100) DEFAULT NULL COMMENT '银信证往账务中心输出的MQ exchange名字',
+  `ACC_OUTPUT_QUEUE_NAME` varchar(100) DEFAULT NULL COMMENT '银信证往账务中心输出的队列名字',
+  `ACC_SEND_STATUS` varchar(1) NOT NULL COMMENT '账户中心队列发送状态，0未发送，5无需发送，8发送成功，9发送失败',
+  `ACC_SEND_FAIL_DESC` varchar(256) DEFAULT NULL COMMENT '账户中心队列发送失败原因',
+  `SW_LAST_SEND_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `ACC_LAST_SEND_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `CREATE_TIME` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT 'MQ消息接收时间',
+  `UPDATE_TIME` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'MQ消息处理时间',
+  `LOCKED_STATUS` varchar(1) NOT NULL COMMENT '当前记录是否处于被锁定状态，1是，0否',
+  `LOCKED_BY_NODE` varchar(256) DEFAULT NULL COMMENT '当前锁定该记录的应用节点ID',
+  PRIMARY KEY (`LC_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='存储从星意批量提现MQ消息队列接收到的消息记录';
+
+-- Data exporting was unselected.
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

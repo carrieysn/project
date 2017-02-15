@@ -1,0 +1,11 @@
+package com.cifpay.lc.std.sched.task;
+
+import org.springframework.stereotype.Component;
+
+/**
+ * 自动检测履约情况，例如调用快递接口查看是否完成
+ */
+@Component
+public class ThirdPartyOrderCheck {
+
+}

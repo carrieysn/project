@@ -1,0 +1,7 @@
+SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- DROP Table `CIFPAY_LC_BATCH_OPEN`
+-- ----------------------------
+DROP TABLE IF EXISTS `CIFPAY_LC_BATCH_OPEN`;
+

@@ -1,0 +1,98 @@
+package com.cifpay.lc.std.business.sms;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.sms.SmsSendMessageService;
+import com.cifpay.lc.api.message.MqMessageService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.MessageEnum;
+import com.cifpay.lc.constant.enums.SmsType;
+import com.cifpay.lc.core.cache.service.SmsCacheServant;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.domain.message.SmsParamBean;
+import com.cifpay.lc.domain.sms.SmsSendOutputBean;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.util.SmsCodeUtil;
+
+/**
+ * 发送短信
+ *
+ * @author Administrator
+ */
+@Service("smsSendMessageService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class})
+public class SmsSendMessageServiceImpl implements SmsSendMessageService {
+    protected Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private MqMessageService messageService;
+    
+    @Autowired
+    private SmsCacheServant smsCacheServant;
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public BusinessOutput<SmsSendOutputBean> execute(BusinessInput<SmsParamBean> input) {
+        SmsParamBean smsParam = input.getData();
+        if (StringUtils.isEmpty(smsParam.getSmstype())) {
+            return BusinessOutput.fail(ReturnCode.SERVER_PARAM_ERROR, "短信模版类型为空");
+        }
+        /*
+         * 校验参数
+		 */
+        String validate = validate(smsParam, smsParam.getSmstype());
+        if (!StringUtils.isEmpty(validate)) {
+            return BusinessOutput.fail(ReturnCode.SERVER_PARAM_ERROR, validate);
+        }
+        /*
+		 * 需要验证码时添加验证码
+		 */
+        if (smsParam.getSmstype() == SmsType.SMS_CP500.getCode() || smsParam.getSmstype() == SmsType.SMS_OPEN.getCode()) {
+            smsParam.setSmsCode(SmsCodeUtil.randomcode());
+        }
+        
+        BusinessOutput output= messageService.sendMessage(MessageEnum.MsgType.SMS, MessageEnum.Scene.SENDSMS, input.getData());
+        
+        if(output.isSuccess()){
+        	String key = smsParam.getMerId() + "_" + smsParam.getPhone() + "_" + smsParam.getSmstype();
+        	smsCacheServant.setSmsCache(key, smsParam);
+        }
+        return output;
+    }
+
+    private String validate(SmsParamBean smsParam, int smsType) {
+    	if (StringUtils.isEmpty(smsParam.getMerId())) {
+            return "商户号不能为空";
+        }
+        if (StringUtils.isEmpty(smsParam.getAmount())) {
+            return "参数金额不能为空";
+        }
+        if (smsType == SmsType.SMS_CP200.getCode() || smsType == SmsType.SMS_CP300.getCode() || smsType == SmsType.SMS_CP500.getCode()) {
+            if (StringUtils.isEmpty(smsParam.getCardNo())) {
+                return "参数银行卡尾号不能为空";
+            }
+            if (StringUtils.isEmpty(smsParam.getCreateTime())) {
+                return "参数交易时间不能为空";
+            }
+        } else if (smsType == SmsType.SMS_OPEN.getCode()) {
+            if (StringUtils.isEmpty(smsParam.getOrderContent())) {
+                return "参数订单详情不能为空";
+            }
+        } else if (smsType == SmsType.SMS_REFUND.getCode()) {
+            if (StringUtils.isEmpty(smsParam.getMerName())) {
+                return "参数商户名称不能为空";
+            }
+            if (StringUtils.isEmpty(smsParam.getCreateTime())) {
+                return "参数交易时间不能为空";
+            }
+        }
+        return null;
+    }
+
+}

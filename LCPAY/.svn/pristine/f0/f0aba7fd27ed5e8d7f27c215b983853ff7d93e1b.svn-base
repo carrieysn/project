@@ -1,0 +1,26 @@
+package com.cifpay.lc.std.mapper;
+
+import com.cifpay.lc.bankadapter.api.constant.TradeConfig;
+import com.cifpay.lc.constant.enums.LcTranStatus;
+
+/**
+ * Created by sweet on 16-11-8.
+ */
+public abstract class LcTranStatusMapper {
+
+    public static LcTranStatus parseUntionResult(String tradeResult) {
+        LcTranStatus lcTranStatus;
+
+        if (TradeConfig.TRADE_RESULT_SUCCEED_0.equalsIgnoreCase(tradeResult)) {
+            lcTranStatus = LcTranStatus.SUCCESS;
+        } else if (TradeConfig.TRADE_RESULT_FAIL_1.equalsIgnoreCase(tradeResult)) {
+            lcTranStatus = LcTranStatus.FAIL;
+        } else if (TradeConfig.TRADE_RESULT_UNKNOWN_2.equalsIgnoreCase(tradeResult)) {
+            lcTranStatus = LcTranStatus.UNCERTAIN;
+        } else {
+            lcTranStatus = LcTranStatus.UNCERTAIN;
+        }
+
+        return lcTranStatus;
+    }
+}

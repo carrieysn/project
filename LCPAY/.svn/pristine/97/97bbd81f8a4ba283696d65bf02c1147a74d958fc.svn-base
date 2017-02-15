@@ -1,0 +1,67 @@
+package com.cifpay.lc.gateway.controller.cache;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.cache.CacheBusinessService;
+import com.cifpay.lc.domain.cache.CacheInput;
+import com.cifpay.lc.domain.cache.CacheOutput;
+import com.cifpay.lc.domain.security.MerchantRequest;
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+
+@Controller
+@RequestMapping("/cache")
+public class CacheBusinessController extends GatewayBaseController{
+
+	
+	@Autowired
+	private CacheBusinessService cacheBusinessService;
+	
+	
+	
+	@RequestMapping(path = "/selectCache", method = RequestMethod.POST)
+    @ResponseBody
+    public CacheOutput selectCache(@RequestBody MerchantRequest<CacheInput> merReq) {
+		CacheInput cacheInput = merReq.getData();
+		//BusinessOutput<CacheOutput> output = cacheBusinessService.getCache(cacheInput.getBusinessParam(),cacheInput.getCacheKey());
+		CacheOutput output = null;
+		BusinessOutput<CacheOutput> busCache = cacheBusinessService.getCache(cacheInput);
+		output = busCache.getData();
+		output.setReturnCode(busCache.getReturnCode());
+		output.setReturnMsg(busCache.getReturnMsg());
+		return output;
+    }
+	
+	
+	@RequestMapping(path = "/updateCache", method = RequestMethod.POST)
+    @ResponseBody
+    public CacheOutput updateCache(@RequestBody MerchantRequest<CacheInput> merReq) {
+		CacheInput cacheInput = merReq.getData();
+		CacheOutput output = new CacheOutput();
+		BusinessOutput<CacheOutput> updateCache = cacheBusinessService.updateCache(cacheInput);
+		output = updateCache.getData();
+		output.setReturnCode(updateCache.getReturnCode());
+		output.setReturnMsg(updateCache.getReturnMsg());
+		return output;
+    }
+	
+	
+	@RequestMapping(path = "/removeCache", method = RequestMethod.POST)
+    @ResponseBody
+    public CacheOutput removeCache(@RequestBody MerchantRequest<CacheInput> merReq) {
+		CacheInput cacheInput = merReq.getData();
+		CacheOutput output = new CacheOutput();
+		BusinessOutput<CacheOutput> removeCache = cacheBusinessService.removeCache(cacheInput);
+		
+		output.setReturnCode(removeCache.getReturnCode());
+		output.setReturnMsg(removeCache.getReturnMsg());
+		return output;
+    }
+	
+}

@@ -1,0 +1,80 @@
+package com.cifpay.lc.std.business.message.lc;
+
+import com.alibaba.fastjson.JSON;
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.lc.ApplyService;
+import com.cifpay.lc.api.message.lc.AutoApplyLcMessageService;
+import com.cifpay.lc.constant.ReturnCode;
+import com.cifpay.lc.constant.enums.MessageEnum;
+import com.cifpay.lc.core.common.CoreBusinessContext;
+import com.cifpay.lc.core.common.CoreBusinessInterceptorConfig;
+import com.cifpay.lc.core.db.dao.MessageDao;
+import com.cifpay.lc.core.db.pojo.Message;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+import com.cifpay.lc.core.exception.CoreValidationRejectException;
+import com.cifpay.lc.domain.lc.ApplyInputBean;
+import com.cifpay.lc.domain.lc.ApplyOutputBean;
+import com.cifpay.lc.domain.message.LcApplyParamBean;
+import com.cifpay.lc.domain.message.MessageInputBean;
+import com.cifpay.lc.domain.message.MessageOutputBean;
+import com.cifpay.lc.exception.MessageBusinessException;
+import com.cifpay.lc.std.business.message.LcMessageServiceBase;
+import com.cifpay.lc.std.interceptor.BusinessLoggingInterceptor;
+import com.cifpay.lc.std.interceptor.MessageLockInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+@Service("autoApplyLcMessageService")
+@CoreBusinessInterceptorConfig({BusinessLoggingInterceptor.class, MessageLockInterceptor.class})
+public class AutoApplyLcMessageServiceImpl extends LcMessageServiceBase<MessageInputBean, MessageOutputBean> implements AutoApplyLcMessageService {
+
+    @Autowired
+    private MessageDao messageDao;
+
+    @Autowired
+    private ApplyService applyService;
+
+    @Override
+    protected void validate(MessageInputBean inputBean, CoreBusinessContext context)
+            throws CoreValidationRejectException {
+        Message message = messageDao.selectByPrimaryKey(inputBean.getMsgId());
+        if (message == null) {
+            throw new MessageBusinessException(ReturnCode.CORE_MSG_NOT_FOUND_EXCEPTION_N108001, "message不存在");
+        }
+        context.setAttribute("LC_OPEN_MESSAGE", message);
+
+        if (StringUtils.isEmpty(message.getParams())) {
+            throw new MessageBusinessException(ReturnCode.SERVER_PARAM_ERROR, "消息参数不正确，不能为空");
+        }
+        LcApplyParamBean autoFlowBean = JSON.parseObject(message.getParams(), LcApplyParamBean.class);
+        context.setAttribute("AUTO_FLOW_BEAN", autoFlowBean);
+    }
+
+    @Override
+    protected BusinessOutput<MessageOutputBean> _processBusiness(MessageInputBean inputBean, CoreBusinessContext context)
+            throws CoreBusinessException {
+
+        Message message = (Message) context.getAttribute("LC_OPEN_MESSAGE");
+        LcApplyParamBean applyParamBean = (LcApplyParamBean) context.getAttribute("AUTO_FLOW_BEAN");
+
+        ApplyInputBean applyInputBean = new ApplyInputBean();
+        applyInputBean.setLcId(applyParamBean.getLcId());
+        applyInputBean.setMerId(applyParamBean.getMerId());
+        applyInputBean.setLcAppointmentId(applyParamBean.getLcAppointmentId());
+        applyInputBean.setRemark(applyParamBean.getRemark());
+
+        BusinessOutput<ApplyOutputBean> output = applyService.execute(new BusinessInput<ApplyInputBean>(applyInputBean));
+
+        if (output.isSuccess()) {
+            return BusinessOutput.success(new MessageOutputBean(true));
+        } else {
+            BusinessOutput<MessageOutputBean> result = BusinessOutput.fail(ReturnCode.CORE_PRE_LC_RECV_FAIL_N106405, "申请解付不成功");
+            if (message.getCount() >= MessageEnum.MAX_COUNT) {
+                result.setData(new MessageOutputBean(true));
+            }
+            return result;
+        }
+    }
+}

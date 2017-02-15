@@ -1,0 +1,107 @@
+package com.cifpay.lc.domain.message;
+
+import com.cifpay.lc.constant.enums.LcTranStatus;
+import com.cifpay.lc.util.logging.LoggerEnum;
+import com.cifpay.lc.constant.enums.PayMethod;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class LcFreezeParamBean<T extends Serializable> extends MessageParamBean {
+
+    private static final long serialVersionUID = 1310774905848940099L;
+
+    private PayMethod payMethod;    //付款方式
+    private T data;                 //开证参数
+
+    private long lcId;                  //银信证Id
+    private long lcOpenId;              //开证Id
+
+    private String serialNo;            //交易流水号
+    private LcTranStatus lcTranStatus;  //交易处理状态
+    private Date freezeTime;            //交易时间
+
+    private String lcOpenResponse;
+
+    public LcFreezeParamBean() {
+        super(LoggerEnum.Scene.QUEUE_OPEN);
+    }
+
+    public PayMethod getPayMethod() {
+        return payMethod;
+    }
+
+    public void setPayMethod(PayMethod payMethod) {
+        this.payMethod = payMethod;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(long lcId) {
+        this.lcId = lcId;
+    }
+
+    public long getLcOpenId() {
+        return lcOpenId;
+    }
+
+    public void setLcOpenId(long lcOpenId) {
+        this.lcOpenId = lcOpenId;
+    }
+
+    public LcTranStatus getLcTranStatus() {
+        return lcTranStatus;
+    }
+
+    public void setLcTranStatus(LcTranStatus lcTranStatus) {
+        this.lcTranStatus = lcTranStatus;
+    }
+
+    public String getLcOpenResponse() {
+        return lcOpenResponse;
+    }
+
+    public void setLcOpenResponse(String lcOpenResponse) {
+        this.lcOpenResponse = lcOpenResponse;
+    }
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    public Date getFreezeTime() {
+        return freezeTime;
+    }
+
+    public void setFreezeTime(Date freezeTime) {
+        this.freezeTime = freezeTime;
+    }
+
+    @Override
+    public String toString() {
+        return "LcFreezeParamBean{" +
+                "payMethod=" + payMethod +
+                ", data=" + data +
+                ", lcId=" + lcId +
+                ", lcOpenId=" + lcOpenId +
+                ", serialNo='" + serialNo + '\'' +
+                ", lcTranStatus=" + lcTranStatus +
+                ", freezeTime=" + freezeTime +
+                ", lcOpenResponse='" + lcOpenResponse + '\'' +
+                '}';
+    }
+}

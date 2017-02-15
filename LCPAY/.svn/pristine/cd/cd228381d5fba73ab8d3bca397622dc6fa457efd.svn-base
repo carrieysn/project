@@ -1,0 +1,51 @@
+package com.cifpay.lc.gateway.controller.cache;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.cifpay.lc.api.gateway.cache.CacheBusinessService;
+import com.cifpay.lc.domain.cache.CacheInput;
+import com.cifpay.lc.domain.cache.CacheOutput;
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+
+@Controller
+@RequestMapping("/cache")
+public class CacheBusinessController extends GatewayBaseController{
+
+	
+	@Autowired
+	private CacheBusinessService cacheBusinessService;
+	
+	
+	
+	@RequestMapping(path = "/selectCache", method = RequestMethod.POST)
+    @ResponseBody
+    public CacheOutput selectCache(@RequestBody CacheInput cacheInput) {
+		//BusinessOutput<CacheOutput> output = cacheBusinessService.getCache(cacheInput.getBusinessParam(),cacheInput.getCacheKey());
+		CacheOutput output = cacheBusinessService.getCache(cacheInput);
+		System.out.println("getresult: "+output.toString());
+		return output;
+    }
+	
+	
+	@RequestMapping(path = "/updateCache", method = RequestMethod.POST)
+    @ResponseBody
+    public CacheOutput updateCache(@RequestBody CacheInput cacheInput) {
+		CacheOutput output = cacheBusinessService.updateCache(cacheInput);
+        return output;
+    }
+	
+	
+	@RequestMapping(path = "/removeCache", method = RequestMethod.POST)
+    @ResponseBody
+    public void removeCache(@RequestBody CacheInput cacheInput) {
+		cacheBusinessService.removeCache(cacheInput);
+		
+      
+    }
+	
+}

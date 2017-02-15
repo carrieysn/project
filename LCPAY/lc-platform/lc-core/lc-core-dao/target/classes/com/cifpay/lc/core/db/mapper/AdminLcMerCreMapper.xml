@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.AdminLcMerCreDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.AdminLcMerCre" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="MER_ID" property="merId" jdbcType="VARCHAR" />
+    <result column="MER_CODE" property="merCode" jdbcType="VARCHAR" />
+    <result column="XN_MER_ID" property="xnMerId" jdbcType="VARCHAR" />
+    <result column="CRE_ID" property="creId" jdbcType="VARCHAR" />
+    <result column="XN_TYPE" property="xnType" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, MER_ID, MER_CODE, XN_MER_ID, CRE_ID, XN_TYPE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from ADMIN_CIFPAY_LC_MER_CRE
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from ADMIN_CIFPAY_LC_MER_CRE
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.AdminLcMerCre" >
+    insert into ADMIN_CIFPAY_LC_MER_CRE (ID, MER_ID, MER_CODE, 
+      XN_MER_ID, CRE_ID, XN_TYPE
+      )
+    values (#{id,jdbcType=VARCHAR}, #{merId,jdbcType=VARCHAR}, #{merCode,jdbcType=VARCHAR}, 
+      #{xnMerId,jdbcType=VARCHAR}, #{creId,jdbcType=VARCHAR}, #{xnType,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.AdminLcMerCre" >
+    insert into ADMIN_CIFPAY_LC_MER_CRE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="merId != null" >
+        MER_ID,
+      </if>
+      <if test="merCode != null" >
+        MER_CODE,
+      </if>
+      <if test="xnMerId != null" >
+        XN_MER_ID,
+      </if>
+      <if test="creId != null" >
+        CRE_ID,
+      </if>
+      <if test="xnType != null" >
+        XN_TYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="merId != null" >
+        #{merId,jdbcType=VARCHAR},
+      </if>
+      <if test="merCode != null" >
+        #{merCode,jdbcType=VARCHAR},
+      </if>
+      <if test="xnMerId != null" >
+        #{xnMerId,jdbcType=VARCHAR},
+      </if>
+      <if test="creId != null" >
+        #{creId,jdbcType=VARCHAR},
+      </if>
+      <if test="xnType != null" >
+        #{xnType,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.AdminLcMerCre" >
+    update ADMIN_CIFPAY_LC_MER_CRE
+    <set >
+      <if test="merId != null" >
+        MER_ID = #{merId,jdbcType=VARCHAR},
+      </if>
+      <if test="merCode != null" >
+        MER_CODE = #{merCode,jdbcType=VARCHAR},
+      </if>
+      <if test="xnMerId != null" >
+        XN_MER_ID = #{xnMerId,jdbcType=VARCHAR},
+      </if>
+      <if test="creId != null" >
+        CRE_ID = #{creId,jdbcType=VARCHAR},
+      </if>
+      <if test="xnType != null" >
+        XN_TYPE = #{xnType,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.AdminLcMerCre" >
+    update ADMIN_CIFPAY_LC_MER_CRE
+    set MER_ID = #{merId,jdbcType=VARCHAR},
+      MER_CODE = #{merCode,jdbcType=VARCHAR},
+      XN_MER_ID = #{xnMerId,jdbcType=VARCHAR},
+      CRE_ID = #{creId,jdbcType=VARCHAR},
+      XN_TYPE = #{xnType,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

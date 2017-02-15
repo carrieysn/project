@@ -1,0 +1,18 @@
+package com.cifpay.lc.api.gateway.bank;
+
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.BusinessService;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+
+import java.util.HashMap;
+
+public interface PaymentSuccessService extends BusinessService {
+
+    void GeneralCallBack(String encoding, HashMap<String, String> map);
+
+    BusinessOutput<String> cifpayCallBack(GeneralTradeResult result);
+
+    void openCardBack(String encoding, HashMap<String, String> map);
+
+    BusinessOutput<Boolean> openCardFront(String encoding, HashMap<String, String> map);
+}

@@ -1,0 +1,71 @@
+package com.cifpay.lc.core.autoconfigure.redis;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.util.StringUtils;
+
+@Configuration
+@ConditionalOnProperty(name="cifpay.redis.enable", havingValue="true")
+public class RedisConfiguration {
+
+
+	@Value("${cifpay.redis.host:localhost}")
+	private String host;
+
+	@Value("${cifpay.redis.port:6379}")
+	private int port;
+
+	@Value("${cifpay.redis.cluster.nodes:}")
+	private String nodes;
+
+	@Value("${cifpay.redis.timeout:5000}")
+	private int timeout;
+
+	@Value("${cifpay.redis.pool.maxActive:300}")
+	private int maxActive;
+
+	@Value("${cifpay.redis.pool.maxWait:-1}")
+	private int maxWait;
+
+	@Value("${cifpay.redis.pool.maxIdle:8}")
+	private int maxIdle;
+
+	@Value("${cifpay.redis.pool.minIdle:5}")
+	private int minIdle;
+
+	@Bean
+	@Primary
+	public RedisProperties redisProperties() {
+		RedisProperties redisProperties =  new RedisProperties();
+
+		if(StringUtils.hasText(nodes)){
+			RedisProperties.Cluster cluster = new RedisProperties.Cluster();
+			String[] arry = nodes.split(",");
+			List<String> nodeList = Arrays.asList(arry);
+			cluster.setNodes(nodeList);
+			cluster.setMaxRedirects(5);
+			redisProperties.setCluster(cluster);
+
+			RedisProperties.Pool pool = new RedisProperties.Pool();
+			pool.setMaxActive(maxActive);
+			pool.setMaxWait(maxWait);
+			pool.setMaxIdle(maxIdle);
+			pool.setMinIdle(minIdle);
+			redisProperties.setPool(pool);
+		}else{
+			redisProperties.setHost(host);
+			redisProperties.setPort(port);
+		}
+
+		return redisProperties;
+	}
+
+
+}

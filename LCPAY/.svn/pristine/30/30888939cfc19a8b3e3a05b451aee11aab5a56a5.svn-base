@@ -1,0 +1,52 @@
+package com.cifpay.lc.core.component;
+
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
+
+import com.cifpay.lc.api.gateway.basic.signkey.MerFrontValidationMaterial;
+import com.cifpay.lc.core.exception.CoreBusinessException;
+
+/**
+ * 商户私有信息提供服务，通过该服务接口，Gateway可以获取到指定商户的商户状态、签名Key等敏感信息。
+ * 
+ * 
+ *
+ */
+@Component
+public class MerPrivateInfoProvider {
+
+	public static final String CACHE_NAME = "CIFPAY-BACKEND-MER_PRIV_INFO_PROVIDER";
+
+	//@Cacheable(cacheNames = CACHE_NAME)
+	public MerFrontValidationMaterial getMerchantMaterial(String merId) throws CoreBusinessException {
+
+		// TODO 现在还不确定具体从哪个源获取商户的信息
+
+		MerFrontValidationMaterial data = new MerFrontValidationMaterial();
+		data.setMerId(merId);
+		data.setMerchantStatus("1");
+
+		//data.setBankAccountNo("111122223333444455");
+		//data.setBankCode("ICBC");
+
+		/*if ("1000001".equals(merId)) {
+			// 星意
+			data.setSignKey("11c9c951a5ad422d88ccbfafa6912d5e");
+		} else if ("1000002".equals(merId)) {
+			// 账单中心
+			data.setSignKey("3cd2fad8aaf34115a16a17346b041b0b");
+		} else if ("1000003".equals(merId)) {
+			// 丰盛园
+			data.setSignKey("44a3e12349ca4128867bf73761e23e26");
+		} else if ("1000004".equals(merId)) {
+			// 单车
+			data.setSignKey("44a3e12349ca4128867bf73761e23e26");
+		} else {
+			data.setMerSiteDomain("test.com");
+			data.setSignKey("12345678901234567890123456789012");
+		}*/
+
+		return data;
+	}
+
+}

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcPageDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcPage" >
+    <id column="LC_ID" property="lcId" jdbcType="BIGINT" />
+    <result column="VERSION" property="version" jdbcType="VARCHAR" />
+    <result column="PAGE_URI" property="pageUri" jdbcType="VARCHAR" />
+    <result column="STORE_TYPE" property="storeType" jdbcType="VARCHAR" />
+    <result column="STORE_PATH" property="storePath" jdbcType="VARCHAR" />
+    <result column="STORE_GROUP" property="storeGroup" jdbcType="VARCHAR" />
+    <result column="TRAN_STATUS" property="tranStatus" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="GEN_TIME" property="genTime" jdbcType="TIMESTAMP" />
+    <result column="LOCKED_BY_NODE" property="lockedByNode" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    LC_ID, VERSION, PAGE_URI, STORE_TYPE, STORE_PATH, STORE_GROUP, TRAN_STATUS, CREATE_TIME, 
+    GEN_TIME, LOCKED_BY_NODE
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_PAGE
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC_PAGE
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcPage" >
+    insert into CIFPAY_LC_PAGE (LC_ID, VERSION, PAGE_URI, 
+      STORE_TYPE, STORE_PATH, STORE_GROUP, 
+      TRAN_STATUS, CREATE_TIME, GEN_TIME, 
+      LOCKED_BY_NODE)
+    values (#{lcId,jdbcType=BIGINT}, #{version,jdbcType=VARCHAR}, #{pageUri,jdbcType=VARCHAR}, 
+      #{storeType,jdbcType=VARCHAR}, #{storePath,jdbcType=VARCHAR}, #{storeGroup,jdbcType=VARCHAR}, 
+      #{tranStatus,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{genTime,jdbcType=TIMESTAMP}, 
+      #{lockedByNode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcPage" >
+    insert into CIFPAY_LC_PAGE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="lcId != null" >
+        LC_ID,
+      </if>
+      <if test="version != null" >
+        VERSION,
+      </if>
+      <if test="pageUri != null" >
+        PAGE_URI,
+      </if>
+      <if test="storeType != null" >
+        STORE_TYPE,
+      </if>
+      <if test="storePath != null" >
+        STORE_PATH,
+      </if>
+      <if test="storeGroup != null" >
+        STORE_GROUP,
+      </if>
+      <if test="tranStatus != null" >
+        TRAN_STATUS,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="genTime != null" >
+        GEN_TIME,
+      </if>
+      <if test="lockedByNode != null" >
+        LOCKED_BY_NODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="lcId != null" >
+        #{lcId,jdbcType=BIGINT},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="pageUri != null" >
+        #{pageUri,jdbcType=VARCHAR},
+      </if>
+      <if test="storeType != null" >
+        #{storeType,jdbcType=VARCHAR},
+      </if>
+      <if test="storePath != null" >
+        #{storePath,jdbcType=VARCHAR},
+      </if>
+      <if test="storeGroup != null" >
+        #{storeGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="tranStatus != null" >
+        #{tranStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="genTime != null" >
+        #{genTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lockedByNode != null" >
+        #{lockedByNode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcPage" >
+    update CIFPAY_LC_PAGE
+    <set >
+      <if test="version != null" >
+        VERSION = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="pageUri != null" >
+        PAGE_URI = #{pageUri,jdbcType=VARCHAR},
+      </if>
+      <if test="storeType != null" >
+        STORE_TYPE = #{storeType,jdbcType=VARCHAR},
+      </if>
+      <if test="storePath != null" >
+        STORE_PATH = #{storePath,jdbcType=VARCHAR},
+      </if>
+      <if test="storeGroup != null" >
+        STORE_GROUP = #{storeGroup,jdbcType=VARCHAR},
+      </if>
+      <if test="tranStatus != null" >
+        TRAN_STATUS = #{tranStatus,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="genTime != null" >
+        GEN_TIME = #{genTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lockedByNode != null" >
+        LOCKED_BY_NODE = #{lockedByNode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcPage" >
+    update CIFPAY_LC_PAGE
+    set VERSION = #{version,jdbcType=VARCHAR},
+      PAGE_URI = #{pageUri,jdbcType=VARCHAR},
+      STORE_TYPE = #{storeType,jdbcType=VARCHAR},
+      STORE_PATH = #{storePath,jdbcType=VARCHAR},
+      STORE_GROUP = #{storeGroup,jdbcType=VARCHAR},
+      TRAN_STATUS = #{tranStatus,jdbcType=INTEGER},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      GEN_TIME = #{genTime,jdbcType=TIMESTAMP},
+      LOCKED_BY_NODE = #{lockedByNode,jdbcType=VARCHAR}
+    where LC_ID = #{lcId,jdbcType=BIGINT}
+  </update>
+  
+  
+</mapper>

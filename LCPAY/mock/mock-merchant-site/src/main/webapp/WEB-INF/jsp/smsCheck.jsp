@@ -1,0 +1,80 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%> 
+<!DOCTYPE >
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>短信验证接口</title>
+	<!--ICON FOR IE7-->
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <!--ICON FOR IE6-->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <!--FOR Favorites ICON-->
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="css/public.css">
+    <link rel="stylesheet" type="text/css" href="css/all.css">
+    <link rel="stylesheet" type="text/css" href="css/pay2.css">
+    
+	<script type="text/javascript" src="js/jquery_1_7.js"></script>
+	<script type="text/javascript">
+		function validate() {
+			if($("input[name='smstype']:checked").val() == undefined){
+				alert("短信类型不能为空");
+				return false;
+			}
+			if($("#phone").val() == "") {
+				alert("手机号不能为空");
+				return false;
+			}
+			if($("#smsCode").val() == "") {
+				alert("短信验证码不能为空");
+				return false;
+			}
+			return true;
+		}
+	</script>
+</head>
+<body onload="">
+	<!--头部-->
+    <div class="header">
+        <div class="logo"><img src="img/logo.png"></div>
+    </div>
+    
+    <!--内容-->
+    <div class="container">
+        <p class="raya-firstpay">短信验证接口测试页面(<span class="requireicon">*</span>标记为必填参数)</p>
+        <div class="raya-ordertable">
+		<form action="<c:url value="/lc/smscheck.lc" />" method="post" target="_blank" onsubmit="return validate()">
+			<ul>
+				<li>
+					<label>手机号：</label>
+					<input class="raya-input"  id="phone" name="phone" maxlength="20" required/>  <span class="requireicon">*</span>
+				</li>
+				<li>
+					<label>短信验证码：</label>
+					<input class="raya-input"  id="smsCode" name="smsCode" maxlength="20" required/>  <span class="requireicon">*</span>
+				</li>
+				<li>
+					<label>需要验证的短信类型：</label>
+					开征 <input type="radio" name="smstype" value="4"/>
+					CP200 <input type="radio" name="smstype" value="1"/>
+					CP300 <input type="radio" name="smstype" value="2"/>
+					CP500 <input type="radio" name="smstype" value="3"/>
+					退款 <input type="radio" name="smstype" value="5"/>
+					<span class="requireicon">*</span>
+				</li>
+			</ul>
+			<input class="raya-submit" value="验证短信" type="submit">
+		</form>
+		</div>
+		<div class="Clearfix"></div>
+	</div>
+	
+	<!--尾部-->
+	<div class="footer">
+		深圳市银信网银科技有限公司 2016 CIFPAY.all Rights Reservde Tel 0755-3368898
+	</div>
+</body>
+</html>

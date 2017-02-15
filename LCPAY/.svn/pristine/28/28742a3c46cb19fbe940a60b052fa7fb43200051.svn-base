@@ -1,0 +1,99 @@
+package com.cifpay.lc.std.business.query;
+
+import com.cifpay.lc.api.gateway.query.LcQueryService;
+import com.cifpay.lc.constant.ResultHandler;
+import com.cifpay.lc.constant.enums.LcStatusType;
+import com.cifpay.lc.core.db.dao.LcDao;
+import com.cifpay.lc.core.db.dao.LcOpenDao;
+import com.cifpay.lc.core.db.dao.LcRefundDao;
+import com.cifpay.lc.core.db.dao.PreLcDao;
+import com.cifpay.lc.core.db.pojo.Lc;
+import com.cifpay.lc.core.db.pojo.LcOpen;
+import com.cifpay.lc.core.db.pojo.LcRefund;
+import com.cifpay.lc.core.db.pojo.PreLc;
+import com.cifpay.lc.domain.query.LcDto;
+import com.cifpay.lc.domain.query.LcOpenDto;
+import com.cifpay.lc.domain.query.PreLcDto;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service("lcQueryService")
+public class LcQueryServiceImpl implements LcQueryService {
+
+    @Autowired
+    private PreLcDao preLcDao;
+    @Autowired
+    private LcDao lcDao;
+    @Autowired
+    private LcOpenDao lcOpenDao;
+    @Autowired
+    private LcRefundDao lcRefundDao;
+
+    @Override
+    public ResultHandler<PreLcDto> selectPreLcByLcId(Long lcId) {
+        PreLc preLce = preLcDao.selectByLcId(lcId);
+
+        if (preLce != null) {
+            PreLcDto preLcDto = new PreLcDto();
+            BeanUtils.copyProperties(preLce, preLcDto);
+
+            return ResultHandler.success(preLcDto);
+        }
+
+        return ResultHandler.fail("未找到银信证");
+    }
+
+    @Override
+    public ResultHandler<LcDto> selectLcByLcId(Long lcId) {
+
+        Lc lc = lcDao.selectByPrimaryKey(lcId);
+
+        if (lc != null) {
+            LcDto lcDto = new LcDto();
+            BeanUtils.copyProperties(lc, lcDto);
+
+            return ResultHandler.success(lcDto);
+
+        }
+
+        return ResultHandler.fail("未找到银信证");
+    }
+
+    @Override
+    public ResultHandler<LcOpenDto> selectOpenLcById(Long openId) {
+        LcOpen lcOpen = lcOpenDao.selectByLcId(openId);
+
+        if (lcOpen != null) {
+            LcOpenDto lcOpenDto = new LcOpenDto();
+            BeanUtils.copyProperties(lcOpen, lcOpenDto);
+
+            return ResultHandler.success(lcOpenDto);
+
+        }
+
+        return ResultHandler.fail("未找到银信证开证记录");
+    }
+
+    @Override
+    public ResultHandler<LcDto> selectLcByOrderId(String merId, String orderId) {
+        Lc lc = lcDao.selectByMidOrderId(merId, orderId);
+
+        if (lc != null) {
+            LcDto lcDto = new LcDto();
+            BeanUtils.copyProperties(lc, lcDto);
+
+            // 如果已退款，修改状态
+            List<LcRefund> lcRefundList = lcRefundDao.selectByLcId(lcDto.getLcId());
+            if (!lcRefundList.isEmpty()) {
+                lcDto.setLcStatus(LcStatusType.REFUND.getStatusCode());
+            }
+
+            return ResultHandler.success(lcDto);
+        }
+
+        return ResultHandler.fail("未找到银信证");
+    }
+}

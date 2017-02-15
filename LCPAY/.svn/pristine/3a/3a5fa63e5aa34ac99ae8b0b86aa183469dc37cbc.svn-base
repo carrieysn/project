@@ -1,0 +1,26 @@
+package com.cifpay.lc.constant;
+
+/**
+ * gateway层的返回码，范围是108xxx，其中使用负数表示失败（错误码），即 -108xxx 用于表示失败。
+ * <p>
+ * 在此文件中定义的返回码常量名必须全部以“CORE_MSG_”开头，例如：
+ *
+ * @{@code int CORE_MSG_NOT_EXISTS = -108001; }
+ */
+public interface MessageReturnCode {
+
+    /**
+     * 消息处理失败
+     */
+    int CORE_MSG_UNKNOWN_ERROR = -108000;
+
+    /**
+     * 消息不存在，数据库没找到
+     */
+    int CORE_MSG_NOT_FOUND_EXCEPTION_N108001 = -108001;
+
+    /**
+     * 插入消息到message表异常
+     */
+    int CORE_MSG_SAVE_EXCEPTION_N108002 = -108002;
+}

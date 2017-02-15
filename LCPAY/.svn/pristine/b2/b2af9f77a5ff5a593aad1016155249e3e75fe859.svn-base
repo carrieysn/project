@@ -1,0 +1,53 @@
+package com.cifpay.lc.std.sched.task.message;
+
+import com.cifpay.lc.constant.enums.LoggerEnum;
+import com.cifpay.lc.constant.enums.MessageEnum;
+import com.cifpay.lc.core.interceptor.annotation.EnableGenerateRequestId;
+import com.cifpay.lc.core.message.biz.MessagePublisher;
+import com.cifpay.lc.core.message.biz.impl.LcMessagePublisher;
+import com.cifpay.lc.std.sched.task.BaseMessageTask;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+/**
+ * 自动申请解付
+ * @author Administrator
+ *
+ */
+@Component
+@EnableGenerateRequestId(scene = LoggerEnum.Scene.QUEUE_APPLY)
+public class LcAutoApplyTask extends BaseMessageTask {
+
+	@Autowired
+	LcMessagePublisher lcMessagePublisher;
+	
+	/**
+     * 自动申请解付
+     * 每1分钟执行一次,扫描cifpay_message表获取消息记录，
+     * 条件为:
+     * 1:当前时间 >= plan_time
+     * 2:状态为待处理
+     * 3：每次最大取50条
+     * 4：每次定时任务执行，处理完所有符合条件的消息
+     * 5：增加分布式锁，避免多个节点部署scheduler处理资源竞争问题，解决HA问题
+     */
+    @Scheduled(cron = "0 */5 * * * *")
+    public void handleAutoApplyLc() {
+        String threadName = Thread.currentThread().getName();
+        if (logger.isInfoEnabled()) {
+            logger.info("============= 开始处理LC相关消息 ，threadName:{}==================", threadName);
+        }
+
+        handleMessage(MessageEnum.MsgType.LC, MessageEnum.Scene.APPLYLC);
+
+        if (logger.isInfoEnabled()) {
+            logger.info("============= 处理LC相关消息结束 ，threadName:{}==================", threadName);
+        }
+    }
+    
+    @Override
+    public MessagePublisher getMessagePublisher() {
+    	return lcMessagePublisher;
+    }
+}

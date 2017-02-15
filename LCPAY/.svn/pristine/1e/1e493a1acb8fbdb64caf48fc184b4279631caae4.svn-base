@@ -1,0 +1,40 @@
+package com.cifpay.lc.constant.enums;
+
+/**
+ * 开证渠道
+ */
+public enum PayChannel {
+
+    NORMAL("BANK", "银行开证"),
+    UNION_CREDIT("UNION_CREDIT", "银联信用卡开证"),
+    UNION_DEPOSIT("UNION_DEPOSIT", "银联储蓄卡开证");
+
+    private String code;
+    private String desc;
+
+    private PayChannel(String code, String desc) {
+        this.code = code;
+        this.desc = desc;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public static PayChannel parse(String code) {
+        PayChannel channel = null;
+        if (NORMAL.code.equals(code)) {
+            channel = NORMAL;
+        } else if (UNION_CREDIT.code.equals(code)) {
+            channel = UNION_CREDIT;
+        } else if (UNION_DEPOSIT.code.equals(code)) {
+            channel = UNION_DEPOSIT;
+        }
+
+        return channel;
+    }
+}

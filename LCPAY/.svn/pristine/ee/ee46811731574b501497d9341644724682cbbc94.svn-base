@@ -1,0 +1,63 @@
+package com.cifpay.lc.std.sched.task;
+
+import java.util.List;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.cifpay.lc.api.gateway.bank.PaymentSuccessService;
+import com.cifpay.lc.bankadapter.api.IBankTradeService;
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.bankadapter.api.input.unionpay.QueryTradeCifParam;
+import com.cifpay.lc.bankadapter.api.output.GeneralTradeResult;
+import com.cifpay.lc.core.db.dao.LcTrdUnionPayMainDao;
+import com.cifpay.lc.core.db.pojo.UnionPayTrdMain;
+
+@Component
+public class UnionPayQueryTask {
+
+	private static Logger logger = LoggerFactory.getLogger(UnionPayQueryTask.class);
+	@Autowired
+	LcTrdUnionPayMainDao mainDao;
+	@Autowired
+	IBankTradeService tradeService;
+	@Autowired
+	PaymentSuccessService paymentSuccessServiceImpl;
+	public static String DINGGOU_BIZTYPE = "001001";// 定购
+	public static String WU_BIZTYPE = "000902";// 无跳转
+
+	@Scheduled(cron = "0/30 * *  * * ?")
+	public void queryTask() {
+		logger.info(" ======== 开始扫描状态查询交易数据 ======== ");
+
+		List<UnionPayTrdMain> list = mainDao.selectToQueryTrade();
+		try {
+			if (list != null && list.size() > 0) {
+				for (UnionPayTrdMain main : list) {
+					QueryTradeCifParam param = new QueryTradeCifParam();
+					try {
+						BeanUtils.copyProperties(param, main);
+					} catch (Exception e) {
+						logger.error("↓↓↓↓ ↓↓↓↓ UionPayQueryTask 异常 ↓↓↓↓↓↓↓↓", e);
+					}
+					if (DINGGOU_BIZTYPE.equals(main.getBizType())) {
+						param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_DINGGOU_QUERY);
+					} else if (WU_BIZTYPE.equals(main.getBizType())) {
+						param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_QUERY);
+					}
+					param.setTxnType("00");
+					param.setTxnSubType("00");
+					param.setOnline(true);
+					GeneralTradeResult  result = tradeService.doTrade(param);
+					paymentSuccessServiceImpl.cifpayCallBack( result);
+				}
+			}
+		} catch (Exception e) {
+			logger.error("银联查询交易失败", e);
+		}
+	}
+}

@@ -1,0 +1,35 @@
+//package com.cifpay.lc.gateway.controller.example;
+//
+//import org.springframework.stereotype.Controller;
+//import org.springframework.web.bind.annotation.RequestMapping;
+//import org.springframework.web.bind.annotation.ResponseBody;
+//
+//import javax.servlet.http.HttpSession;
+//import java.util.Date;
+//
+//@Controller
+//@RequestMapping("/example/session")
+//public class SessionController {
+//
+//    public static final String SESSION_KEY = "test_session_key";
+//
+//    @RequestMapping("/")
+//    public String now() {
+//        return new Date().toString();
+//    }
+//
+//    @ResponseBody
+//    @RequestMapping(path = "/set")
+//        httpSession.setAttribute(SESSION_KEY, key);
+//
+//        return "成功保存Session: " + key;
+//    }
+//
+//    @ResponseBody
+//    @RequestMapping(path = "/get")
+//    public Object get(HttpSession httpSession) {
+//        String value = (String) httpSession.getAttribute(SESSION_KEY);
+//
+//        return value;
+//    }
+//}

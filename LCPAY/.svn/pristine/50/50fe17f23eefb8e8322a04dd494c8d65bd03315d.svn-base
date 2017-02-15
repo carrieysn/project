@@ -1,0 +1,120 @@
+package com.cifpay.lc.versionb.recharge.online.alipay.util;
+
+import java.io.Serializable;
+
+/**
+ * Created by yx on 2016/3/15.
+ */
+public class AlipayParam implements Serializable {
+    private static final long serialVersionUID = 2934886815105484026L;
+
+    //商户唯一订单号[不为空]
+    private String out_trade_no;
+    //商品名称[不为空]
+    private String subject;
+    //交易金额 单位RMB-Yuan
+    //取值范围为[0.01，100000000.00]，精确到小数点后两位[不为空]
+    private String total_fee;
+    //商品展示网址[不为空]
+    private String show_url;
+    //商品描述[可空]
+    private String body;
+    //超时时间[可空]
+    private String it_b_pay;
+    //手机支付宝token[可空]
+    private String extern_token;
+    //页面同步跳转通知页面路径 http://[可空]
+    private String return_url;
+    //服务器异步通知页面路径 http://[可空]
+    private String notify_url;
+
+    public AlipayParam() {
+    }
+
+    public String getOut_trade_no() {
+        return out_trade_no;
+    }
+
+    public void setOut_trade_no(String out_trade_no) {
+        this.out_trade_no = out_trade_no;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getTotal_fee() {
+        return total_fee;
+    }
+
+    public void setTotal_fee(String total_fee) {
+        this.total_fee = total_fee;
+    }
+
+    public String getShow_url() {
+        return show_url;
+    }
+
+    public void setShow_url(String show_url) {
+        this.show_url = show_url;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public String getIt_b_pay() {
+        return it_b_pay;
+    }
+
+    public void setIt_b_pay(String it_b_pay) {
+        this.it_b_pay = it_b_pay;
+    }
+
+    public String getExtern_token() {
+        return extern_token;
+    }
+
+    public void setExtern_token(String extern_token) {
+        this.extern_token = extern_token;
+    }
+
+    public String getReturn_url() {
+        return return_url;
+    }
+
+    public void setReturn_url(String return_url) {
+        this.return_url = return_url;
+    }
+
+    public String getNotify_url() {
+        return notify_url;
+    }
+
+    public void setNotify_url(String notify_url) {
+        this.notify_url = notify_url;
+    }
+
+    @Override
+    public String toString() {
+        return "AlipayParam{" +
+                "out_trade_no='" + out_trade_no + '\'' +
+                ", subject='" + subject + '\'' +
+                ", total_fee='" + total_fee + '\'' +
+                ", show_url='" + show_url + '\'' +
+                ", body='" + body + '\'' +
+                ", it_b_pay='" + it_b_pay + '\'' +
+                ", extern_token='" + extern_token + '\'' +
+                ", return_url='" + return_url + '\'' +
+                ", notify_url='" + notify_url + '\'' +
+                '}';
+    }
+}

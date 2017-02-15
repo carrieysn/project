@@ -1,0 +1,20 @@
+package com.cifpay.lc.api;
+
+import java.io.Serializable;
+
+/**
+ * 核心逻辑层业务服务接口
+ *
+ * @param <I>
+ * @param <O>
+ */
+public interface CoreBusinessService<I extends Serializable, O extends Serializable> extends BusinessService {
+
+    /**
+     * 每一个Core业务层的业务类必须实现该接口方法。
+     *
+     * @param input
+     * @return
+     */
+    BusinessOutput<O> execute(BusinessInput<I> input);
+}

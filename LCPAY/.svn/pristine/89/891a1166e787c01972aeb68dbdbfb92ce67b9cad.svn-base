@@ -1,0 +1,37 @@
+package com.cifpay.lc.core.autoconfigure.redis;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+
+@Configuration
+@ConditionalOnProperty(name = "cifpay.redis.enable", havingValue = "true")
+public class RedisConfiguration extends RedisAutoConfiguration {
+
+    @Value("${cifpay.redis.host:localhost}")
+    private String host;
+
+    @Value("${cifpay.redis.port:30000}")
+    private int port;
+
+    @Value("${cifpay.redis.password:600000}")
+    private String password;
+
+    @Bean
+    @Primary
+    @Override
+    public RedisProperties redisProperties() {
+        RedisProperties redisProperties = new RedisProperties();
+        redisProperties.setHost(host);
+        redisProperties.setPassword(password);
+        redisProperties.setPort(port);
+        return redisProperties;
+    }
+
+
+}

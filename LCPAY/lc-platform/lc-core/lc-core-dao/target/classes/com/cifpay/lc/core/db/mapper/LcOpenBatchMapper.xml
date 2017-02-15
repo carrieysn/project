@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cifpay.lc.core.db.dao.LcOpenBatchDao" >
+  <resultMap id="BaseResultMap" type="com.cifpay.lc.core.db.pojo.LcOpenBatch" >
+    <id column="BATCH_OPEN_ID" property="batchOpenId" jdbcType="BIGINT" />
+    <result column="MID" property="mid" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="LC_CURRENCY" property="lcCurrency" jdbcType="VARCHAR" />
+    <result column="LC_BATCH_AMOUNT" property="lcBatchAmount" jdbcType="DECIMAL" />
+    <result column="LC_BATCH_BALANCE" property="lcBatchBalance" jdbcType="DECIMAL" />
+    <result column="PAYER_ID" property="payerId" jdbcType="VARCHAR" />
+    <result column="PAYER_ACCNO" property="payerAccno" jdbcType="VARCHAR" />
+    <result column="PAYER_TYPE" property="payerType" jdbcType="VARCHAR" />
+    <result column="PAYER_BANK_CODE" property="payerBankCode" jdbcType="VARCHAR" />
+    <result column="PAYER_BANK_NAME" property="payerBankName" jdbcType="VARCHAR" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BATCH_OPEN_ID, MID, ORDER_ID, LC_CURRENCY, LC_BATCH_AMOUNT, LC_BATCH_BALANCE, PAYER_ID, 
+    PAYER_ACCNO, PAYER_TYPE, PAYER_BANK_CODE, PAYER_BANK_NAME, REMARK, CREATE_TIME, UPDATE_TIME
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_LC_OPEN_BATCH
+    where BATCH_OPEN_ID = #{batchOpenId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from CIFPAY_LC_OPEN_BATCH
+    where BATCH_OPEN_ID = #{batchOpenId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.cifpay.lc.core.db.pojo.LcOpenBatch" >
+    insert into CIFPAY_LC_OPEN_BATCH (BATCH_OPEN_ID, MID, ORDER_ID, 
+      LC_CURRENCY, LC_BATCH_AMOUNT, LC_BATCH_BALANCE, 
+      PAYER_ID, PAYER_ACCNO, PAYER_TYPE, 
+      PAYER_BANK_CODE, PAYER_BANK_NAME, REMARK, 
+      CREATE_TIME, UPDATE_TIME)
+    values (#{batchOpenId,jdbcType=BIGINT}, #{mid,jdbcType=VARCHAR}, #{orderId,jdbcType=VARCHAR}, 
+      #{lcCurrency,jdbcType=VARCHAR}, #{lcBatchAmount,jdbcType=DECIMAL}, #{lcBatchBalance,jdbcType=DECIMAL}, 
+      #{payerId,jdbcType=VARCHAR}, #{payerAccno,jdbcType=VARCHAR}, #{payerType,jdbcType=VARCHAR}, 
+      #{payerBankCode,jdbcType=VARCHAR}, #{payerBankName,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.cifpay.lc.core.db.pojo.LcOpenBatch" >
+    insert into CIFPAY_LC_OPEN_BATCH
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="batchOpenId != null" >
+        BATCH_OPEN_ID,
+      </if>
+      <if test="mid != null" >
+        MID,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+      <if test="lcCurrency != null" >
+        LC_CURRENCY,
+      </if>
+      <if test="lcBatchAmount != null" >
+        LC_BATCH_AMOUNT,
+      </if>
+      <if test="lcBatchBalance != null" >
+        LC_BATCH_BALANCE,
+      </if>
+      <if test="payerId != null" >
+        PAYER_ID,
+      </if>
+      <if test="payerAccno != null" >
+        PAYER_ACCNO,
+      </if>
+      <if test="payerType != null" >
+        PAYER_TYPE,
+      </if>
+      <if test="payerBankCode != null" >
+        PAYER_BANK_CODE,
+      </if>
+      <if test="payerBankName != null" >
+        PAYER_BANK_NAME,
+      </if>
+      <if test="remark != null" >
+        REMARK,
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="batchOpenId != null" >
+        #{batchOpenId,jdbcType=BIGINT},
+      </if>
+      <if test="mid != null" >
+        #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="lcCurrency != null" >
+        #{lcCurrency,jdbcType=VARCHAR},
+      </if>
+      <if test="lcBatchAmount != null" >
+        #{lcBatchAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="lcBatchBalance != null" >
+        #{lcBatchBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="payerId != null" >
+        #{payerId,jdbcType=VARCHAR},
+      </if>
+      <if test="payerAccno != null" >
+        #{payerAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="payerType != null" >
+        #{payerType,jdbcType=VARCHAR},
+      </if>
+      <if test="payerBankCode != null" >
+        #{payerBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="payerBankName != null" >
+        #{payerBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cifpay.lc.core.db.pojo.LcOpenBatch" >
+    update CIFPAY_LC_OPEN_BATCH
+    <set >
+      <if test="mid != null" >
+        MID = #{mid,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="lcCurrency != null" >
+        LC_CURRENCY = #{lcCurrency,jdbcType=VARCHAR},
+      </if>
+      <if test="lcBatchAmount != null" >
+        LC_BATCH_AMOUNT = #{lcBatchAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="lcBatchBalance != null" >
+        LC_BATCH_BALANCE = #{lcBatchBalance,jdbcType=DECIMAL},
+      </if>
+      <if test="payerId != null" >
+        PAYER_ID = #{payerId,jdbcType=VARCHAR},
+      </if>
+      <if test="payerAccno != null" >
+        PAYER_ACCNO = #{payerAccno,jdbcType=VARCHAR},
+      </if>
+      <if test="payerType != null" >
+        PAYER_TYPE = #{payerType,jdbcType=VARCHAR},
+      </if>
+      <if test="payerBankCode != null" >
+        PAYER_BANK_CODE = #{payerBankCode,jdbcType=VARCHAR},
+      </if>
+      <if test="payerBankName != null" >
+        PAYER_BANK_NAME = #{payerBankName,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        REMARK = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where BATCH_OPEN_ID = #{batchOpenId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cifpay.lc.core.db.pojo.LcOpenBatch" >
+    update CIFPAY_LC_OPEN_BATCH
+    set MID = #{mid,jdbcType=VARCHAR},
+      ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      LC_CURRENCY = #{lcCurrency,jdbcType=VARCHAR},
+      LC_BATCH_AMOUNT = #{lcBatchAmount,jdbcType=DECIMAL},
+      LC_BATCH_BALANCE = #{lcBatchBalance,jdbcType=DECIMAL},
+      PAYER_ID = #{payerId,jdbcType=VARCHAR},
+      PAYER_ACCNO = #{payerAccno,jdbcType=VARCHAR},
+      PAYER_TYPE = #{payerType,jdbcType=VARCHAR},
+      PAYER_BANK_CODE = #{payerBankCode,jdbcType=VARCHAR},
+      PAYER_BANK_NAME = #{payerBankName,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP}
+    where BATCH_OPEN_ID = #{batchOpenId,jdbcType=BIGINT}
+  </update>
+</mapper>

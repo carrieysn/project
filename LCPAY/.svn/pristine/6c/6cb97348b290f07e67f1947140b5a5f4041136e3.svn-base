@@ -1,0 +1,11 @@
+package com.cifpay.lc.versionb.recharge.online.chinapay.domain.wap;
+
+/**
+ * 接收到的来自银联在线系统的支付结果异步通知结果。
+ * 
+ * 
+ *
+ */
+public class UnionpayPaymentNoticeData extends UnionpayPaymentReturnData {
+
+}

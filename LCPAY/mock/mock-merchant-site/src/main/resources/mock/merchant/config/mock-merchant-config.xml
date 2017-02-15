@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<comment>商户模拟应用所需的配置信息</comment>
+	
+	<!-- 银信证网关应用的地址 -->
+	<entry key="lcGateway.baseURL">http://localhost:8088/gw</entry>
+	
+	<!-- 模拟标准银信证商户的商户ID -->
+	<entry key="mock.lcStandardMerchant.merId">1000001</entry>
+	<!-- 模拟标准银信证商户的商户签名Key -->
+	<entry key="mock.lcStandardMerchant.signKey">11c9c951a5ad422d88ccbfafa6912d5e</entry>
+	
+	<!-- 模拟星意商户的商户ID -->
+	<entry key="mock.starwishMerchant.merId">1000001</entry>
+	<!-- 模拟星意商户的商户签名Key -->
+	<entry key="mock.starwishMerchant.signKey">11c9c951a5ad422d88ccbfafa6912d5e</entry>
+	
+	<!-- Mysql配置 -->
+    <entry key="mysql.connectString"><![CDATA[jdbc:mysql://192.168.163.2:3306/cifpay_lc_dev?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&zeroDateTimeBehavior=convertToNull]]></entry>
+    <entry key="mysql.username">cifpay</entry>
+    <entry key="mysql.password">cifpaydev</entry>
+ 
+</properties>

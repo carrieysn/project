@@ -1,0 +1,150 @@
+package com.cifpay.lc.core.db.pojo;
+
+import java.util.Date;
+
+public class BSwOpenQueueMsg {
+    /**
+     * 处理中
+     */
+    public static final String HANDLE_STATUS_PROCESSING = "1";
+
+    /**
+     * 处理成功
+     */
+    public static final String HANDLE_STATUS_SUCCESS = "2";
+
+    /**
+     * 处理失败
+     */
+    public static final String HANDLE_STATUS_FAILED = "3";
+
+    private Long msgId;
+
+    private String mid;
+
+    private String rechargeOrderId;
+
+    private String type;
+
+    private String sno;
+
+    private String swStatus;
+
+    private String accStatus;
+
+    private Date recieveTime;
+
+    private Date handleTime;
+
+    private String handleBy;
+
+    private String exchangeName;
+
+    private String queueName;
+
+    private Long lcId;
+
+    public Long getMsgId() {
+        return msgId;
+    }
+
+    public void setMsgId(Long msgId) {
+        this.msgId = msgId;
+    }
+
+    public String getMid() {
+        return mid;
+    }
+
+    public void setMid(String mid) {
+        this.mid = mid == null ? null : mid.trim();
+    }
+
+    public String getRechargeOrderId() {
+        return rechargeOrderId;
+    }
+
+    public void setRechargeOrderId(String rechargeOrderId) {
+        this.rechargeOrderId = rechargeOrderId == null ? null : rechargeOrderId.trim();
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type == null ? null : type.trim();
+    }
+
+    public String getSno() {
+        return sno;
+    }
+
+    public void setSno(String sno) {
+        this.sno = sno;
+    }
+
+    public String getSwStatus() {
+        return swStatus;
+    }
+
+    public void setSwStatus(String swStatus) {
+        this.swStatus = swStatus;
+    }
+
+    public Date getRecieveTime() {
+        return recieveTime;
+    }
+
+    public void setRecieveTime(Date recieveTime) {
+        this.recieveTime = recieveTime;
+    }
+
+    public Date getHandleTime() {
+        return handleTime;
+    }
+
+    public void setHandleTime(Date handleTime) {
+        this.handleTime = handleTime;
+    }
+
+    public String getHandleBy() {
+        return handleBy;
+    }
+
+    public void setHandleBy(String handleBy) {
+        this.handleBy = handleBy == null ? null : handleBy.trim();
+    }
+
+    public String getAccStatus() {
+        return accStatus;
+    }
+
+    public void setAccStatus(String accStatus) {
+        this.accStatus = accStatus;
+    }
+
+    public String getExchangeName() {
+        return exchangeName;
+    }
+
+    public void setExchangeName(String exchangeName) {
+        this.exchangeName = exchangeName;
+    }
+
+    public String getQueueName() {
+        return queueName;
+    }
+
+    public void setQueueName(String queueName) {
+        this.queueName = queueName;
+    }
+
+    public Long getLcId() {
+        return lcId;
+    }
+
+    public void setLcId(Long lcId) {
+        this.lcId = lcId;
+    }
+}

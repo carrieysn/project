@@ -1,0 +1,344 @@
+package com.cifpay.lc.gateway.controller.bank;
+
+import com.cifpay.lc.api.BusinessInput;
+import com.cifpay.lc.api.BusinessOutput;
+import com.cifpay.lc.api.gateway.bank.OpenCardService;
+import com.cifpay.lc.api.gateway.basic.signkey.MerFrontValidationMaterial;
+import com.cifpay.lc.api.gateway.lc.OpenLcService;
+import com.cifpay.lc.api.gateway.query.LcQueryService;
+import com.cifpay.lc.api.gateway.sms.SmsSendMessageService;
+import com.cifpay.lc.api.gateway.union.MerInfoService;
+import com.cifpay.lc.api.security.SecurityService;
+import com.cifpay.lc.bankadapter.api.constant.TradeConstant;
+import com.cifpay.lc.constant.BizConstants;
+import com.cifpay.lc.constant.ResultHandler;
+import com.cifpay.lc.constant.enums.SmsType;
+import com.cifpay.lc.domain.bank.OpenCardInputBean;
+import com.cifpay.lc.domain.enums.AdminCardType;
+import com.cifpay.lc.domain.lc.OpenLcInputBean;
+import com.cifpay.lc.domain.lc.OpenLcOutputBean;
+import com.cifpay.lc.domain.lc.OpenLcUnionCreditInputBean;
+import com.cifpay.lc.domain.lc.OpenLcUnionDepositInputBean;
+import com.cifpay.lc.domain.message.SmsParamBean;
+import com.cifpay.lc.domain.query.PreLcDto;
+import com.cifpay.lc.domain.query.UnionUserAccountDto;
+import com.cifpay.lc.domain.security.FinalSignedMerchantResponse;
+import com.cifpay.lc.domain.sms.SmsSendOutputBean;
+import com.cifpay.lc.gateway.common.MerchantSummaryInfoCache;
+import com.cifpay.lc.gateway.controller.GatewayBaseController;
+import com.cifpay.lc.gateway.input.bank.CreditReq;
+import com.cifpay.lc.gateway.input.bank.DepositReq;
+import com.cifpay.lc.gateway.input.bank.SendVerifyCodeReq;
+import com.cifpay.lc.gateway.output.AjaxResponse;
+import com.cifpay.lc.gateway.output.lc.OpenResp;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
+/**
+ * 银联付款页面
+ *
+ * @author sweet
+ */
+@Controller
+@RequestMapping(path = {"/bank/unionpay"})
+public class UnionPayController extends GatewayBaseController {
+
+    @Autowired
+    private LcQueryService lcQueryService;
+
+    @Autowired
+    private OpenLcService openLcService;
+
+    @Autowired
+    private MerchantSummaryInfoCache merSummaryInfoCache;
+
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private MerInfoService merInfoService;
+
+    @Autowired
+    private SmsSendMessageService smsSendMessageService;
+
+    @Autowired
+    private OpenCardService openCardService;
+
+    private final static DecimalFormat decimalFormat = new DecimalFormat("#.00");
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("MM/yyyy"), true));
+    }
+
+    /**
+     * 付款页面
+     *
+     * @param lcId      银信证Id
+     * @param pageModel
+     * @return
+     */
+    @RequestMapping(path = "/{lcId}", method = {RequestMethod.GET})
+    public String paymentEntry(@PathVariable long lcId, Model pageModel) {
+
+        logger.debug("===进入payment");
+
+        //查询预开证信息
+        ResultHandler<PreLcDto> selectResult = lcQueryService.selectPreLcByLcId(lcId);
+
+        if (!selectResult.isSuccess()) {
+
+            logger.debug(selectResult.getMessage());
+
+            pageModel.addAttribute("message", selectResult.getMessage());
+
+            return "bank/error";
+        }
+
+        PreLcDto preLcDto = selectResult.getData();
+
+        //
+        UnionUserAccountDto userAccount = merInfoService.findById(preLcDto.getMid(), preLcDto.getMerUserId(),
+                AdminCardType.CREDIT.getCode());
+
+        //
+        UnionUserAccountDto depositAccount = merInfoService.findById(preLcDto.getMid(), preLcDto.getMerUserId(),
+                AdminCardType.DEPOSIT.getCode());
+
+        //
+        MerFrontValidationMaterial merInfo = merSummaryInfoCache.getMerchantSummary(preLcDto.getMid());
+
+        pageModel.addAttribute("preLcDto", preLcDto);
+        pageModel.addAttribute("merchantName", merInfo.getMerchantName());
+        pageModel.addAttribute("amount", decimalFormat.format(preLcDto.getLcAmount().divide(BigDecimal.valueOf(100))));
+
+        // --------- 2016/10/18-------------- //
+        if (userAccount != null) {
+            pageModel.addAttribute("accountNo", userAccount.getPayerAccno());
+            pageModel.addAttribute("mobileNo", userAccount.getUserMobile());
+        }
+
+        if (depositAccount != null && depositAccount.getPayerAccno() != null) {
+            pageModel.addAttribute("depositAccountNo", depositAccount.getPayerAccno());
+        }
+
+        //返回银联支付页面
+        logger.debug("===payment:成功返回");
+
+        return "bank/payment_union";
+    }
+
+    /**
+     * 信用卡付款
+     *
+     * @param creditReq
+     * @param pageModel
+     * @return
+     */
+    @RequestMapping(path = "/credit", method = RequestMethod.POST)
+    public String credit(CreditReq creditReq, Model pageModel) throws JsonProcessingException {
+
+        logger.debug("===进入 credit");
+
+        Long lcId = creditReq.getLcId();
+        String mid = creditReq.getMid();
+
+        //验证短信验证码
+        OpenLcUnionCreditInputBean openLcInputBean = new OpenLcUnionCreditInputBean();
+        openLcInputBean.setMerId(mid);
+        openLcInputBean.setLcId(lcId);
+
+        openLcInputBean.setAccNo(creditReq.getAccountNo());
+        openLcInputBean.setCvn2(String.valueOf(creditReq.getCvv2()));
+        openLcInputBean.setSmsCode(creditReq.getSmsCode());
+        openLcInputBean.setExpired(creditReq.getExpiryDate());
+        openLcInputBean.setPhoneNo(creditReq.getMobileNo());
+
+        BusinessOutput<OpenLcOutputBean> businessOutput = openLcService.execute(new BusinessInput<OpenLcInputBean>(openLcInputBean));
+
+        if (!businessOutput.isSuccess()) {
+
+            logger.info("=== credit:" + businessOutput.getReturnMsg());
+
+            pageModel.addAttribute("message", businessOutput.getReturnMsg());
+
+            return "bank/error";
+        }
+
+        OpenLcOutputBean outputBean = businessOutput.getData();
+
+        //将返回参数加密
+        OpenResp response = new OpenResp();
+        response.setReturnCode(businessOutput.getReturnCode());
+        response.setReturnMsg(businessOutput.getReturnMsg());
+        response.setLcId(Long.toString(outputBean.getLcId()));
+        response.setOrderId(outputBean.getOrderId());
+        response.setChannel(outputBean.getChannel().getCode());
+        response.setSerialNo(outputBean.getSerialNo());
+        response.setLcAmount(BizConstants.decimalFormat.format(outputBean.getLcAmount()));
+
+        // 加密并返回
+        Map map = new ObjectMapper().convertValue(response, Map.class);
+        BusinessOutput<FinalSignedMerchantResponse> encryptResponse = securityService.encryptData(mid, map);
+
+        if (encryptResponse.isFailed()) {
+            pageModel.addAttribute("message", encryptResponse.getReturnMsg());
+            return "bank/error";
+        }
+
+        pageModel.addAttribute("encryptResponse", encryptResponse.getData());
+        pageModel.addAttribute("returnUrl", outputBean.getReturnUrl());
+
+        //返回商户returnUrl
+        logger.debug("=== credit:成功返回");
+
+        return "bank/paymentSuccess";
+    }
+
+    /**
+     * 储蓄卡预授权
+     *
+     * @param depositReq
+     * @param resp
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(path = "/opencard", method = RequestMethod.POST)
+    public void openCard(DepositReq depositReq, HttpServletResponse resp) throws Exception {
+
+        OpenCardInputBean param = new OpenCardInputBean();
+
+        param.setLcId(new Date().getTime());
+        param.setTxnId(TradeConstant.TRADE_CONFIG.TRADE_UNIONPAY_WU_OPEN_CARD);//无跳转全渠道开通支付
+        param.setTxnType("79");
+        param.setTxnSubType("00");
+        param.setLcId(depositReq.getLcId());
+        param.setOrderId(String.valueOf(depositReq.getLcId()));
+        param.setMerId(depositReq.getMid());
+        param.setAccNo(depositReq.getAccountNo());
+        param.setTxnTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+        param.setChannelType("07");
+
+        String html = openCardService.openCard(param);
+
+        if (html != null) {
+            resp.getWriter().write(html);
+        }
+    }
+
+    /**
+     * 储蓄卡付款
+     *
+     * @param depositReq
+     * @param pageModel
+     * @return
+     */
+    @RequestMapping(path = "/deposit", method = RequestMethod.POST)
+    public String deposit(DepositReq depositReq, Model pageModel) throws JsonProcessingException {
+        logger.debug("===进入 deposit");
+
+        Long lcId = depositReq.getLcId();
+        String mid = depositReq.getMid();
+
+        OpenLcUnionDepositInputBean openLcInputBean = new OpenLcUnionDepositInputBean();
+        openLcInputBean.setMerId(mid);
+        openLcInputBean.setLcId(lcId);
+        openLcInputBean.setSmsCode(depositReq.getSmsCode());
+        openLcInputBean.setAccNo(depositReq.getAccountNo());
+        openLcInputBean.setPhoneNo(depositReq.getMobileNo());
+
+        BusinessOutput<OpenLcOutputBean> businessOutput =
+                openLcService.execute(new BusinessInput<OpenLcInputBean>(openLcInputBean));
+
+        if (!businessOutput.isSuccess()) {
+
+            logger.info("=== deposit:" + businessOutput.getReturnMsg());
+
+            pageModel.addAttribute("message", businessOutput.getReturnMsg());
+
+            return "bank/error";
+        }
+
+        OpenLcOutputBean outputBean = businessOutput.getData();
+
+        //将返回参数加密
+        OpenResp response = new OpenResp();
+        response.setReturnCode(businessOutput.getReturnCode());
+        response.setReturnMsg(businessOutput.getReturnMsg());
+        response.setLcId(Long.toString(outputBean.getLcId()));
+        response.setOrderId(outputBean.getOrderId());
+        response.setLcAmount(BizConstants.decimalFormat.format(outputBean.getLcAmount()));
+
+        // 加密并返回
+        Map map = new ObjectMapper().convertValue(response, Map.class);
+        BusinessOutput<FinalSignedMerchantResponse> encryptResponse = securityService.encryptData(mid, map);
+
+        if (encryptResponse.isFailed()) {
+            pageModel.addAttribute("message", encryptResponse.getReturnMsg());
+            return "bank/error";
+        }
+
+        pageModel.addAttribute("encryptResponse", encryptResponse.getData());
+        pageModel.addAttribute("returnUrl", outputBean.getReturnUrl());
+
+        //返回商户returnUrl
+        logger.debug("=== deposit:成功返回");
+
+        return "bank/paymentSuccess";
+    }
+
+    /**
+     * 发送银联短信验证码
+     *
+     * @return
+     */
+    @RequestMapping(path = "/sendVerifyCode", method = RequestMethod.POST)
+    @ResponseBody
+    public AjaxResponse sendVerifyCode(@RequestBody SendVerifyCodeReq req) {
+        if (StringUtils.isEmpty(req.getAccountNo())) {
+            return AjaxResponse.fail("请输入银行卡号");
+        }
+        if (StringUtils.isEmpty(req.getMobileNo())) {
+            return AjaxResponse.fail("请输入手机号码");
+        }
+
+        ResultHandler<PreLcDto> queryResponse = lcQueryService.selectPreLcByLcId(req.getLcId());
+        if (!queryResponse.isSuccess()) {
+            return AjaxResponse.fail(queryResponse.getMessage());
+        }
+        PreLcDto preLcDto = queryResponse.getData();
+        if (preLcDto.getOpenValidTime().before(new Date())) {
+            return AjaxResponse.fail("已过开证时间");
+        }
+
+        //根据银信证类型，发送短信
+        SmsParamBean smsParamBean = new SmsParamBean();
+        smsParamBean.setSmstype(SmsType.SMS_OPEN.getCode());
+        smsParamBean.setMerId(preLcDto.getMid());
+        smsParamBean.setPhone(req.getMobileNo());
+        smsParamBean.setAmount(preLcDto.getLcAmount());
+        smsParamBean.setOrderContent(preLcDto.getOrderContent());
+
+        BusinessOutput<SmsSendOutputBean> smsOutputBean = smsSendMessageService.execute(new BusinessInput<SmsParamBean>(smsParamBean));
+
+        if (smsOutputBean.isSuccess()) {
+            return AjaxResponse.success();
+        }
+
+        return AjaxResponse.fail(smsOutputBean.getReturnMsg());
+    }
+}

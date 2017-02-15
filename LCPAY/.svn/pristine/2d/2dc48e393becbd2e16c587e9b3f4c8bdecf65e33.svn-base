@@ -1,0 +1,52 @@
+package com.cifpay.lc.core.db.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import com.cifpay.lc.core.db.pojo.BTradeJournal;
+
+/**
+ * 银信证与银行所有交易流水表数据访问接口
+ */
+@Repository("tradeJournalDao")
+public interface BTradeJournalDao {
+
+	/**
+	 * 主键查询银信证与银行所有交易流水表
+	 * 
+	 * @param id
+	 * @return 银信证与银行所有交易流水表信息
+	 */
+	BTradeJournal get(@Param("journalNo") String journalNo);
+
+	/**
+	 * 查询银信证与银行所有交易流水表 列表
+	 * 
+	 * @param lcBankSerial
+	 * @return 银信证与银行所有交易流水表信息列表
+	 */
+	List<BTradeJournal> selectList(BTradeJournal tradeJournal);
+
+	/**
+	 * 保存银信证与银行所有交易流水表
+	 * 
+	 * @param lcBankSerial
+	 *            银信证与银行所有交易流水表信息
+	 */
+	int save(BTradeJournal tradeJournal);
+
+	/**
+	 * 更新银信证与银行所有交易流水表
+	 * 
+	 * @param lcBankSerial
+	 *            银信证与银行所有交易流水表信息
+	 */
+	int update(BTradeJournal tradeJournal);
+
+	int updateByTradeJournalAndIsSuccess(@Param("oldIsSuccess") String oldIsSuccess, @Param("tradeJournal") BTradeJournal tradeJournal);
+
+	List<BTradeJournal> sortByUpdateTimeDesc(BTradeJournal queryTradeJournal);
+
+}

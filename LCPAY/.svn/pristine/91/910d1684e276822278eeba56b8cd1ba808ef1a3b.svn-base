@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cifpay.lc.core.db.dao.BSwRecvDateQueueMsgDao">
+  
+  
+  <update id="updateAsPendingBeforeProcessing" parameterType="map">
+  	update CIFPAY_B_SW_RECV_DATE_QUEUE_MSG set HANDLE_STATUS = #{statusProcessing,jdbcType=VARCHAR}, 
+  	UPDATE_TIME = #{lockDate,jdbcType=TIMESTAMP}, 
+  	LOCKED_BY = #{serverNode,jdbcType=VARCHAR} 
+  	where HANDLE_STATUS = #{statusWaitLcOpen,jdbcType=VARCHAR} 
+  	or (HANDLE_STATUS = #{statusProcessing,jdbcType=VARCHAR} and  <![CDATA[UPDATE_TIME < ]]> #{timeoutLockedDate,jdbcType=TIMESTAMP}) 
+  	order by CREATE_TIME limit #{lockRowsCnt,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectPendingList" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_B_SW_RECV_DATE_QUEUE_MSG
+    where HANDLE_STATUS = #{statusProcessing,jdbcType=VARCHAR} and DATE_FORMAT(UPDATE_TIME,'%Y%m%d%H%i%S') = #{strLockDate,jdbcType=VARCHAR} and LOCKED_BY = #{serverNode,jdbcType=VARCHAR}
+  </select>
+  
+  <update id="updateAsLockedBeforeSendResult" parameterType="map">
+  	update CIFPAY_B_SW_RECV_DATE_QUEUE_MSG set  
+  	RESULT_SEND_STATUS = #{resultSendStatusSending,jdbcType=VARCHAR},
+  	UPDATE_TIME = #{lockDate,jdbcType=TIMESTAMP}, 
+  	LOCKED_BY = #{serverNode,jdbcType=VARCHAR} 
+  	where (HANDLE_STATUS = #{handleStatusSuccess,jdbcType=VARCHAR} or HANDLE_STATUS = #{handleStatusFailed,jdbcType=VARCHAR}) 
+  	and ( 
+  	     RESULT_SEND_STATUS = #{resultSendStatusPending,jdbcType=VARCHAR}
+  	     or (RESULT_SEND_STATUS = #{resultSendStatusSending,jdbcType=VARCHAR} and  <![CDATA[UPDATE_TIME < ]]> #{timeoutLockedDate,jdbcType=TIMESTAMP}) 
+  	     or RESULT_SEND_STATUS = #{resultSendStatusFailed,jdbcType=VARCHAR}
+  	)
+  	order by CREATE_TIME limit #{lockRowsCnt,jdbcType=INTEGER}
+  </update>
+  
+  <select id="selectSendingList" parameterType="map" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from CIFPAY_B_SW_RECV_DATE_QUEUE_MSG
+    where RESULT_SEND_STATUS = #{resultSendStatusSending,jdbcType=VARCHAR}  
+    and DATE_FORMAT(UPDATE_TIME,'%Y%m%d%H%i%S') = #{strLockDate,jdbcType=VARCHAR} and LOCKED_BY = #{serverNode,jdbcType=VARCHAR}
+  </select>
+  
+</mapper>
