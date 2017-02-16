@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsPolicyDao">
+	<resultMap id="baseResultMap" type="InsPolicy">
+		<id property="id" column="id" />
+		<result property="insurerInfoId" column="insurer_info_id" />
+		<result property="policyHolderId" column="policy_holder_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="product" column="product" />
+		<result property="policyNo" column="policy_no" />
+		<result property="insuredName" column="insured_name" />
+		<result property="insurancePeriod" column="insurance_period" />
+		<result property="initPremium" column="init_premium" />
+		<result property="payMode" column="pay_mode" />
+		<result property="premium" column="premium" />
+		<result property="insuredid" column="insuredid" />
+		<result property="insureDate" column="insure_date" />
+		<result property="validFrom" column="valid_from" />
+		<result property="validTo" column="valid_to" />
+		<result property="creditScore" column="credit_score" />
+		<result property="gearing" column="gearing" />
+		<result property="insuredAmount" column="insured_amount" />
+		<result property="status" column="status" />
+		<result property="auditTime" column="audit_time" />
+		<result property="version" column="version" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedTime" column="modified_time" />
+		<association property="insPolicyHolder" javaType="com.cifpay.insurance.model.InsPolicyHolder">
+			<id property="id" column="h_id" />
+			<result property="vendorId" column="h_vendor_id" />
+			<result property="holderName" column="h_holder_name" />
+			<result property="holderType" column="h_holder_type" />
+			<result property="idType" column="h_id_type" />
+			<result property="idNo" column="h_id_no" />
+			<result property="contacts" column="h_contacts" />
+			<result property="phone" column="h_phone" />
+			<result property="email" column="h_email" />
+			<result property="createdUser" column="h_created_User" />
+			<result property="createdTime" column="h_created_Time" />
+			<result property="modifiedUser" column="h_modified_User" />
+			<result property="modifiedTime" column="h_modified_Time" />
+		</association>
+		<association property="insInsurerInfo"
+			javaType="com.cifpay.insurance.model.InsInsurerInfo">
+			<id property="id" column="i_id" />
+			<result property="insurername" column="i_insurerName" />
+			<result property="hotline" column="i_hotline" />
+			<result property="address" column="i_address" />
+		</association>
+	</resultMap>
+	<!-- 保单及其所有关联对象 -->
+	<resultMap id="FullInsPolicyResultMap" type="InsPolicy">
+		<id property="id" column="id" />
+		<result property="insurerInfoId" column="insurer_info_id" />
+		<result property="policyHolderId" column="policy_holder_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="product" column="product" />
+		<result property="policyNo" column="policy_no" />
+		<result property="insuredName" column="insured_name" />
+		<result property="insurancePeriod" column="insurance_period" />
+		<result property="initPremium" column="init_premium" />
+		<result property="payMode" column="pay_mode" />
+		<result property="premium" column="premium" />
+		<result property="insuredid" column="insuredid" />
+		<result property="insureDate" column="insure_date" />
+		<result property="validFrom" column="valid_from" />
+		<result property="validTo" column="valid_to" />
+		<result property="creditScore" column="credit_score" />
+		<result property="gearing" column="gearing" />
+		<result property="insuredAmount" column="insured_amount" />
+		<result property="status" column="status" />
+		<result property="auditTime" column="audit_time" />
+		<result property="version" column="version" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedTime" column="modified_time" />
+		<association property="insPolicyHolder" javaType="com.cifpay.insurance.model.InsPolicyHolder">
+			<id property="id" column="h_id" />
+			<result property="vendorId" column="h_vendor_id" />
+			<result property="holderName" column="h_holder_name" />
+			<result property="holderType" column="h_holder_type" />
+			<result property="idType" column="h_id_type" />
+			<result property="idNo" column="h_id_no" />
+			<result property="contacts" column="h_contacts" />
+			<result property="phone" column="h_phone" />
+			<result property="email" column="h_email" />
+			<result property="createdUser" column="h_created_User" />
+			<result property="createdTime" column="h_created_Time" />
+			<result property="modifiedUser" column="h_modified_User" />
+			<result property="modifiedTime" column="h_modified_Time" />
+		</association>
+		<association property="insInsurerInfo" javaType="com.cifpay.insurance.model.InsInsurerInfo">
+			<id property="id" column="i_id" />
+			<result property="insurername" column="i_insurerName" />
+			<result property="hotline" column="i_hotline" />
+			<result property="address" column="i_address" />
+		</association>
+		<association property="insInsuredAmountInfo" javaType="com.cifpay.insurance.model.InsInsuredAmountInfo">
+			<id property="id" column="ii_id" />
+			<result property="policyId" column="ii_policy_id" />
+			<result property="insuredAmount" column="ii_insured_amount" />
+			<result property="frozenAmount" column="ii_frozen_amount" />
+			<result property="balance" column="ii_balance" />
+			<result property="optTime" column="ii_opt_time" />
+			<result property="version" column="ii_version" />
+		</association>
+	</resultMap>
+	
+	<!-- 保单及实时保额对象 -->
+	<resultMap id="InsPolicyAndInsuredAmountInfoResultMap" type="InsPolicy">
+		<id property="id" column="id" />
+		<result property="insurerInfoId" column="insurer_info_id" />
+		<result property="policyHolderId" column="policy_holder_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="product" column="product" />
+		<result property="policyNo" column="policy_no" />
+		<result property="insuredName" column="insured_name" />
+		<result property="insurancePeriod" column="insurance_period" />
+		<result property="initPremium" column="init_premium" />
+		<result property="payMode" column="pay_mode" />
+		<result property="premium" column="premium" />
+		<result property="insuredid" column="insuredid" />
+		<result property="insureDate" column="insure_date" />
+		<result property="validFrom" column="valid_from" />
+		<result property="validTo" column="valid_to" />
+		<result property="creditScore" column="credit_score" />
+		<result property="gearing" column="gearing" />
+		<result property="insuredAmount" column="insured_amount" />
+		<result property="status" column="status" />
+		<result property="auditTime" column="audit_time" />
+		<result property="version" column="version" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedTime" column="modified_time" />
+		<association property="insInsuredAmountInfo" javaType="com.cifpay.insurance.model.InsInsuredAmountInfo">
+			<id property="id" column="ii_id" />
+			<result property="policyId" column="ii_policy_id" />
+			<result property="insuredAmount" column="ii_insured_amount" />
+			<result property="frozenAmount" column="ii_frozen_amount" />
+			<result property="balance" column="ii_balance" />
+			<result property="optTime" column="ii_opt_time" />
+			<result property="version" column="ii_version" />
+		</association>
+	</resultMap>
+
+	<sql id="baseColumns">id,insurer_info_id,policy_holder_id,vendor_id,product,policy_no,insured_name,insurance_period,init_premium,pay_mode,premium,insuredid,insure_date,valid_from,valid_to,credit_score,gearing,insured_amount,status,audit_time,version,created_time,modified_time
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_policy WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsPolicy">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_policy(insurer_info_id,policy_holder_id,vendor_id,product,policy_no,insured_name,insurance_period,init_premium,pay_mode,premium,insuredid,insure_date,valid_from,valid_to,credit_score,gearing,insured_amount,status,audit_time,version,created_time,modified_time)
+		VALUES(#{insurerInfoId},#{policyHolderId},#{vendorId},#{product},#{policyNo},#{insuredName},#{insurancePeriod},#{initPremium},#{payMode},#{premium},#{insuredid},#{insureDate},#{validFrom},#{validTo},#{creditScore},#{gearing},#{insuredAmount},#{status},#{auditTime},#{version},#{createdTime},#{modifiedTime})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsPolicy">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_policy(
+		<if test="insurerInfoId != null">insurer_info_id,</if>
+		<if test="policyHolderId != null">policy_holder_id,</if>
+		<if test="vendorId != null">vendor_id,</if>
+		<if test="product != null">product,</if>
+		<if test="policyNo != null">policy_no,</if>
+		<if test="insuredName != null">insured_name,</if>
+		<if test="insurancePeriod != null">insurance_period,</if>
+		<if test="initPremium != null">init_premium,</if>
+		<if test="payMode != null">pay_mode,</if>
+		<if test="premium != null">premium,</if>
+		<if test="insuredid != null">insuredid,</if>
+		<if test="insureDate != null">insure_date,</if>
+		<if test="validFrom != null">valid_from,</if>
+		<if test="validTo != null">valid_to,</if>
+		<if test="creditScore != null">credit_score,</if>
+		<if test="gearing != null">gearing,</if>
+		<if test="insuredAmount != null">insured_amount,</if>
+		<if test="status != null">status,</if>
+		<if test="auditTime != null">audit_time,</if>
+		<if test="version != null">version,</if>
+		<if test="createdTime != null">created_time,</if>
+		<if test="modifiedTime != null">modified_time,</if>
+		createTime) VALUES(
+		<if test="insurerInfoId != null">#{insurerInfoId},</if>
+		<if test="policyHolderId != null">#{policyHolderId},</if>
+		<if test="vendorId != null">#{vendorId},</if>
+		<if test="product != null">#{product},</if>
+		<if test="policyNo != null">#{policyNo},</if>
+		<if test="insuredName != null">#{insuredName},</if>
+		<if test="insurancePeriod != null">#{insurancePeriod},</if>
+		<if test="initPremium != null">#{initPremium},</if>
+		<if test="payMode != null">#{payMode},</if>
+		<if test="premium != null">#{premium},</if>
+		<if test="insuredid != null">#{insuredid},</if>
+		<if test="insureDate != null">#{insureDate},</if>
+		<if test="validFrom != null">#{validFrom},</if>
+		<if test="validTo != null">#{validTo},</if>
+		<if test="creditScore != null">#{creditScore},</if>
+		<if test="gearing != null">#{gearing},</if>
+		<if test="insuredAmount != null">#{insuredAmount},</if>
+		<if test="status != null">#{status},</if>
+		<if test="auditTime != null">#{auditTime},</if>
+		<if test="version != null">#{version},</if>
+		<if test="createdTime != null">#{createdTime},</if>
+		<if test="modifiedTime != null">#{modifiedTime},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsPolicy">
+		UPDATE ins_policy SET
+		insurer_info_id=#{insurerInfoId},policy_holder_id=#{policyHolderId},vendor_id=#{vendorId},product=#{product},policy_no=#{policyNo},insured_name=#{insuredName},insurance_period=#{insurancePeriod},init_premium=#{initPremium},pay_mode=#{payMode},premium=#{premium},insuredid=#{insuredid},insure_date=#{insureDate},valid_from=#{validFrom},valid_to=#{validTo},credit_score=#{creditScore},gearing=#{gearing},insured_amount=#{insuredAmount},status=#{status},audit_time=#{auditTime},created_time=#{createdTime},modified_time=#{modifiedTime},version=(version+1)
+		WHERE id=#{id} AND version=#{version}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsPolicy">
+		UPDATE ins_policy
+		<set>
+			<if test="insurerInfoId != null">insurer_info_id=#{insurerInfoId},</if>
+			<if test="policyHolderId != null">policy_holder_id=#{policyHolderId},</if>
+			<if test="vendorId != null">vendor_id=#{vendorId},</if>
+			<if test="product != null">product=#{product},</if>
+			<if test="policyNo != null">policy_no=#{policyNo},</if>
+			<if test="insuredName != null">insured_name=#{insuredName},</if>
+			<if test="insurancePeriod != null">insurance_period=#{insurancePeriod},</if>
+			<if test="initPremium != null">init_premium=#{initPremium},</if>
+			<if test="payMode != null">pay_mode=#{payMode},</if>
+			<if test="premium != null">premium=#{premium},</if>
+			<if test="insuredid != null">insuredid=#{insuredid},</if>
+			<if test="insureDate != null">insure_date=#{insureDate},</if>
+			<if test="validFrom != null">valid_from=#{validFrom},</if>
+			<if test="validTo != null">valid_to=#{validTo},</if>
+			<if test="creditScore != null">credit_score=#{creditScore},</if>
+			<if test="gearing != null">gearing=#{gearing},</if>
+			<if test="insuredAmount != null">insured_amount=#{insuredAmount},</if>
+			<if test="status != null">status=#{status},</if>
+			<if test="auditTime != null">audit_time=#{auditTime},</if>
+			<if test="createdTime != null">created_time=#{createdTime},</if>
+			<if test="modifiedTime != null">modified_time=#{modifiedTime},</if>
+			version=(version+1)
+		</set>
+		WHERE id=#{id} AND version=#{version}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsPolicy">
+		DELETE FROM ins_policy WHERE id=#{id} AND version=#{version}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_policy 
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_policy
+	</select>
+	
+	<sql id="queryCondition">
+		<where>
+			1=1
+			<if test="vendorId != null and vendorId != ''">
+				and p.vendor_id = #{vendorId}
+			</if>
+			<if test="policyNo != null and policyNo != ''">
+				and p.policy_no = #{policyNo}
+			</if>
+			<if test="insureDateFrom != null and insureDateFrom != ''">
+				and p.insure_date >= #{insureDateFrom}
+			</if>
+			<if test="insureDateTo != null and insureDateTo != ''">
+			<![CDATA[
+				and p.insure_date < #{insureDateTo}
+			]]>
+			</if>
+			<if test="auditTimeFrom != null and auditTimeFrom != ''">
+				and p.audit_time >= #{auditTimeFrom}
+			</if>
+			<if test="auditTimeTo != null and auditTimeTo != ''">
+			<![CDATA[
+				and p.audit_time < #{auditTimeTo}
+			]]>
+			</if>
+			<if test="status != null">
+				and p.status = #{status}
+			</if>
+			<if test="holderName != null and holderName != ''">
+			    and h.holder_name like '%${holderName}%'
+			</if>
+			<if test="idNo != null and idNo != ''">
+				and h.id_no like '%${idNo}%'
+			</if>
+		</where>
+	</sql>
+	
+	<sql id="minQueryCondition">
+		<where>
+			1=1
+			<if test="vendorId != null">
+				and p.vendor_id = #{vendorId}
+			</if>
+			<if test="policyNo != null">
+				and p.policy_no = #{policyNo}
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询保单列表 -->
+	<select id="getInsPolicyList" statementType="PREPARED"  parameterType="map" resultMap="baseResultMap">
+		SELECT p.*
+		,i.id i_id,i.insurerName i_insurerName,i.hotline i_hotline,i.address i_address
+		,h.id h_id,h.vendor_id h_vendor_id,h.holder_name h_holder_name,h.holder_type h_holder_type,h.id_type h_id_type,h.id_no h_id_no,h.contacts h_contacts,h.phone h_phone,h.email h_email,h.created_User h_created_User,h.created_Time h_created_Time,h.modified_User h_modified_User,h.modified_Time h_modified_Time
+		FROM ins_policy p 
+		inner join ins_policy_holder h on h.id=p.policy_holder_id and h.vendor_id=p.vendor_id
+		inner join ins_insurer_info i on i.id=p.insurer_info_id
+		<include refid="minQueryCondition" />
+		<if test="insureDateFrom != null and insureDateFrom != ''">
+			and DATE_FORMAT(p.insure_date,"%Y-%m-%d") >= #{insureDateFrom}
+		</if>
+		<if test="insureDateTo != null and insureDateTo != ''">
+		<![CDATA[
+			and DATE_FORMAT(p.insure_date,"%Y-%m-%d") <= #{insureDateTo}
+		]]>
+		</if>
+		<if test="holderName != null and holderName != ''">
+			and h.holder_name like '%${holderName}%'
+		</if>
+		<if test="idNo != null and idNo != ''">
+			and h.id_no like '%${idNo}%'
+		</if>
+		order by policy_no desc
+	</select>
+	
+	<select id="getInsPolicyListCount" parameterType="map" resultType="Integer">
+		SELECT count(p.id)
+		FROM ins_policy p 
+		inner join ins_policy_holder h on h.id=p.policy_holder_id and h.vendor_id=p.vendor_id
+		inner join ins_insurer_info i on i.id=p.insurer_info_id
+		<include refid="minQueryCondition" />
+		<if test="insureDateFrom != null and insureDateFrom != ''">
+			and DATE_FORMAT(p.insure_date,"%Y-%m-%d") >= #{insureDateFrom}
+		</if>
+		<if test="insureDateTo != null and insureDateTo != ''">
+		<![CDATA[
+			and DATE_FORMAT(p.insure_date,"%Y-%m-%d") <= #{insureDateTo}
+		]]>
+		</if>
+		<if test="holderName != null and holderName != ''">
+			and h.holder_name like '%${holderName}%'
+		</if>
+		<if test="idNo != null and idNo != ''">
+			and h.id_no like '%${idNo}%'
+		</if>
+	</select>
+
+	<!-- 查询单个保单（商户ID、保单号） -->
+	<select id="getInsPolicy" statementType="PREPARED"  parameterType="map" resultMap="baseResultMap">
+		SELECT p.*
+		,i.id i_id,i.insurerName i_insurerName,i.hotline i_hotline,i.address i_address
+		,h.id h_id,h.vendor_id h_vendor_id,h.holder_name h_holder_name,h.holder_type h_holder_type,h.id_type h_id_type,h.id_no h_id_no,h.contacts h_contacts,h.phone h_phone,h.email h_email,h.created_User h_created_User,h.created_Time h_created_Time,h.modified_User h_modified_User,h.modified_Time h_modified_Time
+		FROM ins_policy p 
+		inner join ins_policy_holder h on h.id=p.policy_holder_id and h.vendor_id=p.vendor_id
+		inner join ins_insurer_info i on i.id=p.insurer_info_id
+		<include refid="minQueryCondition" />
+		<if test="policyId != null">
+			and p.id = #{policyId}
+		</if>
+	</select>
+	
+	<!-- 查询保单及其关联所有信息（商户ID、保单号） -->
+	<select id="getFullInsPolicy" statementType="PREPARED"  parameterType="map" resultMap="FullInsPolicyResultMap">
+		SELECT p.*
+		,i.id i_id,i.insurerName i_insurerName,i.hotline i_hotline,i.address i_address
+		,h.id h_id,h.vendor_id h_vendor_id,h.holder_name h_holder_name,h.holder_type h_holder_type,h.id_type h_id_type,h.id_no h_id_no,h.contacts h_contacts,h.phone h_phone,h.email h_email,h.created_User h_created_User,h.created_Time h_created_Time,h.modified_User h_modified_User,h.modified_Time h_modified_Time
+		,ii.id ii_id,ii.policy_id ii_policy_id,ii.insured_amount ii_insured_amount,ii.frozen_amount ii_frozen_amount,ii.balance ii_balance,ii.opt_time ii_opt_time,ii.version ii_version
+		FROM ins_policy p 
+		inner join ins_policy_holder h on h.id=p.policy_holder_id and h.vendor_id=p.vendor_id
+		inner join ins_insurer_info i on i.id=p.insurer_info_id
+		inner join ins_insured_amount_info ii on ii.policy_id=p.id
+		<include refid="minQueryCondition" />
+	</select>
+	
+	<!-- 查询所有保单及其实时保额信息 -->
+	<select id="getAllInsPolicyAndInsuredAmountInfo" statementType="PREPARED"  parameterType="map" resultMap="InsPolicyAndInsuredAmountInfoResultMap">
+		SELECT p.*
+		,ii.id ii_id,ii.policy_id ii_policy_id,ii.insured_amount ii_insured_amount,ii.frozen_amount ii_frozen_amount,ii.balance ii_balance,ii.opt_time ii_opt_time,ii.version ii_version
+		FROM ins_policy p 
+		inner join ins_insured_amount_info ii on ii.policy_id=p.id
+	</select>
+	
+
+	<!-- 保费变动更新 -->
+	<update id="updateChangePolicyPremium" statementType="PREPARED" parameterType="InsPolicy">
+		UPDATE ins_policy
+		<set>
+			<if test="premium != null">premium=#{premium},</if>
+			<if test="insuredAmount != null">insured_amount=#{insuredAmount},</if>
+			<if test="status != null">status=#{status},</if>
+			modified_time=now(),
+			version=(version+1)
+		</set>
+		WHERE id=#{id} AND version=#{version}
+	</update>
+	
+	<!-- 状态变更更新 -->
+	<update id="updatePolicyStatus" statementType="PREPARED">
+		UPDATE ins_policy
+		<set>
+		    status=#{newStatus},
+			modified_time=now(),
+			version=(version+1)
+		</set>
+		WHERE id=#{id} AND version=#{version} and status=#{oldStatus}
+	</update>
+	
+	<!-- 是否存在商户保单 -->
+	<select id="isExistsVendorInsPolicy" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(1) FROM ins_policy where vendor_id=#{vendorId}
+		<if test="excludeId != null"> and id!=#{excludeId}</if>
+	</select>
+</mapper>

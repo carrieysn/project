@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsWarningRuleDao">
+	<resultMap id="baseResultMap" type="InsWarningRule">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="greenMin" column="green_min" />
+		<result property="greenMax" column="green_max" />
+		<result property="yellowMin" column="yellow_min" />
+		<result property="yellowMax" column="yellow_max" />
+		<result property="redMin" column="red_min" />
+		<result property="redMax" column="red_max" />
+		<result property="isEnable" column="is_enable" />
+		<result property="remark" column="remark" />
+		<result property="createdUser" column="created_user" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedUser" column="modified_user" />
+		<result property="modifiedTime" column="modified_time" />
+	</resultMap>
+
+	<sql id="baseColumns">id,code,name,green_min,green_max,yellow_min,yellow_max,red_min,red_max,is_enable,remark,created_user,created_time,modified_user,modified_time
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Integer"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_warning_rule WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsWarningRule">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_warning_rule(code,name,green_min,green_max,yellow_min,yellow_max,red_min,red_max,is_enable,remark,created_user,created_time,modified_user,modified_time)
+		VALUES(#{code},#{name},#{greenMin},#{greenMax},#{yellowMin},#{yellowMax},#{redMin},#{redMax},#{isEnable},#{remark},#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsWarningRule">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_warning_rule(
+		<if test="code != null">code,</if>
+		<if test="name != null">name,</if>
+		<if test="greenMin != null">green_min,</if>
+		<if test="greenMax != null">green_max,</if>
+		<if test="yellowMin != null">yellow_min,</if>
+		<if test="yellowMax != null">yellow_max,</if>
+		<if test="redMin != null">red_min,</if>
+		<if test="redMax != null">red_max,</if>
+		<if test="isEnable != null">is_enable,</if>
+		<if test="remark != null">remark,</if>
+		<if test="createdUser != null">created_user,</if>
+		<if test="createdTime != null">created_time,</if>
+		<if test="modifiedUser != null">modified_user,</if>
+		<if test="modifiedTime != null">modified_time,</if>
+		createTime) VALUES(
+		<if test="code != null">#{code},</if>
+		<if test="name != null">#{name},</if>
+		<if test="greenMin != null">#{greenMin},</if>
+		<if test="greenMax != null">#{greenMax},</if>
+		<if test="yellowMin != null">#{yellowMin},</if>
+		<if test="yellowMax != null">#{yellowMax},</if>
+		<if test="redMin != null">#{redMin},</if>
+		<if test="redMax != null">#{redMax},</if>
+		<if test="isEnable != null">#{isEnable},</if>
+		<if test="remark != null">#{remark},</if>
+		<if test="createdUser != null">#{createdUser},</if>
+		<if test="createdTime != null">#{createdTime},</if>
+		<if test="modifiedUser != null">#{modifiedUser},</if>
+		<if test="modifiedTime != null">#{modifiedTime},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsWarningRule">
+		UPDATE ins_warning_rule SET
+		code=#{code},name=#{name},green_min=#{greenMin},green_max=#{greenMax},yellow_min=#{yellowMin},yellow_max=#{yellowMax},red_min=#{redMin},red_max=#{redMax},is_enable=#{isEnable},remark=#{remark},created_user=#{createdUser},created_time=#{createdTime},modified_user=#{modifiedUser},modified_time=#{modifiedTime}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsWarningRule">
+		UPDATE ins_warning_rule
+		<set>
+			<if test="code != null">code=#{code},</if>
+			<if test="name != null">name=#{name},</if>
+			<if test="greenMin != null">green_min=#{greenMin},</if>
+			<if test="greenMax != null">green_max=#{greenMax},</if>
+			<if test="yellowMin != null">yellow_min=#{yellowMin},</if>
+			<if test="yellowMax != null">yellow_max=#{yellowMax},</if>
+			<if test="redMin != null">red_min=#{redMin},</if>
+			<if test="redMax != null">red_max=#{redMax},</if>
+			<if test="isEnable != null">is_enable=#{isEnable},</if>
+			<if test="remark != null">remark=#{remark},</if>
+			<if test="createdUser != null">created_user=#{createdUser},</if>
+			<if test="createdTime != null">created_time=#{createdTime},</if>
+			<if test="modifiedUser != null">modified_user=#{modifiedUser},</if>
+			<if test="modifiedTime != null">modified_time=#{modifiedTime},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsWarningRule">
+		DELETE FROM ins_warning_rule WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_warning_rule ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_warning_rule
+	</select>
+	
+	<!-- 获取一条预警记录。应作为参数表设计 -->
+	<select id="getOne" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_warning_rule limit 1
+	</select>
+	
+</mapper>

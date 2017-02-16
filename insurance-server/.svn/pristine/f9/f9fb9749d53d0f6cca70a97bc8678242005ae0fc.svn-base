@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsInsurerInfoDao">
+	<resultMap id="baseResultMap" type="InsInsurerInfo">
+		<id property="id" column="id" />
+		<result property="insurername" column="insurerName" />
+		<result property="hotline" column="hotline" />
+		<result property="address" column="address" />
+	</resultMap>
+
+	<sql id="baseColumns">id,insurerName,hotline,address</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_insurer_info WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsInsurerInfo">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_insurer_info(insurerName,hotline,address)
+		VALUES(#{insurername},#{hotline},#{address})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsInsurerInfo">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_insurer_info(
+		<if test="insurername != null">insurerName,</if>
+		<if test="hotline != null">hotline,</if>
+		<if test="address != null">address,</if>
+		createTime) VALUES(
+		<if test="insurername != null">#{insurername},</if>
+		<if test="hotline != null">#{hotline},</if>
+		<if test="address != null">#{address},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsInsurerInfo">
+		UPDATE ins_insurer_info SET
+		insurerName=#{insurername},hotline=#{hotline},address=#{address}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsInsurerInfo">
+		UPDATE ins_insurer_info
+		<set>
+			<if test="insurername != null">insurerName=#{insurername},</if>
+			<if test="hotline != null">hotline=#{hotline},</if>
+			<if test="address != null">address=#{address},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsInsurerInfo">
+		DELETE FROM ins_insurer_info WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_insurer_info ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_insurer_info
+	</select>
+	
+	<!-- 获取一个保险人信息 -->
+	<select id="getOne" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_insurer_info order by id desc limit 1
+	</select>
+</mapper>

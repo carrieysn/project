@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsGearingRuleDao">
+	<resultMap id="baseResultMap" type="InsGearingRule">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="name" column="name" />
+		<result property="creditScore" column="credit_score" />
+		<result property="gearing" column="gearing" />
+		<result property="remark" column="remark" />
+		<result property="createdUser" column="created_user" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedUser" column="modified_user" />
+		<result property="modifiedTime" column="modified_time" />
+	</resultMap>
+
+	<sql id="baseColumns">id,code,name,credit_score,gearing,remark,created_user,created_time,modified_user,modified_time
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Integer"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_gearing_rule WHERE id=#{id}
+	</select>
+	
+	<select id="getDefault" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_gearing_rule where gearing=1 
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsGearingRule">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_gearing_rule(code,name,credit_score,gearing,remark,created_user,created_time,modified_user,modified_time)
+		VALUES(#{code},#{name},#{creditScore},#{gearing},#{remark},#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsGearingRule">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_gearing_rule(
+		<if test="code != null">code,</if>
+		<if test="name != null">name,</if>
+		<if test="creditScore != null">credit_score,</if>
+		<if test="gearing != null">gearing,</if>
+		<if test="remark != null">remark,</if>
+		<if test="createdUser != null">created_user,</if>
+		<if test="createdTime != null">created_time,</if>
+		<if test="modifiedUser != null">modified_user,</if>
+		<if test="modifiedTime != null">modified_time,</if>
+		createTime) VALUES(
+		<if test="code != null">#{code},</if>
+		<if test="name != null">#{name},</if>
+		<if test="creditScore != null">#{creditScore},</if>
+		<if test="gearing != null">#{gearing},</if>
+		<if test="remark != null">#{remark},</if>
+		<if test="createdUser != null">#{createdUser},</if>
+		<if test="createdTime != null">#{createdTime},</if>
+		<if test="modifiedUser != null">#{modifiedUser},</if>
+		<if test="modifiedTime != null">#{modifiedTime},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsGearingRule">
+		UPDATE ins_gearing_rule SET
+		code=#{code},name=#{name},credit_score=#{creditScore},gearing=#{gearing},remark=#{remark},created_user=#{createdUser},created_time=#{createdTime},modified_user=#{modifiedUser},modified_time=#{modifiedTime}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsGearingRule">
+		UPDATE ins_gearing_rule
+		<set>
+			<if test="code != null">code=#{code},</if>
+			<if test="name != null">name=#{name},</if>
+			<if test="creditScore != null">credit_score=#{creditScore},</if>
+			<if test="gearing != null">gearing=#{gearing},</if>
+			<if test="remark != null">remark=#{remark},</if>
+			<if test="createdUser != null">created_user=#{createdUser},</if>
+			<if test="createdTime != null">created_time=#{createdTime},</if>
+			<if test="modifiedUser != null">modified_user=#{modifiedUser},</if>
+			<if test="modifiedTime != null">modified_time=#{modifiedTime},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsGearingRule">
+		DELETE FROM ins_gearing_rule WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_gearing_rule ORDER BY credit_score desc
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_gearing_rule
+	</select>
+</mapper>

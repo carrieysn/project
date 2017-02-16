@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<validation-root namespace="org.iscreen"
+                 default-resource="messages">
+
+  <!--
+    StringValidator
+
+    This validator checks String values to ensure that their lengths are
+    appropriate.
+    It has the following constraints:
+    minLength : Minimum number of characters the value can have.
+    maxLength : Maximum number of characters the value can have.
+    It uses the SimpleBean, which means for mapping, map a String to 'value'.
+    For example:
+    <mapping from="someProperty" to="value" />
+    The 'to' attribute is optional, since the default is 'value'.
+    This validator has three failure messages:
+    'minLengthFailure' to report a minimum length validation failure.
+    'maxLengthFailure' to report a maximum length validation failure.
+    'nullFailure' to report a null validation failure.
+    -->
+  <validator id="StringValidator"
+             class="org.iscreen.validators.StringValidator">
+    <failure property="minLengthFailure" key="vf.minLength" severity="failure"/>
+    <failure property="maxLengthFailure" key="vf.maxLength" severity="failure"/>
+    <failure property="nullFailure" key="vf.null" severity="failure"/>
+    <doc>The ${label} field should be at least ${validator.minLength} characters long, but no longer than ${validator.maxLength} characters.</doc>
+  </validator>
+
+  <!--
+    DateRangeValidator
+
+    This validator checks two dates to ensure that the 'from' date is equal
+    to or before the 'to' date.  In addition, if a 'date' is defined (non-null),
+    it is compared to the range properties (the 'from' and 'to' dates, though
+    neither of them is required).
+    It has no constraints.
+    For mapping, it uses 'from' and 'to' as in this example:
+    <mapping from="someProperty" to="from" />
+    <mapping from="someOtherProperty" to="to" />
+    <mapping from="someOtherProperty" to="date" />
+    There are three failures:
+    <failure property="rangeFailure">some message</failure>
+    The 'rangeFailure' failure is reported if the 'from' date is
+    after the 'to' date.  For this failure, there is no failure object
+    reported.
+    <failure property="beforeFailure">some message</failure>
+    The 'beforeFailure' failure is reported if the 'date' date is
+    before the 'from' date (assuming it's non-null).  The 'from'
+    date is reported as the failure object.
+    <failure property="afterFailure">some message</failure>
+    The 'afterFailure' failure is reported if the 'date' date is
+    after the 'to' date (assuming it's non-null).  The 'to' date
+    is reported as the failure object.
+    -->
+  <validator id="DateRangeValidator"
+             class="org.iscreen.validators.DateRangeValidator">
+    <failure property="rangeFailure" key="vf.dateRange" severity="failure" />
+    <failure property="beforeFailure" key="vf.dateBeforeRange" severity="failure" />
+    <failure property="afterFailure" key="vf.dateAfterRange" severity="failure" />
+    <doc>The ${label} field is a date that must be between the appropriate dates.</doc>
+  </validator>
+
+  <!--
+    DateFormatValidator
+
+    This validator checks a String to ensure that the date is formatted
+    properly.  The format is defined by the SimpleDateFormat, with the
+    default being MM/dd/yyyy.  In addition, a "displayDate" property
+    defines the format that should be displayed to the user in the
+    event that there is a failure.  The default for this property
+    is MM/DD/YYYY.
+    The SimpleBean is used for mapping:
+    <mapping from="someProperty" to="value" />
+    There are three constraints:
+    'format' defines the SimpleDateFormat used to validate the date string.
+    'displayFormat' defines the format to display to the user (when there's a failure)
+    'lenient' is a flag (true/false) that defines whether the parsing should
+              be lenient or not (it is false by default)
+    There is a single failure message:
+    'defaultFailure'
+    -->
+  <validator id="DateFormatValidator"
+             class="org.iscreen.validators.DateFormatValidator">
+    <failure property="defaultFailure" key="vf.dateFormat" severity="failure" />
+    <doc>The ${label} field is a date, and should be in the following format: ${validator.displayFormat}.</doc>
+  </validator>
+
+  <!--
+    NullValidator
+
+    This validator ensures that a field has a non-null value.
+    It has the no constraints.
+    It uses the SimpleBean, which means for mapping, map a String to 'value'.
+    For example:
+    <mapping from="someProperty" to="value" />
+    The 'to' attribute is optional, since the default is 'value'.
+    This validator has only one failure message:
+    'defaultFailure'
+    -->
+  <validator id="NullValidator"
+             class="org.iscreen.validators.NullValidator">
+    <failure property="defaultFailure" key="vf.null" severity="failure" />
+    <doc>The ${label} field is required.</doc>
+  </validator>
+
+  <!--
+    NumberRangeValidator
+
+    This validator checks the value to ensure it is within the defined range.
+    The value being validated must be a java.lang.Number (or subclass).
+    It has the following constraints:
+    minimumValue : Minimum number the value can be
+    maximumValue : Maximum number the value can be
+    It uses the SimpleBean, which means for mapping, map a String to 'value'.
+    For example:
+    <mapping from="someProperty" to="value" />
+    The 'to' attribute is optional, since the default is 'value'.
+    This validator has two failure messages:
+    'rangeFailure' to report a number outside the range.
+    'invalidNumberFailure' to report a value that is not a java.lang.Number.
+    -->
+  <validator id="NumberRangeValidator"
+             class="com.cifpay.insurance.iscreen.validators.NumberRangeValidator">
+    <failure property="rangeFailure" key="vf.numberOutOfRange" severity="failure" />
+    <failure property="invalidNumberFailure" key="vf.invalidNumber" severity="failure" />
+    <doc>The ${label} field should be at least ${validator.minimumValue} but not greater than ${validator.maximumValue}.</doc>
+  </validator>
+
+  <!--
+    ExpressionValidator
+
+    This validator performs an OGNL expression check on the object
+    being validated.  No mapping element is necessary (in fact, shouldn't be used).
+    The OGNL expression is evaluated using the object being validated
+    as the OGNL root.  If the result of the OGNL expression is false, the
+    validation fails (note that the expression MUST return a boolean value).
+    This validator has only one failure message:
+    'defaultFailure'
+    In the failure message, you can reference the object being validated
+    using the 'failure' property (i.e. "Some error message using the
+    failed object referenced using ${failure.someProperty} property.")
+    To set the OGNL expression, use the expression constraint:
+    <constraint property="expression">OGNL exp</constraint>
+    -->
+  <validator id="ExpressionValidator"
+             class="org.iscreen.ognl.validators.ExpressionValidator">
+    <failure property="defaultFailure" key="vf.ognlExp" severity="failure" />
+  </validator>
+
+  <!--
+    RegularExpressionValidator
+
+    This validator performs a regular expression check on the String
+    being validated.  If the String is null, and the 'allowNull' property
+    is set to false (which is the default), then a failure is reported.
+    If the regular expression doesn't match, a failure is reported.
+    It has two constraints:
+    'allowNull' defines whether a null value is okay (if so, it's ignored).
+    This defaults to false.
+    'regex' defines the regular expression to use.  It has no default, so
+    if it's not set, the validator won't work.
+    It uses the SimpleBean, which means for mapping, map a String to 'value'.
+    For example:
+    <mapping from="someProperty" to="value" />
+    The 'to' attribute is optional, since the default is 'value'.
+    This validator has only one failure message:
+    'defaultFailure'
+    -->
+  <validator id="RegexValidator"
+             class="org.iscreen.validators.RegularExpressionValidator">
+    <failure property="defaultFailure" key="vf.regex" severity="failure" />
+  </validator>
+
+
+  <!--
+    EmailAddressValidator
+
+    The email address validator uses the regular expression validator to
+    validate email address fields.  It defines a different failure message,
+    and predefines the regular expression to one that will match a valid
+    email address.  By default, if the String being validated is null or
+    not a valid email address, then a failure is reported.
+    It has two constraints:
+    'allowNull' defines whether a null value is okay (if so, it's ignored).
+    This defaults to false.
+    'regex' defines the regular expression to use.  It has no default, so
+    if it's not set, the validator won't work.
+    It uses the SimpleBean, which means for mapping, map a String to 'value'.
+    For example:
+    <mapping from="someProperty" to="value" />
+    The 'to' attribute is optional, since the default is 'value'.
+    This validator has only one failure message:
+    'defaultFailure'
+    -->
+  <validator id="EmailAddressValidator" ref="RegexValidator">
+    <constraint property="regex">^[_A-Za-z0-9-]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*$</constraint>
+    <failure property="defaultFailure" key="vf.emailAddress" severity="failure" />
+    <doc>The ${label} field must be a valid email address in the form of name@domain.com.</doc>
+  </validator>
+
+
+  <!--
+    Main resource file for validators.
+    -->
+  <resource id="messages">
+    <resource-file file="iscreen.messages_zh_CN" />
+  </resource>
+</validation-root>

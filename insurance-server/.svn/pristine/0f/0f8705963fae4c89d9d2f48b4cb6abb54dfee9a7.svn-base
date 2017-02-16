@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsSalesOrderDao">
+	<resultMap id="baseResultMap" type="InsSalesOrder">
+		<id property="id" column="id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="orderNo" column="order_no" />
+		<result property="orderDate" column="order_date" />
+		<result property="returnAddress" column="return_address" />
+		<result property="returnContacts" column="return_contacts" />
+		<result property="returnPhone" column="return_phone" />
+		<result property="buyerName" column="buyer_name" />
+		<result property="buyerMobilePhone" column="buyer_mobile_phone" />
+		<result property="payMode" column="pay_mode" />
+		<result property="totalPrice" column="total_price" />
+		<collection property="insSalesOrderItems" ofType="com.cifpay.insurance.model.InsSalesOrderItems">
+			<id property="id" column="i_id" />
+			<result property="salesOrderId" column="i_sales_order_id" />
+			<result property="insuranceCertId" column="i_insurance_cert_id" />
+			<result property="orderNo" column="i_order_no" />
+			<result property="goodsNo" column="i_goods_no" />
+			<result property="goodsName" column="i_goods_name" />
+			<result property="price" column="i_price" />
+			<result property="quantity" column="i_quantity" />
+			<result property="totalPrice" column="i_total_price" />
+		</collection>
+	</resultMap>
+
+	<sql id="baseColumns">id,vendor_id,order_no,order_date,return_address,return_contacts,return_phone,buyer_name,buyer_mobile_phone,pay_mode,total_price
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_sales_order WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsSalesOrder">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_sales_order(vendor_id,order_no,order_date,return_address,return_contacts,return_phone,buyer_name,buyer_mobile_phone,pay_mode,total_price)
+		VALUES(#{vendorId},#{orderNo},#{orderDate},#{returnAddress},#{returnContacts},#{returnPhone},#{buyerName},#{buyerMobilePhone},#{payMode},#{totalPrice})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsSalesOrder">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_sales_order(
+		<if test="vendorId != null">vendor_id,</if>
+		<if test="orderNo != null">order_no,</if>
+		<if test="orderDate != null">order_date,</if>
+		<if test="returnAddress != null">return_address,</if>
+		<if test="returnContacts != null">return_contacts,</if>
+		<if test="returnPhone != null">return_phone,</if>
+		<if test="buyerName != null">buyer_name,</if>
+		<if test="buyerMobilePhone != null">buyer_mobile_phone,</if>
+		<if test="payMode != null">pay_mode,</if>
+		<if test="totalPrice != null">total_price,</if>
+		createTime) VALUES(
+		<if test="vendorId != null">#{vendorId},</if>
+		<if test="orderNo != null">#{orderNo},</if>
+		<if test="orderDate != null">#{orderDate},</if>
+		<if test="returnAddress != null">#{returnAddress},</if>
+		<if test="returnContacts != null">#{returnContacts},</if>
+		<if test="returnPhone != null">#{returnPhone},</if>
+		<if test="buyerName != null">#{buyerName},</if>
+		<if test="buyerMobilePhone != null">#{buyerMobilePhone},</if>
+		<if test="payMode != null">#{payMode},</if>
+		<if test="totalPrice != null">#{totalPrice},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsSalesOrder">
+		UPDATE ins_sales_order SET
+		vendor_id=#{vendorId},order_no=#{orderNo},order_date=#{orderDate},return_address=#{returnAddress},return_contacts=#{returnContacts},return_phone=#{returnPhone},buyer_name=#{buyerName},buyer_mobile_phone=#{buyerMobilePhone},pay_mode=#{payMode},total_price=#{totalPrice}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsSalesOrder">
+		UPDATE ins_sales_order
+		<set>
+			<if test="vendorId != null">vendor_id=#{vendorId},</if>
+			<if test="orderNo != null">order_no=#{orderNo},</if>
+			<if test="orderDate != null">order_date=#{orderDate},</if>
+			<if test="returnAddress != null">return_address=#{returnAddress},</if>
+			<if test="returnContacts != null">return_contacts=#{returnContacts},</if>
+			<if test="returnPhone != null">return_phone=#{returnPhone},</if>
+			<if test="buyerName != null">buyer_name=#{buyerName},</if>
+			<if test="buyerMobilePhone != null">buyer_mobile_phone=#{buyerMobilePhone},</if>
+			<if test="payMode != null">pay_mode=#{payMode},</if>
+			<if test="totalPrice != null">total_price=#{totalPrice},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsSalesOrder">
+		DELETE FROM ins_sales_order WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_sales_order ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_sales_order
+	</select>
+	
+	<select id="getFullInsSalesOrder" statementType="PREPARED" resultMap="baseResultMap">
+	<![CDATA[
+	SELECT a.*,
+	    b.id i_id, b.insurance_cert_id i_insurance_cert_id,b.sales_order_id i_sales_order_id,b.order_no i_order_no,b.price i_price,b.quantity i_quantity,b.total_price i_total_price
+		FROM ins_sales_order a left join ins_sales_order_items b on a.id = b.sales_order_id
+		where a.vendor_id=#{vendorId} and a.order_no=#{orderNo}
+	]]>
+	</select>
+</mapper>

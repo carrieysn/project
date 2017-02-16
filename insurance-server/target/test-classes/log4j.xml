@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-d{yyyy-MM-dd HH:mm:ss} %p (%c:%L) - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="levelMin" value="DEBUG" />
+			<param name="levelMax" value="FATAL" />
+			<param name="AcceptOnMatch" value="true" />
+		</filter>
+	</appender>
+	<appender name="FILE" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="../logs/ins/insuranceServer.log" />
+		<param name="Append" value="true" />
+		<param name="MaxFileSize" value="50MB" />
+		<param name="MaxBackupIndex" value="10" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-d{yyyy-MM-dd HH:mm:ss} %p (%c:%L) - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="levelMin" value="DEBUG" />
+			<param name="levelMax" value="FATAL" />
+			<param name="AcceptOnMatch" value="true" />
+		</filter>
+	</appender>
+
+	<appender name="FILE_ERROR" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="../logs/ins/insuranceServer_error.log" />
+		<param name="Append" value="true" />
+		<param name="MaxFileSize" value="50MB" />
+		<param name="MaxBackupIndex" value="10" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-d{yyyy-MM-dd HH:mm:ss} %p (%c:%L) - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="levelMin" value="ERROR" />
+			<param name="levelMax" value="FATAL" />
+			<param name="AcceptOnMatch" value="true" />
+		</filter>
+	</appender>
+
+	<logger name="com.cifpay.insurance.controller" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+
+	<logger name="com.cifpay.insurance.dao" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+
+	<logger name="com.cifpay.insurance.dao.impl" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+
+
+	<logger name="com.cifpay.insurance.filter" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+
+	<logger name="com.cifpay.insurance.listener" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+
+	<logger name="com.cifpay.insurance.service" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+
+	<logger name="com.cifpay.insurance.service.impl" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+
+	<logger name="com.cifpay.insurance.util" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+
+
+	<logger name="org.apache.ibatis" additivity="false">
+		<level value="ERROR" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+	<logger name="org.mybatis.spring" additivity="false">
+		<level value="ERROR" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+
+	<logger name="java.sql" additivity="false">
+		<level value="ERROR" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</logger>
+
+	<root>
+		<priority value="INFO" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+		<appender-ref ref="FILE_ERROR" />
+	</root>
+</log4j:configuration>

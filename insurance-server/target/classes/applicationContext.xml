@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+	<context:property-placeholder location="classpath:database.properties,classpath:config.properties" />
+
+    <bean id="springContextUtil" class="com.cifpay.insurance.util.SpringContextUtil"/>
+	<!-- <context:property-placeholder location="classpath:database.properties,classpath:databasePassword.properties"/> -->
+	<!-- “singleton”和“prototype”默认情况下是“singleton -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" scope="singleton">
+		<property name="driverClassName" value="${databaseDriverClassName}" />
+		<property name="url" value="${databaseUrl}" />
+		<property name="username" value="${databaseUsername}" />
+		<property name="password" value="${databasePasswd}" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="validationQuery" value="SELECT NOW()" />
+		<property name="validationQueryTimeout" value="1" />
+		<property name="timeBetweenEvictionRunsMillis" value="30000" />
+		<property name="numTestsPerEvictionRun" value="16" />
+	</bean>
+
+	<!-- destroy-method="close" http://liyixing1.iteye.com/blog/1202891 http://csumissu.iteye.com/blog/1079576 -->
+	<!-- http://www.iteye.com/topic/1117330 -->
+	<!-- <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"> <property name="driverClass" value="${databaseDriverClassName}" /> <property name="jdbcUrl" value="${databaseUrl}" /> <property name="user" value="${databaseUsername}" /> <property name="password" value="${databasePasswd}" 
+		/> <property name=”preferredTestQuery” value="SELECT NOW()"/> <property name="autoCommitOnClose" value="true" /> <property name="checkoutTimeout" value="5000" /> <property name="initialPoolSize" value="3" /> <property name="minPoolSize" value="2" /> <property name="maxPoolSize" value="5" /> <property 
+		name="maxIdleTime" value="25200" /> <property name="acquireIncrement" value="3" /> <property name="acquireRetryAttempts" value="30"/> <property name="maxIdleTimeExcessConnections" value="1800" /> </bean> -->
+	<!-- define the SqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="mapperLocations" value="classpath*:com/cifpay/insurance/dao/*.xml" />
+		<property name="typeAliasesPackage" value="com.cifpay.insurance.model" />
+	</bean>
+
+	<!-- <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate"> <constructor-arg ref="sqlSessionFactory" /> </bean> http://www.oschina.net/question/97503_131975 -->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+
+	<!-- 配置事务管理 -->
+	<!-- http://www.iteye.com/topic/1121458 -->
+	<!-- http://www.iteye.com/topic/1121458 -->
+	<!-- http://www.1744.cc/HTML/Java/20121116/14083_4.html -->
+	<!-- http://blog.chinaunix.net/uid-21162795-id-3424973.html -->
+	<!-- http://www.itblog8.cn/java/20130425101.html -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"> <property name="messageConverters"> <list> <bean class="xxx.web.json.MappingFastjsonHttpMessageConverter"> <property name="supportedMediaTypes" value="application/json"/> <property name="serializerFeature"> 
+		<list> <value>WriteMapNullValue</value> <value>QuoteFieldNames</value> </list> </property> </bean> </list> </property> </bean> -->
+
+
+	<!-- enable component scanning (beware that this does not enable mapper scanning!) -->
+	<!-- 多个包使用逗号分开 -->
+	<context:component-scan base-package="com.cifpay.insurance">
+		<context:include-filter type="regex" expression=".service.*" />
+		<context:include-filter type="regex" expression=".dao.*" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- enable autowire -->
+	<!-- 是对包进行扫描，实现注释驱动Bean定义，同时将bean自动注入容器中使用。即解决了@Controller标识的类的bean的注入和使用 -->
+	<context:annotation-config />
+	<!-- enable transaction demarcation with annotations -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
+	<bean id="mailSenderDao" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<property name="host" value="smtp.163.com" />
+		<property name="port" value="25" />
+		<property name="protocol" value="smtp" />
+		<property name="username" value="dd@163.com" />
+		<property name="password" value="5448" />
+
+		<property name="javaMailProperties">
+			<props>
+				<!-- 163邮箱中的fromAddress必须与username一样,因此在这里加了这个(mail.fromAddress)自己的属性,公司的邮箱可以随意设定:any@cnlaunch.com -->
+				<prop key="mail.fromAddress"></prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.timeout">60000</prop>
+				<prop key="mail.smtp.connectiontimeout">30000</prop>
+				<!-- 起用这个ssl好象不成功 -->
+				<!-- <prop key="mail.smtp.starttls.enable">true</prop> <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop> -->
+			</props>
+		</property>
+	</bean>
+
+	<bean id="threadPoolTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="10" />
+		<property name="maxPoolSize" value="30" />
+	</bean>
+	
+	<bean id="validationFactory" class="org.iscreen.ValidationFactoryConfig">
+	  <constructor-arg><value>iscreen/ins_validations.xml</value></constructor-arg>
+	</bean>
+	
+	<bean id="insValidationServiceWrapper" class="com.cifpay.insurance.base.InsValidationServiceWrapper">
+	  <property name="validationFactory" ref="validationFactory"></property>
+	</bean>
+
+   <bean id="cifpayService" class="com.cifpay.gateway.service.CifpayService">
+		<constructor-arg index="0">
+			<value>${lc.public_key}</value>
+		</constructor-arg>
+		<constructor-arg index="1">
+			<value>${lc.private_key}</value>
+		</constructor-arg>
+	</bean>
+	<!-- mock cp -->
+	<bean id="mockCifpayService" class="com.cifpay.insurance.lc.MockCifpayService">
+		<constructor-arg index="0">
+			<value>${lc.public_key}</value>
+		</constructor-arg>
+		<constructor-arg index="1">
+			<value>${lc.private_key}</value>
+		</constructor-arg>
+	</bean>
+    <bean id="cifpayServiceAdapter" class="com.cifpay.insurance.lc.CifpayServiceAdapter">
+		<property name="cifpayService">
+			<ref bean="mockCifpayService"/>
+		</property>
+    </bean>
+</beans> 

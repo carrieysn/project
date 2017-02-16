@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsPolicyOrderDao">
+	<resultMap id="baseResultMap" type="InsPolicyOrder">
+		<id property="id" column="id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="billNo" column="bill_no" />
+		<result property="type" column="type" />
+		<result property="status" column="status" />
+		<result property="amount" column="amount" />
+		<result property="lcId" column="lc_id" />
+		<result property="lcNo" column="lc_no" />
+		<result property="lcState" column="lc_state" />
+		<result property="tradeDate" column="trade_date" />
+		<result property="beforePremium" column="before_premium" />
+		<result property="policyId" column="policy_id" />
+		<result property="createdUser" column="created_user" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedUser" column="modified_user" />
+		<result property="modifiedTime" column="modified_time" />
+		<result property="version" column="version" />
+		<association property="insPolicyOrderItem" javaType="com.cifpay.insurance.model.InsPolicyOrderItem">
+			<id property="id" column="i_id" />
+			<result property="policyOrderId" column="i_policy_order_id" />
+			<result property="holderName" column="i_holder_name" />
+			<result property="holderType" column="i_holder_type" />
+			<result property="idType" column="i_id_type" />
+			<result property="idNo" column="i_id_no" />
+			<result property="contacts" column="i_contacts" />
+			<result property="phone" column="i_phone" />
+			<result property="email" column="i_email" />
+			<result property="product" column="i_product" />
+			<result property="insuredName" column="i_insured_name" />
+			<result property="insurancePeriod" column="i_insurance_period" />
+			<result property="insuredid" column="i_insuredId" />
+		</association>
+	</resultMap>
+
+	<sql id="baseColumns">id,vendor_id,bill_no,type,status,amount,lc_id,lc_no,lc_state,trade_date,before_premium,policy_id,created_user,created_time,modified_user,modified_time,version
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_policy_order WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsPolicyOrder">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_policy_order(vendor_id,bill_no,type,status,amount,lc_id,lc_no,lc_state,trade_date,before_premium,policy_id,created_user,created_time,modified_user,modified_time,version)
+		VALUES(#{vendorId},#{billNo},#{type},#{status},#{amount},#{lcId},#{lcNo},#{lcState},#{tradeDate},#{beforePremium},#{policyId},#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime},#{version})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsPolicyOrder">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_policy_order(
+		<if test="vendorId != null">vendor_id,</if>
+		<if test="billNo != null">bill_no,</if>
+		<if test="type != null">type,</if>
+		<if test="status != null">status,</if>
+		<if test="amount != null">amount,</if>
+		<if test="lcId != null">lc_id,</if>
+		<if test="lcNo != null">lc_no,</if>
+		<if test="lcState != null">lc_state,</if>
+		<if test="tradeDate != null">trade_date,</if>
+		<if test="beforePremium != null">before_premium,</if>
+		<if test="policyId != null">policy_id,</if>
+		<if test="createdUser != null">created_user,</if>
+		<if test="createdTime != null">created_time,</if>
+		<if test="modifiedUser != null">modified_user,</if>
+		<if test="modifiedTime != null">modified_time,</if>
+		<if test="version != null">version,</if>
+		createTime) VALUES(
+		<if test="vendorId != null">#{vendorId},</if>
+		<if test="billNo != null">#{billNo},</if>
+		<if test="type != null">#{type},</if>
+		<if test="status != null">#{status},</if>
+		<if test="amount != null">#{amount},</if>
+		<if test="lcId != null">#{lcId},</if>
+		<if test="lcNo != null">#{lcNo},</if>
+		<if test="lcState != null">#{lcState},</if>
+		<if test="tradeDate != null">#{tradeDate},</if>
+		<if test="beforePremium != null">#{beforePremium},</if>
+		<if test="policyId != null">#{policyId},</if>
+		<if test="createdUser != null">#{createdUser},</if>
+		<if test="createdTime != null">#{createdTime},</if>
+		<if test="modifiedUser != null">#{modifiedUser},</if>
+		<if test="modifiedTime != null">#{modifiedTime},</if>
+		<if test="version != null">#{version},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsPolicyOrder">
+		UPDATE ins_policy_order SET
+		vendor_id=#{vendorId},bill_no=#{billNo},type=#{type},status=#{status},amount=#{amount},lc_id=#{lcId},lc_no=#{lcNo},lc_state=#{lcState},trade_date=#{tradeDate},before_premium=#{beforePremium},policy_id=#{policyId},created_user=#{createdUser},created_time=#{createdTime},modified_user=#{modifiedUser},modified_time=#{modifiedTime},version=(version+1)
+		WHERE id=#{id} AND version=#{version}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsPolicyOrder">
+		UPDATE ins_policy_order
+		<set>
+			<if test="vendorId != null">vendor_id=#{vendorId},</if>
+			<if test="billNo != null">bill_no=#{billNo},</if>
+			<if test="type != null">type=#{type},</if>
+			<if test="status != null">status=#{status},</if>
+			<if test="amount != null">amount=#{amount},</if>
+			<if test="lcId != null">lc_id=#{lcId},</if>
+			<if test="lcNo != null">lc_no=#{lcNo},</if>
+			<if test="lcState != null">lc_state=#{lcState},</if>
+			<if test="tradeDate != null">trade_date=#{tradeDate},</if>
+			<if test="beforePremium != null">before_premium=#{beforePremium},</if>
+			<if test="policyId != null">policy_id=#{policyId},</if>
+			<if test="createdUser != null">created_user=#{createdUser},</if>
+			<if test="createdTime != null">created_time=#{createdTime},</if>
+			<if test="modifiedUser != null">modified_user=#{modifiedUser},</if>
+			<if test="modifiedTime != null">modified_time=#{modifiedTime},</if>
+			version=(version+1)
+		</set>
+		WHERE id=#{id} AND version=#{version}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsPolicyOrder">
+		DELETE FROM ins_policy_order WHERE id=#{id} AND version=#{version}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_policy_order ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_policy_order
+	</select>
+
+	<sql id="getInsPolicyOrderListCondition">
+		<where>
+			1=1
+			<if test="policyId != null">
+				and policy_id=#{policyId}
+			</if>
+			<if test="status != null">
+				and status=#{status}
+			</if>
+			<if test="beginDate != null">
+				<![CDATA[and created_time >=#{beginDate}
+				 ]]>
+			</if>
+			<if test="endDate != null">
+				<![CDATA[ and created_time <=#{endDate}
+				 ]]>
+			</if>
+		</where>
+	</sql>
+	<!-- 查询订单列表 -->
+	<select id="getInsPolicyOrderList" parameterType="map" resultMap="baseResultMap">
+		SELECT * FROM ins_policy_order
+		<include refid="getInsPolicyOrderListCondition" />
+		ORDER BY created_time desc
+	</select>
+
+	<!-- 查询订单总记录数 -->
+	<select id="getInsPolicyOrderListCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(id) FROM ins_policy_order 
+		<include refid="getInsPolicyOrderListCondition" />
+	</select>
+
+    <!-- 据订单号，银行信证id查找订单 -->
+	<select id="getInsPolicyOrder" resultMap="baseResultMap">
+		SELECT a.*,
+		b.id i_id,b.holder_name i_holder_name,b.holder_type i_holder_type,b.id_type i_id_type,b.id_no i_id_no,b.contacts i_contacts
+		,b.phone i_phone,b.email i_email,b.product i_product,b.insured_name i_insured_name,b.insurance_period i_insurance_period,b.insuredid i_insuredId
+		FROM ins_policy_order a left join ins_policy_order_item b on b.policy_order_id=a.id
+		where a.bill_no=#{billNo}
+		<if test="lcId != null">
+				and a.lc_id=#{lcId}
+		</if>
+	</select>
+</mapper>

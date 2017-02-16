@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validation-root namespace="com.cifpay.ins.vendor" default-resource="messages">
+	<!-- 绑定银行卡 -->
+	<validation-set id="BindVendorBankAccountInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="bankCode">
+			<mapping from="bankCode" />
+			<label>bankCode</label>
+			<constraint property="minLength">1</constraint>
+			<constraint property="maxLength">128</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="bankName">
+			<mapping from="bankName" />
+			<label>bankName</label>
+			<constraint property="minLength">1</constraint>
+			<constraint property="maxLength">128</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="accountName">
+			<mapping from="accountName" />
+			<label>accountName</label>
+			<constraint property="minLength">1</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="bankAccount">
+			<mapping from="bankAccount" />
+			<label>bankAccount</label>
+			<constraint property="minLength">1</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="reserveMobilePhone">
+			<mapping from="reserveMobilePhone" />
+			<label>reserveMobilePhone</label>
+			<constraint property="minLength">11</constraint>
+		</use-validator>
+	</validation-set>
+	<!-- 输入银行账号 -->
+	<validation-set id="VendorBankAccountSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="bankAccount">
+			<mapping from="bankAccount" />
+			<label>bankAccount</label>
+			<constraint property="minLength">1</constraint>
+		</use-validator>
+	</validation-set>
+	
+	<!-- 添加收货地址 -->
+	<validation-set id="AddVendorReturnAddressInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="address">
+			<mapping from="address" />
+			<label>address</label>
+			<constraint property="minLength">1</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="contacts">
+			<mapping from="contacts" />
+			<label>contacts</label>
+			<constraint property="minLength">1</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="mobilePhone">
+			<mapping from="mobilePhone" />
+			<label>mobilePhone</label>
+			<constraint property="minLength">11</constraint>
+		</use-validator>
+	</validation-set>
+	
+	<!-- 收货地址ID -->
+	<validation-set id="VendorReturnAddressIdSet">
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="vendorReturnAddressId">
+			<mapping from="vendorReturnAddressId" />
+			<label>vendorReturnAddressId</label>
+		</use-validator>
+	</validation-set>
+	
+	<!-- 查找银行卡号 -->
+	<validation-set id="LookupBankCardInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="inputCardNo">
+			<mapping from="inputCardNo" />
+			<label>inputCardNo</label>
+			<constraint property="minLength">6</constraint>
+			<constraint property="maxLength">10</constraint>
+		</use-validator>
+	</validation-set>
+
+</validation-root>

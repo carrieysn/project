@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsVendorDao">
+	<resultMap id="baseResultMap" type="InsVendor">
+		<id property="id" column="id" />
+		<result property="loginAccount" column="login_account" />
+		<result property="loginPassword" column="login_password" />
+		<result property="isEnable" column="is_enable" />
+		<result property="regDate" column="reg_date" />
+		<result property="remark" column="remark" />
+		<result property="createdUser" column="created_user" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedUser" column="modified_user" />
+		<result property="modifiedTime" column="modified_time" />
+	</resultMap>
+
+	<sql id="baseColumns">id,login_account,login_password,is_enable,reg_date,remark,created_user,created_time,modified_user,modified_time
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_vendor WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsVendor">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_vendor(login_account,login_password,is_enable,reg_date,remark,created_user,created_time,modified_user,modified_time)
+		VALUES(#{loginAccount},#{loginPassword},#{isEnable},#{regDate},#{remark},#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsVendor">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_vendor(
+		<if test="loginAccount != null">login_account,</if>
+		<if test="loginPassword != null">login_password,</if>
+		<if test="isEnable != null">is_enable,</if>
+		<if test="regDate != null">reg_date,</if>
+		<if test="remark != null">remark,</if>
+		<if test="createdUser != null">created_user,</if>
+		<if test="createdTime != null">created_time,</if>
+		<if test="modifiedUser != null">modified_user,</if>
+		<if test="modifiedTime != null">modified_time,</if>
+		createTime) VALUES(
+		<if test="loginAccount != null">#{loginAccount},</if>
+		<if test="loginPassword != null">#{loginPassword},</if>
+		<if test="isEnable != null">#{isEnable},</if>
+		<if test="regDate != null">#{regDate},</if>
+		<if test="remark != null">#{remark},</if>
+		<if test="createdUser != null">#{createdUser},</if>
+		<if test="createdTime != null">#{createdTime},</if>
+		<if test="modifiedUser != null">#{modifiedUser},</if>
+		<if test="modifiedTime != null">#{modifiedTime},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsVendor">
+		UPDATE ins_vendor SET
+		login_account=#{loginAccount},login_password=#{loginPassword},is_enable=#{isEnable},reg_date=#{regDate},remark=#{remark},created_user=#{createdUser},created_time=#{createdTime},modified_user=#{modifiedUser},modified_time=#{modifiedTime}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsVendor">
+		UPDATE ins_vendor
+		<set>
+			<if test="loginAccount != null">login_account=#{loginAccount},</if>
+			<if test="loginPassword != null">login_password=#{loginPassword},</if>
+			<if test="isEnable != null">is_enable=#{isEnable},</if>
+			<if test="regDate != null">reg_date=#{regDate},</if>
+			<if test="remark != null">remark=#{remark},</if>
+			<if test="createdUser != null">created_user=#{createdUser},</if>
+			<if test="createdTime != null">created_time=#{createdTime},</if>
+			<if test="modifiedUser != null">modified_user=#{modifiedUser},</if>
+			<if test="modifiedTime != null">modified_time=#{modifiedTime},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsVendor">
+		DELETE FROM ins_vendor WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_vendor ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_vendor
+	</select>
+	 <!-- 据登录账号获取商户信息 -->
+	<select id="getInsVendorByLoginAccount" parameterType="String" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_vendor where login_account=#{loginAccount}
+	</select>
+	
+</mapper>

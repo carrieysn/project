@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsBankCardDao">
+	<resultMap id="baseResultMap" type="InsBankCard">
+		<id property="id" column="id" />
+		<result property="cardBin" column="card_bin" />
+		<result property="binDigits" column="bin_digits" />
+		<result property="bankCode" column="bank_code" />
+		<result property="bankName" column="bank_name" />
+		<result property="cardName" column="card_name" />
+		<result property="cardType" column="card_type" />
+		<result property="cardDigits" column="card_digits" />
+	</resultMap>
+
+	<sql id="baseColumns">id,card_bin,bin_digits,bank_code,bank_name,card_name,card_type,card_digits
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_bank_card WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsBankCard">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_bank_card(card_bin,bin_digits,bank_code,bank_name,card_name,card_type,card_digits)
+		VALUES(#{cardBin},#{binDigits},#{bankCode},#{bankName},#{cardName},#{cardType},#{cardDigits})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsBankCard">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_bank_card(
+		<if test="cardBin != null">card_bin,</if>
+		<if test="binDigits != null">bin_digits,</if>
+		<if test="bankCode != null">bank_code,</if>
+		<if test="bankName != null">bank_name,</if>
+		<if test="cardName != null">card_name,</if>
+		<if test="cardType != null">card_type,</if>
+		<if test="cardDigits != null">card_digits,</if>
+		createTime) VALUES(
+		<if test="cardBin != null">#{cardBin},</if>
+		<if test="binDigits != null">#{binDigits},</if>
+		<if test="bankCode != null">#{bankCode},</if>
+		<if test="bankName != null">#{bankName},</if>
+		<if test="cardName != null">#{cardName},</if>
+		<if test="cardType != null">#{cardType},</if>
+		<if test="cardDigits != null">#{cardDigits},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsBankCard">
+		UPDATE ins_bank_card SET
+		card_bin=#{cardBin},bin_digits=#{binDigits},bank_code=#{bankCode},bank_name=#{bankName},card_name=#{cardName},card_type=#{cardType},card_digits=#{cardDigits}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsBankCard">
+		UPDATE ins_bank_card
+		<set>
+			<if test="cardBin != null">card_bin=#{cardBin},</if>
+			<if test="binDigits != null">bin_digits=#{binDigits},</if>
+			<if test="bankCode != null">bank_code=#{bankCode},</if>
+			<if test="bankName != null">bank_name=#{bankName},</if>
+			<if test="cardName != null">card_name=#{cardName},</if>
+			<if test="cardType != null">card_type=#{cardType},</if>
+			<if test="cardDigits != null">card_digits=#{cardDigits},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsBankCard">
+		DELETE FROM ins_bank_card WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_bank_card
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_bank_card
+	</select>
+	<!-- 获取有效银行卡号信息 -->
+	<select id="getBankCardList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT a.* FROM ins_bank_card a inner join ins_bank b on a.bank_code=b.bank_code order by a.bank_code
+	</select>
+</mapper>

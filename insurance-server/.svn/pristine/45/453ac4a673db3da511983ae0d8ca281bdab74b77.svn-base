@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsInsuranceCertDao">
+	<resultMap id="baseResultMap" type="InsInsuranceCert">
+		<id property="id" column="id" />
+		<result property="policyId" column="policy_id" />
+		<result property="policyNo" column="policy_no" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="insuranceCertNo" column="insurance_cert_no" />
+		<result property="effectiveTime" column="effective_time" />
+		<result property="effectivePeriod" column="effective_period" />
+		<result property="expiredTime" column="expired_time" />
+		<result property="status" column="status" />
+		<result property="isSign" column="is_sign" />
+		<result property="signTime" column="sign_time" />
+		<result property="totalPrice" column="total_price" />
+		<result property="noticeUrl" column="notice_url" />
+		<result property="isLcOpen" column="is_lc_open" />
+		<result property="isIcRefund" column="is_ic_refund" />
+		<result property="returnDate" column="return_date" />
+		<result property="version" column="version" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedTime" column="modified_time" />
+		<association property="insSalesOrderItems" javaType="com.cifpay.insurance.model.InsSalesOrderItems">
+			<id property="id" column="i_id" />
+			<result property="salesOrderId" column="sales_order_id" />
+			<result property="insuranceCertId" column="insurance_cert_id" />
+			<result property="orderNo" column="order_no" />
+			<result property="goodsNo" column="goods_no" />
+			<result property="goodsName" column="goods_name" />
+			<result property="price" column="price" />
+			<result property="quantity" column="quantity" />
+			<result property="totalPrice" column="total_price" />
+		</association>
+	</resultMap>
+
+    <resultMap id="FullCertResultMap" type="InsInsuranceCert">
+		<id property="id" column="id" />
+		<result property="policyId" column="policy_id" />
+		<result property="policyNo" column="policy_no" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="insuranceCertNo" column="insurance_cert_no" />
+		<result property="effectiveTime" column="effective_time" />
+		<result property="effectivePeriod" column="effective_period" />
+		<result property="expiredTime" column="expired_time" />
+		<result property="status" column="status" />
+		<result property="isSign" column="is_sign" />
+		<result property="signTime" column="sign_time" />
+		<result property="totalPrice" column="total_price" />
+		<result property="noticeUrl" column="notice_url" />
+		<result property="isLcOpen" column="is_lc_open" />
+		<result property="isIcRefund" column="is_ic_refund" />
+		<result property="returnDate" column="return_date" />
+		<result property="version" column="version" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedTime" column="modified_time" />
+		<association property="insPolicy" javaType="com.cifpay.insurance.model.InsPolicy">
+		    <id property="id" column="p_id" />
+			<result property="policyNo" column="p_policy_no" />
+			<result property="insuredName" column="insured_name" />
+			<result property="status" column="p_status" />
+			<association property="insPolicyHolder" javaType="com.cifpay.insurance.model.InsPolicyHolder">
+				<id property="id" column="h_id" />
+				<result property="holderName" column="h_holder_name" />
+			</association>
+			<association property="insInsurerInfo" javaType="com.cifpay.insurance.model.InsInsurerInfo">
+				<id property="id" column="i_id" />
+				<result property="insurername" column="i_insurerName" />
+			</association>
+		</association>
+		<association property="insSalesOrderItems" javaType="com.cifpay.insurance.model.InsSalesOrderItems">
+			<id property="id" column="it_id" />
+			<result property="goodsNo" column="goods_no" />
+			<result property="goodsName" column="goods_name" />
+			<result property="price" column="price" />
+			<result property="quantity" column="quantity" />
+			<result property="totalPrice" column="total_price" />
+			<association property="insSalesOrder" javaType="com.cifpay.insurance.model.InsSalesOrder">
+				<id property="id" column="o_id" />
+		        <result property="vendorId" column="o_vendor_id" />
+				<result property="orderNo" column="order_no" />
+				<result property="orderDate" column="order_date" />
+				<result property="returnAddress" column="return_address" />
+				<result property="returnContacts" column="return_contacts" />
+				<result property="returnPhone" column="return_phone" />
+				<result property="buyerName" column="buyer_name" />
+				<result property="buyerMobilePhone" column="buyer_mobile_phone" />
+			</association>
+		</association>
+	</resultMap>
+
+	<sql id="baseColumns">id,policy_id,policy_no,vendor_id,insurance_cert_no,effective_time,effective_period,expired_time,status,is_sign,sign_time,total_price,notice_url,is_lc_open,is_ic_refund,return_date,version,created_time,modified_time
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_insurance_cert WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsInsuranceCert">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_insurance_cert(policy_id,policy_no,vendor_id,insurance_cert_no,effective_time,effective_period,expired_time,status,is_sign,sign_time,total_price,notice_url,is_lc_open,is_ic_refund,return_date,version,created_time,modified_time)
+		VALUES(#{policyId},#{policyNo},#{vendorId},#{insuranceCertNo},#{effectiveTime},#{effectivePeriod},#{expiredTime},#{status},#{isSign},#{signTime},#{totalPrice},#{noticeUrl},#{isLcOpen},#{isIcRefund},#{returnDate},#{version},#{createdTime},#{modifiedTime})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsInsuranceCert">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_insurance_cert(
+		<if test="policyId != null">policy_id,</if>
+		<if test="policyNo != null">policy_no,</if>
+		<if test="vendorId != null">vendor_id,</if>
+		<if test="insuranceCertNo != null">insurance_cert_no,</if>
+		<if test="effectiveTime != null">effective_time,</if>
+		<if test="effectivePeriod != null">effective_period,</if>
+		<if test="expiredTime != null">expired_time,</if>
+		<if test="status != null">status,</if>
+		<if test="isSign != null">is_sign,</if>
+		<if test="signTime != null">sign_time,</if>
+		<if test="totalPrice != null">total_price,</if>
+		<if test="noticeUrl != null">notice_url,</if>
+		<if test="isLcOpen != null">is_lc_open,</if>
+		<if test="isIcRefund != null">is_ic_refund,</if>
+		<if test="returnDate != null">return_date,</if>
+		<if test="version != null">version,</if>
+		<if test="createdTime != null">created_time,</if>
+		<if test="modifiedTime != null">modified_time,</if>
+		createTime) VALUES(
+		<if test="policyId != null">#{policyId},</if>
+		<if test="policyNo != null">#{policyNo},</if>
+		<if test="vendorId != null">#{vendorId},</if>
+		<if test="insuranceCertNo != null">#{insuranceCertNo},</if>
+		<if test="effectiveTime != null">#{effectiveTime},</if>
+		<if test="effectivePeriod != null">#{effectivePeriod},</if>
+		<if test="expiredTime != null">#{expiredTime},</if>
+		<if test="status != null">#{status},</if>
+		<if test="isSign != null">#{isSign},</if>
+		<if test="signTime != null">#{signTime},</if>
+		<if test="totalPrice != null">#{totalPrice},</if>
+		<if test="noticeUrl != null">#{noticeUrl},</if>
+		<if test="isLcOpen != null">#{isLcOpen},</if>
+		<if test="isIcRefund != null">#{isIcRefund},</if>
+		<if test="returnDate != null">#{returnDate},</if>
+		<if test="version != null">#{version},</if>
+		<if test="createdTime != null">#{createdTime},</if>
+		<if test="modifiedTime != null">#{modifiedTime},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsInsuranceCert">
+		UPDATE ins_insurance_cert SET
+		policy_id=#{policyId},policy_no=#{policyNo},vendor_id=#{vendorId},insurance_cert_no=#{insuranceCertNo},effective_time=#{effectiveTime},effective_period=#{effectivePeriod},expired_time=#{expiredTime},status=#{status},is_sign=#{isSign},sign_time=#{signTime},total_price=#{totalPrice},notice_url=#{noticeUrl},is_lc_open=#{isLcOpen},is_ic_refund=#{isIcRefund},return_date=#{returnDate},created_time=#{createdTime},modified_time=#{modifiedTime},version=(version+1)
+		WHERE id=#{id} AND version=#{version}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsInsuranceCert">
+		UPDATE ins_insurance_cert
+		<set>
+			<if test="policyId != null">policy_id=#{policyId},</if>
+			<if test="policyNo != null">policy_no=#{policyNo},</if>
+			<if test="vendorId != null">vendor_id=#{vendorId},</if>
+			<if test="insuranceCertNo != null">insurance_cert_no=#{insuranceCertNo},</if>
+			<if test="effectiveTime != null">effective_time=#{effectiveTime},</if>
+			<if test="effectivePeriod != null">effective_period=#{effectivePeriod},</if>
+			<if test="expiredTime != null">expired_time=#{expiredTime},</if>
+			<if test="status != null">status=#{status},</if>
+			<if test="isSign != null">is_sign=#{isSign},</if>
+			<if test="signTime != null">sign_time=#{signTime},</if>
+			<if test="totalPrice != null">total_price=#{totalPrice},</if>
+			<if test="noticeUrl != null">notice_url=#{noticeUrl},</if>
+			<if test="isLcOpen != null">is_lc_open=#{isLcOpen},</if>
+			<if test="isIcRefund != null">is_ic_refund=#{isIcRefund},</if>
+			<if test="returnDate != null">return_date=#{returnDate},</if>
+			<if test="createdTime != null">created_time=#{createdTime},</if>
+			<if test="modifiedTime != null">modified_time=#{modifiedTime},</if>
+			version=(version+1)
+		</set>
+		WHERE id=#{id} AND version=#{version}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsInsuranceCert">
+		DELETE FROM ins_insurance_cert WHERE id=#{id} AND version=#{version}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_insurance_cert
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_insurance_cert
+	</select>
+	<sql id="queryCondition">
+	    <where>
+			1=1
+			<if test="vendorId != null">
+				and a.vendor_id = #{vendorId}
+			</if>
+			<if test="insuranceCertNo != null">
+				and a.insurance_cert_no like '%${insuranceCertNo}%'
+			</if>
+			<if test="createTimeFrom != null">
+			<![CDATA[and a.created_time >=#{createTimeFrom}]]>
+			</if>
+			<if test="createTimeTo != null">
+		  <![CDATA[and a.created_time <#{createTimeTo}]]>
+			</if>
+			<if test="returnDateFrom != null">
+			<![CDATA[and return_date >=#{returnDateFrom}
+			 ]]>
+			</if>
+			<if test="returnDateTo != null">
+			<![CDATA[and return_date <#{returnDateTo}
+			 ]]>
+			</if>
+			<if test="status != null">
+				and a.status=#{status}
+				<!-- <foreach item="item" index="index" collection="status" open="(" separator="," close=")">  
+				 #{item}  
+				</foreach> -->
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 更新生效状态 -->
+    <update id="updateEffectiveState" statementType="PREPARED" parameterType="InsInsuranceCert">
+		UPDATE ins_insurance_cert
+		set modified_time=now(),
+			status=2,
+			effective_time=#{effectiveTime},
+			expired_time=#{expiredTime},
+			version=(version+1)
+		WHERE ID=#{id} and status=0
+	</update>
+
+	<!-- 更新是否开证成功状态 -->
+    <update id="updateLcOpenState" statementType="PREPARED" parameterType="InsInsuranceCert">
+		UPDATE ins_insurance_cert
+		set modified_time=now(),
+			is_lc_open=1,
+			version=(version+1)
+		WHERE ID=#{id}
+	</update>
+    <!-- 更新待退款状态 -->
+    <update id="updateToRefundState"  statementType="PREPARED" parameterType="InsInsuranceCert">
+		UPDATE ins_insurance_cert
+		set modified_time=now(),
+			status=10,
+			return_date=#{returnDate},
+			version=(version+1)
+		WHERE ID=#{id} AND status=2
+    </update>
+    <!-- 更新待退款中状态 -->
+   <!--  <update id="updateInRefundState"  statementType="PREPARED" parameterType="InsInsuranceCert">
+    	UPDATE ins_insurance_cert
+		set	modified_time=now(),
+			status=11,
+			version=(version+1)
+		WHERE ID=#{id} AND status= 10
+    </update> -->
+	<!-- 更新拒绝退款状态 -->
+	<update id="updateRefuseRefundState" statementType="PREPARED" parameterType="InsInsuranceCert">
+		UPDATE ins_insurance_cert
+		set modified_time=now(),
+			status=14,
+			is_ic_refund=#{isIcRefund},
+			version=(version+1)
+		WHERE ID=#{id} AND status=10
+	</update>
+	<!-- 更新已退款状态 -->
+	<update id="updateRefundSuccessState" statementType="PREPARED" parameterType="InsInsuranceCert">
+		UPDATE ins_insurance_cert
+		set modified_time=now(),
+			status=12,
+			is_ic_refund=#{isIcRefund},
+			version=(version+1)
+		WHERE ID=#{id} AND status=10
+	</update>
+	
+    <!-- 更新失效状态 -->
+    <update id="updateExpiredStatus"  statementType="PREPARED" parameterType="InsInsuranceCert">
+    	UPDATE ins_insurance_cert
+		<set>
+			modified_time=now(),
+			status=100,
+			version=(version+1)
+		</set>
+		WHERE ID=#{id} AND status= 2
+    </update>
+
+	<!-- 据保险证号查询保险证信息 -->
+	<select id="getInsInsuranceCertByNo" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_insurance_cert WHERE
+		insurance_cert_no=#{insuranceCertNo，jdbcType=VARCHAR}
+	</select>
+	<!-- 根据保险证号查看保险证 -->
+	<select id="getInsuranceCertByCertNo" statementType="PREPARED" parameterType="java.lang.String" resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_insurance_cert WHERE insurance_cert_no=#{insuranceCertNo}
+	</select>
+	<!-- 根据查询条件查询保险证列表 -->
+	<select id="getInsInsuranceCertList" parameterType="map" resultMap="baseResultMap">
+		SELECT a.*,b.id i_id, b.insurance_cert_id,b.sales_order_id,b.order_no,b.price,b.quantity,b.total_price
+		FROM ins_insurance_cert a left join ins_sales_order_items b on a.ID = b.insurance_cert_id
+		<include refid="queryCondition" />
+		ORDER BY a.created_time desc, a.id desc
+	</select>
+	<select id="getInsInsuranceCertListCount" parameterType="map" resultType="Integer">
+		SELECT count(a.id)
+		FROM ins_insurance_cert a left join ins_sales_order_items b on a.ID = b.insurance_cert_id
+		<include refid="queryCondition" />
+	</select>
+	
+	<!-- 获取商户今日新增保险证 -->
+	<select id="getTodayAddedCert" statementType="PREPARED" resultType="com.cifpay.insurance.bean.TodayAddedCertBean">
+	SELECT count(a.ID) as todayAddedCertCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+	FROM ins_insurance_cert a
+	INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+	<where>
+	    a.vendor_id = #{vendorId} 
+	    AND a.created_time >= #{beginDate} 
+	    <![CDATA[AND a.created_time < #{endDate}]]>
+		<if test="status != null"><!-- 指定状态，不指定就是全部 -->
+		AND a.status = #{status}
+		</if>
+	</where>
+	</select>
+	
+	<!-- 获取商户退货保险证信息  -->
+	<select id="getVendorReturnCert" statementType="PREPARED" resultType="com.cifpay.insurance.bean.VendorReturnCertBean">
+	SELECT count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+	FROM ins_insurance_cert a
+	INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+	<!-- INNER JOIN ins_cert_refund_bill c ON c.insurance_cert_id=a.id and c.bill_status!=20 --> <!-- 不商户包含20的 -->
+	<where>
+		a.vendor_id = #{vendorId}
+		<if test="status != null"><!-- 指定状态，不指定就是全部 -->
+		AND a.status = #{status}
+		</if>
+		<if test="beginDate != null"><!-- 指定时间，不指定就是全部 -->
+		AND a.return_date >= #{beginDate}
+		</if>
+		<if test="endDate != null">
+		<![CDATA[AND a.return_date < #{endDate}]]>
+		</if>
+	</where>
+	</select>
+	
+	<!-- 获取商户退货保险证信息 -->
+	<select id="getVendorCertStatic" statementType="PREPARED" resultType="com.cifpay.insurance.bean.VendorCertStaticBean">
+	<![CDATA[
+	#今日保险证
+	SELECT 1 as type, 1 as ctype,count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId} 
+	AND a.created_time >= #{todayBegin} AND a.created_time < #{todayEnd}
+	#今日退货保险证
+	union ALL
+	SELECT 1 as type,2 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.return_date >= #{todayBegin} AND a.return_date < #{todayEnd}
+	
+	#昨日保险证
+	union ALL
+	SELECT 2 as type,1 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.created_time >= #{yesterdayBegin} AND a.created_time < #{yesterdayEnd}
+	#昨日退货保险证
+	union ALL
+	SELECT 2 as type,2 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.return_date >= #{yesterdayBegin} AND a.return_date < #{yesterdayEnd}
+	
+	#本月保险证
+	union ALL
+	SELECT 3 as type,1 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.created_time >= #{thisMonthBegin} AND a.created_time < #{thisMonthEnd}
+	#本月退货保险证
+	union ALL
+	SELECT 3 as type,2 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.return_date >= #{thisMonthBegin} AND a.return_date < #{thisMonthEnd}
+	
+	#上月保险证
+	union ALL
+	SELECT 4 as type,1 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.created_time >= #{lastMonthBegin} AND a.created_time < #{lastMonthEnd}
+	#上月退货保险证
+	union ALL
+	SELECT 4 as type,2 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.return_date >= #{lastMonthBegin} AND a.return_date < #{lastMonthEnd}
+	
+	#今年保险证
+	union ALL
+	SELECT 5 as type,1 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.created_time >= #{thisYearBegin} AND a.created_time < #{thisYearEnd}
+	#今年退货保险证
+	union ALL
+	SELECT 5 as type,2 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.return_date >= #{thisYearBegin} AND a.return_date < #{thisYearEnd}
+	
+	#去年保险证
+	union ALL
+	SELECT 6 as type,1 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.created_time >= #{lastYearBegin} AND a.created_time < #{lastYearEnd}
+	#去年退货保险证
+	union ALL
+	SELECT 6 as type,2 as ctype, count(a.ID) as certCount,sum(b.total_price) as amount,a.vendor_id as vendorId
+		FROM ins_insurance_cert a
+		INNER JOIN ins_sales_order_items b ON b.insurance_cert_id = a.ID
+		where a.vendor_id = #{vendorId}
+	AND a.return_date >= #{lastYearBegin} AND a.return_date < #{lastYearEnd}
+	]]>
+	</select>
+	
+	<!-- 获取过期商户保险证列表 -->
+	<select id="getExpiredInsInsuranceCerts" statementType="PREPARED" resultMap="baseResultMap">
+	
+	SELECT
+		a.*,b.id i_id, b.insurance_cert_id,b.sales_order_id,b.order_no,b.price,b.quantity,b.total_price
+		FROM ins_insurance_cert a left join ins_sales_order_items b on a.ID =
+		b.insurance_cert_id
+		where 
+		a.status=2 
+		<![CDATA[
+		  and expired_time<#{expiredTime}
+		]]>
+		<if test="vendorId != null">
+		  and a.vendor_id=#{vendorId} 
+		</if>
+		order by expired_time asc
+	
+	</select>
+	
+	<!-- 获取已签收商户保险证列表 -->
+	<select id="getSignedInsInsuranceCerts" statementType="PREPARED" resultMap="baseResultMap">
+	SELECT a.*,b.id i_id, b.insurance_cert_id,b.sales_order_id,b.order_no,b.price,b.quantity,b.total_price
+		FROM ins_insurance_cert a left join ins_sales_order_items b on a.ID = b.insurance_cert_id
+		where 
+		a.status=0 and a.is_sign=1 
+		<![CDATA[
+		  and sign_time<#{signTime}
+		]]>
+		<if test="vendorId != null">
+		  and a.vendor_id=#{vendorId} 
+		</if>
+		order by sign_time asc
+	</select>
+	
+	<!-- 获取过期商户保险证列表 -->
+	<select id="getInsInsuranceCertByCertNo" statementType="PREPARED" resultMap="baseResultMap">
+	<![CDATA[
+	SELECT a.*,b.id i_id, b.insurance_cert_id,b.sales_order_id,b.order_no,b.price,b.quantity,b.total_price
+		FROM ins_insurance_cert a left join ins_sales_order_items b on a.ID = b.insurance_cert_id
+		where a.insurance_cert_no=#{insuranceCertNo}
+	]]>
+	</select>
+	
+	<!-- 据保险证号查询保险证信息 -->
+	<select id="getFullInsInsuranceCertByCertNo" statementType="PREPARED" resultMap="FullCertResultMap">
+		select c.*<!-- c.id, c.vendor_id, c.insurance_cert_no,c.effective_time, c.expired_time,c.status,c.is_sign -->
+        ,p.id p_id, p.policy_no p_policy_no,p.insured_name,p.insure_date,p.status p_status
+        ,h.id h_id,h.holder_name h_holder_name
+        ,i.id i_id,i.insurerName i_insurerName
+        ,it.id it_id,it.goods_no,it.goods_name,it.price,it.quantity,it.total_price
+        ,o.id o_id,o.vendor_id o_vendor_id,o.order_no,o.order_date,o.return_address,o.return_contacts,o.return_phone,o.buyer_name,o.buyer_mobile_phone
+		from ins_insurance_cert c 
+		inner join ins_policy p on p.id= c.policy_id
+		inner join ins_policy_holder h on h.id=p.policy_holder_id
+		inner join ins_insurer_info i on i.id= p.insurer_info_id
+		inner join ins_sales_order_items it on it.insurance_cert_id=c.id
+		inner join ins_sales_order o on o.id=it.sales_order_id
+		where c.insurance_cert_no=#{insuranceCertNo}
+	</select>
+</mapper>

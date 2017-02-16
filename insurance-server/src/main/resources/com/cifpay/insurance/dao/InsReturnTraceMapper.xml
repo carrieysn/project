@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsReturnTraceDao">
+	<resultMap id="baseResultMap" type="InsReturnTrace">
+		<id property="id" column="id" />
+		<result property="insuranceCertId" column="insurance_cert_id" />
+		<result property="insuranceCertNo" column="insurance_cert_no" />
+		<result property="optType" column="opt_type" />
+		<result property="description" column="description" />
+		<result property="optTime" column="opt_time" />
+		<result property="optMicrosecond" column="opt_microsecond" />
+	</resultMap>
+
+	<sql id="baseColumns">id,insurance_cert_id,insurance_cert_no,opt_type,description,opt_time,opt_microsecond
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_return_trace WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsReturnTrace">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_return_trace(insurance_cert_id,insurance_cert_no,opt_type,description,opt_time,opt_microsecond)
+		VALUES(#{insuranceCertId},#{insuranceCertNo},#{optType},#{description},#{optTime},#{optMicrosecond})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsReturnTrace">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_return_trace(
+		<if test="insuranceCertId != null">insurance_cert_id,</if>
+		<if test="insuranceCertNo != null">insurance_cert_no,</if>
+		<if test="optType != null">opt_type,</if>
+		<if test="description != null">description,</if>
+		<if test="optTime != null">opt_time,</if>
+		<if test="optMicrosecond != null">opt_microsecond,</if>
+		createTime) VALUES(
+		<if test="insuranceCertId != null">#{insuranceCertId},</if>
+		<if test="insuranceCertNo != null">#{insuranceCertNo},</if>
+		<if test="optType != null">#{optType},</if>
+		<if test="description != null">#{description},</if>
+		<if test="optTime != null">#{optTime},</if>
+		<if test="optMicrosecond != null">#{optMicrosecond},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsReturnTrace">
+		UPDATE ins_return_trace SET
+		insurance_cert_id=#{insuranceCertId},insurance_cert_no=#{insuranceCertNo},opt_type=#{optType},description=#{description},opt_time=#{optTime},opt_microsecond=#{optMicrosecond}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsReturnTrace">
+		UPDATE ins_return_trace
+		<set>
+			<if test="insuranceCertId != null">insurance_cert_id=#{insuranceCertId},</if>
+			<if test="insuranceCertNo != null">insurance_cert_no=#{insuranceCertNo},</if>
+			<if test="optType != null">opt_type=#{optType},</if>
+			<if test="description != null">description=#{description},</if>
+			<if test="optTime != null">opt_time=#{optTime},</if>
+			<if test="optMicrosecond != null">opt_microsecond=#{optMicrosecond},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsReturnTrace">
+		DELETE FROM ins_return_trace WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT *
+		FROM ins_return_trace ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_return_trace
+	</select>
+	<select id="getListByCertNo" statementType="PREPARED"
+		parameterType="java.lang.String" resultMap="baseResultMap">
+		SELECT * FROM
+		ins_return_trace where insurance_cert_no = #{insuranceCertNo} order by
+		opt_time desc,opt_microsecond desc
+	</select>
+</mapper>

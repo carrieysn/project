@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.SysCodeRuleDao">
+	<resultMap id="baseResultMap" type="SysCodeRule">
+		<id property="id" column="id" />
+		<result property="codeName" column="code_name" />
+		<result property="curValue" column="cur_value" />
+		<result property="version" column="version" />
+		<result property="cu" column="cu" />
+		<association property="sysCodeRuleDt" javaType="com.cifpay.insurance.model.SysCodeRuleDt">
+			<id property="id" column="d_id" />
+			<result property="codeRuleId" column="code_rule_id" />
+			<result property="rule" column="rule" />
+			<result property="ruleType" column="rule_type" />
+			<result property="sort" column="sort" />
+		</association>
+	</resultMap>
+
+	<sql id="baseColumns">id,code_name,cur_value,version,cu</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM sys_code_rule WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="SysCodeRule">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO sys_code_rule(code_name,cur_value,version,cu)
+		VALUES(#{codeName},#{curValue},#{version},#{cu})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="SysCodeRule">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO sys_code_rule(
+		<if test="codeName != null">code_name,</if>
+		<if test="curValue != null">cur_value,</if>
+		<if test="version != null">version,</if>
+		<if test="cu != null">cu,</if>
+		createTime) VALUES(
+		<if test="codeName != null">#{codeName},</if>
+		<if test="curValue != null">#{curValue},</if>
+		<if test="version != null">#{version},</if>
+		<if test="cu != null">#{cu},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="SysCodeRule">
+		UPDATE sys_code_rule SET
+		code_name=#{codeName},cur_value=#{curValue},cu=#{cu},version=(version+1)
+		WHERE id=#{id} AND version=#{version}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="SysCodeRule">
+		UPDATE sys_code_rule
+		<set>
+			<if test="codeName != null">code_name=#{codeName},</if>
+			<if test="curValue != null">cur_value=#{curValue},</if>
+			<if test="cu != null">cu=#{cu},</if>
+			version=(version+1)
+		</set>
+		WHERE id=#{id} AND version=#{version}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="SysCodeRule">
+		DELETE FROM sys_code_rule WHERE id=#{id} AND version=#{version}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM sys_code_rule ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM sys_code_rule
+	</select>
+	
+	<!-- 据编码名称获取编码规则对象 -->
+	<select id="getSysCodeRule" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT a.*,b.id d_id,b.code_rule_id,b.rule,b.rule_type,b.sort
+		FROM sys_code_rule a,sys_code_rule_dt b WHERE a.id=b.code_rule_id and a.code_name=#{codeName} 
+		<if test="cu != null"> and a.cu=#{cu} </if>
+		order by b.sort
+	</select>
+	
+	<!-- 据编码名称获取默认编码规则（未分配cu的）对象 -->
+	<select id="getDefaultSysCodeRule" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT a.*,b.id d_id,b.code_rule_id,b.rule,b.rule_type,b.sort
+		FROM sys_code_rule a,sys_code_rule_dt b WHERE a.id=b.code_rule_id and a.code_name=#{codeName} and cu is null
+		order by b.sort
+	</select>
+</mapper>

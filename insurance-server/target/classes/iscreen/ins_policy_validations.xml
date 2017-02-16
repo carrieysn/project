@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validation-root namespace="com.cifpay.ins.policy" default-resource="messages">
+	<!-- 创建投保订单 -->
+	<validation-set id="CreatePolicyOrderInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="product">
+			<mapping from="product" />
+			<label>product</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="insuredName">
+			<mapping from="insuredName" />
+			<label>insuredName</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="insurancePeriod">
+			<mapping from="insurancePeriod" />
+			<label>insurancePeriod</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="premium">
+			<mapping from="premium" />
+			<label>premium</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="insuredid">
+			<mapping from="insuredid" />
+			<label>insuredid</label>
+		</use-validator>
+		<use-validation-set ref="PolicyHolderInfo" map="policyHolderInfo" />
+	</validation-set>
+	
+	<!-- 投保订单前端通知 -->
+	<validation-set id="NoticeFrontPolicyOrderInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="billNo">
+			<mapping from="billNo" />
+			<label>billNo</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="lcId">
+			<mapping from="lcId" />
+			<label>lcId</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="lcNo">
+			<mapping from="lcNo" />
+			<label>lcNo</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="lcState">
+			<mapping from="lcState" />
+			<label>lcState</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="tradeDate">
+			<mapping from="tradeDate" />
+			<label>tradeDate</label>
+		</use-validator>
+	</validation-set>
+	
+	<!-- 创建保单 -->
+	<validation-set id="CreateInsurancePolicyInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="product">
+			<mapping from="product" />
+			<label>product</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="insuredName">
+			<mapping from="insuredName" />
+			<label>insuredName</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="insurancePeriod">
+			<mapping from="insurancePeriod" />
+			<label>insurancePeriod</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="premium">
+			<mapping from="premium" />
+			<label>premium</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="insuredid">
+			<mapping from="insuredid" />
+			<label>insuredid</label>
+		</use-validator>
+		<use-validation-set ref="PolicyHolderInfo" map="policyHolderInfo" />
+	</validation-set>
+	
+	<validation-set id="PolicyHolderInfo">
+	    <use-validator ref="com.cifpay.ins.StringValidator" name="holderName">
+			<mapping from="holderName" />
+			<label>holderName</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="idNo">
+			<mapping from="idNo" />
+			<label>idNo</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="contacts">
+			<mapping from="contacts" />
+			<label>contacts</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="phone">
+			<mapping from="phone" />
+			<label>phone</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="email">
+			<mapping from="email" />
+			<label>email</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="holderType">
+			<mapping from="holderType" />
+			<label>holderType</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="idType">
+			<mapping from="idType" />
+			<label>idType</label>
+		</use-validator>
+	</validation-set>
+	
+	  <!-- 创建充值订单 -->
+	<validation-set id="CreateChargeFeePolicyOrderInfoSet">
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="policyId">
+			<mapping from="policyId" />
+			<label>policyId</label>
+		</use-validator>
+        <use-validator ref="com.cifpay.ins.NumberRangeValidator" name="amount">
+			<mapping from="amount" />
+			<label>amount</label>
+		</use-validator>
+	</validation-set>
+	
+	 <!-- 查询投保/充值记录 -->
+	<validation-set id="GetPolicyOrderListInfoSet">
+	    <use-validator ref="com.cifpay.ins.NumberRangeValidator" name="policyId">
+			<mapping from="policyId" />
+			<label>policyId</label>
+		</use-validator>
+	    <use-validator ref="org.iscreen.NullValidator" fail-fast="true" name="beginDate">
+			<mapping from="beginDate" />
+			<label>beginDate</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.DateFormatValidator" name="beginDate">
+			<mapping from="beginDate" />
+			<label>beginDate</label>
+		    <constraint property="displayFormat">yyyy-MM-dd</constraint>
+		    <constraint property="format">yyyy-MM-dd</constraint>
+		</use-validator>
+	    <use-validator ref="org.iscreen.NullValidator" fail-fast="true" name="endDate">
+			<mapping from="endDate" />
+			<label>endDate</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.DateFormatValidator" name="endDate">
+			<mapping from="endDate" />
+			<label>endDate</label>
+		    <constraint property="displayFormat">yyyy-MM-dd</constraint>
+		    <constraint property="format">yyyy-MM-dd</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageNo">
+			<mapping from="pageNo" />
+			<label>pageNo</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">50</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageSize">
+			<mapping from="pageSize" />
+			<label>pageSize</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">100</constraint>
+		</use-validator>
+	</validation-set>
+	
+	<!-- 获取商户保单保费、保额变动流水数据列表 -->
+	<validation-set id="GetPolicyChangeListInfoSet">
+	    <use-validator ref="org.iscreen.NullValidator" fail-fast="true" name="beginDate">
+			<mapping from="beginDate" />
+			<label>beginDate</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.DateFormatValidator" name="beginDate">
+			<mapping from="beginDate" />
+			<label>beginDate</label>
+		    <constraint property="displayFormat">yyyy-MM-dd</constraint>
+		    <constraint property="format">yyyy-MM-dd</constraint>
+		</use-validator>
+	    <use-validator ref="org.iscreen.NullValidator" fail-fast="true" name="endDate">
+			<mapping from="endDate" />
+			<label>endDate</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.DateFormatValidator" name="endDate">
+			<mapping from="endDate" />
+			<label>endDate</label>
+		    <constraint property="displayFormat">yyyy-MM-dd</constraint>
+		    <constraint property="format">yyyy-MM-dd</constraint>
+		</use-validator>
+	    <!-- <use-validator ref="com.cifpay.ins.NumberRangeValidator" name="type">
+			<mapping from="type" />
+			<label>type</label>
+		</use-validator> -->
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageNo">
+			<mapping from="pageNo" />
+			<label>pageNo</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">50</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageSize">
+			<mapping from="pageSize" />
+			<label>pageSize</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">100</constraint>
+		</use-validator>
+	</validation-set>
+	
+	  <!-- 查询投保/充值订单 -->
+	<validation-set id="GetPolicyOrderInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="billNo">
+			<mapping from="billNo" />
+			<label>billNo</label>
+		</use-validator>
+	</validation-set>
+	
+  <!-- 商户订单支付信息 -->
+	<validation-set id="PolicyOrderPayInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="orderNo">
+			<mapping from="orderNo" />
+			<label>orderNo</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="bankCode">
+			<mapping from="bankCode" />
+			<label>bankCode</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="mobilePhone">
+			<mapping from="mobilePhone" />
+			<label>mobilePhone</label>
+			<constraint property="minLength">11</constraint>
+			<constraint property="maxLength">11</constraint>
+		</use-validator>
+        <use-validator ref="com.cifpay.ins.NumberRangeValidator" name="premium">
+			<mapping from="premium" />
+			<label>premium</label>
+			<constraint property="minimumValue">1</constraint>
+		</use-validator>
+	</validation-set>
+	
+	<!-- 查询保单列表 -->
+	<validation-set id="GetPolicyListInfoSet">
+	    <use-validator ref="com.cifpay.ins.NumberRangeValidator" name="status">
+			<mapping from="status" />
+			<label>status</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageNo">
+			<mapping from="pageNo" />
+			<label>pageNo</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">50</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageSize">
+			<mapping from="pageSize" />
+			<label>pageSize</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">100</constraint>
+		</use-validator>
+	</validation-set>
+	
+</validation-root>

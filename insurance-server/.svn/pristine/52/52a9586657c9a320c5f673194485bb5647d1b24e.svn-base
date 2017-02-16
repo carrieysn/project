@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsPolicyHolderDao">
+	<resultMap id="baseResultMap" type="InsPolicyHolder">
+		<id property="id" column="id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="holderName" column="holder_name" />
+		<result property="holderType" column="holder_type" />
+		<result property="idType" column="id_type" />
+		<result property="idNo" column="id_no" />
+		<result property="contacts" column="contacts" />
+		<result property="phone" column="phone" />
+		<result property="email" column="email" />
+		<result property="createdUser" column="created_User" />
+		<result property="createdTime" column="created_Time" />
+		<result property="modifiedUser" column="modified_User" />
+		<result property="modifiedTime" column="modified_Time" />
+	</resultMap>
+
+	<sql id="baseColumns">id,vendor_id,holder_name,holder_type,id_type,id_no,contacts,phone,email,created_User,created_Time,modified_User,modified_Time
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_policy_holder WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsPolicyHolder">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_policy_holder(vendor_id,holder_name,holder_type,id_type,id_no,contacts,phone,email,created_User,created_Time,modified_User,modified_Time)
+		VALUES(#{vendorId},#{holderName},#{holderType},#{idType},#{idNo},#{contacts},#{phone},#{email},#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsPolicyHolder">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_policy_holder(
+		<if test="vendorId != null">vendor_id,</if>
+		<if test="holderName != null">holder_name,</if>
+		<if test="holderType != null">holder_type,</if>
+		<if test="idType != null">id_type,</if>
+		<if test="idNo != null">id_no,</if>
+		<if test="contacts != null">contacts,</if>
+		<if test="phone != null">phone,</if>
+		<if test="email != null">email,</if>
+		<if test="createdUser != null">created_User,</if>
+		<if test="createdTime != null">created_Time,</if>
+		<if test="modifiedUser != null">modified_User,</if>
+		<if test="modifiedTime != null">modified_Time,</if>
+		createTime) VALUES(
+		<if test="vendorId != null">#{vendorId},</if>
+		<if test="holderName != null">#{holderName},</if>
+		<if test="holderType != null">#{holderType},</if>
+		<if test="idType != null">#{idType},</if>
+		<if test="idNo != null">#{idNo},</if>
+		<if test="contacts != null">#{contacts},</if>
+		<if test="phone != null">#{phone},</if>
+		<if test="email != null">#{email},</if>
+		<if test="createdUser != null">#{createdUser},</if>
+		<if test="createdTime != null">#{createdTime},</if>
+		<if test="modifiedUser != null">#{modifiedUser},</if>
+		<if test="modifiedTime != null">#{modifiedTime},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsPolicyHolder">
+		UPDATE ins_policy_holder SET
+		vendor_id=#{vendorId},holder_name=#{holderName},holder_type=#{holderType},id_type=#{idType},id_no=#{idNo},contacts=#{contacts},phone=#{phone},email=#{email},created_User=#{createdUser},created_Time=#{createdTime},modified_User=#{modifiedUser},modified_Time=#{modifiedTime}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsPolicyHolder">
+		UPDATE ins_policy_holder
+		<set>
+			<if test="vendorId != null">vendor_id=#{vendorId},</if>
+			<if test="holderName != null">holder_name=#{holderName},</if>
+			<if test="holderType != null">holder_type=#{holderType},</if>
+			<if test="idType != null">id_type=#{idType},</if>
+			<if test="idNo != null">id_no=#{idNo},</if>
+			<if test="contacts != null">contacts=#{contacts},</if>
+			<if test="phone != null">phone=#{phone},</if>
+			<if test="email != null">email=#{email},</if>
+			<if test="createdUser != null">created_User=#{createdUser},</if>
+			<if test="createdTime != null">created_Time=#{createdTime},</if>
+			<if test="modifiedUser != null">modified_User=#{modifiedUser},</if>
+			<if test="modifiedTime != null">modified_Time=#{modifiedTime},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsPolicyHolder">
+		DELETE FROM ins_policy_holder WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_policy_holder ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_policy_holder
+	</select>
+	<!-- 根据保险证号查询投保人信息 -->
+	<select id="selectPolicyHolderByCertNo" statementType="PREPARED" resultMap="baseResultMap" parameterType="java.lang.String">
+	    SELECT * FROM ins_policy_holder WHERE id in(SELECT Ins_policy_holder_id FROM ins_policy WHERE id in (SELECT ins_policy_id FROM ins_insurance_cert WHERE insurance_cert_no =#{value} ))
+	</select>
+	
+	<!-- 根据保险证号查询投保人信息 -->
+	<select id="getPolicyHolderByVendorId" statementType="PREPARED" resultMap="baseResultMap" parameterType="java.lang.String">
+	    SELECT * FROM ins_policy_holder WHERE vendor_id=#{vendorId}
+	</select>
+
+</mapper>

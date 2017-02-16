@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsCertRefundBillDao">
+	<resultMap id="baseResultMap" type="InsCertRefundBill">
+		<id property="id" column="id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="insuranceCertId" column="insurance_cert_id" />
+		<result property="insuranceCertNo" column="insurance_cert_no" />
+		<result property="logisticsCompany" column="logistics_company" />
+		<result property="logisticsBillNo" column="logistics_bill_no" />
+		<result property="returnDate" column="return_date" />
+		<result property="refundAmount" column="refund_amount" />
+		<result property="payerMobilePhone" column="payer_mobile_phone" />
+		<result property="payerBankAccount" column="payer_bank_account" />
+		<result property="payerType" column="payer_type" />
+		<result property="payerBankCode" column="payer_bank_code" />
+		<result property="payerBankName" column="payer_bank_name" />
+		<result property="payerAccName" column="payer_acc_name" />
+		<result property="payeeBankCode" column="payee_bank_code" />
+		<result property="payeeBankName" column="payee_bank_name" />
+		<result property="payeeAccName" column="payee_acc_name" />
+		<result property="payeeBankAccount" column="payee_bank_account" />
+		<result property="payeeMobilePhone" column="payee_mobile_phone" />
+		<result property="billStatus" column="bill_status" />
+		<result property="lcId" column="lc_id" />
+		<result property="lcNo" column="lc_no" />
+		<result property="lcOrderId" column="lc_order_id" />
+		<result property="lcState" column="lc_state" />
+		<result property="lcOrderState" column="lc_order_state" />
+		<result property="lcTradeDate" column="lc_trade_date" />
+		<result property="lcTradeResult" column="lc_trade_result" />
+		<result property="confirmRefundTime" column="confirm_refund_time" />
+		<result property="refuseRefundTime" column="refuse_refund_time" />
+		<result property="refuseRefundCause" column="refuse_refund_cause" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedTime" column="modified_time" />
+		<result property="version" column="version" />
+		<result property="lcOpenTime" column="lc_open_time" />
+		<result property="lcReceiveTime" column="lc_receive_time" />
+		<result property="lcSendTime" column="lc_send_time" />
+		<result property="lcConfirmTime" column="lc_confirm_time" />
+		<result property="lcPayedTime" column="lc_payed_time" />
+	</resultMap>
+
+	<sql id="baseColumns">id,vendor_id,insurance_cert_id,insurance_cert_no,logistics_company,logistics_bill_no,return_date,refund_amount,payer_mobile_phone,payer_bank_account,payer_type,payer_bank_code,payer_bank_name,payer_acc_name,payee_bank_code,payee_bank_name,payee_acc_name,payee_bank_account,payee_mobile_phone,bill_status,lc_id,lc_no,lc_order_id,lc_state,lc_order_state,lc_trade_date,lc_trade_result,confirm_refund_time,refuse_refund_time,refuse_refund_cause,created_time,modified_time,version,lc_open_time,lc_receive_time,lc_send_time,lc_confirm_time,lc_payed_time
+	</sql>
+	
+	<sql id="queryCondition">
+		<where>
+			1=1 and payer_type = 1
+			<if test="insuranceCertNo != null and insuranceCertNo != ''">
+				and bill.insurance_cert_no like '%${insuranceCertNo}%'
+			</if>
+			<if test="billStatus != null and billStatus !=''">
+				and bill.bill_status = #{billStatus}
+			</if>
+			<if test="solutionPayDateFrom != null and solutionPayDateFrom != ''">
+				<![CDATA[and bill.lc_payed_time >= DATE_FORMAT('${solutionPayDateFrom} 00:00:00','%Y-%m-%e %H:%i:%S')
+				 ]]>
+			</if>
+			<if test="solutionPayDateTo != null and solutionPayDateTo !=''">
+			<![CDATA[
+				and bill.lc_payed_time <=  DATE_FORMAT('${solutionPayDateTo} 23:59:59','%Y-%m-%e %H:%i:%S')
+			]]>
+			</if>
+		</where>
+	</sql>
+	<select id="selectPageRefundBills"  statementType="PREPARED"  parameterType="map"  resultMap="baseResultMap" >
+	    SELECT
+		<include refid="baseColumns" />
+		FROM ins_cert_refund_bill bill
+	   <include refid="queryCondition" />
+	    order by bill.lc_payed_time desc
+	</select>
+	
+	<select id="selectRefundBillCount"   parameterType="map"  resultType="Integer" >
+	    SELECT count(bill.id)
+		FROM ins_cert_refund_bill bill
+	   <include refid="queryCondition" />
+	</select>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_cert_refund_bill WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsCertRefundBill">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_cert_refund_bill(vendor_id,insurance_cert_id,insurance_cert_no,logistics_company,logistics_bill_no,return_date,refund_amount,payer_mobile_phone,payer_bank_account,payer_type,payer_bank_code,payer_bank_name,payer_acc_name,payee_bank_code,payee_bank_name,payee_acc_name,payee_bank_account,payee_mobile_phone,bill_status,lc_id,lc_no,lc_order_id,lc_state,lc_order_state,lc_trade_date,lc_trade_result,confirm_refund_time,refuse_refund_time,refuse_refund_cause,created_time,modified_time,version,lc_open_time,lc_receive_time,lc_send_time,lc_confirm_time,lc_payed_time)
+		VALUES(#{vendorId},#{insuranceCertId},#{insuranceCertNo},#{logisticsCompany},#{logisticsBillNo},#{returnDate},#{refundAmount},#{payerMobilePhone},#{payerBankAccount},#{payerType},#{payerBankCode},#{payerBankName},#{payerAccName},#{payeeBankCode},#{payeeBankName},#{payeeAccName},#{payeeBankAccount},#{payeeMobilePhone},#{billStatus},#{lcId},#{lcNo},#{lcOrderId},#{lcState},#{lcOrderState},#{lcTradeDate},#{lcTradeResult},#{confirmRefundTime},#{refuseRefundTime},#{refuseRefundCause},#{createdTime},#{modifiedTime},#{version},#{lcOpenTime},#{lcReceiveTime},#{lcSendTime},#{lcConfirmTime},#{lcPayedTime})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsCertRefundBill">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_cert_refund_bill(
+		<if test="vendorId != null">vendor_id,</if>
+		<if test="insuranceCertId != null">insurance_cert_id,</if>
+		<if test="insuranceCertNo != null">insurance_cert_no,</if>
+		<if test="logisticsCompany != null">logistics_company,</if>
+		<if test="logisticsBillNo != null">logistics_bill_no,</if>
+		<if test="returnDate != null">return_date,</if>
+		<if test="refundAmount != null">refund_amount,</if>
+		<if test="payerMobilePhone != null">payer_mobile_phone,</if>
+		<if test="payerBankAccount != null">payer_bank_account,</if>
+		<if test="payerType != null">payer_type,</if>
+		<if test="payerBankCode != null">payer_bank_code,</if>
+		<if test="payerBankName != null">payer_bank_name,</if>
+		<if test="payerAccName != null">payer_acc_name,</if>
+		<if test="payeeBankCode != null">payee_bank_code,</if>
+		<if test="payeeBankName != null">payee_bank_name,</if>
+		<if test="payeeAccName != null">payee_acc_name,</if>
+		<if test="payeeBankAccount != null">payee_bank_account,</if>
+		<if test="payeeMobilePhone != null">payee_mobile_phone,</if>
+		<if test="billStatus != null">bill_status,</if>
+		<if test="lcId != null">lc_id,</if>
+		<if test="lcNo != null">lc_no,</if>
+		<if test="lcOrderId != null">lc_order_id,</if>
+		<if test="lcState != null">lc_state,</if>
+		<if test="lcOrderState != null">lc_order_state,</if>
+		<if test="lcTradeDate != null">lc_trade_date,</if>
+		<if test="lcTradeResult != null">lc_trade_result,</if>
+		<if test="confirmRefundTime != null">confirm_refund_time,</if>
+		<if test="refuseRefundTime != null">refuse_refund_time,</if>
+		<if test="refuseRefundCause != null">refuse_refund_cause,</if>
+		<if test="createdTime != null">created_time,</if>
+		<if test="modifiedTime != null">modified_time,</if>
+		<if test="version != null">version,</if>
+		<if test="lcOpenTime != null">lc_open_time,</if>
+		<if test="lcReceiveTime != null">lc_receive_time,</if>
+		<if test="lcSendTime != null">lc_send_time,</if>
+		<if test="lcConfirmTime != null">lc_confirm_time,</if>
+		<if test="lcPayedTime != null">lc_payed_time,</if>
+		createTime) VALUES(
+		<if test="vendorId != null">#{vendorId},</if>
+		<if test="insuranceCertId != null">#{insuranceCertId},</if>
+		<if test="insuranceCertNo != null">#{insuranceCertNo},</if>
+		<if test="logisticsCompany != null">#{logisticsCompany},</if>
+		<if test="logisticsBillNo != null">#{logisticsBillNo},</if>
+		<if test="returnDate != null">#{returnDate},</if>
+		<if test="refundAmount != null">#{refundAmount},</if>
+		<if test="payerMobilePhone != null">#{payerMobilePhone},</if>
+		<if test="payerBankAccount != null">#{payerBankAccount},</if>
+		<if test="payerType != null">#{payerType},</if>
+		<if test="payerBankCode != null">#{payerBankCode},</if>
+		<if test="payerBankName != null">#{payerBankName},</if>
+		<if test="payerAccName != null">#{payerAccName},</if>
+		<if test="payeeBankCode != null">#{payeeBankCode},</if>
+		<if test="payeeBankName != null">#{payeeBankName},</if>
+		<if test="payeeAccName != null">#{payeeAccName},</if>
+		<if test="payeeBankAccount != null">#{payeeBankAccount},</if>
+		<if test="payeeMobilePhone != null">#{payeeMobilePhone},</if>
+		<if test="billStatus != null">#{billStatus},</if>
+		<if test="lcId != null">#{lcId},</if>
+		<if test="lcNo != null">#{lcNo},</if>
+		<if test="lcOrderId != null">#{lcOrderId},</if>
+		<if test="lcState != null">#{lcState},</if>
+		<if test="lcOrderState != null">#{lcOrderState},</if>
+		<if test="lcTradeDate != null">#{lcTradeDate},</if>
+		<if test="lcTradeResult != null">#{lcTradeResult},</if>
+		<if test="confirmRefundTime != null">#{confirmRefundTime},</if>
+		<if test="refuseRefundTime != null">#{refuseRefundTime},</if>
+		<if test="refuseRefundCause != null">#{refuseRefundCause},</if>
+		<if test="createdTime != null">#{createdTime},</if>
+		<if test="modifiedTime != null">#{modifiedTime},</if>
+		<if test="version != null">#{version},</if>
+		<if test="lcOpenTime != null">#{lcOpenTime},</if>
+		<if test="lcReceiveTime != null">#{lcReceiveTime},</if>
+		<if test="lcSendTime != null">#{lcSendTime},</if>
+		<if test="lcConfirmTime != null">#{lcConfirmTime},</if>
+		<if test="lcPayedTime != null">#{lcPayedTime},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsCertRefundBill">
+		UPDATE ins_cert_refund_bill SET
+		vendor_id=#{vendorId},insurance_cert_id=#{insuranceCertId},insurance_cert_no=#{insuranceCertNo},logistics_company=#{logisticsCompany},logistics_bill_no=#{logisticsBillNo},return_date=#{returnDate},refund_amount=#{refundAmount},payer_mobile_phone=#{payerMobilePhone},payer_bank_account=#{payerBankAccount},payer_type=#{payerType},payer_bank_code=#{payerBankCode},payer_bank_name=#{payerBankName},payer_acc_name=#{payerAccName},payee_bank_code=#{payeeBankCode},payee_bank_name=#{payeeBankName},payee_acc_name=#{payeeAccName},payee_bank_account=#{payeeBankAccount},payee_mobile_phone=#{payeeMobilePhone},bill_status=#{billStatus},lc_id=#{lcId},lc_no=#{lcNo},lc_order_id=#{lcOrderId},lc_state=#{lcState},lc_order_state=#{lcOrderState},lc_trade_date=#{lcTradeDate},lc_trade_result=#{lcTradeResult},confirm_refund_time=#{confirmRefundTime},refuse_refund_time=#{refuseRefundTime},refuse_refund_cause=#{refuseRefundCause},created_time=#{createdTime},modified_time=#{modifiedTime},lc_open_time=#{lcOpenTime},lc_receive_time=#{lcReceiveTime},lc_send_time=#{lcSendTime},lc_confirm_time=#{lcConfirmTime},lc_payed_time=#{lcPayedTime},version=(version+1)
+		WHERE id=#{id} AND version=#{version}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsCertRefundBill">
+		UPDATE ins_cert_refund_bill
+		<set>
+			<if test="vendorId != null">vendor_id=#{vendorId},</if>
+			<if test="insuranceCertId != null">insurance_cert_id=#{insuranceCertId},</if>
+			<if test="insuranceCertNo != null">insurance_cert_no=#{insuranceCertNo},</if>
+			<if test="logisticsCompany != null">logistics_company=#{logisticsCompany},</if>
+			<if test="logisticsBillNo != null">logistics_bill_no=#{logisticsBillNo},</if>
+			<if test="returnDate != null">return_date=#{returnDate},</if>
+			<if test="refundAmount != null">refund_amount=#{refundAmount},</if>
+			<if test="payerMobilePhone != null">payer_mobile_phone=#{payerMobilePhone},</if>
+			<if test="payerBankAccount != null">payer_bank_account=#{payerBankAccount},</if>
+			<if test="payerType != null">payer_type=#{payerType},</if>
+			<if test="payerBankCode != null">payer_bank_code=#{payerBankCode},</if>
+			<if test="payerBankName != null">payer_bank_name=#{payerBankName},</if>
+			<if test="payerAccName != null">payer_acc_name=#{payerAccName},</if>
+			<if test="payeeBankCode != null">payee_bank_code=#{payeeBankCode},</if>
+			<if test="payeeBankName != null">payee_bank_name=#{payeeBankName},</if>
+			<if test="payeeAccName != null">payee_acc_name=#{payeeAccName},</if>
+			<if test="payeeBankAccount != null">payee_bank_account=#{payeeBankAccount},</if>
+			<if test="payeeMobilePhone != null">payee_mobile_phone=#{payeeMobilePhone},</if>
+			<if test="billStatus != null">bill_status=#{billStatus},</if>
+			<if test="lcId != null">lc_id=#{lcId},</if>
+			<if test="lcNo != null">lc_no=#{lcNo},</if>
+			<if test="lcOrderId != null">lc_order_id=#{lcOrderId},</if>
+			<if test="lcState != null">lc_state=#{lcState},</if>
+			<if test="lcOrderState != null">lc_order_state=#{lcOrderState},</if>
+			<if test="lcTradeDate != null">lc_trade_date=#{lcTradeDate},</if>
+			<if test="lcTradeResult != null">lc_trade_result=#{lcTradeResult},</if>
+			<if test="confirmRefundTime != null">confirm_refund_time=#{confirmRefundTime},</if>
+			<if test="refuseRefundTime != null">refuse_refund_time=#{refuseRefundTime},</if>
+			<if test="refuseRefundCause != null">refuse_refund_cause=#{refuseRefundCause},</if>
+			<if test="createdTime != null">created_time=#{createdTime},</if>
+			<if test="modifiedTime != null">modified_time=#{modifiedTime},</if>
+			<if test="lcOpenTime != null">lc_open_time=#{lcOpenTime},</if>
+			<if test="lcReceiveTime != null">lc_receive_time=#{lcReceiveTime},</if>
+			<if test="lcSendTime != null">lc_send_time=#{lcSendTime},</if>
+			<if test="lcConfirmTime != null">lc_confirm_time=#{lcConfirmTime},</if>
+			<if test="lcPayedTime != null">lc_payed_time=#{lcPayedTime},</if>
+			version=(version+1)
+		</set>
+		WHERE id=#{id} AND version=#{version}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsCertRefundBill">
+		DELETE FROM ins_cert_refund_bill WHERE id=#{id} AND version=#{version}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_cert_refund_bill
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_cert_refund_bill
+	</select>
+	
+	<!-- 更新状态为待退款（已开证） -->
+	<update id="updateOpenSuccessState" statementType="PREPARED" parameterType="InsCertRefundBill">
+		UPDATE ins_cert_refund_bill 
+		set bill_status=#{billStatus},
+		lc_id=#{lcId},
+		lc_no=#{lcNo},
+		lc_order_id=#{lcOrderId},
+		lc_state=#{lcState},
+		lc_order_state=#{lcOrderState},
+		lc_trade_date=#{lcTradeDate},
+		lc_open_time=#{lcTradeDate},
+		modified_time=now(),
+		version=(version+1)
+		WHERE id=#{id} AND bill_status=-1
+	</update>
+	
+	<!-- 更新开证失败状态 -->
+	<update id="updateOpenFailState" statementType="PREPARED" parameterType="InsCertRefundBill">
+		UPDATE ins_cert_refund_bill 
+		set bill_status=#{billStatus},
+		modified_time=now(),
+		version=(version+1) 
+		WHERE id=#{id} AND bill_status=-1
+	</update>
+	
+	<!-- 更新退款中 -->
+	<update id="updateInRefundState" statementType="PREPARED" parameterType="InsCertRefundBill">
+		UPDATE ins_cert_refund_bill
+		set bill_status=1,
+		confirm_refund_time=now(),
+		modified_time=now(),
+		version=(version+1)
+		WHERE id=#{id} and bill_status=0
+	</update>
+	<!-- 更新退款成功 -->
+	<update id="updateRefundSuccessState" statementType="PREPARED" parameterType="InsCertRefundBill">
+		UPDATE ins_cert_refund_bill
+		set bill_status=2,
+		confirm_refund_time=now(),
+		lc_id=#{lcId},
+		lc_no=#{lcNo},
+		lc_order_id=#{lcOrderId},
+		lc_state=#{lcState},
+		lc_order_state=#{lcOrderState},
+		lc_trade_date=#{lcTradeDate},
+		lc_payed_time=#{lcTradeDate},
+		modified_time=now(),
+		version=(version+1)
+		WHERE id=#{id} and bill_status=1
+	</update>
+	<!-- 更新退款失败 -->
+	<update id="updateRefundFailState" statementType="PREPARED" parameterType="InsCertRefundBill">
+		UPDATE ins_cert_refund_bill
+		<set>
+			<if test="lcId != null">lc_id=#{lcId},</if>
+			<if test="lcNo != null">lc_no=#{lcNo},</if>
+			<if test="lcOrderId != null">lc_order_id=#{lcOrderId},</if>
+			<if test="lcState != null">lc_state=#{lcState},</if>
+			<if test="lcOrderState != null">lc_order_state=#{lcOrderState},</if>
+			<if test="lcTradeDate != null">lc_trade_date=#{lcTradeDate},</if>
+			<if test="lcTradeResult != null">lc_trade_result=#{lcTradeResult},</if>
+			<if test="billStatus != null">bill_status=#{billStatus},</if>
+			modified_time=now(),
+			version=(version+1)
+		</set>
+		WHERE id=#{id} <!-- AND version=#{version} -->
+	</update>
+	
+	<!-- 更新拒绝退款状态 -->
+	<update id="updateRefuseRefundState" statementType="PREPARED" parameterType="InsCertRefundBill">
+		UPDATE ins_cert_refund_bill 
+		set bill_status=10,
+		refuse_refund_time=now(),
+		refuse_refund_cause=#{refuseRefundCause},
+		modified_time=now(),
+		version=(version+1) 
+		WHERE id=#{id} AND bill_status=0
+	</update>
+
+    <!-- 据订单号，银行信证id查找单据 -->
+	<select id="getInsCertRefundBillByOrderId" resultMap="baseResultMap" parameterType="map" >
+		SELECT * FROM ins_cert_refund_bill
+		where lc_id=#{lcId}
+		<if test="lcOrderId != null">
+			and lc_order_id=#{lcOrderId}
+		</if>
+	</select>
+
+    <!-- 据保险证号查找单据 -->
+	<select id="getInsCertRefundBillByCertNo" resultMap="baseResultMap">
+	<![CDATA[
+		SELECT a.* FROM ins_cert_refund_bill a
+		where a.insurance_cert_no=#{insuranceCertNo} and bill_status<>20
+	]]>
+	</select>
+</mapper>

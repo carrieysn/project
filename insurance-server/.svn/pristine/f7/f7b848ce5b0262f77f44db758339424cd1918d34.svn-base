@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.SysCodeRuleDtDao">
+	<resultMap id="baseResultMap" type="SysCodeRuleDt">
+		<id property="id" column="id" />
+		<result property="codeRuleId" column="code_rule_id" />
+		<result property="rule" column="rule" />
+		<result property="ruleType" column="rule_type" />
+		<result property="sort" column="sort" />
+	</resultMap>
+
+	<sql id="baseColumns">id,code_rule_id,rule,rule_type,sort</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM sys_code_rule_dt WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="SysCodeRuleDt">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO sys_code_rule_dt(code_rule_id,rule,rule_type,sort)
+		VALUES(#{codeRuleId},#{rule},#{ruleType},#{sort})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="SysCodeRuleDt">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO sys_code_rule_dt(
+		<if test="codeRuleId != null">code_rule_id,</if>
+		<if test="rule != null">rule,</if>
+		<if test="ruleType != null">rule_type,</if>
+		<if test="sort != null">sort,</if>
+		createTime) VALUES(
+		<if test="codeRuleId != null">#{codeRuleId},</if>
+		<if test="rule != null">#{rule},</if>
+		<if test="ruleType != null">#{ruleType},</if>
+		<if test="sort != null">#{sort},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="SysCodeRuleDt">
+		UPDATE sys_code_rule_dt SET
+		code_rule_id=#{codeRuleId},rule=#{rule},rule_type=#{ruleType},sort=#{sort}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="SysCodeRuleDt">
+		UPDATE sys_code_rule_dt
+		<set>
+			<if test="codeRuleId != null">code_rule_id=#{codeRuleId},</if>
+			<if test="rule != null">rule=#{rule},</if>
+			<if test="ruleType != null">rule_type=#{ruleType},</if>
+			<if test="sort != null">sort=#{sort},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="SysCodeRuleDt">
+		DELETE FROM sys_code_rule_dt WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT *
+		FROM sys_code_rule_dt ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM sys_code_rule_dt
+	</select>
+	
+	<insert id="addBatch" statementType="PREPARED" parameterType="java.util.List">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO sys_code_rule_dt(code_rule_id,rule,rule_type,sort) VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			#{item.codeRuleId},
+			#{item.rule},
+			#{item.ruleType},
+			#{item.sort}
+			)
+		</foreach>
+	</insert>
+</mapper>

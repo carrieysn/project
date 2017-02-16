@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsUserDao">
+	<resultMap id="baseResultMap" type="InsUser">
+		<id property="id" column="id" />
+		<result property="userAccount" column="user_account" />
+		<result property="userName" column="user_name" />
+		<result property="password" column="password" />
+		<result property="isEnable" column="is_enable" />
+		<result property="isAdmin" column="is_admin" />
+		<result property="isValid" column="is_valid" />
+		<result property="remark" column="remark" />
+		<result property="createdUser" column="created_user" />
+		<result property="createdTime" column="created_time" />
+		<result property="modifiedUser" column="modified_user" />
+		<result property="modifiedTime" column="modified_time" />
+	</resultMap>
+
+	<sql id="baseColumns">id,user_account,user_name,password,is_enable,is_admin,is_valid,remark,created_user,created_time,modified_user,modified_time
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_user WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsUser">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_user(user_account,user_name,password,is_enable,is_admin,is_valid,remark,created_user,created_time,modified_user,modified_time)
+		VALUES(#{userAccount},#{userName},#{password},#{isEnable},#{isAdmin},#{isValid},#{remark},#{createdUser},#{createdTime},#{modifiedUser},#{modifiedTime})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsUser">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_user(
+		<if test="userAccount != null">user_account,</if>
+		<if test="userName != null">user_name,</if>
+		<if test="password != null">password,</if>
+		<if test="isEnable != null">is_enable,</if>
+		<if test="isAdmin != null">is_admin,</if>
+		<if test="isValid != null">is_valid,</if>
+		<if test="remark != null">remark,</if>
+		<if test="createdUser != null">created_user,</if>
+		<if test="createdTime != null">created_time,</if>
+		<if test="modifiedUser != null">modified_user,</if>
+		<if test="modifiedTime != null">modified_time,</if>
+		createTime) VALUES(
+		<if test="userAccount != null">#{userAccount},</if>
+		<if test="userName != null">#{userName},</if>
+		<if test="password != null">#{password},</if>
+		<if test="isEnable != null">#{isEnable},</if>
+		<if test="isAdmin != null">#{isAdmin},</if>
+		<if test="isValid != null">#{isValid},</if>
+		<if test="remark != null">#{remark},</if>
+		<if test="createdUser != null">#{createdUser},</if>
+		<if test="createdTime != null">#{createdTime},</if>
+		<if test="modifiedUser != null">#{modifiedUser},</if>
+		<if test="modifiedTime != null">#{modifiedTime},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsUser">
+		UPDATE ins_user SET
+		user_account=#{userAccount},user_name=#{userName},password=#{password},is_enable=#{isEnable},is_admin=#{isAdmin},is_valid=#{isValid},remark=#{remark},created_user=#{createdUser},created_time=#{createdTime},modified_user=#{modifiedUser},modified_time=#{modifiedTime}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsUser">
+		UPDATE ins_user
+		<set>
+			<if test="userAccount != null">user_account=#{userAccount},</if>
+			<if test="userName != null">user_name=#{userName},</if>
+			<if test="password != null">password=#{password},</if>
+			<if test="isEnable != null">is_enable=#{isEnable},</if>
+			<if test="isAdmin != null">is_admin=#{isAdmin},</if>
+			<if test="isValid != null">is_valid=#{isValid},</if>
+			<if test="remark != null">remark=#{remark},</if>
+			<if test="createdUser != null">created_user=#{createdUser},</if>
+			<if test="createdTime != null">created_time=#{createdTime},</if>
+			<if test="modifiedUser != null">modified_user=#{modifiedUser},</if>
+			<if test="modifiedTime != null">modified_time=#{modifiedTime},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsUser">
+		DELETE FROM ins_user WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_user ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_user
+	</select>
+	
+	 <!-- 据用户账号获取用户信息 -->
+	<select id="getInsUserByUserAccount" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_user where user_account=#{userAccount} and is_enable=1 and is_valid=1
+	</select>
+	
+	<sql id="queryCondition">
+		<where>
+			1=1 and user.is_valid = 1
+			<if test="userAccount != null and userAccount != ''">
+				and user.user_account = #{userAccount} 
+			</if>
+		</where>
+	</sql>
+	<select id="selectPageUser"  statementType="PREPARED"  parameterType="map"  resultMap="baseResultMap" >
+	    SELECT
+		<include refid="baseColumns" />
+		FROM ins_user user
+	   <include refid="queryCondition" />
+	    order by user.created_time desc
+	</select>
+	
+	<select id="selectPageUserCount"   parameterType="map"  resultType="Integer" >
+	    SELECT count(user.id)
+		FROM ins_user user
+	   <include refid="queryCondition" />
+	</select>
+	
+	<update id="updateSelectUserInfo" statementType="PREPARED"  parameterType="InsUser">
+		UPDATE ins_user
+		<set>
+			<if test="userAccount != null and userAccount != ''">user_account=#{userAccount},</if>
+			<if test="userName != null  and userName != ''">user_name=#{userName},</if>
+			<if test="password != null and password != ''">password=#{password},</if>
+			<if test="isEnable != null">is_enable=#{isEnable},</if>
+			<if test="isValid != null">is_valid=#{isValid},</if>
+			<if test="isAdmin != null and isAdmin != ''">is_admin=#{isAdmin},</if>
+			<if test="remark != null and remark != ''">remark=#{remark},</if>
+			<if test="modifiedUser != null and modifiedUser != ''">modified_user=#{modifiedUser},</if>
+			 modified_time = #{modifiedTime}
+		</set>
+		WHERE id=#{id}
+	</update>
+</mapper>

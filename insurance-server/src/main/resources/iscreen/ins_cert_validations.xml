@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validation-root namespace="com.cifpay.ins.cert" default-resource="messages">
+	<!-- 生成保险证 -->
+	<validation-set id="CreateInsuranceCertInfoSet">
+		<!-- <use-validator ref="com.cifpay.ins.StringValidator" name="policyId">
+			<mapping from="policyId" />
+			<label>policyId</label>
+			<constraint property="minLength">1</constraint>
+			<constraint property="maxLength">128</constraint>
+		</use-validator> -->
+
+		<!-- <use-validator ref="com.cifpay.ins.StringValidator" name="noticeUrl">
+			<mapping from="noticeUrl" />
+			<label>noticeUrl</label>
+			<constraint property="minLength">1</constraint>
+		</use-validator> -->
+		<use-validator ref="org.iscreen.NullValidator" fail-fast="true" name="orderInfo">
+			<mapping from="orderInfo" />
+			<label>orderInfo</label>
+		</use-validator>
+
+		<use-validation-set ref="OrderInfo" map="orderInfo" />
+	</validation-set>
+	<!-- 保险证订单信息 -->
+	<validation-set id="OrderInfo">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="orderNo">
+			<mapping from="orderNo" />
+			<label>orderNo</label>
+			<constraint property="minLength">1</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="payMode">
+			<mapping from="payMode" />
+			<label>payMode</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="buyerName">
+			<mapping from="buyerName" />
+			<label>buyerName</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="buyerMobilePhone">
+			<mapping from="buyerMobilePhone" />
+			<label>buyerMobilePhone</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.DateFormatValidator" name="orderDate">
+			<mapping from="orderDate" />
+			<label>orderDate</label>
+		    <constraint property="displayFormat">yyyy-MM-dd</constraint>
+		    <constraint property="format">yyyy-MM-dd</constraint>
+		</use-validator>
+		<use-validator ref="org.iscreen.NullValidator" fail-fast="true" name="orderItemsInfo">
+			<mapping from="orderItemsInfo" />
+			<label>orderItemsInfo</label>
+		</use-validator>
+
+		<use-validation-set ref="OrderItemsInfo" map="orderItemsInfo" iterate="true"/>
+	</validation-set>
+	
+	<!-- 保险证订单商品明细信息 -->
+	<validation-set id="OrderItemsInfo">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="goodsNo">
+			<mapping from="goodsNo" />
+			<label>goodsNo</label>
+			<constraint property="minLength">1</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="goodsName">
+			<mapping from="goodsName" />
+			<label>goodsName</label>
+			<constraint property="minLength">1</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="price">
+			<mapping from="price" />
+			<label>price</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="quantity">
+			<mapping from="quantity" />
+			<label>quantity</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="totalPrice">
+			<mapping from="totalPrice" />
+			<label>totalPrice</label>
+		</use-validator>
+	</validation-set>
+	
+	<!-- 批量生成保险证 -->
+	<validation-set id="CreateInsuranceCertInfoBatchSet">
+		<!-- <use-validator ref="com.cifpay.ins.StringValidator" name="policyId">
+			<mapping from="policyId" />
+			<label>policyId</label>
+			<constraint property="minLength">1</constraint>
+			<constraint property="maxLength">128</constraint>
+		</use-validator> -->
+
+		<use-validator ref="com.cifpay.ins.StringValidator" name="noticeUrl">
+			<mapping from="noticeUrl" />
+			<label>noticeUrl</label>
+			<constraint property="minLength">1</constraint>
+		</use-validator>
+		<use-validator ref="org.iscreen.NullValidator" fail-fast="true" name="orderInfos">
+			<mapping from="orderInfos" />
+			<label>orderInfos</label>
+		</use-validator>
+
+		<use-validation-set ref="OrderInfo" map="orderInfos" iterate="true"/>
+	</validation-set>
+	
+	<!-- 退货 -->
+	<validation-set id="InsuranceCertReturnInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="insuranceCertNo">
+			<mapping from="insuranceCertNo" />
+			<label>insuranceCertNo</label>
+			<constraint property="minLength">1</constraint>
+			<constraint property="maxLength">128</constraint>
+		</use-validator>
+
+		<use-validator ref="com.cifpay.ins.StringValidator" name="logisticsCompany">
+			<mapping from="logisticsCompany" />
+			<label>logisticsCompany</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="logisticsBillNo">
+			<mapping from="logisticsBillNo" />
+			<label>logisticsBillNo</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="payeeBankCode">
+			<mapping from="payeeBankCode" />
+			<label>payeeBankCode</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="payeeBankName">
+			<mapping from="payeeBankName" />
+			<label>payeeBankName</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="payeeAccName">
+			<mapping from="payeeAccName" />
+			<label>payeeAccName</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="payeeBankAccount">
+			<mapping from="payeeBankAccount" />
+			<label>payeeBankAccount</label>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.StringValidator" name="payeeMobilePhone">
+			<mapping from="payeeMobilePhone" />
+			<label>payeeMobilePhone</label>
+		</use-validator>
+	</validation-set>
+	
+	<!-- 拒绝退款 -->
+	<validation-set id="InsuranceCertRefundRefuseInfoSet">
+	   <use-validator ref="com.cifpay.ins.StringValidator" name="insuranceCertNo">
+			<mapping from="insuranceCertNo" />
+			<label>insuranceCertNo</label>
+			<constraint property="minLength">1</constraint>
+			<constraint property="maxLength">128</constraint>
+	   </use-validator>
+	   <use-validator ref="com.cifpay.ins.StringValidator" name="refuseRefundCause">
+			<mapping from="refuseRefundCause" />
+			<label>refuseRefundCause</label>
+			<constraint property="minLength">1</constraint>
+	   </use-validator>
+	</validation-set>
+    <!-- 查看退款单列表 -->
+	<validation-set id="GetRefundBillInfoSet">
+	   <use-validator ref="com.cifpay.ins.StringValidator" name="insuranceCertNo">
+			<mapping from="insuranceCertNo" />
+			<label>insuranceCertNo</label>
+			<constraint property="maxLength">128</constraint>
+	   </use-validator>
+	   <use-validator ref="com.cifpay.ins.StringValidator" name="billStatus">
+			<mapping from="billStatus" />
+			<label>billStatus</label>
+	   </use-validator>
+	   <use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageNo">
+			<mapping from="pageNo" />
+			<label>pageNo</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">50</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageSize">
+			<mapping from="pageSize" />
+			<label>pageSize</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">100</constraint>
+		</use-validator>
+	</validation-set>
+	<!-- 查看保险证 -->
+	<validation-set id="InsuranceCertNoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="insuranceCertNo">
+			<mapping from="insuranceCertNo" />
+			<label>insuranceCertNo</label>
+			<constraint property="minLength">1</constraint>
+			<constraint property="maxLength">128</constraint>
+	    </use-validator>
+	</validation-set>
+	
+	<!-- 查询保险证列表 -->
+	<validation-set id="GetInsuranceCertListInfoSet">
+	    <use-validator ref="com.cifpay.ins.StringValidator" name="status">
+			<mapping from="status" />
+			<label>status</label>
+		</use-validator>
+	    <!-- <use-validator ref="com.cifpay.ins.NumberRangeValidator" name="bizStatus">
+			<mapping from="bizStatus" />
+			<label>bizStatus</label>
+		</use-validator> -->
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageNo">
+			<mapping from="pageNo" />
+			<label>pageNo</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">50</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageSize">
+			<mapping from="pageSize" />
+			<label>pageSize</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">100</constraint>
+		</use-validator>
+	</validation-set>
+	
+	<!-- 保险证统计查询 -->
+	<validation-set id="InsuranceCertReportInfoSet">
+	    <use-validator ref="com.cifpay.ins.StringValidator" name="policyNo">
+			<mapping from="policyNo" />
+			<label>policyNo</label>
+		</use-validator>
+	</validation-set>
+
+</validation-root>

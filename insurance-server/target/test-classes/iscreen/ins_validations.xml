@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validation-root namespace="com.cifpay.ins" default-resource="messages">
+	<include file="iscreen/validators.xml" />
+
+	<!-- 字符串长度校验 默认255 -->
+	<validator id="StringValidator" ref="org.iscreen.StringValidator">
+		<constraint property="maxLength">255</constraint>
+	</validator>
+
+	<!-- 数字格式校验 0 到 99999999999 -->
+	<validator id="NumberRangeValidator" ref="org.iscreen.NumberRangeValidator">
+		<constraint property="minimumValue">0</constraint>
+		<constraint property="maximumValue">99999999999</constraint>
+	</validator>
+
+	<!-- 日期时间个格式校验 -->
+	<validator id="DateFormatValidator" ref="org.iscreen.DateFormatValidator">
+		<!-- 默认约束为 yyyy-MM-dd HH:mm:ss- -->
+		<constraint property="displayFormat">yyyy-MM-dd HH:mm:ss</constraint>
+		<constraint property="format">yyyy-MM-dd HH:mm:ss</constraint>
+	</validator>
+
+	<!-- 系统参数信息校验器 -->
+	<validation-set id="SystemParamReqInfoSet">
+		<use-validator ref="StringValidator" name="vendorId">
+			<mapping from="vendorId" />
+			<label>vendorId</label>
+			<constraint property="minLength">1</constraint>
+			<constraint property="maxLength">128</constraint>
+		</use-validator>
+
+	</validation-set>
+
+	<!-- 保险单校验器 -->
+	<include file="iscreen/ins_policy_validations.xml" />
+	<!-- 保险证校验器 -->
+	<include file="iscreen/ins_cert_validations.xml" />
+	<!-- 用户管理 -->
+	<include file="iscreen/ins_user_validations.xml" />
+	<!-- 商户管理 -->
+	<include file="iscreen/ins_vendor_validations.xml" />
+  
+</validation-root>

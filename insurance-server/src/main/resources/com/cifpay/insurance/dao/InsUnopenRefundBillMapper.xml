@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsUnopenRefundBillDao">
+	<resultMap id="baseResultMap" type="InsUnopenRefundBill">
+		<id property="id" column="id" />
+		<result property="certRefundBillId" column="cert_refund_bill_id" />
+		<result property="vendorId" column="vendor_id" />
+		<result property="insuranceCertId" column="insurance_cert_id" />
+		<result property="insuranceCertNo" column="insurance_cert_no" />
+		<result property="logisticsCompany" column="logistics_company" />
+		<result property="logisticsBillNo" column="logistics_bill_no" />
+		<result property="expiredTime" column="expired_time" />
+		<result property="refundAmount" column="refund_amount" />
+		<result property="payerMobilePhone" column="payer_mobile_phone" />
+		<result property="payerBankAccount" column="payer_bank_account" />
+		<result property="payerBankCode" column="payer_bank_code" />
+		<result property="payerBankName" column="payer_bank_name" />
+		<result property="payerAccName" column="payer_acc_name" />
+		<result property="payeeBankCode" column="payee_bank_code" />
+		<result property="payeeBankName" column="payee_bank_name" />
+		<result property="payeeAccName" column="payee_acc_name" />
+		<result property="payeeBankAccount" column="payee_bank_account" />
+		<result property="payeeMobilePhone" column="payee_mobile_phone" />
+	</resultMap>
+
+	<sql id="baseColumns">id,cert_refund_bill_id,vendor_id,insurance_cert_id,insurance_cert_no,logistics_company,logistics_bill_no,expired_time,refund_amount,payer_mobile_phone,payer_bank_account,payer_bank_code,payer_bank_name,payer_acc_name,payee_bank_code,payee_bank_name,payee_acc_name,payee_bank_account,payee_mobile_phone
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_unopen_refund_bill WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsUnopenRefundBill">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_unopen_refund_bill(cert_refund_bill_id,vendor_id,insurance_cert_id,insurance_cert_no,logistics_company,logistics_bill_no,expired_time,refund_amount,payer_mobile_phone,payer_bank_account,payer_bank_code,payer_bank_name,payer_acc_name,payee_bank_code,payee_bank_name,payee_acc_name,payee_bank_account,payee_mobile_phone)
+		VALUES(#{certRefundBillId},#{vendorId},#{insuranceCertId},#{insuranceCertNo},#{logisticsCompany},#{logisticsBillNo},#{expiredTime},#{refundAmount},#{payerMobilePhone},#{payerBankAccount},#{payerBankCode},#{payerBankName},#{payerAccName},#{payeeBankCode},#{payeeBankName},#{payeeAccName},#{payeeBankAccount},#{payeeMobilePhone})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsUnopenRefundBill">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_unopen_refund_bill(
+		<if test="certRefundBillId != null">cert_refund_bill_id,</if>
+		<if test="vendorId != null">vendor_id,</if>
+		<if test="insuranceCertId != null">insurance_cert_id,</if>
+		<if test="insuranceCertNo != null">insurance_cert_no,</if>
+		<if test="logisticsCompany != null">logistics_company,</if>
+		<if test="logisticsBillNo != null">logistics_bill_no,</if>
+		<if test="expiredTime != null">expired_time,</if>
+		<if test="refundAmount != null">refund_amount,</if>
+		<if test="payerMobilePhone != null">payer_mobile_phone,</if>
+		<if test="payerBankAccount != null">payer_bank_account,</if>
+		<if test="payerBankCode != null">payer_bank_code,</if>
+		<if test="payerBankName != null">payer_bank_name,</if>
+		<if test="payerAccName != null">payer_acc_name,</if>
+		<if test="payeeBankCode != null">payee_bank_code,</if>
+		<if test="payeeBankName != null">payee_bank_name,</if>
+		<if test="payeeAccName != null">payee_acc_name,</if>
+		<if test="payeeBankAccount != null">payee_bank_account,</if>
+		<if test="payeeMobilePhone != null">payee_mobile_phone,</if>
+		createTime) VALUES(
+		<if test="certRefundBillId != null">#{certRefundBillId},</if>
+		<if test="vendorId != null">#{vendorId},</if>
+		<if test="insuranceCertId != null">#{insuranceCertId},</if>
+		<if test="insuranceCertNo != null">#{insuranceCertNo},</if>
+		<if test="logisticsCompany != null">#{logisticsCompany},</if>
+		<if test="logisticsBillNo != null">#{logisticsBillNo},</if>
+		<if test="expiredTime != null">#{expiredTime},</if>
+		<if test="refundAmount != null">#{refundAmount},</if>
+		<if test="payerMobilePhone != null">#{payerMobilePhone},</if>
+		<if test="payerBankAccount != null">#{payerBankAccount},</if>
+		<if test="payerBankCode != null">#{payerBankCode},</if>
+		<if test="payerBankName != null">#{payerBankName},</if>
+		<if test="payerAccName != null">#{payerAccName},</if>
+		<if test="payeeBankCode != null">#{payeeBankCode},</if>
+		<if test="payeeBankName != null">#{payeeBankName},</if>
+		<if test="payeeAccName != null">#{payeeAccName},</if>
+		<if test="payeeBankAccount != null">#{payeeBankAccount},</if>
+		<if test="payeeMobilePhone != null">#{payeeMobilePhone},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsUnopenRefundBill">
+		UPDATE ins_unopen_refund_bill SET
+		cert_refund_bill_id=#{certRefundBillId},vendor_id=#{vendorId},insurance_cert_id=#{insuranceCertId},insurance_cert_no=#{insuranceCertNo},logistics_company=#{logisticsCompany},logistics_bill_no=#{logisticsBillNo},expired_time=#{expiredTime},refund_amount=#{refundAmount},payer_mobile_phone=#{payerMobilePhone},payer_bank_account=#{payerBankAccount},payer_bank_code=#{payerBankCode},payer_bank_name=#{payerBankName},payer_acc_name=#{payerAccName},payee_bank_code=#{payeeBankCode},payee_bank_name=#{payeeBankName},payee_acc_name=#{payeeAccName},payee_bank_account=#{payeeBankAccount},payee_mobile_phone=#{payeeMobilePhone}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsUnopenRefundBill">
+		UPDATE ins_unopen_refund_bill
+		<set>
+			<if test="certRefundBillId != null">cert_refund_bill_id=#{certRefundBillId},</if>
+			<if test="vendorId != null">vendor_id=#{vendorId},</if>
+			<if test="insuranceCertId != null">insurance_cert_id=#{insuranceCertId},</if>
+			<if test="insuranceCertNo != null">insurance_cert_no=#{insuranceCertNo},</if>
+			<if test="logisticsCompany != null">logistics_company=#{logisticsCompany},</if>
+			<if test="logisticsBillNo != null">logistics_bill_no=#{logisticsBillNo},</if>
+			<if test="expiredTime != null">expired_time=#{expiredTime},</if>
+			<if test="refundAmount != null">refund_amount=#{refundAmount},</if>
+			<if test="payerMobilePhone != null">payer_mobile_phone=#{payerMobilePhone},</if>
+			<if test="payerBankAccount != null">payer_bank_account=#{payerBankAccount},</if>
+			<if test="payerBankCode != null">payer_bank_code=#{payerBankCode},</if>
+			<if test="payerBankName != null">payer_bank_name=#{payerBankName},</if>
+			<if test="payerAccName != null">payer_acc_name=#{payerAccName},</if>
+			<if test="payeeBankCode != null">payee_bank_code=#{payeeBankCode},</if>
+			<if test="payeeBankName != null">payee_bank_name=#{payeeBankName},</if>
+			<if test="payeeAccName != null">payee_acc_name=#{payeeAccName},</if>
+			<if test="payeeBankAccount != null">payee_bank_account=#{payeeBankAccount},</if>
+			<if test="payeeMobilePhone != null">payee_mobile_phone=#{payeeMobilePhone},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsUnopenRefundBill">
+		DELETE FROM ins_unopen_refund_bill WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_unopen_refund_bill ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_unopen_refund_bill
+	</select>
+	
+	<!-- 获取未过期的未开证退款单 -->
+	<select id="getUnexpiredInsUnopenRefundBills" statementType="PREPARED" resultMap="baseResultMap">
+	<![CDATA[
+		SELECT * FROM ins_unopen_refund_bill where expired_time>now()
+	]]>
+	</select>
+	
+	<!-- 获取过期的未开证退款单 -->
+	<select id="getExpiredInsUnopenRefundBills" statementType="PREPARED" resultMap="baseResultMap">
+	<![CDATA[
+		SELECT * FROM ins_unopen_refund_bill where expired_time<=now()
+	]]>
+	</select>
+</mapper>

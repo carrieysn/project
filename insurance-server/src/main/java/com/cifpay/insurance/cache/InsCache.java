@@ -1,0 +1,155 @@
+/**
+ * File: InsCache.java
+ *
+ * Copyright：Copyright (c) 2015
+ * Company：深圳市银信网银科技有限公司
+ * Created on：2015年12月25日 下午4:06:32
+ */
+package com.cifpay.insurance.cache;
+
+import com.cifpay.insurance.exception.InsuranceBizRuntimeException;
+import com.cifpay.insurance.model.InsBankCard;
+import com.cifpay.insurance.model.InsPolicy;
+import com.cifpay.insurance.model.InsReturnType;
+import com.cifpay.insurance.model.InsWarningRule;
+import com.cifpay.insurance.service.InsPolicyService;
+import com.cifpay.insurance.service.InsReturnTypeService;
+import com.cifpay.insurance.service.InsWarningRuleService;
+import com.cifpay.insurance.util.RedisUtil;
+import com.cifpay.insurance.util.SpringContextUtil;
+import com.cifpay.starframework.cache.ServiceResultCodeCache;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
+/**
+ * 缓存
+ * 
+ * @author 张均锋
+ *
+ */
+public class InsCache {
+
+	/**
+	 * 银行卡缓存（暂JVM缓存）
+	 */
+	public static final Cache<String, InsBankCard> bankCardCache = CacheBuilder.newBuilder().build();
+	// TODO 须移到缓存机器。
+
+	/** 退款类型缓存 **/
+	//public static final Cache<String, InsReturnType> insReturnTypeCache = CacheBuilder.newBuilder().build();
+
+	private static InsPolicyService insPolicyService = (InsPolicyService) SpringContextUtil.getBean("insPolicyService");
+	private static InsWarningRuleService insWarningRuleService = (InsWarningRuleService) SpringContextUtil.getBean("insWarningRuleService");
+	private static InsReturnTypeService insReturnTypeService = (InsReturnTypeService) SpringContextUtil.getBean("insReturnTypeService");
+	private static ServiceResultCodeCache resultCode = ServiceResultCodeCache.getInstance();
+	/** 一天秒数 **/
+	private final static int ONE_DAY_SECONDS = 24*60*60;
+	
+	/** 半天秒数 **/
+	private final static int HALF_DAY_SECONDS = 12*60*60;
+	
+	/**
+	 * 从缓存获取保单信息。
+	 * 
+	 * @param vendorId
+	 * @return
+	 */
+	public static InsPolicy getInsPolicyCache(String vendorId) {
+		InsPolicy ip = insPolicyService.getPolicyByVendorId(vendorId);
+		/*String keyVendorPolicy = "policy:" + vendorId;
+		InsPolicy ip = RedisUtil.getObject(keyVendorPolicy, InsPolicy.class);
+		if (ip == null) {
+			ip = insPolicyService.getPolicyByVendorId(vendorId);
+			if (ip == null) {
+				throw new InsuranceBizRuntimeException(resultCode.get("biz.policy.notfound"), "商户保单不存在！");
+			}
+			setInsPolicyCache(vendorId, ip);
+		}*/
+		return ip;
+	}
+
+	/**
+	 * 设置保单信息缓存
+	 * 
+	 * @param vendorId
+	 * @param insPolicy
+	 */
+	public static void setInsPolicyCache(String vendorId, InsPolicy insPolicy) {
+		String keyVendorPolicy = "policy:" + vendorId;
+		RedisUtil.setObject(keyVendorPolicy, insPolicy, HALF_DAY_SECONDS);
+	}
+
+	/** 删除保单信息缓存 **/
+	public static void removeInsPolicyCache(String vendorId) {
+		String keyVendorPolicy = "policy:" + vendorId;
+		RedisUtil.delObject(keyVendorPolicy);
+	}
+	
+	/**
+	 * 从缓存获取预警规则信息。
+	 * 
+	 * @return
+	 */
+	public static InsWarningRule getInsWarningRuleCache() {
+		String key = "insWarningRule";
+		InsWarningRule ir = RedisUtil.getObject(key, InsWarningRule.class);
+		if (ir == null) {
+			ir = insWarningRuleService.getOne();
+			if (ir == null) {
+				throw new IllegalArgumentException("预警规则未设置！");
+			}
+			setInsWarningRuleCache(ir);
+		}
+		return ir;
+	}
+
+	/**
+	 * 设置预警规则缓存
+	 * 
+	 */
+	public static void setInsWarningRuleCache(InsWarningRule insWarningRule) {
+		String key = "insWarningRule";
+		RedisUtil.setObject(key, insWarningRule);
+	}
+
+	/**
+	 * 删除预警规则缓存
+	 */
+	public static void removeInsWarningRuleCache() {
+		String key = "insWarningRule";
+		RedisUtil.delObject(key);
+	}
+	
+	/**
+	 * 获取退款类型，优先从缓存获取。
+	 * 
+	 * @param code
+	 * @return
+	 */
+	public static InsReturnType getInsReturnTypeCache(String code) {
+		String key = "InsReturnType:" + code;
+		InsReturnType ir = RedisUtil.getObject(key, InsReturnType.class);
+		if (ir == null) {
+			ir = insReturnTypeService.getInsReturnTypeByCode(code);
+			setInsReturnTypeCache(ir);
+		}
+		return ir;
+	}
+	
+	/**
+	 * 设置退款类型缓存
+	 * 
+	 */
+	public static void setInsReturnTypeCache(InsReturnType insReturnType) {
+		String key = "InsReturnType:" + insReturnType.getCode();
+		RedisUtil.setObject(key, insReturnType);
+	}
+
+	/**
+	 * 删除退款类型缓存
+	 */
+	public static void removeInsReturnTypeCache(String code) {
+		String key = "InsReturnType:" + code;
+		RedisUtil.delObject(key);
+	}
+}

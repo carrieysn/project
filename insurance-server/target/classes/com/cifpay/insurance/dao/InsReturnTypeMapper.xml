@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsReturnTypeDao">
+	<resultMap id="baseResultMap" type="InsReturnType">
+		<id property="id" column="id" />
+		<result property="code" column="code" />
+		<result property="descZh" column="desc_zh" />
+		<result property="descEn" column="desc_en" />
+		<result property="remark" column="remark" />
+	</resultMap>
+
+	<sql id="baseColumns">id,code,desc_zh,desc_en,remark</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_return_type WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsReturnType">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_return_type(code,desc_zh,desc_en,remark)
+		VALUES(#{code},#{descZh},#{descEn},#{remark})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsReturnType">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_return_type(
+		<if test="code != null">code,</if>
+		<if test="descZh != null">desc_zh,</if>
+		<if test="descEn != null">desc_en,</if>
+		<if test="remark != null">remark,</if>
+		createTime) VALUES(
+		<if test="code != null">#{code},</if>
+		<if test="descZh != null">#{descZh},</if>
+		<if test="descEn != null">#{descEn},</if>
+		<if test="remark != null">#{remark},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsReturnType">
+		UPDATE ins_return_type SET
+		code=#{code},desc_zh=#{descZh},desc_en=#{descEn},remark=#{remark}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsReturnType">
+		UPDATE ins_return_type
+		<set>
+			<if test="code != null">code=#{code},</if>
+			<if test="descZh != null">desc_zh=#{descZh},</if>
+			<if test="descEn != null">desc_en=#{descEn},</if>
+			<if test="remark != null">remark=#{remark},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsReturnType">
+		DELETE FROM ins_return_type WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_return_type
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_return_type
+	</select>
+
+	<select id="getInsReturnTypeByCode" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT * FROM ins_return_type where code=#{code}
+	</select>
+</mapper>

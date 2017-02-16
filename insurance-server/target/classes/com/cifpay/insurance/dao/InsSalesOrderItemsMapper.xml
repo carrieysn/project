@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cifpay.insurance.dao.InsSalesOrderItemsDao">
+	<resultMap id="baseResultMap" type="InsSalesOrderItems">
+		<id property="id" column="id" />
+		<result property="salesOrderId" column="sales_order_id" />
+		<result property="insuranceCertId" column="insurance_cert_id" />
+		<result property="orderNo" column="order_no" />
+		<result property="goodsNo" column="goods_no" />
+		<result property="goodsName" column="goods_name" />
+		<result property="price" column="price" />
+		<result property="quantity" column="quantity" />
+		<result property="totalPrice" column="total_price" />
+		<association property="insSalesOrder" javaType="com.cifpay.insurance.model.InsSalesOrder">
+			<id property="id" column="m_id" />
+			<result property="orderNo" column="m_order_no" />
+			<result property="orderDate" column="m_order_date" />
+			<result property="returnAddress" column="m_return_address" />
+			<result property="returnContacts" column="m_return_contacts" />
+			<result property="returnPhone" column="m_return_phone" />
+			<result property="payMode" column="m_pay_mode" />
+			<result property="totalPrice" column="m_total_price" />
+		</association>
+	</resultMap>
+
+	<sql id="baseColumns">id,sales_order_id,insurance_cert_id,order_no,goods_no,goods_name,price,quantity,total_price
+	</sql>
+
+	<select id="get" statementType="PREPARED" parameterType="java.lang.Long"
+		resultMap="baseResultMap">
+		SELECT
+		<include refid="baseColumns" />
+		FROM ins_sales_order_items WHERE id=#{id}
+	</select>
+
+	<insert id="add" statementType="PREPARED" parameterType="InsSalesOrderItems">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_sales_order_items(sales_order_id,insurance_cert_id,order_no,goods_no,goods_name,price,quantity,total_price)
+		VALUES(#{salesOrderId},#{insuranceCertId},#{orderNo},#{goodsNo},#{goodsName},#{price},#{quantity},#{totalPrice})
+	</insert>
+
+	<insert id="addSelective" statementType="PREPARED"
+		parameterType="InsSalesOrderItems">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO ins_sales_order_items(
+		<if test="salesOrderId != null">sales_order_id,</if>
+		<if test="insuranceCertId != null">insurance_cert_id,</if>
+		<if test="orderNo != null">order_no,</if>
+		<if test="goodsNo != null">goods_no,</if>
+		<if test="goodsName != null">goods_name,</if>
+		<if test="price != null">price,</if>
+		<if test="quantity != null">quantity,</if>
+		<if test="totalPrice != null">total_price,</if>
+		createTime) VALUES(
+		<if test="salesOrderId != null">#{salesOrderId},</if>
+		<if test="insuranceCertId != null">#{insuranceCertId},</if>
+		<if test="orderNo != null">#{orderNo},</if>
+		<if test="goodsNo != null">#{goodsNo},</if>
+		<if test="goodsName != null">#{goodsName},</if>
+		<if test="price != null">#{price},</if>
+		<if test="quantity != null">#{quantity},</if>
+		<if test="totalPrice != null">#{totalPrice},</if>
+		#{createTime})
+	</insert>
+
+	<update id="update" statementType="PREPARED" parameterType="InsSalesOrderItems">
+		UPDATE ins_sales_order_items SET
+		sales_order_id=#{salesOrderId},insurance_cert_id=#{insuranceCertId},order_no=#{orderNo},goods_no=#{goodsNo},goods_name=#{goodsName},price=#{price},quantity=#{quantity},total_price=#{totalPrice}
+		WHERE id=#{id}
+	</update>
+
+	<update id="updateSelective" statementType="PREPARED"
+		parameterType="InsSalesOrderItems">
+		UPDATE ins_sales_order_items
+		<set>
+			<if test="salesOrderId != null">sales_order_id=#{salesOrderId},</if>
+			<if test="insuranceCertId != null">insurance_cert_id=#{insuranceCertId},</if>
+			<if test="orderNo != null">order_no=#{orderNo},</if>
+			<if test="goodsNo != null">goods_no=#{goodsNo},</if>
+			<if test="goodsName != null">goods_name=#{goodsName},</if>
+			<if test="price != null">price=#{price},</if>
+			<if test="quantity != null">quantity=#{quantity},</if>
+			<if test="totalPrice != null">total_price=#{totalPrice},</if>
+		</set>
+		WHERE id=#{id}
+	</update>
+
+	<delete id="delete" statementType="PREPARED" parameterType="InsSalesOrderItems">
+		DELETE FROM ins_sales_order_items WHERE id=#{id}
+	</delete>
+
+	<select id="getList" statementType="PREPARED" resultMap="baseResultMap">
+		SELECT *
+		FROM ins_sales_order_items ORDER BY updateTime
+	</select>
+	<select id="getCount" statementType="PREPARED" resultType="Integer">
+		SELECT COUNT(*) FROM ins_sales_order_items
+	</select>
+
+	<!-- 批量增加 -->
+	<insert id="addBatch" statementType="PREPARED" parameterType="java.util.List">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+			SELECT
+			LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO
+		ins_sales_order_items(sales_order_id,insurance_cert_id,order_no,goods_no,goods_name,price,quantity,total_price)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+			#{item.salesOrderId},
+			#{item.insuranceCertId},
+			#{item.orderNo},
+			#{item.goodsNo},
+			#{item.goodsName},
+			#{item.price},
+			#{item.quantity},
+			#{item.totalPrice}
+			)
+		</foreach>
+	</insert>
+
+	<select id="getInsSalesOrderItemsByCertNo" statementType="PREPARED" parameterType="java.lang.String" resultMap="baseResultMap">
+		SELECT a.*,
+        c.id m_id,c.order_no m_order_no,c.order_date m_order_date,c.return_address m_return_address,c.return_contacts m_return_contacts,c.return_phone m_return_phone,c.pay_mode m_pay_mode,c.total_price m_total_price
+		FROM ins_sales_order_items a
+		INNER JOIN ins_sales_order c on a.sales_order_id=c.id
+		LEFT JOIN ins_insurance_cert b ON a.insurance_cert_id = b.id where
+		b.insurance_cert_no = #{insuranceCertNo}
+	</select>
+</mapper>

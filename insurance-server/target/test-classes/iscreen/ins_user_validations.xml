@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<validation-root namespace="com.cifpay.ins.user" default-resource="messages">
+     <!-- 用户登录 -->
+	<validation-set id="UserAccountLoginInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="userAccount">
+			<mapping from="userAccount" />
+			<label>userAccount</label>
+		</use-validator>
+        <use-validator ref="com.cifpay.ins.StringValidator" name="password">
+			<mapping from="password" />
+			<label>password</label>
+		</use-validator>
+	</validation-set>
+     <!-- 商户用户登录 -->
+	<validation-set id="UserVendorAccountLoginInfoSet">
+		<use-validator ref="com.cifpay.ins.StringValidator" name="userAccount">
+			<mapping from="userAccount" />
+			<label>userAccount</label>
+		</use-validator>
+        <use-validator ref="com.cifpay.ins.StringValidator" name="password">
+			<mapping from="password" />
+			<label>password</label>
+		</use-validator>
+	</validation-set>
+	<!-- 用户管理查询用户列表输入参数验证-->
+	<validation-set id="GetUserAccountInfoSet">
+	     <use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageNo">
+			<mapping from="pageNo" />
+			<label>pageNo</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">50</constraint>
+		</use-validator>
+		<use-validator ref="com.cifpay.ins.NumberRangeValidator" name="pageSize">
+			<mapping from="pageSize" />
+			<label>pageSize</label>
+			<constraint property="minimumValue">1</constraint>
+			<constraint property="maximumValue">100</constraint>
+		</use-validator>
+	</validation-set>
+	  <!-- 用户信息新增 -->
+	<validation-set id="UserAccountSaveInfoSet">
+	    <use-validator ref="com.cifpay.ins.StringValidator" name="userAccount">
+			<mapping from="userAccount" />
+			<label>userAccount</label>
+		</use-validator>
+        <use-validator ref="com.cifpay.ins.StringValidator" name="password">
+			<mapping from="password" />
+			<label>password</label>
+		</use-validator>
+	</validation-set>
+	
+    <!-- 用户信息更新-->
+	<validation-set id="UserAccountUpdateInfoSet">
+	    <use-validator ref="com.cifpay.ins.NumberRangeValidator" name="id">
+			<mapping from="id" />
+			<label>id</label>
+		</use-validator>
+	    <use-validator ref="com.cifpay.ins.StringValidator" name="userAccount">
+			<mapping from="userAccount" />
+			<label>userAccount</label>
+		</use-validator>
+        <use-validator ref="com.cifpay.ins.StringValidator" name="password">
+			<mapping from="password" />
+			<label>password</label>
+		</use-validator>
+	</validation-set>
+	
+	<!-- 用户信息删除-->
+	<validation-set id="UserAccountDeleteInfoSet">
+	    <use-validator ref="com.cifpay.ins.NumberRangeValidator" name="id">
+			<mapping from="id" />
+			<label>id</label>
+		</use-validator>
+	</validation-set>
+
+</validation-root>

@@ -1,0 +1,272 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cifpay.insurance</groupId>
+	<artifactId>insurance-server</artifactId>
+	<packaging>war</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>insurance-server Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<package.environment>dev</package.environment>
+		<spring.version>4.1.6.RELEASE</spring.version>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<package.environment>dev</package.environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<package.environment>test</package.environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>production</id>
+			<properties>
+				<package.environment>production</package.environment>
+			</properties>
+		</profile>
+	</profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.cifpay</groupId>
+			<artifactId>starframework</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>hadoop-client</artifactId>
+					<groupId>org.apache.hadoop</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>hbase-client</artifactId>
+					<groupId>org.apache.hbase</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- jackson -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.6.3</version>
+		</dependency>
+		<!-- iscreen validation -->
+
+		<dependency>
+			<groupId>ognl</groupId>
+			<artifactId>ognl</artifactId>
+			<version>3.0.11</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.iscreen.ognl</groupId>
+			<artifactId>org.iscreen.ognl</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+
+		<!-- guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
+
+		<!-- Servlet-->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency> 
+		<!-- 单元测试使用,2.5为发布打包使用 
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>test</scope>
+		</dependency>-->
+
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+			<!-- <scope>provided</scope> -->
+		</dependency>
+		<!-- 银信证sdk -->
+		<dependency>
+			<groupId>com.cifpay</groupId>
+			<artifactId>lc-ms-sdk</artifactId>
+			<version>2.2.0-SNAPSHOT-jar-with-dependencies</version>
+		</dependency>
+
+		<!-- 单元测试 -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>4.1.6.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- mock test -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.10.19</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>2.1.0</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>cifpay-release</id>
+			<name>Nexus Release Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>cifpay-snapshots</id>
+			<name>Nexus Snapshot Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>nexus</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/groups/public</url>
+			<!-- <releases> <enabled>true</enabled> </releases> <snapshots> <enabled>true</enabled> 
+				</snapshots> -->
+		</repository>
+		<repository>
+			<id>thirdpart</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/repositories/thirdparty</url>
+		</repository>
+		<repository>
+			<id>releases</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>oschina</id>
+			<url>http://maven.oschina.net/content/groups/public/</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>nexus</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/groups/public</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>thirdpart</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/repositories/thirdparty</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<build>
+		<finalName>insurance-server</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<warName>insurance-server</warName>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<packagingExcludes>**/environment/**,**/db/**,**/db-assembly.xml</packagingExcludes>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+					</archive>
+					<webResources>
+						<resource>
+							<directory>src/main/spring-conf</directory>
+							<targetPath>WEB-INF/classes</targetPath>
+						</resource>
+						<resource>
+							<directory>src/main/resources/environment/${package.environment}</directory>
+							<targetPath>WEB-INF/classes</targetPath>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+
+			<!-- <plugin> <groupId>org.apache.tomcat.maven</groupId> <artifactId>tomcat7-maven-plugin</artifactId> 
+				<configuration> <port>9001</port> <path>/insurance-server</path> <uriEncoding>UTF-8</uriEncoding> 
+				</configuration> </plugin> -->
+
+		</plugins>
+
+
+	</build>
+</project>
