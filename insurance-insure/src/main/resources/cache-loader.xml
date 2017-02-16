@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cache-loader>
+    <item name="serviceResultCode" targetMethod="reload" class="com.cifpay.starframework.cache.ServiceResultCodeCache"/>
+    <item name="config" targetMethod="reload" class="com.cifpay.starframework.cache.ConfigPropertiesCache"/>
+</cache-loader>

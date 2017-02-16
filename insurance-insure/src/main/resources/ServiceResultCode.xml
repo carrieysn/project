@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service-code>
+    <!-- 错误码标识等于id加"."加子节点ident; 错误码标识等于code加子节点pre加code-->
+	<type id="common.framework" code="100">
+		<item ident="success" pre="" code="1" msgZh="执行成功" msgEn=""/>
+		<item ident="fail" pre="" code="0" msgZh="执行失败" msgEn=""/>
+		
+		<item ident="system.error" pre="1" code="0001" msgZh="系统错误" msgEn=""/>
+		<item ident="service.unavailable" pre="1" code="0002" msgZh="服务暂停" msgEn=""/>
+		<item ident="remote.service.error" pre="1" code="0003" msgZh="远程服务错误" msgEn=""/>
+		<item ident="ip.limit" pre="1" code="0004" msgZh="IP限制不能请求该资源" msgEn=""/>
+		<item ident="unsupport.mediatype" pre="1" code="0005" msgZh="不支持的媒体类型" msgEn=""/>
+		<item ident="req.param.error" pre="1" code="0006" msgZh="请求参数错误" msgEn=""/>
+		<item ident="system.is.busy" pre="1" code="0007" msgZh="系统繁忙,稍后重试" msgEn=""/>
+		<item ident="system.is.busy" pre="1" code="0008" msgZh="系统繁忙,稍后重试" msgEn=""/>
+		<item ident="job.expired" pre="1" code="0009" msgZh="业务超时" msgEn=""/>
+		<item ident="illegal.request" pre="1" code="0010" msgZh="非法请求" msgEn=""/>
+		<item ident="username.password.error" pre="1" code="0011" msgZh="用户名密码错误" msgEn=""/>
+		<item ident="phone.has.used" pre="1" code="0012" msgZh="该手机号已经被使用" msgEn=""/>
+		<item ident="user.has.bind.phone" pre="1" code="0013" msgZh="该用户已经绑定手机" msgEn=""/>
+		<item ident="image.size.too.large" pre="1" code="0014" msgZh="图片太大" msgEn=""/>
+		<item ident="user.not.exist" pre="1" code="0015" msgZh="用户不存在" msgEn=""/>
+		<item ident="unsuppor.image.type" pre="1" code="0016" msgZh="不支持的图片类型" msgEn=""/>
+		<item ident="unsuppor.file.type" pre="1" code="0017" msgZh="不支持的文件类型" msgEn=""/>
+		<item ident="domain.not.exist" pre="1" code="0018" msgZh="域名不存在" msgEn=""/>
+	</type>
+	<type id="common" code="">
+	    <item ident="success" pre="" code="0" msgZh="正常" msgEn=""/>
+		<item ident="request.param.error" pre="" code="1000" msgZh="请求参数不正确" msgEn=""/>
+		<item ident="illegal.datatype" pre="" code="1001" msgZh="非法的数据类型" msgEn=""/>
+		<item ident="illegal.vendorid" pre="" code="1002" msgZh="非法的商户" msgEn=""/>
+		<item ident="post.method.expected" pre="" code="1003" msgZh="非法的请求方法，只有用POST提交" msgEn=""/>
+		<item ident="system.error" pre="" code="1004" msgZh="系统异常，请重试" msgEn=""/>
+		<item ident="record.version.ischanged" pre="" code="1005" msgZh="更新记录失败，可能记录版本已被更新，请重新处理！" msgEn=""/>
+	</type>
+	<type id="biz" code="2">
+	    <!-- 保单 -->
+		<item ident="policy.notfound" pre="0" code="000" msgZh="保单不存在" msgEn=""/>
+		<item ident="policy.repeat" pre="0" code="001" msgZh="重复投保" msgEn=""/>
+		<item ident="policy.holder.notfound" pre="0" code="002" msgZh="商户对应投保人信息不存在！" msgEn=""/>
+		<item ident="policy.real.insured.amount.islimit" pre="0" code="003" msgZh="保单实时保额已到达警报权限！" msgEn=""/>
+		<item ident="policy.real.insured.amount.notenough" pre="0" code="004" msgZh="保单保额不足！" msgEn=""/>
+		<item ident="policy.real.insured.amount.deduct.fail" pre="0" code="005" msgZh="保单保额扣减失败！" msgEn=""/>
+	    <item ident="policy.insurance.cert.notvalid.status" pre="0" code="006" msgZh="不是有效的保险证状态，无法扣减保额！" msgEn=""/>
+		<item ident="policy.change.list.add.fail" pre="0" code="007" msgZh="新增保单变动流水失败！" msgEn=""/>
+		<item ident="policy.order.notfound" pre="0" code="008" msgZh="保单缴费订单号不存在！" msgEn=""/>
+		<item ident="policy.order.item.notfound" pre="0" code="008" msgZh="保单投保订单明细不存在！" msgEn=""/>
+		
+		<!-- 保险证 -->
+		<item ident="insurance.cert.notfound" pre="1" code="001" msgZh="保险证不存在" msgEn=""/>
+		<item ident="insurance.cert.notsigned" pre="1" code="002" msgZh="保险证不是已签收状态，不能申请退货！" msgEn=""/>
+	    <item ident="insurance.cert.nottoberefunded" pre="1" code="003" msgZh="保险证不是待退款状态，不能确认退款！" msgEn=""/>
+	    <item ident="insurance.cert.refuseRefund" pre="1" code="004" msgZh="保险证不是待退款状态，不能拒绝退款！" msgEn=""/>
+	    <item ident="insurance.cert.notsigned" pre="1" code="005" msgZh="保险证目前状态不能被签收！" msgEn=""/>
+	    <item ident="insurance.cert.notvalid.status" pre="1" code="006" msgZh="不是有效的保险证状态！" msgEn=""/>
+	    
+	    <!-- 商户 -->
+	    <item ident="vendor.bankaccount.exists" pre="2" code="000" msgZh="银行卡号已存在，不能重复添加！" msgEn=""/>
+	    <item ident="vendor.bankaccount.notfound" pre="2" code="001" msgZh="银行卡号不存在！" msgEn=""/>
+	    <item ident="vendor.returnaddress.notfound" pre="2" code="001" msgZh="收货地址Id不存在！" msgEn=""/>
+	    
+	    <!-- 系统 -->
+	    <item ident="sys.coderule.notfound" pre="3" code="000" msgZh="编码规则不存在！" msgEn=""/>
+	    <item ident="sys.coderule.detail.notfound" pre="3" code="001" msgZh="编码规则明细不存在！" msgEn=""/>
+	    
+	</type>
+</service-code>

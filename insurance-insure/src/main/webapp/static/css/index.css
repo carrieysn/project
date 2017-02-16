@@ -1,0 +1,209 @@
+/* 
+* @Author: anchen
+* @Date:   2015-12-01 09:07:32
+* @Last Modified by:   anchen
+* @Last Modified time: 2015-12-04 13:48:43
+*/
+html, body, .bigbac {
+    width: 100%;
+    background: white;
+}
+.bigbac {
+    height: 300px;
+    margin: 0 auto;
+    background: url(../images/bac.png) no-repeat center center;
+}
+.body-content {
+    position: relative;
+    width: 1200px;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+.body-content nav ul li {
+    cursor: pointer;
+    float: left;
+    width: 300px;
+    height: 50px;
+    background: #dddddd;
+    line-height: 50px;
+    font-size: 16px;
+    text-align: center;
+}
+.body-content nav ul .first {
+    background: #1c85c4;
+    color: white;
+}
+.body-content nav ul li:hover {
+    background: #1c85c4;
+    color: white;
+}
+.trading {
+    position: absolute;
+    top: -310px;
+    right: 0px;
+    width: 270px;
+    height: 300px;
+    background: #d6e5fd;
+}
+.trading h2 {
+    height: 130px;
+    line-height: 130px;
+    font-size: 30px;
+    text-align: center;
+}
+.trading div {
+    height: 60px;
+    font-size: 18px;
+    line-height: 60px;
+    text-align: center;
+}
+.trading div button {
+    cursor: pointer;
+    width: 190px;
+    height: 45px;
+    border: none;
+    border-radius: 5px;
+    background: #ffbe21;
+    line-height: 45px;
+    text-align: center;
+    outline: none;
+}
+.trading div button:hover {
+    background: #ecb020;
+}
+.con-part {
+    margin-bottom: 19px;
+}
+.body-content-con1 {
+    padding: 50px;
+    width: 1098px;
+    border: 1px solid #dddddd;
+    margin-bottom: 48px;
+}
+.body-content-con {
+    padding: 50px;
+    width: 1098px;
+    border: 1px solid #dddddd;
+    margin-bottom: 48px;
+}
+.body-content-con1 .suitable {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: bold;
+}
+.body-content-con1 .suitable-con {
+    line-height: 22px;
+    font-size: 14px;
+}
+.con-part2 {
+    position: relative;
+}
+.con-part2 img {
+    position: absolute;
+    top: 20px;
+    left: 106px;
+    width: 94px;
+    height: 27px;
+}
+.con-part5 p {
+    font-size: 14px;
+}
+.con-part6-bac {
+    width: 100%;
+    height: 300px;
+    background: url(../images/bac1.png) no-repeat;
+}
+.body-content-con2 {
+    display: none;
+}
+.body-content-con2 h2 {
+    margin-top: 10px;
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+.body-content-con3, .body-content-con2, .body-content-con4 {
+    display: none;
+}
+.body-content-con3 .con-part .suitable {
+    font-weight: bold;
+}
+.body-content-con3 .con-part .suitable-con {
+    text-indent: 2em;
+    font-size: 14px;
+}
+.body-content-con4 .suitable {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.body-content-con4 .suitable-con {
+    font-size: 14px;
+}
+.body-content-con4 img {
+    width: 1110px;
+    height: 392px;
+}
+.popup {
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    background: url(../images/abc.png);
+    z-index: 999999;
+}
+.popup .popup-infor {
+    position: absolute;
+    top:430px;
+    left: 50%;
+    width: 430px;
+    height: 280px;
+    margin-left: -215px;
+    margin-top: -140px;
+    background: white;
+    border-radius: 5px;
+}
+.popup .popup-infor h2 {
+    position: relative;
+    height: 40px;
+    width: 390px;
+    padding: 0 20px;
+    line-height: 40px;
+    background: #0277bd;
+    border-radius: 5px 5px 0px 0px;
+    color: white;
+}
+.popup .popup-infor h2 img {
+    position: absolute;
+    cursor: pointer;
+    top: 13px;
+    right: 20px;
+    width: 14px;
+    height: 14px;
+}
+.popup .popup-infor .poping {
+    line-height: 50px;
+    font-size: 20px;
+    margin-top: 50px;
+    text-align: center;
+}
+.popup .popup-infor .popinfo {
+    line-height: 50px;
+    font-size: 16px;
+    text-align: center;
+    color: #999999;
+}
+.popup .popup-infor .popinfo span {
+    color: black;
+}
+.popup .popup-infor .btn-bd a {
+    display: block;
+    width: 166px;
+    height: 40px;
+    margin: 0 auto;
+    color: #333333;
+    line-height: 40px;
+    font-size: 16px;
+    text-align: center;
+    background: #ffbe21;
+    border-radius: 5px;
+}

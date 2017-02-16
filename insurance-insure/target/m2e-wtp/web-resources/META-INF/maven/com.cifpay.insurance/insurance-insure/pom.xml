@@ -1,0 +1,174 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cifpay.insurance</groupId>
+	<artifactId>insurance-insure</artifactId>
+	<packaging>war</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>insurance-insure Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<package.environment>test</package.environment>
+		<spring.version>4.1.6.RELEASE</spring.version>
+	</properties>
+	
+    <profiles>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<package.environment>dev</package.environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<package.environment>test</package.environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>production</id>
+			<properties>
+				<package.environment>production</package.environment>
+			</properties>
+		</profile>
+	</profiles>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.cifpay</groupId>
+			<artifactId>starframework</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>hadoop-client</artifactId>
+					<groupId>org.apache.hadoop</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>hbase-client</artifactId>
+					<groupId>org.apache.hbase</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- Servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+			<!-- <scope>provided</scope> -->
+		</dependency>
+	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>cifpay-release</id>
+			<name>Nexus Release Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>cifpay-snapshots</id>
+			<name>Nexus Snapshot Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>nexus</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/groups/public</url>
+			<!-- <releases> <enabled>true</enabled> </releases> <snapshots> <enabled>true</enabled> </snapshots> -->
+		</repository>
+		<repository>
+			<id>thirdpart</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/repositories/thirdparty</url>
+		</repository>
+		<repository>
+			<id>releases</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>oschina</id>
+			<url>http://maven.oschina.net/content/groups/public/</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>nexus</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/groups/public</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>thirdpart</id>
+			<name>Team Nexus Repository</name>
+			<url>http://192.168.4.142:8089/nexus/content/repositories/thirdparty</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<build>
+		<finalName>insurance-insure</finalName>
+		<plugins>
+		    <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<warName>insurance-insure</warName>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<packagingExcludes>**/environment/**,**/db/**,**/db-assembly.xml</packagingExcludes>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+					</archive>
+					<webResources>
+						<resource>
+							<directory>src/main/spring-conf</directory>
+							<targetPath>WEB-INF/classes</targetPath>
+						</resource>
+						<resource>
+							<directory>src/main/resources/environment/${package.environment}</directory>
+							<targetPath>WEB-INF/classes</targetPath>	
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+		</plugins>
+
+
+	</build>
+</project>

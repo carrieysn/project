@@ -1,0 +1,272 @@
+/* 
+* @Author: anchen
+* @Date:   2015-12-01 13:44:09
+* @Last Modified by:   anchen
+* @Last Modified time: 2015-12-16 13:47:12
+*/
+html body {
+    background: white;
+} 
+.pro-con {
+    width: 1168px;
+    margin: 0 auto;
+    margin-bottom: 50px;
+    padding: 16px;
+    border: 1px solid #dddddd;
+}
+.pro-con .pay-pro {
+    width: 1168px;
+    
+}
+.pay-pro-con {
+    margin: 0 auto;
+    margin-top: 70px;
+    width: 585px;
+    padding-bottom: 100px;
+}
+.btn-next4 {
+    position: relative;
+    height: 40px;
+    width: 550px;
+}
+.btn-next4 button {
+    position: absolute;
+    top: 20%;
+    left:36%;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+    margin: 0 auto;
+    width: 165px;
+    height: 40px;
+    line-height: 40px;
+    border: none;
+    background: #666666;
+    border-radius: 5px;
+    text-align: center;
+}
+.btn-next4 p {
+    cursor: pointer;
+    position: absolute;
+    display: inline-block;
+    bottom: -71%;
+    left: 41.5%;
+    font-size: 12px;
+    text-decoration: underline ;
+}
+.con4pay {
+    height: 36px;
+}
+.con4pay span, .con4pay strong {
+    display: inline-block;
+    height: 36px;
+    line-height: 36px;
+    font-size: 16px;
+}
+.con4pay strong {
+    text-indent: 1em;
+}
+.con4mid1 ul {
+    width: 450px;
+    padding-left: 72px;
+}
+.con4mid1 ul li {
+    overflow: hidden;
+    float: right;
+    height: 40px;
+    border: 1px solid #dddddd;
+    line-height: 40px;
+    font-size: 16px;
+    text-align: center;
+}
+.con4mid1 ul .right {
+    width: 288px;
+}
+.con4mid1 ul .left {
+    width: 146px;
+}
+.con4pay {
+    position: relative;
+}
+.con4pay .btncifpay {
+    position: absolute;
+    top: 9px;
+    left: 85px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid black;
+}
+.con4pay .btncifpay .chose {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: black;
+}
+.con4pay .figpay-logo {
+    position: absolute;
+    top: 4px;
+    left: 117px;
+}
+.con4paycon {
+    margin-top: 20px;
+}
+.con4paycon input{
+	outline:none;
+    width: 200px;
+    height: 30px;
+    text-indent: 10px;
+}
+.bank {
+    position: relative;
+    width: 550px;
+    height: 50px;
+    font-size: 16px;
+    line-height: 50px;
+    margin-top: 20px;
+}
+.bank .bank-btn {
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid black;
+}
+.bank-btn1 {
+    left: 85px;
+}
+.bank-btn2 {
+    left: 245px;
+}
+.bank-btn3 {
+    left: 408px;
+}
+.bank .bank-btn .back-chose {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: black;
+}
+.bank .bank-btn .bank-chose {
+    background: white;
+}
+.bank img {
+    position: absolute;
+    top: 3px;
+    width: 110px;
+    height: 42px;
+}
+.bank .bank1-logo {
+    left: 116px;
+}
+.bank .bank2-logo {
+    left: 274px;
+}
+.bank .bank3-logo {
+    left: 432px;
+}
+.popup {
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 999999;
+}
+.popup .popup-infor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 430px;
+    height: 280px;
+    margin-left: -215px;
+    margin-top: -140px;
+    background: white;
+    border-radius: 5px;
+}
+.popup .popup-infor h2 {
+    position: relative;
+    height: 40px;
+    width: 390px;
+    padding: 0 20px;
+    line-height: 40px;
+    background: #0277bd;
+    border-radius: 5px 5px 0px 0px;
+    color: white;
+}
+.popup .popup-infor h2 img {
+    position: absolute;
+    cursor: pointer;
+    top: 13px;
+    right: 20px;
+    width: 14px;
+    height: 14px;
+}
+.popup-top {
+    height: 110px;
+    width: 350px;
+    padding: 30px 0;
+    margin: 0 auto;
+}
+.popup-top dl dt, .popup-top dl dd {
+    float: left;
+}
+.popup-top dl dt {
+    width: 73px;
+    height: 130px;
+}
+.popup-top dl dd {
+    overflow: hidden;
+    white-space: nowrap;
+     text-overflow:ellipsis;
+    width: 275px;
+}
+.popup-top dl dt img {
+    width: 58px;
+    height: 58px;
+}
+.popup-top dl .part1 {
+    height: 31px;
+    font-size: 20px;
+    line-height: 31px;
+}
+.popup-top dl .part2 {
+    height: 31px;
+    font-size: 14px;
+    line-height: 31px;
+}
+.popup-top dl .part3 {
+    height: 31px;
+    font-size: 14px;
+    line-height: 31px;
+}
+.popup-down {
+    width: 360px;
+    margin: 0 auto;
+    padding: 0 35px;
+}
+.popup-down button {
+    cursor: pointer;
+    display: inline-block;
+    width: 167px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    text-align: center;
+    color: black;
+}
+.popup-down .back {
+    float: left;
+    background: #ffbe21;
+}

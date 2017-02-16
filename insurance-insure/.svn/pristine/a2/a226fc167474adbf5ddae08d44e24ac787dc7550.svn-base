@@ -1,0 +1,116 @@
+
+.boxy-wrapper {
+    position: absolute;
+}
+.boxy-wrapper.fixed {
+    position: fixed;
+}
+.boxy-modal-blackout {
+    background-color: black;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+.boxy-wrapper {
+    empty-cells: show;
+}
+.boxy-wrapper .top-left, .boxy-wrapper .top-right, .boxy-wrapper .bottom-right, .boxy-wrapper .bottom-left {
+    height: 10px;
+    padding: 0;
+    width: 10px;
+}
+.boxy-wrapper .top-left {
+}
+.boxy-wrapper .top-right {
+}
+.boxy-wrapper .bottom-right {
+}
+.boxy-wrapper .bottom-left {
+}
+.boxy-wrapper .top-left {
+}
+.boxy-wrapper .top-right {
+}
+.boxy-wrapper .bottom-right {
+}
+.boxy-wrapper .bottom-left {
+}
+.boxy-wrapper .top, .boxy-wrapper .bottom {
+    background-color: #0277bd;
+    height: 10px;
+    padding: 0;
+}
+.boxy-wrapper .left, .boxy-wrapper .right {
+    opacity: 0.6;
+    padding: 0;
+    width: 10px;
+}
+.boxy-wrapper .title-bar {
+    background-color: #0277bd;
+    padding: 6px;
+    position: relative;
+}
+.boxy-wrapper .title-bar.dragging {
+    cursor: move;
+}
+.boxy-wrapper .title-bar h2 {
+    color: white;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+}
+.boxy-wrapper .title-bar .close {
+    color: white;
+    font-size: 12px;
+    position: absolute;
+    right: 6px;
+    top: 5px;
+}
+.boxy-wrapper .title-bar .close:hover {
+    background-color: #454545;
+}
+.boxy-inner {
+    background-color: white;
+    padding: 0;
+}
+.boxy-content {
+    padding: 15px;
+}
+.boxy-wrapper .question {
+    min-height: 60px;
+    width: 350px;
+}
+.boxy-wrapper .answers {
+    text-align: right;
+}
+.boxy-btn1, .boxy-btn2, .boxy-btn3 {
+    border-style: solid;
+    border-width: 1px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    line-height: 15px;
+    overflow: visible;
+    padding: 3px 12px 1.9px;
+}
+.boxy-btn1 {
+    background-color: #4cc5fe;
+    border-color: #4cc5fe;
+    color: white;
+}
+.boxy-btn2 {
+    background-color: #4cc5fe;
+    border-color: #4cc5fe;
+    color: white;
+}
+.boxy-btn3 {
+    background-color: #eaeaea;
+    border-color: #eaeaea #aaaaaa #aaaaaa #eaeaea;
+    color: #333333;
+    padding: 3px 5px 1.9px;
+}
+.boxy-btn3:hover {
+    background-color: #cad5eb;
+    border-color: #ced8e3 #a2adbc #a2adbc #ced8e3;
+}

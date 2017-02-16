@@ -1,0 +1,827 @@
+/* 
+* @Author: anchen
+* @Date:   2015-12-01 13:44:09
+* @Last Modified by:   anchen
+* @Last Modified time: 2015-12-04 15:42:33
+*/
+html body {
+    background: white;
+} 
+header {
+    margin-bottom: 30px;
+}
+.pro-con {
+    width: 1168px;
+    margin: 0 auto;
+    margin-bottom: 50px;
+    padding: 16px;
+    border: 1px solid #dddddd;
+}
+.pro-con h2 a {
+    display: inline-block;
+    height: 25px;
+    margin-left: 15px;
+    margin-bottom: 10px;
+    color: #266ab2;
+    font-size: 16px;
+    line-height: 25px;
+}
+.pro-con h2 {
+    position: relative;
+    border-bottom: 1px solid #dddddd;
+}
+.pro-con .pay-pro {
+    width: 1168px;
+    
+}
+.registor {
+    margin-top: 35px;
+}
+.registor ul {
+    margin: 0 auto;
+    width: 1005px;
+    height: 70px;
+    border: 1px solid #d6d6d6;
+    background: #eeeeee;
+}
+.registor ul li {
+    position: relative;
+    cursor: pointer;
+    float: left;
+    width: 201px;
+    height: 70px;
+    background: #eeeeee;
+    line-height: 70px;
+    font-size: 16px;
+    text-align: center;
+}
+.registor ul li img {
+    overflow: hidden;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    height: 70px;
+    z-index: 101;
+}
+.registor ul li span {
+    position: absolute;
+    top: 4px;
+    right: -45px;
+    display: inline-block;
+    width: 90px;
+    height: 50px;
+    font-size: 153px;
+    color: #eeeeee;
+    z-index: 100;
+}
+.registor ul li .back0277bd {
+    color: #0277bd;
+}
+.registor ul li .back0277bd1 {
+    color: #0277bd;
+}
+.registor ul .bac0277bd {
+    color: white;
+    background: #0277bd;
+}
+.registor ul .bac0277bd1 {
+    color: white;
+    background: #0277bd;
+}
+.pay-pro-con {
+    margin: 0 auto;
+    margin-top: 70px;
+    width: 586px;
+    padding-bottom: 100px;
+}
+.pay-pro-con1 .pay-part1 span ,.pay-pro-con2 .pay-part1 span{
+    cursor: pointer;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #aaaaaa;
+}
+.pay-pro-con1 div strong {
+    margin-right: 38px;
+}
+.pay-pro-con1 div em {
+    display: inline-block;
+    width: 118px;
+    text-align: right;
+    margin-right: 5px;
+}
+.pay-pro-con1 div em:before {
+   content: "*";
+   color: red;
+}
+.pay-part1 {
+    font-size: 16px;
+    height: 50px;
+    line-height: 50px;
+}
+.pay-pro-con1 .pay-part1 .addcls, .pay-pro-con2 .pay-part1 .addcls {
+    background: url(../images/111.png) no-repeat center center;
+    border: 1px solid #3081f4;
+}
+.pay-part1 em {
+    line-height: 49px;
+}
+.pay-part1 section, .pay-part2 section {
+    float: right;
+    width: 458px;
+}
+.pay-part2 {
+    height: 94px;
+}
+.pay-part2 em {
+    font-size: 16px;
+    line-height: 40px;
+}
+.pay-part2 section input {
+    outline:none;
+    width: 350px;
+    height: 40px;
+    text-indent: 10px;
+    border: 1px solid rgb(211, 211, 211);
+}
+.pay-part2 section .pay-num {
+    font-size: 12px;
+    color: #d3d3d3;
+}
+.pay-part2 section .pay-much {
+    margin-top: 10px;
+}
+.pay-pro-con1 p {
+    margin-top: 40px;
+    font-size: 16px;
+    text-align: center;
+}
+.btn-next1, .btn-next2, .btn-next3, .btn-next4 {
+    position: relative;
+    height: 40px;
+    width: 550px;
+}
+.btn-next1 button {
+    position: absolute;
+    top: 20%;
+    left:36%;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+    margin: 0 auto;
+    width: 165px;
+    height: 40px;
+    line-height: 40px;
+    border: none;
+    background: #d6d6d6;
+    border-radius: 5px;
+    text-align: center;
+}
+.btn-next1 p {
+    cursor: pointer;
+    position: absolute;
+    display: inline-block;
+    top: -71%;
+    left: 41.5%;
+    font-size: 12px;
+    text-decoration: underline ;
+}
+.btn-next2 button {
+    position: absolute;
+    top: 20%;
+    left:36%;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+    margin: 0 auto;
+    width: 165px;
+    height: 40px;
+    line-height: 40px;
+    border: none;
+    background: #ffbe21;
+    border-radius: 5px;
+    text-align: center;
+}
+.btn-next2 p {
+    cursor: pointer;
+    position: absolute;
+    display: inline-block;
+    bottom: -71%;
+    left: 41.5%;
+    font-size: 12px;
+    text-decoration: underline ;
+}
+.btn-next3 button {
+    position: absolute;
+    top: 233%;
+    left:36%;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+    margin: 0 auto;
+    width: 165px;
+    height: 40px;
+    line-height: 40px;
+    border: none;
+    background: #ffbe21;
+    border-radius: 5px;
+    text-align: center;
+}
+.btn-next3 p {
+    cursor: pointer;
+    position: absolute;
+    display: inline-block;
+    bottom: -281%;
+    left: 41.5%;
+    font-size: 12px;
+    text-decoration: underline ;
+}
+.btn-next4 button {
+    position: absolute;
+    top: 20%;
+    left:36%;
+    cursor: pointer;
+    outline: none;
+    display: inline-block;
+    margin: 0 auto;
+    width: 165px;
+    height: 40px;
+    line-height: 40px;
+    border: none;
+    background: #ffbe21;
+    border-radius: 5px;
+    text-align: center;
+}
+.btn-next4 p {
+    cursor: pointer;
+    position: absolute;
+    display: inline-block;
+    bottom: -71%;
+    left: 41.5%;
+    font-size: 12px;
+    text-decoration: underline ;
+}
+.pay-pro-con2 .pay-part1 section strong {
+    margin-right: 150px;
+}
+.pay-pro-con2 .pay-part1 em {
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+}
+.pay-pro-con2 .pay-part1 em i {
+    color: red;
+}
+.policy-holder label {
+    display: inline-block;
+    width: 99px;
+    font-size: 16px;
+    text-align: right;
+}
+.policy-holder label span {
+    color: red;
+}
+.policy-holder input {
+    outline:none;
+    width: 350px;
+    height: 40px;
+    text-indent: 10px;
+}
+.policy {
+    height: 44px;
+    margin-bottom: 15px;
+}
+.IDcard {
+    position: relative;
+}
+.IDcard img {
+    position: absolute;
+    cursor: pointer;
+    top: 16px;
+    right: 134px;
+    width: 14px;
+    height: 8px;
+    z-index: 100001;
+}
+.pay-pro-con2 .pay-part1 em:before {
+    content: "*";
+    color: red;
+}
+.IDcard span {
+    display: inline-block;
+    width: 93px;
+    font-size: 16px;
+    text-align: right;
+    line-height: 40px;
+}
+.IDcard ul {
+    position: absolute;
+    top: 0px;
+    left: 104px;
+    height: 44px;
+    width: 354px;
+    background: #dddddd;
+    z-index: 1000;
+}
+.IDcard ul li {
+    cursor: pointer;
+    display: none;
+    height: 42px;
+    width: 352px;
+    line-height: 40px;
+    text-indent: 10px;
+    font-size: 16px;
+    color: #aaaaaa;
+    background: white;
+    border: 1px solid #999999;
+}
+.IDcard ul  .first {
+    display: block;
+    background: #dddddd;
+}
+.IDcard div span i {
+    color: red;
+}
+.pay-pro-con3 {
+    margin: 0 auto;
+    margin-top: 70px;
+    width: 588px;
+    height: 390px;
+    padding-bottom: 150px; 
+    background: url(../images/21212_03.png) no-repeat center center;
+}
+.pay-pro-con3 h2 {
+    width: 580px;
+    height: 34px;
+    background: #0277bd;
+    color: white;
+    font-size: 16px;
+    line-height: 34px;
+    text-align: center;
+}
+.conpad {
+    width: 510px;
+    height: 380px;
+    padding: 4px;
+}
+.pay-pro-con3 .content {
+    width: 520px;
+    height: 306px;
+    padding: 20px 30px;
+    padding-top: 62px;
+}
+.content-top {
+    height: 126px;
+    width: 520px;
+    font-size: 16px;
+}
+.content-foot {
+    height: 180px;
+    width: 520px;
+}
+.content-top span {
+    display: inline-block;
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    text-align: right;
+    color: #a9a9a9;
+}
+.content-top ul {
+    padding-bottom: 10px;
+    border-bottom: 1px dotted #dddddd;
+}
+.content-top ul li {
+    height: 30px;
+    width: 520px;
+}
+.content-top ul li strong{
+    display: inline-block;
+    height: 30px;
+    color: #333333;
+}
+.content-top ul li .number {
+    color: red;
+}
+ .date-left {
+    width: 43%;
+    overflow: hidden;
+}
+.date-right{
+	width: 57%;
+    overflow: hidden;
+}
+.date-right {
+    float: right;
+}
+.date-left {
+    float: left;
+}
+#asdsad span {
+    float: left;
+    margin-right: 5px;
+}
+#asdsad p {
+    float: left;
+}
+.content-top .content-top1 {
+    border-bottom: none;
+}
+.con4pay {
+    height: 36px;
+}
+.con4pay span, .con4pay strong {
+    display: inline-block;
+    height: 36px;
+    line-height: 36px;
+    font-size: 16px;
+}
+.con4pay strong {
+    text-indent: 2em;
+}
+.con4mid1 ul {
+    width: 450px;
+    padding-left: 72px;
+}
+.con4mid1 ul li {
+    overflow: hidden;
+    float: right;
+    height: 40px;
+    border: 1px solid #dddddd;
+    line-height: 40px;
+    font-size: 16px;
+    text-align: center;
+}
+.con4mid1 ul .right {
+    width: 112px;
+}
+.con4mid1 ul .left {
+    width: 308px;
+}
+.con4pay {
+    position: relative;
+}
+.con4pay .btncifpay {
+    position: absolute;
+    top: 9px;
+    left: 85px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid black;
+}
+.con4pay .btncifpay .chose {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: black;
+}
+.con4pay .figpay-logo {
+    position: absolute;
+    top: 4px;
+    left: 117px;
+}
+.con4paycon {
+    margin-top: 20px;
+}
+.bank {
+    position: relative;
+    width: 550px;
+    height: 50px;
+    font-size: 16px;
+    line-height: 50px;
+    margin-top: 20px;
+}
+.bank .bank-btn {
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 1px solid black;
+}
+.bank-btn1 {
+    left: 85px;
+}
+.bank-btn2 {
+    left: 245px;
+}
+.bank-btn3 {
+    left: 408px;
+}
+.bank .bank-btn .back-chose {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: black;
+}
+.bank .bank-btn .bank-chose {
+    background: white;
+}
+.bank img {
+    position: absolute;
+    top: 3px;
+    width: 110px;
+    height: 42px;
+}
+.bank .bank1-logo {
+    left: 116px;
+}
+.bank .bank2-logo {
+    left: 274px;
+}
+.bank .bank3-logo {
+    left: 432px;
+}
+.content5 .small-logo {
+    height: 90px;
+    margin-top: 20px;
+    background: url(../images/smell.png) no-repeat center center;
+}
+.content5 .congra {
+    height: 20px;
+    font-size: 18px;
+    line-height: 20px;
+    text-align: center;
+}
+.content5 .congra-mid {
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    font-size: 16px;
+}
+.content5 .congra-mid span {
+    color: red;
+}
+.content5 .congra-footer {
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #999999;
+}
+.content5 .congra-footer span {
+    color: #333333;
+}
+.content5 .congra-footer {
+    margin-bottom: 10px;
+}
+.content5 .infor-content {
+    width: 850px;
+    margin: 0 auto;
+}
+.content5 .infor-content h2 {
+    height: 48px;
+    line-height: 48px;
+    font-size: 16px;
+    color: #666666;
+    border: none;
+}
+.content5 .infor-content .infor-con-mid {
+    overflow: hidden;
+    width: 848px;
+    height: 348px;
+    background: #f4f4f4;
+    border: 1px solid #bbbbbb;
+    padding:24px;
+}
+.content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-left, .content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-right {
+    float: left;
+    height: 35px;
+}
+.content5 .infor-content .infor-con-mid .infor-con-mid1 li {
+    height: 35px;
+}
+.content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-left {
+    width: 55%;
+}
+.content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-right {
+    width: 45%;
+}
+.content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-left span, .content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-left strong,.content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-right span, .content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-right strong {
+    display: inline-block;
+    height: 35px;
+    line-height: 35px;
+}
+.content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-left span, .content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-right span {
+    width: 120px;
+    font-size: 14px;
+    text-align: left;
+    color: #666666;
+}
+.content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-left strong,.content5 .infor-content .infor-con-mid .infor-con-mid1 .infor-con-mid1-right strong {
+    font-size: 14px;
+}
+.infor-con-mid1-1 {
+    margin-bottom: 10px;
+}
+.dowload {
+    width: 850px;
+    height: 300px; 
+    margin: 0 auto;
+    margin-top: 20px;
+}
+.dowload h2 {
+    height: 35px;
+    line-height: 35px;
+    color: #666666;
+    font-size: 16px;
+    border: none;
+}
+.dowload .download-con {
+    overflow: hidden;
+    width: 848px;
+    height: 248px;
+    border: 1px solid #eeeeee;
+}
+.dowload .download-con dl dt, .dowload .download-con dl dd {
+    float: left;
+}
+.dowload .download-con dl dt {
+    width: 515px;
+    height: 248px;
+}
+.dowload .download-con dl dt img {
+    margin: 25px 0px 0px 100px;
+}
+.dowload .download-con dl dd {
+    width: 333px;
+    height: 180px;
+    padding-top: 68px;
+}
+.dowload .download-con dl dd h3 {
+    height: 22px;
+    line-height: 22px;
+    font-size: 18px;
+}
+.dowload .download-con dl dd .pace {
+    height:21px;
+    line-height: 21px;
+    color: #666666;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+.dowload .download-con dl dd .down-btn {
+    height: 44px;
+    margin-bottom: 10px;
+}
+.dowload .download-con dl dd .down-btn button {
+    cursor: pointer;
+    width: 166px;
+    height: 43px;
+    border-radius: 5px;
+    background: #0fb5ed;
+    line-height: 43px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    outline: none;
+}
+.dowload .download-con dl dd .date {
+    height: 15px;
+    line-height: 15px;
+    font-size: 12px;
+    color: #999999;
+}
+.content5 {
+    display: none;
+}
+/*.pay-pro-con1 {
+    display: none;
+}*/
+.pay-pro-con2 {
+    display: none;
+}
+.pay-pro-con3 {
+    display: none;
+}
+.pay-pro-con4 {
+    display: none;
+}
+.popup {
+    position: fixed;
+    display: none;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 999999;
+}
+.popup .popup-infor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 430px;
+    height: 280px;
+    margin-left: -215px;
+    margin-top: -140px;
+    background: white;
+    border-radius: 5px;
+}
+.popup .popup-infor h2 {
+    position: relative;
+    height: 40px;
+    width: 390px;
+    padding: 0 20px;
+    line-height: 40px;
+    background: #0277bd;
+    border-radius: 5px 5px 0px 0px;
+    color: white;
+}
+.popup .popup-infor h2 img {
+    position: absolute;
+    cursor: pointer;
+    top: 13px;
+    right: 20px;
+    width: 14px;
+    height: 14px;
+}
+.popup-top {
+    height: 110px;
+    width: 350px;
+    padding: 30px 0;
+    margin: 0 auto;
+}
+.popup-top dl dt, .popup-top dl dd {
+    float: left;
+}
+.popup-top dl dt {
+    width: 73px;
+    height: 130px;
+}
+.popup-top dl dd {
+    overflow: hidden;
+    white-space: nowrap;
+     text-overflow:ellipsis;
+    width: 275px;
+}
+.popup-top dl dt img {
+    width: 58px;
+    height: 58px;
+}
+.popup-top dl .part1 {
+    height: 31px;
+    font-size: 20px;
+    line-height: 31px;
+}
+.popup-top dl .part2 {
+    height: 31px;
+    font-size: 14px;
+    line-height: 31px;
+}
+.popup-top dl .part3 {
+    height: 31px;
+    font-size: 14px;
+    line-height: 31px;
+}
+.popup-down {
+    width: 360px;
+    margin: 0 auto;
+    padding: 0 35px;
+}
+.popup-down button {
+    cursor: pointer;
+    display: inline-block;
+    width: 167px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    text-align: center;
+    color: black;
+}
+.popup-down .back {
+    float: left;
+    background: #ffbe21;
+}
+.popup-down .go {
+    float: right;
+    background: #dddddd;
+}
+.pro-con h2 img {
+    position: absolute;
+    top: 5px;
+    left: 0px;
+    width: 9px;
+    height: 15px;
+}
+.bank .bank-btn span.back-chosecolor {
+    background: black;
+}
+
+form label.error {
+    
+    color: red;
+    font-size: 12px;
+    width: 18%;
+}

@@ -1,0 +1,104 @@
+/* 
+* @Author: anchen
+* @Date:   2015-12-02 15:35:46
+* @Last Modified by:   anchen
+* @Last Modified time: 2015-12-03 08:57:06
+*/
+.policycon {
+    width: 1198px;
+    height: 1098px;
+    border: 1px solid #dddddd;
+    background: #ffffff;
+    margin: 0 auto;
+    margin-top: 30px;
+}
+.policycon .header h2 {
+    position: relative;
+    width: 1160px;
+    height: 40px;
+    margin: 0 auto;
+    border-bottom: 1px solid #dddddd;
+    line-height: 40px;
+}
+.buyInsureBut {
+    cursor: pointer;
+    width: 190px;
+    height: 45px;
+    border: none;
+    border-radius: 5px;
+    background: #ffbe21;
+    line-height: 45px;
+    text-align: center;
+    outline: none;
+}
+.policycon .header h2 a {
+    display: inline-block;
+    color: #005bac;  
+    font-size: 16px;
+    margin-left: 17px;
+}
+.policycon .header h2 img {
+    position: absolute;
+    top: 13px;
+    left: 0px;
+    width: 9px;
+    height: 15px;
+}
+.policycon .policycon-infor h2 {
+    height: 54px;
+    width: 1160px;
+    margin: 0 auto;
+    color: #666666;
+    font-size: 18px;
+    line-height: 54px;
+}
+.policycon-infor .policyconinfor {
+    width: 1110px;
+    border: 1px solid #bbbbbb;
+    padding: 24px;
+    margin: 0 auto;
+    background: #eeeeee;
+}
+.part li {
+    height: 40px;
+}
+.part .left, .part .right {
+    float: left;
+    height: 40px;
+}
+.part .left {
+    width: 55%;
+}
+.part .right {
+    width: 45%;
+}
+.part .left span, .part .right span {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-decoration: ellipsis;
+    width: 130px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 16px;
+    color: #666666;
+    text-align: left;
+}
+.part .left strong, .part .right strong {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 301px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 16px;
+    color: #333333;
+}
+.part1 {
+    border-bottom: 1px dotted white;
+    padding: 5px 0px;
+}
+.part-last {
+    border: none;
+}
